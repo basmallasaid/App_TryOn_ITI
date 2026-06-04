@@ -182,23 +182,29 @@ const LoginScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#f4f4f5", // shows behind image while loading
-  },
-  imageContainer: {
-    paddingTop: 25,
-    height: SCREEN_HEIGHT * 0.25,
-    width: "100%",
     backgroundColor: "#f4f4f5",
   },
+
+  imageContainer: {
+  paddingTop: Platform.OS === "ios" ? 40 : 25,
+  height: Platform.OS === "ios"
+    ? SCREEN_HEIGHT * 0.35
+    : SCREEN_HEIGHT * 0.25,
+  width: "100%",
+    backgroundColor: "#f4f4f5",
+  },
+
   heroImage: {
     width: "100%",
     height: "100%",
   },
+
   sheetWrapper: {
     flex: 1,
     marginTop: -40,
     zIndex: 3,
   },
+
   sheet: {
     flexGrow: 1,
     backgroundColor: Colors.white,
@@ -208,16 +214,18 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     paddingBottom: 40,
   },
+
   title: {
     ...Typography.screenTitleLarge,
-
   },
+
   subtitle: {
     ...Typography.screenSubtitle,
     paddingBottom: 10,
-    paddingTop:4,
+    paddingTop: 4,
     marginBottom: 32,
   },
+
   successMsg: {
     fontFamily: "Roboto_400Regular",
     fontSize: 12,
@@ -227,41 +235,49 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 14,
   },
+
   errorMsg: {
     fontFamily: "Roboto_400Regular",
     fontSize: 12,
     color: Colors.error,
     marginBottom: 10,
   },
+
   forgotWrap: {
     alignSelf: "flex-end",
     marginTop: -8,
     marginBottom: 14,
   },
+
   forgotText: {
     ...Typography.forgotPassword,
     paddingVertical: 5,
   },
+
   buttonWrap: {
     marginTop: 75,
     marginBottom: 29,
   },
+
   dividerRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
     justifyContent: "center",
   },
+
   dividerLine: {
-    width:"15%",
+    width: "15%",
     height: 1,
     backgroundColor: Colors.primary,
   },
+
   dividerText: {
     ...Typography.dividerText,
     marginHorizontal: 5,
-    marginTop:-9,
+    marginTop: -9,
   },
+
   enrichRow: {
     flexDirection: "row",
     justifyContent: "center",
@@ -269,9 +285,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     flexWrap: "wrap",
   },
+
   enrichBase: {
     ...Typography.enrichTextBase,
   },
+
   enrichLink: {
     ...Typography.enrichTextLink,
   },

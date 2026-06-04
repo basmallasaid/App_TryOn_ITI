@@ -1,17 +1,25 @@
 import { useState } from 'react';
-import { Linking, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  Linking,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Platform,
+} from 'react-native';
 import LottieView from 'lottie-react-native';
 import { sendVerification } from '../../../api/auth_services/authServices';
 import CustomizeAppButtonFilled from '../../../components/common/CustomizeAppButtonFilled';
 import CustomizeAppButtonOutlined from "../../../components/common/CustomizeAppButtonOutlined";
 import Colors from '../../../constants/theme/colors';
 import Typography from '../../../constants/theme/typography';
-import {ANIMATIONS} from "../../../constants/images/animations";
+import { ANIMATIONS } from "../../../constants/images/animations";
 
 const CheckEmailScreen = ({ route, navigation }) => {
   const { email, token } = route.params;
   const [resent, setResent] = useState(false);
-  const [error, setError]   = useState('');
+  const [error, setError] = useState('');
 
   const openGmail = async () => {
     const supported = await Linking.canOpenURL('googlegmail://');
@@ -30,102 +38,111 @@ const CheckEmailScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.scrollContainer}
+    >
+      <View style={styles.container}>
 
-      {/* Title */}
-      <Text style={styles.title}>Check Your Inbox</Text>
+        {/* Title */}
+        <Text style={styles.title}>Check Your Inbox</Text>
 
-      {/* Subtitle */}
-      <Text style={styles.subtitle}>
-        We sent a verification link to{'\n'}
-        <Text style={styles.emailHighlight}>{email}</Text>
-        {'\n'}Click the link to activate your account.
-      </Text>
+        {/* Subtitle */}
+        <Text style={styles.subtitle}>
+          We sent a verification link to{'\n'}
+          <Text style={styles.emailHighlight}>{email}</Text>
+          {'\n'}Click the link to activate your account.
+        </Text>
 
-      
+        {/* Lottie animation */}
+        <LottieView
+          source={ANIMATIONS.CHECK_EMAIL_SUCCESS}
+          autoPlay
+          loop
+          style={styles.animation}
+        />
 
-      {/* Lottie animation */}
-      <LottieView
-        source={ANIMATIONS.CHECK_EMAIL_SUCCESS}
-        autoPlay
-        loop
-        style={styles.animation}
-      />
+        {/* Resend feedback */}
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        {resent ? <Text style={styles.successText}>Email resent!</Text> : null}
 
-      {/* Resend feedback */}
-      {error  ? <Text style={styles.errorText}>{error}</Text>   : null}
-      {resent ? <Text style={styles.successText}>Email resent!</Text> : null}
+        {/* Spam notice */}
+        <Text style={styles.spamText}>
+          Can't find it? Also check your{' '}
+          <Text style={styles.spamBold}>Spam</Text> or{' '}
+          <Text style={styles.spamBold}>Junk</Text> folder.
+        </Text>
 
-      {/* Spam notice */}
-      <Text style={styles.spamText}>
-        Can't find it? Also check your{' '}
-        <Text style={styles.spamBold}>Spam</Text> or{' '}
-        <Text style={styles.spamBold}>Junk</Text> folder.
-      </Text>
-      <View style={styles.gap} />
+        <View style={styles.gap} />
 
-      {/* Open Gmail  */}
-      <CustomizeAppButtonFilled
-        label="Open Email-app"
-        onPress={openGmail}
-        backgroundColor={Colors.primary}
-      />
+        {/* Open Gmail */}
+        <CustomizeAppButtonFilled
+          label="Open Email-app"
+          onPress={openGmail}
+          backgroundColor={Colors.primary}
+        />
 
-      <View style={styles.gap} />
+        <View style={styles.gap} />
 
-      {/* Resend email  */}
-      <CustomizeAppButtonOutlined
-        label="Resend Email"
-        onPress={handleResend}
-        borderColor={Colors.success}
-        textColor={Colors.success}
-      />
+        {/* Resend email */}
+        <CustomizeAppButtonOutlined
+          label="Resend Email"
+          onPress={handleResend}
+          borderColor={Colors.success}
+          textColor={Colors.success}
+        />
 
-      {/* Back to login link */}
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Login', {
-          message: `Verification email sent to ${email}. Please verify before signing in.`,
-        })}
-        style={styles.backWrap}
-      >
-        <Text style={styles.backLink}>Back to Login</Text>
-      </TouchableOpacity>
+        {/* Back to login link */}
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('Login', {
+              message: `Verification email sent to ${email}. Please verify before signing in.`,
+            })
+          }
+          style={styles.backWrap}
+        >
+          <Text style={styles.backLink}>Back to Login</Text>
+        </TouchableOpacity>
 
-      
-
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
+
   container: {
     flex: 1,
     backgroundColor: Colors.white,
     paddingHorizontal: 24,
-    paddingTop: 124,
+    paddingTop: Platform.OS === 'ios' ? 80 : 124,
     paddingBottom: 36,
-    //alignItems: 'center',
   },
+
   title: {
     fontFamily: 'Roboto_700Bold',
     fontSize: 24,
     lineHeight: 38.4,
     color: Colors.textPrimary,
-    // textAlign: 'center',
     marginBottom: 12,
   },
+
   subtitle: {
     fontFamily: 'Roboto_400Regular',
     fontSize: 14,
     lineHeight: 22,
     color: Colors.textSecondary,
-    // textAlign: 'center',
     marginBottom: 10,
   },
+
   emailHighlight: {
     fontFamily: 'Roboto_600SemiBold',
     color: Colors.textPrimary,
   },
+
   spamText: {
     fontFamily: 'Roboto_400Regular',
     fontSize: 12,
@@ -133,16 +150,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
   },
+
   spamBold: {
     fontFamily: 'Roboto_600SemiBold',
     color: Colors.textSecondary,
   },
+
   animation: {
     width: 220,
     height: 220,
     marginVertical: 16,
-      alignSelf: 'center',
+    alignSelf: 'center',
   },
+
   errorText: {
     fontFamily: 'Roboto_400Regular',
     fontSize: 12,
@@ -150,6 +170,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
+
   successText: {
     fontFamily: 'Roboto_400Regular',
     fontSize: 12,
@@ -157,12 +178,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
+
   gap: {
     height: 20,
   },
+
   backWrap: {
     marginTop: 24,
   },
+
   backLink: {
     fontFamily: 'Roboto_500Medium',
     fontSize: 14,

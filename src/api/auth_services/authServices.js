@@ -2,10 +2,16 @@ import apiClient from "./apiClient";
 import { saveToken, clearToken } from '../../storage/TokenStorage';
 import {ENDPOINTS} from "../../config/endpoints";
 
-export const login = async (email, password) => {
-  const { data } = await apiClient.post(ENDPOINTS.LOGIN, { email, password });
-  await saveToken(data.token);
- return { email: data.email, token: data.token}
+export const login = async (
+  email,
+  password,
+  client = apiClient,
+  tokenSaver = saveToken
+) => {
+  const { data } = await client.post(ENDPOINTS.LOGIN, { email, password });
+  console.log("Login successful:", data);
+  await tokenSaver(data.token);
+  return { email: data.email, token: data.token };
 };
 
 export const register = async (email, password, confirmPassword) => {
@@ -14,6 +20,7 @@ export const register = async (email, password, confirmPassword) => {
     password,
    confirmPassword,
   });
+  
   await saveToken(data.token);
   return data; // { token, email, _id }
 };

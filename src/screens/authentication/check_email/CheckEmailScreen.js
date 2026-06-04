@@ -1,13 +1,12 @@
-// src/screens/auth/CheckEmailScreen.js
 import { useState } from 'react';
 import { Linking, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';
-import { sendVerification } from '../../api/auth_services/authServices';
-import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
-import CustomizeAppButtonOutlined from "../../components/common/CustomizeAppButtonOutlined";
-import Colors from '../../constants/theme/colors';
-import Typography from '../../constants/theme/typography';
-import {ANIMATIONS} from "../../constants/images/animations";
+import { sendVerification } from '../../../api/auth_services/authServices';
+import CustomizeAppButtonFilled from '../../../components/common/CustomizeAppButtonFilled';
+import CustomizeAppButtonOutlined from "../../../components/common/CustomizeAppButtonOutlined";
+import Colors from '../../../constants/theme/colors';
+import Typography from '../../../constants/theme/typography';
+import {ANIMATIONS} from "../../../constants/images/animations";
 
 const CheckEmailScreen = ({ route, navigation }) => {
   const { email, token } = route.params;
@@ -65,7 +64,7 @@ const CheckEmailScreen = ({ route, navigation }) => {
       </Text>
       <View style={styles.gap} />
 
-      {/* Open Gmail — filled primary */}
+      {/* Open Gmail  */}
       <CustomizeAppButtonFilled
         label="Open Email-app"
         onPress={openGmail}
@@ -74,7 +73,7 @@ const CheckEmailScreen = ({ route, navigation }) => {
 
       <View style={styles.gap} />
 
-      {/* Resend email — outlined success */}
+      {/* Resend email  */}
       <CustomizeAppButtonOutlined
         label="Resend Email"
         onPress={handleResend}

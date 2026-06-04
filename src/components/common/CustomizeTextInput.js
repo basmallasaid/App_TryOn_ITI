@@ -84,41 +84,12 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontSize: 12,
     color: Colors.textPrimary,
-    padding: 0,   // remove default Android padding
+    padding: 0,
   },
   eyeWrap: {
     paddingLeft: 8,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  // Minimal eye icon built from shapes
-  eyeIcon: {
-    width: 20,
-    height: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  eyeOuter: {
-    width: 18,
-    height: 12,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: Colors.iconGray,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  eyeInner: {
-    width: 5,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: Colors.iconGray,
-  },
-  eyeSlash: {
-    position: 'absolute',
-    width: 20,
-    height: 1.5,
-    backgroundColor: Colors.iconGray,
-    transform: [{ rotate: '-35deg' }],
   },
   errorText: {
     fontFamily: 'Roboto_400Regular',

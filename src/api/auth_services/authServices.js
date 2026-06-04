@@ -9,7 +9,6 @@ export const login = async (email, password) => {
 };
 
 export const register = async (email, password, confirmPassword) => {
-  console.log('API payload:', {email, password, confirmPassword }); // ← add
   const { data } = await apiClient.post(ENDPOINTS.SIGNUP, {
     email,
     password,
@@ -32,7 +31,6 @@ export const forgotPassword = async (email) => {
 };
 
 export const verifyOtp = async (email, otp) => {
-  console.log('verifyOtp payload:', { email, otp }); // ← add
   await apiClient.post(ENDPOINTS.VERIFY_FORGET_PASSWORD_OTP, { email, otp });
 };
 

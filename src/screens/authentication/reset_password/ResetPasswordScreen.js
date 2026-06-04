@@ -1,10 +1,9 @@
-// src/screens/auth/ResetPasswordScreen.js
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { resetPassword } from '../../api/auth_services/authServices';
-import CustomizeTextInput from '../../components/common/CustomizeTextInput';
-import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
-import Colors from '../../constants/theme/colors';
+import { resetPassword } from '../../../api/auth_services/authServices';
+import CustomizeTextInput from '../../../components/common/CustomizeTextInput';
+import CustomizeAppButtonFilled from '../../../components/common/CustomizeAppButtonFilled';
+import Colors from '../../../constants/theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 
 const ResetPasswordScreen = ({ route, navigation }) => {

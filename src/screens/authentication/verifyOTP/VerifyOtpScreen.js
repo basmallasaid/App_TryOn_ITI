@@ -1,10 +1,9 @@
-// src/screens/auth/VerifyOtpScreen.js
 import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { verifyOtp, forgotPassword } from '../../api/auth_services/authServices';
-import CustomizeTextInput from '../../components/common/CustomizeTextInput';
-import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
-import Colors from '../../constants/theme/colors';
+import { verifyOtp, forgotPassword } from '../../../api/auth_services/authServices';
+import CustomizeTextInput from '../../../components/common/CustomizeTextInput';
+import CustomizeAppButtonFilled from '../../../components/common/CustomizeAppButtonFilled';
+import Colors from '../../../constants/theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 
 const VerifyOtpScreen = ({ route, navigation }) => {

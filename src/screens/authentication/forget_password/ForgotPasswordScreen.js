@@ -1,4 +1,3 @@
-// src/screens/auth/ForgotPasswordScreen.js
 import { useState } from "react";
 import {
   View,
@@ -11,14 +10,14 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import { useAuth } from "../../context/AuthContext";
-import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
-import CustomizeTextInput from "../../components/common/CustomizeTextInput";
-import Colors from "../../constants/theme/colors";
-import Typography from "../../constants/theme/typography";
-import { IMAGES } from "../../constants/images/images";
-import {ICONS} from "../../constants/images/icons";
-import { forgotPassword } from '../../api/auth_services/authServices';
+import { useAuth } from "../../../context/AuthContext";
+import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
+import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
+import Colors from "../../../constants/theme/colors";
+import Typography from "../../../constants/theme/typography";
+import { IMAGES } from "../../../constants/images/images";
+import {ICONS} from "../../../constants/images/icons";
+import { forgotPassword } from '../../../api/auth_services/authServices';
 
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');

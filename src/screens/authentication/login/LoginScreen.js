@@ -10,16 +10,16 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import { useAuth } from "../../context/AuthContext";
-import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
-import CustomizeTextInput from "../../components/common/CustomizeTextInput";
-import Colors from "../../constants/theme/colors";
-import Typography from "../../constants/theme/typography";
-import { ICONS } from "../../constants/images/icons";
-import { IMAGES } from "../../constants/images/images";
-
+import { useAuth } from "../../../context/AuthContext";
+import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
+import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
+import Colors from "../../../constants/theme/colors";
+import Typography from "../../../constants/theme/typography";
+import { IMAGES } from "../../../constants/images/images";
+import {ICONS} from "../../../constants/images/icons";
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
+// Google icon 
 const GoogleIcon = () => (
   <View
     style={{
@@ -37,71 +37,38 @@ const GoogleIcon = () => (
   </View>
 );
 
-const SignUpScreen = ({ navigation }) => {
-  const { register } = useAuth();
+const LoginScreen = ({ route, navigation }) => {
+  const { login } = useAuth();
+  const successMessage = route?.params?.message ?? "";
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const update = (field) => (val) => {
-    setForm((f) => ({ ...f, [field]: val }));
-    if (field !== "confirmPassword") setError("");
-  };
+  const emailState = error ? "error" : "default";
+  const passwordState = error ? "error" : "default";
 
-  // Live password match state
-  const confirmState = () => {
-    if (!form.confirmPassword) return "default";
-    return form.password === form.confirmPassword ? "success" : "error";
-  };
-
-  const validate = () => {
-    if (!form.email.includes("@")) return "Enter a valid email";
-    if (form.password.length < 8)
-      return "Password must be at least 8 characters";
-    if (form.password !== form.confirmPassword)
-      return "Password didn't match, try again!";
-    return null;
-  };
-
-  const handleRegister = async () => {
-    const err = validate();
-    if (err) {
-      setError(err);
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Please fill in all fields");
       return;
     }
     try {
       setLoading(true);
       setError("");
-      const { email, token } = await register(
-        form.email.toLowerCase().trim(),
-        form.password,
-        form.confirmPassword,
-      );
-      navigation.navigate("CheckEmail", { email, token });
+      await login(email.toLowerCase().trim(), password);
     } catch (e) {
-      setError(
-        e.response?.data?.message ||
-          e.message ||
-          "Registration failed. Try again.",
-      );
+      const msg = e.response?.data?.message || "";
+      if (msg.toLowerCase().includes("verif")) {
+        setError("Please verify your email before signing in.");
+      } else {
+        setError(msg || "Login failed. Try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
-
-  const emailState =
-    error && error.toLowerCase().includes("email") ? "error" : "default";
-  const passwordState =
-    error &&
-    error.toLowerCase().includes("password") &&
-    !error.includes("match")
-      ? "error"
-      : "default";
 
   return (
     <View style={styles.root}>
@@ -125,62 +92,59 @@ const SignUpScreen = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
-          <Text style={styles.title}>Create Your Style Profile</Text>
-          <Text style={styles.subtitle}>
-            Start building your personalized wardrobe
-          </Text>
+          <Text style={styles.title}>Welcome Back 👋</Text>
+          <Text style={styles.subtitle}>Continue your styling Journey</Text>
 
-          {/* Global error (non-field-specific) */}
-          {error &&
-          !error.toLowerCase().includes("match") &&
-          !error.toLowerCase().includes("email") &&
-          !error.toLowerCase().includes("password") ? (
-            <Text style={styles.errorMsg}>{error}</Text>
-          ) : null}
-
-          {/* Email */}
+          {/* Email input */}
           <CustomizeTextInput
             label="Email"
             placeholder="Enter your email"
-            value={form.email}
-            onChangeText={update("email")}
+            value={email}
+            onChangeText={(v) => {
+              setEmail(v);
+              setError("");
+            }}
             keyboardType="email-address"
             autoCapitalize="none"
             state={emailState}
-            errorMessage={emailState === "error" ? error : ""}
-          />
-          <View style={{ height: 12 }} />
-          {/* Password */}
-          <CustomizeTextInput
-            label="Password"
-            placeholder="Enter your password"
-            value={form.password}
-            onChangeText={update("password")}
-            secureTextEntry
-            state={passwordState}
-            errorMessage={passwordState === "error" ? error : ""}
-          />
-          <View style={{ height: 12 }} />
-          {/* Confirm Password — live match feedback */}
-          <CustomizeTextInput
-            label="Confirm Password"
-            placeholder="Re-enter your password"
-            value={form.confirmPassword}
-            onChangeText={update("confirmPassword")}
-            secureTextEntry
-            state={confirmState()}
-            errorMessage={
-              confirmState() === "error"
-                ? "Password didn't match, try again!"
-                : ""
-            }
           />
 
-          {/* Sign up button */}
+          {/* Password input + forgot password row */}
+          <View style={{ marginTop: 10 }}>
+            <CustomizeTextInput
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={(v) => {
+                setPassword(v);
+                setError("");
+              }}
+              secureTextEntry
+              state={passwordState}
+            />
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ForgotPassword")}
+              style={styles.forgotWrap}
+            >
+              <Text style={styles.forgotText}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+
+          
+          {/* Success message (from register / reset) */}
+          {successMessage ? (
+            <Text style={styles.successMsg}>{successMessage}</Text>
+          ) : null}
+
+          {/* Global error */}
+          {error ? <Text style={styles.errorMsg}>{error}</Text> : null}
+
+
+          {/* Login button */}
           <View style={styles.buttonWrap}>
             <CustomizeAppButtonFilled
-              label="Sign Up"
-              onPress={handleRegister}
+              label="Login"
+              onPress={handleLogin}
               loading={loading}
               backgroundColor={Colors.primary}
             />
@@ -202,11 +166,11 @@ const SignUpScreen = ({ navigation }) => {
             icon={<GoogleIcon />}
           />
 
-          {/* Login link */}
+          {/* Sign up link */}
           <View style={styles.enrichRow}>
-            <Text style={styles.enrichBase}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-              <Text style={styles.enrichLink}>login now</Text>
+            <Text style={styles.enrichBase}>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+              <Text style={styles.enrichLink}>sign-up now</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -246,11 +210,12 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.screenTitleLarge,
+
   },
   subtitle: {
     ...Typography.screenSubtitle,
     paddingBottom: 10,
-    paddingTop: 4,
+    paddingTop:4,
     marginBottom: 32,
   },
   successMsg: {
@@ -278,7 +243,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   buttonWrap: {
-    marginTop: 50,
+    marginTop: 75,
     marginBottom: 29,
   },
   dividerRow: {
@@ -288,14 +253,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   dividerLine: {
-    width: "15%",
+    width:"15%",
     height: 1,
     backgroundColor: Colors.primary,
   },
   dividerText: {
     ...Typography.dividerText,
     marginHorizontal: 5,
-    marginTop: -9,
+    marginTop:-9,
   },
   enrichRow: {
     flexDirection: "row",
@@ -311,4 +276,5 @@ const styles = StyleSheet.create({
     ...Typography.enrichTextLink,
   },
 });
-export default SignUpScreen;
+
+export default LoginScreen;

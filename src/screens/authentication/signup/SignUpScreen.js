@@ -10,16 +10,16 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import { useAuth } from "../../context/AuthContext";
-import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
-import CustomizeTextInput from "../../components/common/CustomizeTextInput";
-import Colors from "../../constants/theme/colors";
-import Typography from "../../constants/theme/typography";
-import { IMAGES } from "../../constants/images/images";
-import {ICONS} from "../../constants/images/icons";
+import { useAuth } from "../../../context/AuthContext";
+import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
+import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
+import Colors from "../../../constants/theme/colors";
+import Typography from "../../../constants/theme/typography";
+import { ICONS } from "../../../constants/images/icons";
+import { IMAGES } from "../../../constants/images/images";
+
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-// Google icon (inline SVG-style using shapes)
 const GoogleIcon = () => (
   <View
     style={{
@@ -37,39 +37,71 @@ const GoogleIcon = () => (
   </View>
 );
 
-const LoginScreen = ({ route, navigation }) => {
-  const { login } = useAuth();
-  const successMessage = route?.params?.message ?? "";
+const SignUpScreen = ({ navigation }) => {
+  const { register } = useAuth();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Determine input states
-  const emailState = error ? "error" : "default";
-  const passwordState = error ? "error" : "default";
+  const update = (field) => (val) => {
+    setForm((f) => ({ ...f, [field]: val }));
+    if (field !== "confirmPassword") setError("");
+  };
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      setError("Please fill in all fields");
+  // Live password match state
+  const confirmState = () => {
+    if (!form.confirmPassword) return "default";
+    return form.password === form.confirmPassword ? "success" : "error";
+  };
+
+  const validate = () => {
+    if (!form.email.includes("@")) return "Enter a valid email";
+    if (form.password.length < 8)
+      return "Password must be at least 8 characters";
+    if (form.password !== form.confirmPassword)
+      return "Password didn't match, try again!";
+    return null;
+  };
+
+  const handleRegister = async () => {
+    const err = validate();
+    if (err) {
+      setError(err);
       return;
     }
     try {
       setLoading(true);
       setError("");
-      await login(email.toLowerCase().trim(), password);
+      const { email, token } = await register(
+        form.email.toLowerCase().trim(),
+        form.password,
+        form.confirmPassword,
+      );
+      navigation.navigate("CheckEmail", { email, token });
     } catch (e) {
-      const msg = e.response?.data?.message || "";
-      if (msg.toLowerCase().includes("verif")) {
-        setError("Please verify your email before signing in.");
-      } else {
-        setError(msg || "Login failed. Try again.");
-      }
+      setError(
+        e.response?.data?.message ||
+          e.message ||
+          "Registration failed. Try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  const emailState =
+    error && error.toLowerCase().includes("email") ? "error" : "default";
+  const passwordState =
+    error &&
+    error.toLowerCase().includes("password") &&
+    !error.includes("match")
+      ? "error"
+      : "default";
 
   return (
     <View style={styles.root}>
@@ -93,59 +125,62 @@ const LoginScreen = ({ route, navigation }) => {
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
-          <Text style={styles.title}>Welcome Back 👋</Text>
-          <Text style={styles.subtitle}>Continue your styling Journey</Text>
+          <Text style={styles.title}>Create Your Style Profile</Text>
+          <Text style={styles.subtitle}>
+            Start building your personalized wardrobe
+          </Text>
 
-          {/* Email input */}
+          {/* Global error */}
+          {error &&
+          !error.toLowerCase().includes("match") &&
+          !error.toLowerCase().includes("email") &&
+          !error.toLowerCase().includes("password") ? (
+            <Text style={styles.errorMsg}>{error}</Text>
+          ) : null}
+
+          {/* Email */}
           <CustomizeTextInput
             label="Email"
             placeholder="Enter your email"
-            value={email}
-            onChangeText={(v) => {
-              setEmail(v);
-              setError("");
-            }}
+            value={form.email}
+            onChangeText={update("email")}
             keyboardType="email-address"
             autoCapitalize="none"
             state={emailState}
+            errorMessage={emailState === "error" ? error : ""}
+          />
+          <View style={{ height: 12 }} />
+          {/* Password */}
+          <CustomizeTextInput
+            label="Password"
+            placeholder="Enter your password"
+            value={form.password}
+            onChangeText={update("password")}
+            secureTextEntry
+            state={passwordState}
+            errorMessage={passwordState === "error" ? error : ""}
+          />
+          <View style={{ height: 12 }} />
+          {/* Confirm Password — live match feedback */}
+          <CustomizeTextInput
+            label="Confirm Password"
+            placeholder="Re-enter your password"
+            value={form.confirmPassword}
+            onChangeText={update("confirmPassword")}
+            secureTextEntry
+            state={confirmState()}
+            errorMessage={
+              confirmState() === "error"
+                ? "Password didn't match, try again!"
+                : ""
+            }
           />
 
-          {/* Password input + forgot password row */}
-          <View style={{ marginTop: 10 }}>
-            <CustomizeTextInput
-              label="Password"
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={(v) => {
-                setPassword(v);
-                setError("");
-              }}
-              secureTextEntry
-              state={passwordState}
-            />
-            <TouchableOpacity
-              onPress={() => navigation.navigate("ForgotPassword")}
-              style={styles.forgotWrap}
-            >
-              <Text style={styles.forgotText}>Forgot Password?</Text>
-            </TouchableOpacity>
-          </View>
-
-          
-          {/* Success message (from register / reset) */}
-          {successMessage ? (
-            <Text style={styles.successMsg}>{successMessage}</Text>
-          ) : null}
-
-          {/* Global error */}
-          {error ? <Text style={styles.errorMsg}>{error}</Text> : null}
-
-
-          {/* Login button */}
+          {/* Sign up button */}
           <View style={styles.buttonWrap}>
             <CustomizeAppButtonFilled
-              label="Login"
-              onPress={handleLogin}
+              label="Sign Up"
+              onPress={handleRegister}
               loading={loading}
               backgroundColor={Colors.primary}
             />
@@ -167,11 +202,11 @@ const LoginScreen = ({ route, navigation }) => {
             icon={<GoogleIcon />}
           />
 
-          {/* Sign up link */}
+          {/* Login link */}
           <View style={styles.enrichRow}>
-            <Text style={styles.enrichBase}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-              <Text style={styles.enrichLink}>sign-up now</Text>
+            <Text style={styles.enrichBase}>Already have an account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <Text style={styles.enrichLink}>login now</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -211,12 +246,11 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.screenTitleLarge,
-
   },
   subtitle: {
     ...Typography.screenSubtitle,
     paddingBottom: 10,
-    paddingTop:4,
+    paddingTop: 4,
     marginBottom: 32,
   },
   successMsg: {
@@ -244,7 +278,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   buttonWrap: {
-    marginTop: 75,
+    marginTop: 50,
     marginBottom: 29,
   },
   dividerRow: {
@@ -254,14 +288,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   dividerLine: {
-    width:"15%",
+    width: "15%",
     height: 1,
     backgroundColor: Colors.primary,
   },
   dividerText: {
     ...Typography.dividerText,
     marginHorizontal: 5,
-    marginTop:-9,
+    marginTop: -9,
   },
   enrichRow: {
     flexDirection: "row",
@@ -277,5 +311,4 @@ const styles = StyleSheet.create({
     ...Typography.enrichTextLink,
   },
 });
-
-export default LoginScreen;
+export default SignUpScreen;

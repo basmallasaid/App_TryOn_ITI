@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
+
 
 const HomeScreen = () => {
     return (
         <View>
-            
         </View>
     );
 }

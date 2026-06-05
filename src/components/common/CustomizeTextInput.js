@@ -4,35 +4,74 @@ import Colors from "../../constants/theme/colors";
 import Typography from "../../constants/theme/typography";
 import { Ionicons } from '@expo/vector-icons';
 
-
 const CustomizeTextInput = ({
   label,
   placeholder,
   value,
   onChangeText,
   secureTextEntry = false,
-  state = 'default',
+  state = "default",
   errorMessage,
-  keyboardType = 'default',
-  autoCapitalize = 'none',
+  keyboardType = "default",
+  autoCapitalize = "none",
   autoFocus = false,
+  wrapperStyle,
 }) => {
   const [hidden, setHidden] = useState(secureTextEntry);
 
   const borderColor =
-    state === 'error'   ? Colors.error   :
-    state === 'success' ? Colors.success :
-    Colors.borderStrong;
+    state === "error"
+      ? Colors.error
+      : state === "success"
+      ? Colors.success
+      : Colors.borderStrong;
+
+  const stateColor =
+    state === "error"
+      ? Colors.error
+      : state === "success"
+      ? Colors.success
+      : Colors.textPrimary;
+
+  const iconColor =
+    state === "default" ? Colors.iconGray : stateColor;
 
   return (
-    <View style={styles.wrapper}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+    <View style={[styles.wrapper, wrapperStyle]}>
+      {label ? (
+        <Text
+          style={[
+            styles.label,
+            {
+              color: stateColor,
+            },
+          ]}
+        >
+          {label}
+        </Text>
+      ) : null}
 
-      <View style={[styles.container, { borderColor }]}>
+      <View
+        style={[
+          styles.container,
+          {
+            borderColor,
+          },
+        ]}
+      >
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              color: stateColor,
+            },
+          ]}
           placeholder={placeholder}
-          placeholderTextColor={Colors.textMuted}
+          placeholderTextColor={
+            state === "error"
+              ? Colors.error
+              : Colors.textMuted
+          }
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={hidden}
@@ -42,18 +81,28 @@ const CustomizeTextInput = ({
         />
 
         {secureTextEntry && (
-          <TouchableOpacity onPress={() => setHidden((h) => !h)} style={styles.eyeWrap}>
-            {/* Eye icon — open */}
+          <TouchableOpacity
+            onPress={() => setHidden((h) => !h)}
+            style={styles.eyeWrap}
+          >
             {hidden ? (
-               <Ionicons name="eye-off-outline" size={20} color={Colors.iconGray} />
+              <Ionicons
+                name="eye-off-outline"
+                size={20}
+                color={iconColor}
+              />
             ) : (
-              <Ionicons name="eye-outline" size={20} color={Colors.iconGray} />
+              <Ionicons
+                name="eye-outline"
+                size={20}
+                color={iconColor}
+              />
             )}
           </TouchableOpacity>
         )}
       </View>
 
-      {state === 'error' && errorMessage ? (
+      {state === "error" && errorMessage ? (
         <Text style={styles.errorText}>{errorMessage}</Text>
       ) : null}
     </View>
@@ -64,36 +113,40 @@ const styles = StyleSheet.create({
   wrapper: {
     marginBottom: 14,
   },
+
   label: {
     ...Typography.inputLabel,
     marginBottom: 6,
   },
+
   container: {
-    width: '100%',
+    width: "100%",
     height: 40,
     borderWidth: 2,
     borderRadius: 8,
     paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: Colors.white,
   },
+
   input: {
     flex: 1,
-    fontFamily: 'Roboto_400Regular',
-    fontWeight: '400',
+    fontFamily: "Roboto_400Regular",
+    fontWeight: "400",
     fontSize: 12,
-    color: Colors.textPrimary,
     padding: 0,
   },
+
   eyeWrap: {
     paddingLeft: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
+
   errorText: {
-    fontFamily: 'Roboto_400Regular',
-    fontWeight: '400',
+    fontFamily: "Roboto_400Regular",
+    fontWeight: "400",
     fontSize: 11,
     color: Colors.error,
     marginTop: 4,

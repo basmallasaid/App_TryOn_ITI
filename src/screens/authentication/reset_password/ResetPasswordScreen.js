@@ -1,171 +1,115 @@
-import { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Platform,
-} from 'react-native';
-import { resetPassword } from '../../../api/auth_services/authServices';
-import CustomizeTextInput from '../../../components/common/CustomizeTextInput';
-import CustomizeAppButtonFilled from '../../../components/common/CustomizeAppButtonFilled';
-import Colors from '../../../constants/theme/colors';
-import { Ionicons } from '@expo/vector-icons';
+import { useState } from "react";
+import { View, Text, StyleSheet, ScrollView, Platform } from "react-native";
+import { resetPassword } from "../../../api/auth_services/authServices";
+import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
+import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
+import Colors from "../../../constants/theme/colors";
+import { Ionicons } from "@expo/vector-icons";
+import BottomSheetLayout from "../../../components/common/authentication/BottomSheetLayout";
 
 const ResetPasswordScreen = ({ route, navigation }) => {
   const { email } = route.params;
 
   const [form, setForm] = useState({
-    password: '',
-    confirmPassword: '',
+    password: "",
+    confirmPassword: "",
   });
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const update = (field) => (val) => {
     setForm((f) => ({ ...f, [field]: val }));
-    setError('');
+    setError("");
   };
 
   const confirmState = () => {
-    if (!form.confirmPassword) return 'default';
-    return form.password === form.confirmPassword
-      ? 'success'
-      : 'error';
+    if (!form.confirmPassword) return "default";
+    return form.password === form.confirmPassword ? "success" : "error";
   };
 
   const passwordState =
-    error && error.toLowerCase().includes('8')
-      ? 'error'
-      : 'default';
+    error && error.toLowerCase().includes("8") ? "error" : "default";
 
   const handleReset = async () => {
     if (form.password.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError("Password must be at least 8 characters");
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     try {
       setLoading(true);
-      setError('');
+      setError("");
 
-      await resetPassword(
-        email,
-        form.password,
-        form.confirmPassword
-      );
+      await resetPassword(email, form.password, form.confirmPassword);
 
-      navigation.navigate('Login', {
-        message: 'Password reset successfully. Please sign in.',
+      navigation.navigate("Login", {
+        message: "Password reset successfully. Please sign in.",
       });
     } catch (e) {
-      setError(
-        e.response?.data?.message ||
-          'Reset failed. Try again.'
-      );
+      setError(e.response?.data?.message || "Reset failed. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.content}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
+    <BottomSheetLayout
+      title="Reset password"
+      subtitle="Almost done!Set your new password and you are ready to go."
     >
-      <View style={styles.root}>
-        <Text style={styles.title}>Set New Password</Text>
+      <CustomizeTextInput
+        label="New Password"
+        placeholder="Enter new password"
+        value={form.password}
+        onChangeText={update("password")}
+        secureTextEntry
+        state={passwordState}
+      />
 
-        <Text style={styles.subtitle}>
-          Must be at least 8 characters.
-        </Text>
+      <View style={{ height: 20 }} />
 
-        {error ? (
-          <Text style={styles.errorMsg}>{error}</Text>
-        ) : null}
+      <CustomizeTextInput
+        label="Confirm Password"
+        placeholder="Re-enter new password"
+        value={form.confirmPassword}
+        onChangeText={update("confirmPassword")}
+        secureTextEntry
+        state={confirmState()}
+        errorMessage={
+          confirmState() === "error" ? "Password didn't match, try again!" : ""
+        }
+      />
 
-        <CustomizeTextInput
-          label="New Password"
-          placeholder="Enter new password"
-          value={form.password}
-          onChangeText={update('password')}
-          secureTextEntry
-          state={passwordState}
+      {error ? <Text style={styles.errorMsg}>{error}</Text> : null}
+
+      <View style={styles.buttonWrap}>
+        <CustomizeAppButtonFilled
+          label="Reset Password"
+          onPress={handleReset}
+          loading={loading}
+          backgroundColor={Colors.primary}
         />
-
-        <View style={{ height: 20 }} />
-
-        <CustomizeTextInput
-          label="Confirm Password"
-          placeholder="Re-enter new password"
-          value={form.confirmPassword}
-          onChangeText={update('confirmPassword')}
-          secureTextEntry
-          state={confirmState()}
-          errorMessage={
-            confirmState() === 'error'
-              ? "Password didn't match, try again!"
-              : ''
-          }
-        />
-
-        <View style={styles.buttonWrap}>
-          <CustomizeAppButtonFilled
-            label="Reset Password"
-            onPress={handleReset}
-            loading={loading}
-            backgroundColor={Colors.primary}
-          />
-        </View>
       </View>
-    </ScrollView>
+    </BottomSheetLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  content: {
-    flexGrow: 1,
-  },
-
-  root: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    paddingHorizontal: 24,
-    paddingTop: Platform.OS === 'ios' ? 80 : 124,
-  },
-
-  title: {
-    fontFamily: 'Roboto_700Bold',
-    fontSize: 24,
-    lineHeight: 38.4,
-    color: Colors.textPrimary,
-    marginBottom: 8,
-  },
-
-  subtitle: {
-    fontFamily: 'Roboto_400Regular',
-    fontSize: 12,
-    lineHeight: 18,
-    color: Colors.textSecondary,
-    marginBottom: 28,
-  },
-
   errorMsg: {
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: "Roboto_400Regular",
     fontSize: 12,
     color: Colors.error,
     marginBottom: 12,
   },
 
   buttonWrap: {
-    marginTop: 'auto',
+    marginTop: "auto",
     paddingBottom: 24,
   },
 });

@@ -27,6 +27,13 @@ export const AuthProvider = ({ children }) => {
   await clearToken();
   return { email, token: data.token };
 };
+const updateProfile=async(token,firstName,lastName,dateOfBirth,gender)=>{
+  await authService.updateProfile(token,firstName,lastName,dateOfBirth,gender);
+}
+const deleteAccount=async(token)=>{
+  await authService.deleteAccount(token);
+  await clearToken();
+}
   const logout = async () => {
     await authService.logout();
     setUser(null);
@@ -34,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, role, loading, login, register, updateProfile, deleteAccount, logout }}>
       {children}
     </AuthContext.Provider>
   );

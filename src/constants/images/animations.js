@@ -1,3 +1,3 @@
 export const ANIMATIONS ={
-    CHECK_EMAIL_SUCCESS: require('../../../assets/animations/email-sent.json'),
+    CHECK_EMAIL_SUCCESS: require('../../../assets/animations/gmail.json'),
 }

@@ -1,17 +1,23 @@
-import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { verifyOtp, forgotPassword } from '../../../api/auth_services/authServices';
-import CustomizeTextInput from '../../../components/common/CustomizeTextInput';
-import CustomizeAppButtonFilled from '../../../components/common/CustomizeAppButtonFilled';
-import Colors from '../../../constants/theme/colors';
-import { Ionicons } from '@expo/vector-icons';
+import { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import {
+  verifyOtp,
+  forgotPassword,
+} from "../../../api/auth_services/authServices";
+import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
+import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
+import Colors from "../../../constants/theme/colors";
+import { Ionicons } from "@expo/vector-icons";
+import Typography from "../../../constants/theme/typography";
+import OtpInput from "../../../components/common/OtpInput";
 
 const VerifyOtpScreen = ({ route, navigation }) => {
   const { email } = route.params;
-  const [otp, setOtp]             = useState('');
-  const [error, setError]         = useState('');
-  const [loading, setLoading]     = useState(false);
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
+  const [expireCountdown, setExpireCountdown] = useState(300);
 
   useEffect(() => {
     if (countdown === 0) return;
@@ -19,17 +25,42 @@ const VerifyOtpScreen = ({ route, navigation }) => {
     return () => clearTimeout(t);
   }, [countdown]);
 
-  const otpState = error ? 'error' : otp.length === 6 ? 'success' : 'default';
+  useEffect(() => {
+    if (expireCountdown === 0) {
+      setError("Verification code has expired.");
+      return;
+    }
 
+    const timer = setTimeout(() => {
+      setExpireCountdown((c) => c - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [expireCountdown]);
+
+  const otpState = error ? "error" : otp.length === 6 ? "success" : "default";
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
   const handleVerify = async () => {
-    if (otp.length !== 6) { setError('Enter the 6-digit code'); return; }
+    if (expireCountdown <= 0) {
+      setError("Verification code has expired. Please request a new code.");
+      return;
+    }
+    if (otp.length !== 6) {
+      setError("Enter the 6-digit code");
+      return;
+    }
     try {
       setLoading(true);
-      setError('');
+      setError("");
       await verifyOtp(email, otp);
-      navigation.navigate('ResetPassword', { email });
+      navigation.navigate("ResetPassword", { email });
     } catch (e) {
-      setError(e.response?.data?.message || 'Invalid or expired code.');
+      setError(e.response?.data?.message || "Invalid or expired code.");
     } finally {
       setLoading(false);
     }
@@ -38,37 +69,42 @@ const VerifyOtpScreen = ({ route, navigation }) => {
   const handleResend = async () => {
     try {
       await forgotPassword(email);
+
       setCountdown(60);
-      setOtp('');
-      setError('');
+      setExpireCountdown(240);
+
+      setOtp("");
+      setError("");
     } catch (e) {
-      setError('Could not resend. Try again.');
+      setError("Could not resend. Try again.");
     }
   };
 
   return (
+    
     <View style={styles.root}>
-
-      <Text style={styles.title}>Enter Reset Code</Text>
+      <ScrollView>
+      <Text style={styles.title}>Verification</Text>
       <Text style={styles.subtitle}>
-        We sent a 6-digit code to{'\n'}
-        <Text style={styles.emailHighlight}>{email}</Text>
+        Write down the code sent to your Email !
       </Text>
+
+      <Text style={styles.label}>OTP Code</Text>
+
+      <OtpInput
+        value={otp}
+        onChange={(value) => {
+          setOtp(value);
+          setError("");
+        }}
+        state={otpState}
+      />
 
       {error ? <Text style={styles.errorMsg}>{error}</Text> : null}
 
-      <CustomizeTextInput
-        label="Verification Code"
-        placeholder="000000"
-        value={otp}
-        onChangeText={(v) => {
-          setOtp(v.replace(/\D/g, '').slice(0, 6));
-          setError('');
-        }}
-        keyboardType="number-pad"
-        state={otpState}
-        autoFocus
-      />
+      <Text style={styles.expireText}>
+        Code won’t be Valid after {formatTime(expireCountdown)}
+      </Text>
 
       <View style={styles.buttonWrap}>
         <CustomizeAppButtonFilled
@@ -85,14 +121,15 @@ const VerifyOtpScreen = ({ route, navigation }) => {
         disabled={countdown > 0}
         style={styles.resendWrap}
       >
-        <Text style={[styles.resendText, countdown > 0 && styles.resendDisabled]}>
-          {countdown > 0
-            ? `Resend code in ${countdown}s`
-            : 'Resend code'}
+        <Text
+          style={[styles.resendText, countdown > 0 && styles.resendDisabled]}
+        >
+          {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
         </Text>
       </TouchableOpacity>
-
+      </ScrollView>
     </View>
+    
   );
 };
 
@@ -106,44 +143,48 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: 24,
   },
   title: {
-    fontFamily: 'Roboto_700Bold',
-    fontSize: 24,
-    lineHeight: 38.4,
-    color: Colors.textPrimary,
+    ...Typography.screenTitleLarge,
     marginBottom: 8,
+    textAlign: "center",
   },
   subtitle: {
-    fontFamily: 'Roboto_400Regular',
-    fontSize: 12,
-    lineHeight: 18,
-    color: Colors.textSecondary,
+    ...Typography.screenSubtitle,
     marginBottom: 28,
+    textAlign: "center",
   },
-  emailHighlight: {
-    fontFamily: 'Roboto_600SemiBold',
-    color: Colors.textPrimary,
+  label: {
+    ...Typography.label,
+    marginBottom: 6,
+    marginTop:30,
   },
   errorMsg: {
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: "Roboto_400Regular",
     fontSize: 12,
     color: Colors.error,
     marginBottom: 12,
   },
+  expireText: {
+    marginTop: 50,
+    textAlign: "center",
+    fontFamily: "Roboto_400Regular",
+    fontSize: 12,
+    color: Colors.error,
+  },
   buttonWrap: {
-    marginTop: 24,
+    marginTop: "85%",
     marginBottom: 20,
   },
   resendWrap: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   resendText: {
-    fontFamily: 'Roboto_500Medium',
+    fontFamily: "Roboto_500Medium",
     fontSize: 13,
-    color: Colors.primary,
+    color: Colors.success,
   },
   resendDisabled: {
     color: Colors.textMuted,

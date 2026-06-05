@@ -33,6 +33,19 @@ export const sendVerification = async (token) => {
   );
 };
 
+export const updateProfile=async(token,firstName,lastName,dateOfBirth,gender)=>{
+  await apiClient.put(ENDPOINTS.UPDATE_PROFILE,{firstName,lastName,dateOfBirth,gender}, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+}
+
+export const deleteAccount=async(token)=>{
+  await apiClient.delete(ENDPOINTS.DELETE_ACCOUNT, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
 export const forgotPassword = async (email) => {
   await apiClient.post(ENDPOINTS.FORGOT_PASSWORD, { email });
 };

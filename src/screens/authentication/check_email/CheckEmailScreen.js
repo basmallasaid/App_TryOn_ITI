@@ -13,7 +13,7 @@ import { sendVerification } from '../../../api/auth_services/authServices';
 import CustomizeAppButtonFilled from '../../../components/common/CustomizeAppButtonFilled';
 import CustomizeAppButtonOutlined from "../../../components/common/CustomizeAppButtonOutlined";
 import Colors from '../../../constants/theme/colors';
-import Typography from '../../../constants/theme/typography';
+import Typography  from '../../../constants/theme/typography';
 import { ANIMATIONS } from "../../../constants/images/animations";
 
 const CheckEmailScreen = ({ route, navigation }) => {
@@ -123,24 +123,22 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontFamily: 'Roboto_700Bold',
-    fontSize: 24,
-    lineHeight: 38.4,
-    color: Colors.textPrimary,
+    ...Typography.screenTitleLarge,
+    textAlign: 'center',
     marginBottom: 12,
   },
 
   subtitle: {
-    fontFamily: 'Roboto_400Regular',
-    fontSize: 14,
-    lineHeight: 22,
-    color: Colors.textSecondary,
+    ...Typography.screenSubtitle,
+    textAlign: 'center',
     marginBottom: 10,
   },
 
   emailHighlight: {
     fontFamily: 'Roboto_600SemiBold',
     color: Colors.textPrimary,
+    textAlign: 'center',
+
   },
 
   spamText: {

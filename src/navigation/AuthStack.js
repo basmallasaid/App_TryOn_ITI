@@ -6,7 +6,6 @@ import VerifyOtpScreen from "../screens/authentication/verifyOTP/VerifyOtpScreen
 import ResetPasswordScreen from "../screens/authentication/reset_password/ResetPasswordScreen";
 import CheckEmailScreen from "../screens/authentication/check_email/CheckEmailScreen";
 
-
 const Stack = createNativeStackNavigator();
 
 export default function AuthStack() {

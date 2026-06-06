@@ -18,7 +18,7 @@ import Typography from "../../../constants/theme/typography";
 import { IMAGES } from "../../../constants/images/images";
 import { ICONS } from "../../../constants/images/icons";
 import { forgotPassword } from "../../../api/auth_services/authServices";
-import BottomSheetLayout from "../../../components/common/authentication/BottomSheetLayout";
+import BottomSheetLayout from "../../../components/authentication/BottomSheetLayout";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 

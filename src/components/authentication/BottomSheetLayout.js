@@ -7,9 +7,9 @@ import {
   Platform,
   StyleSheet,
 } from "react-native";
-import Colors from "../../../constants/theme/colors";
+import Colors from "../../constants/theme/colors";
 import HeroImage from "./HeroImage";
-import Typography from "../../../constants/theme/typography";
+import Typography from "../../constants/theme/typography";
 
 const BottomSheetLayout = ({ title, subtitle, children }) => {
   return (

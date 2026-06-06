@@ -5,7 +5,7 @@ import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
 import Colors from "../../../constants/theme/colors";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheetLayout from "../../../components/common/authentication/BottomSheetLayout";
+import BottomSheetLayout from "../../../components/authentication/BottomSheetLayout";
 
 const ResetPasswordScreen = ({ route, navigation }) => {
   const { email } = route.params;

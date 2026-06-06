@@ -52,6 +52,14 @@ const Typography = {
     fontSize: 20,
     lineHeight: 20,
   },
+   subtitleBase: {
+    fontFamily: "Roboto_500Medium",
+    fontWeight: "500",
+    fontSize: 10,
+    lineHeight: 16.38,
+    color: Colors.textSecondary,
+    textAlign: "center",
+  },
   dividerText: {
     fontFamily: "Inter_700Bold",
     fontWeight: "700",

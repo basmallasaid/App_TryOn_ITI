@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Image,Platform,Dimensions } from "react-native";
-import { IMAGES } from "../../../constants/images/images";
+import { IMAGES } from "../../constants/images/images";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const HeroImage = () => {

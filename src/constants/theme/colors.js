@@ -1,4 +1,5 @@
 const Colors = {
+  backgroundColor:"#F5F6F7",
   // Primary
   primary:        '#40B9FF',
  

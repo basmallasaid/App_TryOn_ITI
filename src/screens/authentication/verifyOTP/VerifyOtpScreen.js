@@ -17,7 +17,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
-  const [expireCountdown, setExpireCountdown] = useState(300);
+  const [expireCountdown, setExpireCountdown] = useState(290);
 
   useEffect(() => {
     if (countdown === 0) return;
@@ -71,7 +71,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
       await forgotPassword(email);
 
       setCountdown(60);
-      setExpireCountdown(240);
+      setExpireCountdown(290);
 
       setOtp("");
       setError("");
@@ -83,7 +83,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
   return (
     
     <View style={styles.root}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
       <Text style={styles.title}>Verification</Text>
       <Text style={styles.subtitle}>
         Write down the code sent to your Email !
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.label,
-    marginBottom: 6,
+    marginBottom: 16,
     marginTop:30,
   },
   errorMsg: {
@@ -166,6 +166,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.error,
     marginBottom: 12,
+    marginTop:20,
   },
   expireText: {
     marginTop: 50,
@@ -175,11 +176,12 @@ const styles = StyleSheet.create({
     color: Colors.error,
   },
   buttonWrap: {
-    marginTop: "85%",
+    marginTop: "80%",
     marginBottom: 20,
   },
   resendWrap: {
     alignItems: "center",
+    marginBottom:10
   },
   resendText: {
     fontFamily: "Roboto_500Medium",

@@ -86,10 +86,10 @@ const styles = StyleSheet.create({
   },
 
   box: {
-    width: 48,
-    height: 56,
-    borderWidth: 2,
-    borderRadius: 12,
+    width: 50,
+    height: 65,
+    borderWidth: 1,
+    borderRadius: 8,
     fontSize: 22,
     textAlign: "center",
     color: Colors.textPrimary,

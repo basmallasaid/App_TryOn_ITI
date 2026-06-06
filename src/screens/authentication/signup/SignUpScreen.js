@@ -11,6 +11,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useAuth } from "../../../context/AuthContext";
+import { useGoogleAuth } from "../../../hooks/useGoogleAuth";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
 import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
 import Colors from "../../../constants/theme/colors";
@@ -40,7 +41,8 @@ const GoogleIcon = () => (
 );
 
 const SignUpScreen = ({ navigation }) => {
-  const { register , updateProfile} = useAuth();
+  const { register , updateProfile, loginWithGoogle } = useAuth();
+  const { signInWithGoogle } = useGoogleAuth();
 
   const [form, setForm] = useState({
     firstName: "",
@@ -197,7 +199,14 @@ const SignUpScreen = ({ navigation }) => {
       {/* Google button */}
       <CustomizeAppButtonFilled
         label="Continue with Google"
-        onPress={() => {}}
+        onPress={async () => {
+          try {
+            const idToken = await signInWithGoogle();
+            await loginWithGoogle(idToken);
+          } catch (e) {
+            setError(e.message || "Google sign-up failed. Try again.");
+          }
+        }}
         outlined
         textColor={Colors.textPrimary}
         icon={<GoogleIcon />}

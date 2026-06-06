@@ -6,5 +6,8 @@ export const ENDPOINTS = {
   VERIFY_FORGET_PASSWORD_OTP:"/auth/verify-otp",
   SEND_VERIFICATION:  '/auth/send-verification', 
   UPDATE_PROFILE: '/users/profile',
-  DELETE_ACCOUNT:"/users/account"
+  DELETE_ACCOUNT:"/users/account",
+  LOGIN_WITH_GOOGLE:"/auth/google",
+  LOGIN_WITH_GOOGLE_MOBILE:"/auth/google/mobile",
+  SELECT_LANG:"/users/settings/language",
 };

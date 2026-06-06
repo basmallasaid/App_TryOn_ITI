@@ -34,6 +34,16 @@ const deleteAccount=async(token)=>{
   await authService.deleteAccount(token);
   await clearToken();
 }
+const loginWithGoogle = async (idToken) => {
+  const data = await authService.loginWithGoogleMobile(idToken);
+
+  setUser({
+    token: data.token,
+    email: data.email,
+  });
+
+  return data;
+};
   const logout = async () => {
     await authService.logout();
     setUser(null);
@@ -41,7 +51,7 @@ const deleteAccount=async(token)=>{
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, login, register, updateProfile, deleteAccount, logout }}>
+    <AuthContext.Provider value={{ user, role, loading, login, register, updateProfile, deleteAccount,loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );

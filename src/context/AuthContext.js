@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getToken, clearToken } from '../storage/TokenStorage';
+import { getToken, clearToken,getUserId, clearUserId  } from '../storage/TokenStorage';
 import * as authService from "../api/auth_services/authServices";
 import { useLanguage } from './LanguageContext';
 const AuthContext = createContext();
@@ -11,10 +11,12 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
  const { syncLanguage } = useLanguage();
   useEffect(() => {
-    getToken()
-      .then(token => { if (token) setUser({ token }); })
-      .finally(() => setLoading(false));
-  }, []);
+  Promise.all([getToken(), getUserId()]).then(([token, _id]) => {
+    if (token && _id) {
+      setUser({ token, _id });
+    }
+  }).finally(() => setLoading(false));
+}, []);
 
   const login = async (email, password) => {
     const data = await authService.login(email, password);
@@ -48,6 +50,7 @@ const loginWithGoogle = async (idToken) => {
 };
   const logout = async () => {
     await authService.logout();
+    await clearUserId();
     setUser(null);
     setRole(null);
   };

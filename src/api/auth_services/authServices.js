@@ -1,5 +1,5 @@
 import apiClient from "./apiClient";
-import { saveToken, clearToken } from '../../storage/TokenStorage';
+import { saveToken, clearToken,saveUserId } from '../../storage/TokenStorage';
 import {ENDPOINTS} from "../../config/endpoints";
 
 export const loginWithGoogleMobile = async (idToken) => {
@@ -17,7 +17,8 @@ export const login = async (
   const { data } = await client.post(ENDPOINTS.LOGIN, { email, password });
   console.log("Login successful:", data);
   await tokenSaver(data.token);
-  return { email: data.email, token: data.token };
+  await saveUserId(data._id);
+  return { email: data.email, token: data.token, _id: data._id };
 };
 
 export const register = async (email, password, confirmPassword) => {
@@ -45,11 +46,6 @@ export const updateProfile=async(token,firstName,lastName,dateOfBirth,gender)=>{
   });
 
 }
-
-export const getProfile = async () => {
-  const { data } = await apiClient.get(ENDPOINTS.UPDATE_PROFILE);
-  return data;
-};
 
 export const deleteAccount=async(token)=>{
   await apiClient.delete(ENDPOINTS.DELETE_ACCOUNT, {

@@ -10,4 +10,5 @@ export const ENDPOINTS = {
   LOGIN_WITH_GOOGLE:"/auth/google",
   LOGIN_WITH_GOOGLE_MOBILE:"/auth/google/mobile",
   SELECT_LANG:"/users/settings/language",
+  GET_USER_PROFILE:"/users"
 };

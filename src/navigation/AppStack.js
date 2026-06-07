@@ -3,12 +3,10 @@ import { View, Text, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../constants/theme/colors';
-
+import ProfileStack from "../navigation/ProfileStack"
 import HomeScreen from '../screens/home/HomeScreen';
-import ProfileScreen from '../screens/profile/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
-
 
 const ACTIVE_COLOR = Colors.primarybrand;
 const INACTIVE_COLOR = Colors.disabled;
@@ -75,7 +73,7 @@ export default function AppStack() {
 
       <Tab.Screen 
         name="Profile" 
-        component={ProfileScreen} 
+        component={ProfileStack} 
         options={{
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "person" : "person-outline"} size={26} color={color} />

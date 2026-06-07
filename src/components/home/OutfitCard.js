@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   arrowIcon: {
+    marginTop:3,
     marginLeft: 8,
   },
 });

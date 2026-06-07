@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   arrow: {
+    marginTop:4,
     marginLeft: 5,
   },
 });

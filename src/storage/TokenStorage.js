@@ -3,6 +3,8 @@ import * as SecureStore from 'expo-secure-store';
 const TOKEN_KEY = 'auth_token';
 const ONBOARDING_KEY = 'onboarding_seen';
 const LANGUAGE_KEY = 'app_language';
+const USER_ID_KEY = 'user_id';
+
 
 export const setOnboardingSeen = () =>
   SecureStore.setItemAsync(ONBOARDING_KEY, 'true');
@@ -26,3 +28,6 @@ export const getLanguageSeen = () =>
 export const setLanguageSeen = () =>
   SecureStore.setItemAsync('language_seen', 'true');
  
+export const saveUserId = (id) => SecureStore.setItemAsync(USER_ID_KEY, id);
+export const getUserId  = ()   => SecureStore.getItemAsync(USER_ID_KEY);
+export const clearUserId = ()  => SecureStore.deleteItemAsync(USER_ID_KEY);

@@ -30,8 +30,8 @@ const CustomizeAppButtonOutlined = ({
         <ActivityIndicator color={resolvedText} />
       ) : (
         <View style={styles.inner}>
-          {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
           <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
+          {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
         </View>
       )}
     </TouchableOpacity>

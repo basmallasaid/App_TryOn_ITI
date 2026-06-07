@@ -6,4 +6,10 @@ export const IMAGES ={
     ONBOARDING_ONE:require("../../../assets/images/onboarding1.png"),
     ONBOARDING_TWO:require("../../../assets/images/onboarding2.png"),
     ONBOARDING_THREE:require("../../../assets/images/onboarding3.png"),
+    PERSON:require("../../../assets/images/person.jpg"),
+    HOME_HERO:require("../../../assets/images/hero.jpg"),
+    PICK:require("../../../assets/images/pick.jpg"),
+    TRY_ON:require("../../../assets/images/try.jpg"),
+  
+    
 }

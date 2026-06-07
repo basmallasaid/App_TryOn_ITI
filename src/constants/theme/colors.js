@@ -2,6 +2,8 @@ const Colors = {
   backgroundColor:"#F5F6F7",
   // Primary
   primary:        '#40B9FF',
+  primaryLight:   '#89D4ff',
+  primarybrand:    '#4FC3FF',
  
   // Text
   textPrimary:    '#121826',

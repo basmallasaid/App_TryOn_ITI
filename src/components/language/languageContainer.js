@@ -1,84 +1,62 @@
-import React from 'react';
-import {
-  TouchableOpacity,
-  Image,
-  Text,
-  StyleSheet,
-} from 'react-native';
-
+import { TouchableOpacity, Text, View, StyleSheet, Image } from 'react-native';
 import Colors from '../../constants/theme/colors';
 
-const LanguageContainer = ({
-  label,
-  flag,
-  selected,
-  onPress,
-}) => {
+const FLAG = {
+  en: '🇬🇧',
+  ar: '🇪🇬',
+};
 
+const LABEL = {
+  en: 'English',
+  ar: 'Arabic',
+};
+
+const LanguageContainer = ({ language, selected = false, onPress }) => {
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      style={[styles.container, selected && styles.containerSelected]}
       onPress={onPress}
-      style={[
-        styles.container,
-        selected && styles.selectedContainer,
-      ]}
+      activeOpacity={0.8}
     >
-      <Image
-        source={flag}
-        style={styles.flag}
-      />
-
-      <Text
-        style={[
-          styles.label,
-          selected && styles.selectedLabel,
-        ]}
-      >
-        {label}
+      <Text style={styles.flag}>{FLAG[language]}</Text>
+      <Text style={[styles.label, selected && styles.labelSelected]}>
+        {LABEL[language]}
       </Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-
   container: {
-    borderWidth: 1,
-    borderColor: Colors.disabled,
-
-    borderRadius: 8,
-
-    paddingHorizontal: 16,
-
-    height: 56,
-
     flexDirection: 'row',
     alignItems: 'center',
-
+    borderWidth: 1.5,
+    borderColor: Colors.disabled,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    height: 56,
     marginBottom: 12,
+    backgroundColor: '#fff',
   },
-
-  selectedContainer: {
+  containerSelected: {
     borderColor: Colors.success,
+    //backgroundColor: '#F6FDE8',
   },
-
   flag: {
-    width: 28,
-    height: 28,
-    marginRight: 12,
+    fontSize: 24,
+    marginRight: 14,
   },
-
   label: {
-    color: Colors.mutedText,
-    fontSize: 16,
+    flex: 1,
+    fontFamily: 'Roboto_500Medium',
+    fontSize: 15,
+    color: Colors.textMuted,
   },
-
-  selectedLabel: {
+  labelSelected: {
     color: Colors.textPrimary,
-    fontWeight: '600',
+    fontFamily: 'Roboto_600SemiBold',
   },
-
+ 
 });
 
 export default LanguageContainer;

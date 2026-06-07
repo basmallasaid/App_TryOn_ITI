@@ -1,35 +1,54 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useAuth } from '../context/AuthContext';
-import AuthStack from './AuthStack';
-import AppStack from './AppStack';
-import SplashScreen from '../screens/splash/SplashScreen';
-import { useState, useEffect } from 'react';
-import { getOnboardingSeen } from "../storage/TokenStorage";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useAuth } from "../context/AuthContext";
+import AuthStack from "./AuthStack";
+import AppStack from "./AppStack";
+import SplashScreen from "../screens/splash/SplashScreen";
+import { useState, useEffect } from "react";
+import { useLanguage } from "../context/LanguageContext";
+import { getOnboardingSeen,getLanguageSeen } from "../storage/TokenStorage"; 
 
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { loading: langLoading } = useLanguage();
   const [showSplash, setShowSplash] = useState(true);
-  const [onboardingSeen, setOnboardingSeen] = useState(null); 
+  const [onboardingSeen, setOnboardingSeen] = useState(null);
+  const [languageSeen, setLanguageSeen] = useState(null);
 
+  //show splash screen timer
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 4000);
     return () => clearTimeout(timer);
   }, []);
 
+  // Check both flags in parallel
   useEffect(() => {
-    getOnboardingSeen().then((val) => {
-      setOnboardingSeen(val === 'true');
-    });
+    Promise.all([getOnboardingSeen(), getLanguageSeen()]).then(
+      ([onboarding, language]) => {
+        setOnboardingSeen(onboarding === "true");
+        setLanguageSeen(language === "true");
+      },
+    );
   }, []);
 
-
-  if (showSplash || loading || onboardingSeen === null) {
+  if (
+    showSplash ||
+    authLoading ||
+    langLoading ||
+    onboardingSeen === null ||
+    languageSeen === null
+  ) {
     return <SplashScreen />;
   }
 
   if (user) return <AppStack />;
 
-  return <AuthStack initialRoute={onboardingSeen ? 'Login' : 'Onboarding'} />;
+  const initialRoute = !languageSeen
+    ? "SelectLanguage"
+    : !onboardingSeen
+      ? "Onboarding"
+      : "Login";
+
+  return <AuthStack initialRoute={initialRoute} />;
 }

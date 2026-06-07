@@ -16,6 +16,10 @@ import {
 import {
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import { resetOnboardingAndLanguage } from './src/utils/devReset';
+
+// ⚠️ DEV ONLY — comment out when done testing
+resetOnboardingAndLanguage();
 
 export default function App() {
   const [fontsLoaded] = useFonts({

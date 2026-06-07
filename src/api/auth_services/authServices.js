@@ -40,6 +40,11 @@ export const updateProfile=async(token,firstName,lastName,dateOfBirth,gender)=>{
 
 }
 
+export const getProfile = async () => {
+  const { data } = await apiClient.get(ENDPOINTS.UPDATE_PROFILE);
+  return data;
+};
+
 export const deleteAccount=async(token)=>{
   await apiClient.delete(ENDPOINTS.DELETE_ACCOUNT, {
     headers: { Authorization: `Bearer ${token}` }

@@ -1,0 +1,62 @@
+import { TouchableOpacity, Text, View, StyleSheet, Image } from 'react-native';
+import Colors from '../../constants/theme/colors';
+
+const FLAG = {
+  en: '🇬🇧',
+  ar: '🇪🇬',
+};
+
+const LABEL = {
+  en: 'English',
+  ar: 'Arabic',
+};
+
+const LanguageContainer = ({ language, selected = false, onPress }) => {
+  return (
+    <TouchableOpacity
+      style={[styles.container, selected && styles.containerSelected]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <Text style={styles.flag}>{FLAG[language]}</Text>
+      <Text style={[styles.label, selected && styles.labelSelected]}>
+        {LABEL[language]}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.disabled,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    height: 56,
+    marginBottom: 12,
+    backgroundColor: '#fff',
+  },
+  containerSelected: {
+    borderColor: Colors.success,
+    //backgroundColor: '#F6FDE8',
+  },
+  flag: {
+    fontSize: 24,
+    marginRight: 14,
+  },
+  label: {
+    flex: 1,
+    fontFamily: 'Roboto_500Medium',
+    fontSize: 15,
+    color: Colors.textMuted,
+  },
+  labelSelected: {
+    color: Colors.textPrimary,
+    fontFamily: 'Roboto_600SemiBold',
+  },
+ 
+});
+
+export default LanguageContainer;

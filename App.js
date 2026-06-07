@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './src/context/AuthContext';
+import { LanguageProvider } from './src/context/LanguageContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -15,6 +16,10 @@ import {
 import {
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import { resetOnboardingAndLanguage } from './src/utils/devReset';
+
+// ⚠️ DEV ONLY — comment out when done testing
+resetOnboardingAndLanguage();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -32,11 +37,12 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
+    <LanguageProvider>
     <AuthProvider>
       <NavigationContainer>
         <RootNavigator />
       </NavigationContainer>
-    </AuthProvider>
+    </AuthProvider></LanguageProvider>
   );
 }
 

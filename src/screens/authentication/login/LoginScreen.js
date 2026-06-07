@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useAuth } from "../../../context/AuthContext";
+import { useGoogleAuth } from "../../../hooks/useGoogleAuth";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
 import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
 import Colors from "../../../constants/theme/colors";
@@ -38,7 +39,8 @@ const GoogleIcon = () => (
 );
 
 const LoginScreen = ({ route, navigation }) => {
-  const { login } = useAuth();
+  const { login ,loginWithGoogle} = useAuth();
+  const { signInWithGoogle } = useGoogleAuth();
   const successMessage = route?.params?.message ?? "";
 
   const [email, setEmail] = useState("");
@@ -69,6 +71,15 @@ const LoginScreen = ({ route, navigation }) => {
       setLoading(false);
     }
   };
+
+  const handleLoginWithGoogle = async () => {
+    try {
+      const idToken = await signInWithGoogle();
+      await loginWithGoogle(idToken);
+    } catch (e) {
+      setError(e.message || "Login failed. Try again.");
+    }
+  }
 
   return (
     <BottomSheetLayout
@@ -135,7 +146,7 @@ const LoginScreen = ({ route, navigation }) => {
       {/* Google button */}
       <CustomizeAppButtonFilled
         label="Continue with Google"
-        onPress={() => {}}
+        onPress={handleLoginWithGoogle}
         outlined
         textColor={Colors.textPrimary}
         icon={<GoogleIcon />}

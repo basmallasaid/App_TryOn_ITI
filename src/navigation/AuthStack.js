@@ -5,12 +5,15 @@ import ForgotPasswordScreen from "../screens/authentication/forget_password/Forg
 import VerifyOtpScreen from "../screens/authentication/verifyOTP/VerifyOtpScreen";
 import ResetPasswordScreen from "../screens/authentication/reset_password/ResetPasswordScreen";
 import CheckEmailScreen from "../screens/authentication/check_email/CheckEmailScreen";
-
+import OnboardingScreen from "../screens/onboarding/OnboardingScreen";
+import SelectLanguageScreen from "../screens/language/SelectLanguageScreen";
 const Stack = createNativeStackNavigator();
 
-export default function AuthStack() {
+export default function AuthStack({ initialRoute }) {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="SelectLanguage" component={SelectLanguageScreen} />
+      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={SignUpScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />

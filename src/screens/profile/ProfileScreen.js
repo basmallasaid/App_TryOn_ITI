@@ -10,7 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
-import useProfile from "../../hooks/useProfile";
+import { useProfileContext } from "../../context/ProfileContext";
 import ProfileAvatar from "../../components/profile/ProfileAvatar";
 import StatCard from "../../components/profile/StatCard";
 import PrefRow from "../../components/profile/PrefRow";
@@ -31,7 +31,8 @@ const STYLE_OPTIONS = [
 const ProfileScreen = ({ navigation }) => {
   const { logout } = useAuth();
   const { language, selectLanguage, syncLanguage } = useLanguage();
-  const { profile } = useProfile();
+  const { profile } = useProfileContext() ;
+
 
   const [customizeMode, setCustomizeMode] = useState(false);
   const [selectedStyles, setSelectedStyles] = useState([]);
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 12,
     color: Colors.textSecondary,
-    paddingBottom:5,
+    paddingBottom: 5,
   },
   editBtn: {
     height: 20,
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   switch: {
-    transform: [{ scaleX: 0.85 }, { scaleY: 0.85 }],
+    transform: [{ scaleX: 0.95 }, { scaleY: 0.95 }],
   },
   logoutWrap: {
     marginTop: 8,

@@ -1,8 +1,14 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import Colors from "../../constants/theme/colors";
 import Typography from "../../constants/theme/typography";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 const CustomizeTextInput = ({
   label,
@@ -16,6 +22,10 @@ const CustomizeTextInput = ({
   autoCapitalize = "none",
   autoFocus = false,
   wrapperStyle,
+
+  rightIcon,
+  onRightIconPress,
+  editable = true,
 }) => {
   const [hidden, setHidden] = useState(secureTextEntry);
 
@@ -23,18 +33,17 @@ const CustomizeTextInput = ({
     state === "error"
       ? Colors.error
       : state === "success"
-      ? Colors.success
-      : Colors.borderStrong;
+        ? Colors.success
+        : Colors.borderStrong;
 
   const stateColor =
     state === "error"
       ? Colors.error
       : state === "success"
-      ? Colors.success
-      : Colors.textPrimary;
+        ? Colors.success
+        : Colors.textPrimary;
 
-  const iconColor =
-    state === "default" ? Colors.iconGray : stateColor;
+  const iconColor = state === "default" ? Colors.iconGray : stateColor;
 
   return (
     <View style={[styles.wrapper, wrapperStyle]}>
@@ -68,9 +77,7 @@ const CustomizeTextInput = ({
           ]}
           placeholder={placeholder}
           placeholderTextColor={
-            state === "error"
-              ? Colors.error
-              : Colors.textMuted
+            state === "error" ? Colors.error : Colors.textMuted
           }
           value={value}
           onChangeText={onChangeText}
@@ -78,28 +85,23 @@ const CustomizeTextInput = ({
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
           autoFocus={autoFocus}
+          editable={editable}
         />
 
-        {secureTextEntry && (
-          <TouchableOpacity
-            onPress={() => setHidden((h) => !h)}
-            style={styles.eyeWrap}
-          >
-            {hidden ? (
+        <View style={styles.rightSection}>
+          {secureTextEntry && (
+            <TouchableOpacity onPress={() => setHidden((h) => !h)}>
               <Ionicons
-                name="eye-off-outline"
+                name={hidden ? "eye-off-outline" : "eye-outline"}
                 size={20}
                 color={iconColor}
               />
-            ) : (
-              <Ionicons
-                name="eye-outline"
-                size={20}
-                color={iconColor}
-              />
-            )}
-          </TouchableOpacity>
-        )}
+            </TouchableOpacity>
+          )}
+
+          {!secureTextEntry && rightIcon}
+        </View>
+
       </View>
 
       {state === "error" && errorMessage ? (
@@ -152,6 +154,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginLeft: 2,
   },
+  rightSection: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
 });
 
 export default CustomizeTextInput;

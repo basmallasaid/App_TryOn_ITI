@@ -1,3 +1,6 @@
+import { I18nManager } from "react-native";
+import * as Updates from "expo-updates";
+import i18n from "./src/localization/i18n";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -15,9 +18,22 @@ import {
 } from "@expo-google-fonts/roboto";
 import { Inter_700Bold } from "@expo-google-fonts/inter";
 import { resetOnboardingAndLanguage } from "./src/utils/devReset";
-import {ProfileProvider } from "./src/context/ProfileContext"
-// ⚠️ DEV ONLY — comment out when done testing
+import { ProfileProvider } from "./src/context/ProfileContext";
+
+I18nManager.allowRTL(true);
+
+// DEV ONLY — comment out when done testing
 resetOnboardingAndLanguage();
+
+i18n.on("languageChanged", async (lang) => {
+  const isRTL = lang === "ar";
+  if (I18nManager.isRTL !== isRTL) {
+    I18nManager.forceRTL(isRTL);
+    if (Updates.isEmbeddedLaunch) {
+      await Updates.reloadAsync();
+    }
+  }
+});
 
 export default function App() {
   const [fontsLoaded] = useFonts({

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../../context/AuthContext";
 import { useGoogleAuth } from "../../../hooks/useGoogleAuth";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
@@ -39,6 +40,7 @@ const GoogleIcon = () => (
 );
 
 const LoginScreen = ({ route, navigation }) => {
+  const { t } = useTranslation();
   const { login ,loginWithGoogle} = useAuth();
   const { signInWithGoogle } = useGoogleAuth();
   const successMessage = route?.params?.message ?? "";
@@ -53,7 +55,7 @@ const LoginScreen = ({ route, navigation }) => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError(t('auth.login.fillFields'));
       return;
     }
     try {
@@ -63,9 +65,9 @@ const LoginScreen = ({ route, navigation }) => {
     } catch (e) {
       const msg = e.response?.data?.message || "";
       if (msg.toLowerCase().includes("verif")) {
-        setError("Please verify your email before signing in.");
+        setError(t('auth.login.emailError'));
       } else {
-        setError(msg || "Login failed. Try again.");
+        setError(msg || t('auth.login.loginFailed'));
       }
     } finally {
       setLoading(false);
@@ -77,19 +79,19 @@ const LoginScreen = ({ route, navigation }) => {
       const idToken = await signInWithGoogle();
       await loginWithGoogle(idToken);
     } catch (e) {
-      setError(e.message || "Login failed. Try again.");
+      setError(e.message || t('auth.login.loginFailed'));
     }
   }
 
   return (
     <BottomSheetLayout
-      title="Welcome Back 👋"
-      subtitle="Continue your styling Journey"
+      title={t('auth.login.title')}
+      subtitle={t('auth.login.subtitle')}
     >
       {/* Email input */}
       <CustomizeTextInput
-        label="Email"
-        placeholder="Enter your email"
+        label={t('auth.login.email')}
+        placeholder={t('auth.login.emailPlaceholder')}
         value={email}
         onChangeText={(v) => {
           setEmail(v);
@@ -103,8 +105,8 @@ const LoginScreen = ({ route, navigation }) => {
       <View style={{ marginTop: 10 }}>
        
         <CustomizeTextInput
-          label="Password"
-          placeholder="Enter your password"
+          label={t('auth.login.password')}
+          placeholder={t('auth.login.passwordPlaceholder')}
           value={password}
           onChangeText={(v) => {
             setPassword(v);
@@ -117,7 +119,7 @@ const LoginScreen = ({ route, navigation }) => {
           onPress={() => navigation.navigate("ForgotPassword")}
           style={styles.forgotWrap}
         >
-          <Text style={styles.forgotText}>Forgot Password?</Text>
+          <Text style={styles.forgotText}>{t('auth.login.forgotPassword')}</Text>
         </TouchableOpacity>
       </View>
       {/* Success message (from register / reset) */}
@@ -130,7 +132,7 @@ const LoginScreen = ({ route, navigation }) => {
       <View style={styles.buttonWrap}>
         
         <CustomizeAppButtonFilled
-          label="Login"
+          label={t('auth.login.loginButton')}
           onPress={handleLogin}
           loading={loading}
           backgroundColor={Colors.primary}
@@ -140,12 +142,12 @@ const LoginScreen = ({ route, navigation }) => {
       <View style={styles.dividerRow}>
         
         <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>OR</Text>
+        <Text style={styles.dividerText}>{t('common.or')}</Text>
         <View style={styles.dividerLine} />
       </View>
       {/* Google button */}
       <CustomizeAppButtonFilled
-        label="Continue with Google"
+        label={t('auth.login.continueGoogle')}
         onPress={handleLoginWithGoogle}
         outlined
         textColor={Colors.textPrimary}
@@ -153,8 +155,8 @@ const LoginScreen = ({ route, navigation }) => {
       />
       {/* Sign up link */}
       <EnrichTextComponent
-        baseText="Don't have an account? "
-        linkText="sign-up now"
+        baseText={t('auth.login.noAccount')}
+        linkText={t('auth.login.signupNow')}
         onPress={() => navigation.navigate("Register")}
       />
     </BottomSheetLayout>

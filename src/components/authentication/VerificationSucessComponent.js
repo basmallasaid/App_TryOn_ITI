@@ -1,11 +1,13 @@
 import React from "react";
 import { StyleSheet, View, Image, Text } from "react-native";
+import { useTranslation } from 'react-i18next';
 import { IMAGES } from "../../constants/images/images";
 import LottieView from "lottie-react-native";
 import { ANIMATIONS } from "../../constants/images/animations";
 import Typography from "../../constants/theme/typography";
 
 const VerificationSucessComponent = () => {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
 
@@ -25,10 +27,9 @@ const VerificationSucessComponent = () => {
         />
       </View>
 
-      <Text style={styles.title}>OTP Verified successfully</Text>
+      <Text style={styles.title}>{t('auth.verifyOtp.successTitle')}</Text>
       <Text style={styles.subtitle}>
-        Memory unlocked! Let's get you a password you'll actually remember this
-        time.
+        {t('auth.verifyOtp.successSubtitle')}
       </Text>
     </View>
   );

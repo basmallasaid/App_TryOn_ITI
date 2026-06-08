@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../constants/theme/colors';
@@ -11,7 +12,15 @@ const Tab = createBottomTabNavigator();
 const ACTIVE_COLOR = Colors.primarybrand;
 const INACTIVE_COLOR = Colors.disabled;
 
+const TAB_LABELS = {
+  Home: 'navigation.tab.home',
+  Wardrobe: 'navigation.tab.wardrobe',
+  Store: 'navigation.tab.store',
+  Profile: 'navigation.tab.profile',
+};
+
 export default function AppStack() {
+  const { t } = useTranslation();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -34,7 +43,7 @@ export default function AppStack() {
         tabBarLabel: ({ focused, color }) => (
           <View style={{ alignItems: 'center' }}>
             <Text style={{ color, fontSize: 13, fontWeight: focused ? '700' : '500' }}>
-              {route.name}
+              {t(TAB_LABELS[route.name])}
             </Text>
             {focused && <View style={styles.activeIndicator} />}
           </View>

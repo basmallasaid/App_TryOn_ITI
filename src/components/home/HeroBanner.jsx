@@ -7,32 +7,29 @@ import {
     StyleSheet,
     useWindowDimensions,
 } from "react-native";
+import { useTranslation } from 'react-i18next';
 import { IMAGES } from "../../constants/images/images";
 import { Ionicons } from '@expo/vector-icons';
 import Colors from "../../constants/theme/colors";
 export default function HeroBanner() {
+    const { t } = useTranslation();
     const { width } = useWindowDimensions();
 
     return (
         <View style={styles.banner}>
             <View style={styles.bannerContent}>
                 <Text style={styles.bannerTitle}>
-                    Your style, {"\n"}
-                    <Text style={styles.highlight}>
-                        intelligently
-                    </Text>{" "}
-                    yours.
+                    {t('home.hero.title')}
                 </Text>
 
                 <Text style={styles.bannerSubTitle}>
-                    AI that understands your wardrobe and creates
-                    looks that fit you.
+                    {t('home.hero.subtitle')}
                 </Text>
 
                 <TouchableOpacity style={styles.generateButton}>
                     <Ionicons name="sparkles" size={24} color="white" />
                     <Text style={styles.generateButtonText}>
-                        Generate outfit
+                        {t('home.actions.generateOutfit')}
                     </Text>
 
                 </TouchableOpacity>

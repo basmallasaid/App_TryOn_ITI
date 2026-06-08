@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from "@expo/vector-icons";
 
 import Colors from "../../constants/theme/colors";
@@ -35,6 +35,7 @@ const formatDate = (dateString) => {
 };
 
 const EditProfileScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const { profile, loading, setProfile } = useProfileContext();
 
   const { updateProfile } = useAuth();
@@ -106,16 +107,16 @@ const EditProfileScreen = ({ navigation }) => {
           <Ionicons name="chevron-back" size={24} color="#6B7280" />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Edit Profile</Text>
+        <Text style={styles.title}>{t('editProfile.title')}</Text>
 
         <View style={{ width: 24 }} />
       </View>
 
       <View style={styles.card}>
-        <CustomizeTextInput label="Email" value={email} editable={false} />
+        <CustomizeTextInput label={t('editProfile.email')} value={email} editable={false} />
 
         <CustomizeTextInput
-          label="First Name"
+          label={t('editProfile.firstName')}
           value={firstName}
           onChangeText={setFirstName}
           rightIcon={
@@ -124,7 +125,7 @@ const EditProfileScreen = ({ navigation }) => {
         />
 
         <CustomizeTextInput
-          label="Last Name"
+          label={t('editProfile.lastName')}
           value={lastName}
           onChangeText={setLastName}
           rightIcon={
@@ -133,16 +134,16 @@ const EditProfileScreen = ({ navigation }) => {
         />
 
         <CustomizeTextInput
-          label="Date Of Birth"
+          label={t('editProfile.dateOfBirth')}
           value={dateOfBirth}
           onChangeText={setDateOfBirth}
-          placeholder="5-10-1995"
+          placeholder={t('editProfile.datePlaceholder')}
           rightIcon={
             <Ionicons name="calendar-outline" size={18} color="#6B7280" />
           }
         />
 
-        <Text style={styles.genderLabel}>Gender</Text>
+        <Text style={styles.genderLabel}>{t('editProfile.gender')}</Text>
 
         <View style={styles.genderRow}>
           <GenderOptionCard
@@ -160,7 +161,7 @@ const EditProfileScreen = ({ navigation }) => {
       </View>
 
       <CustomizeAppButtonFilled
-        label="Save"
+        label={t('editProfile.save')}
         onPress={handleSave}
         loading={saving}
       />

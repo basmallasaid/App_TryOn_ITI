@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../context/AuthContext";
 import { useProfileContext } from "../../context/ProfileContext";
@@ -7,6 +8,7 @@ import Colors from "../../constants/theme/colors";
 
 
 export default function Header() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [isNotification, setIsNotification] = useState(false);
   const { profile } = useProfileContext();
@@ -28,17 +30,17 @@ export default function Header() {
         ) : (
           <View style={styles.profilePlaceholder}>
             <Text style={styles.profilePlaceholderText}>
-              {firstName ? firstName.charAt(0).toUpperCase() : "G"}
+              {firstName ? firstName.charAt(0).toUpperCase() : t('home.guestInitial')}
             </Text>
           </View>
         )}
 
         <View style={styles.headerText}>
           <View style={styles.helloRow}>
-            <Text style={styles.helloText}>Hello</Text>
+            <Text style={styles.helloText}>{t('home.hello')}</Text>
             <Text style={styles.wave}>👋</Text>
           </View>
-          <Text style={styles.userName}>{firstName || "Guest"}</Text>
+          <Text style={styles.userName}>{firstName || t('home.guest')}</Text>
         </View>
       </View>
 

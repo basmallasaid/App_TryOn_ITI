@@ -7,6 +7,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
+import { useTranslation } from 'react-i18next';
 import { IMAGES } from "../../constants/images/images";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import LanguageContainer from "../../components/language/languageContainer";
@@ -19,6 +20,7 @@ const { height: H } = Dimensions.get("window");
 const LANGUAGES = ["en", "ar"];
 
 const SelectLanguageScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const { selectLanguage } = useLanguage();
   const [selected, setSelected] = useState(null);
   const handleContinue = async () => {
@@ -43,7 +45,7 @@ const SelectLanguageScreen = ({ navigation }) => {
         />
 
         {/* Title */}
-        <Text style={styles.title}>Select a Language to get started</Text>
+        <Text style={styles.title}>{t('language.title')}</Text>
 
         {/* Language options */}
         <View style={styles.languagesWrap}>
@@ -60,7 +62,7 @@ const SelectLanguageScreen = ({ navigation }) => {
         {/* Continue button — disabled until a language is selected */}
         <View style={styles.buttonWrap}>
           <CustomizeAppButtonFilled
-            label="Continue"
+            label={t('language.continue')}
             onPress={handleContinue}
             backgroundColor={selected ? Colors.primary : Colors.disabled}
             disabled={!selected}
@@ -68,9 +70,7 @@ const SelectLanguageScreen = ({ navigation }) => {
         </View>
         {/* Footer note */}
         <EnrichTextComponent
-          baseText={
-            "You can switch languages at any time through the settings."
-          }
+          baseText={t('language.footer')}
         ></EnrichTextComponent>
       </ScrollView>
     </View>

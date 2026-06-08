@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Switch,
 } from "react-native";
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -19,19 +20,20 @@ import LanguageBottomSheet from "../../components/profile/LanguageBottomSheet";
 import CustomizeAppButtonOutlined from "../../components/common/CustomizeAppButtonOutlined";
 import Colors from "../../constants/theme/colors";
 
-const STYLE_OPTIONS = [
-  "Streetwear",
-  "Minimalist",
-  "Avant-Garde",
-  "Cyberpunk",
-  "Quiet Luxury",
-  "Bohemian",
-];
-
 const ProfileScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const { language, selectLanguage, syncLanguage } = useLanguage();
   const { profile } = useProfileContext() ;
+
+  const STYLE_OPTIONS = [
+    t('profile.styleOptions.streetwear'),
+    t('profile.styleOptions.minimalist'),
+    t('profile.styleOptions.avantGarde'),
+    t('profile.styleOptions.cyberpunk'),
+    t('profile.styleOptions.quietLuxury'),
+    t('profile.styleOptions.bohemian'),
+  ];
 
 
   const [customizeMode, setCustomizeMode] = useState(false);
@@ -82,7 +84,7 @@ const ProfileScreen = ({ navigation }) => {
             <View style={styles.profileLeft}>
               <ProfileAvatar name={profile?.profile?.first_name} />
               <View style={styles.profileInfo}>
-                <Text style={styles.hiName}>Hi, {firstName} 👋</Text>
+                <Text style={styles.hiName}>{t('profile.hi', { name: firstName })}</Text>
                 <Text style={styles.email}>{profile?.email ?? ""}</Text>
               </View>
             </View>
@@ -90,7 +92,7 @@ const ProfileScreen = ({ navigation }) => {
               style={styles.editBtn}
               onPress={() => navigation.navigate("EditProfile")}
             >
-              <Text style={styles.editText}>Edit</Text>
+              <Text style={styles.editText}>{t('profile.edit')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -105,7 +107,7 @@ const ProfileScreen = ({ navigation }) => {
               />
             </View>
             <Text style={styles.progressLabel}>
-              Complete your profile to personalize your experience!
+              {t('profile.completeProfile')}
             </Text>
           </View>
 
@@ -113,13 +115,13 @@ const ProfileScreen = ({ navigation }) => {
           <View style={styles.statRow}>
             <StatCard
               icon="card-outline"
-              title="Your Credits"
-              subtitle="EGP 0.00"
+              title={t('profile.credits')}
+              subtitle={t('profile.creditsAmount')}
             />
             <StatCard
               icon="heart-outline"
-              title="Wishlist"
-              subtitle="0 saved items"
+              title={t('profile.wishlist')}
+              subtitle={t('profile.wishlistEmpty')}
             />
           </View>
         </View>
@@ -127,10 +129,10 @@ const ProfileScreen = ({ navigation }) => {
         {/* ── Card 2: Style Identity ── */}
         <View style={styles.card}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Style Identity</Text>
+            <Text style={styles.sectionTitle}>{t('profile.styleIdentity')}</Text>
             <TouchableOpacity onPress={() => setCustomizeMode((v) => !v)}>
               <Text style={styles.customizeText}>
-                {customizeMode ? "Done" : "Customize"}
+                {customizeMode ? t('profile.done') : t('profile.customize')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -150,11 +152,11 @@ const ProfileScreen = ({ navigation }) => {
 
         {/* ── Card 3: Preferences & Privacy ── */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Preferences & Privacy</Text>
+          <Text style={styles.sectionTitle}>{t('profile.preferences')}</Text>
 
           <PrefRow
             icon="notifications-outline"
-            title="Notifications"
+            title={t('profile.notifications')}
             right={
               <Switch
                 value={notifications}
@@ -168,7 +170,7 @@ const ProfileScreen = ({ navigation }) => {
 
           <PrefRow
             icon="flag-outline"
-            title="Language"
+            title={t('profile.language')}
             onPress={() => {
               setTempLang(language);
               setLangModalVisible(true);
@@ -180,7 +182,7 @@ const ProfileScreen = ({ navigation }) => {
 
           <PrefRow
             icon="card-outline"
-            title="Payment"
+            title={t('profile.payment')}
             borderBottom={false}
             onPress={() => {}}
             right={
@@ -192,7 +194,7 @@ const ProfileScreen = ({ navigation }) => {
         {/* ── Logout ── */}
         <View style={styles.logoutWrap}>
           <CustomizeAppButtonOutlined
-            label="Log Out"
+            label={t('profile.logout')}
             onPress={logout}
             borderColor={Colors.error}
             textColor={Colors.error}

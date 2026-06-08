@@ -9,6 +9,7 @@ import {
   Platform,
   StatusBar,
 } from "react-native";
+import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import Header from "../../components/home/Header";
 import HeroBanner from "../../components/home/HeroBanner";
@@ -19,6 +20,7 @@ import { IMAGES } from "../../constants/images/images";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -29,11 +31,11 @@ export default function HomeScreen() {
         <Header />
         <HeroBanner />
 
-        <Text style={styles.sectionTitle}>What would you Like to do ?</Text>
+        <Text style={styles.sectionTitle}>{t('home.whatToDo')}</Text>
         <View style={styles.grid}>
           <ActionCard
-            title="Try-on"
-            sub="see how clothes look on you"
+            title={t('home.actions.tryOn')}
+            sub={t('home.actions.tryOnSub')}
             mainIconName="crop-free"
             innerIconName="tshirt-crew"
             titleColor="#40B9FF"
@@ -41,16 +43,16 @@ export default function HomeScreen() {
             iconColor="#40B9FF"
           />
           <ActionCard
-            title="Recycle"
-            sub="Give clothes another life"
+            title={t('home.actions.recycle')}
+            sub={t('home.actions.recycleSub')}
             mainIconName="recycle"
             titleColor="#A6E22E"
             iconBgColor="#F1F8E9"
             iconColor="#A6E22E"
           />
           <ActionCard
-            title="Generate outfit"
-            sub="personalized style suggestions"
+            title={t('home.actions.generateOutfit')}
+            sub={t('home.actions.generateOutfitSub')}
             useIonicons={true}
             mainIconName="sparkles"
             titleColor="#FF7D9A"
@@ -58,8 +60,8 @@ export default function HomeScreen() {
             iconColor="#FF6B8B"
           />
           <ActionCard
-            title="Matching"
-            sub="Find the perfect match for your clothes"
+            title={t('home.actions.matching')}
+            sub={t('home.actions.matchingSub')}
             useIonicons={true}
             mainIconName="checkmark-circle-outline"
             titleColor="#FF8A3D"
@@ -68,13 +70,13 @@ export default function HomeScreen() {
           />
         </View>
 
-        <Text style={styles.sectionTitle}>Today's picks for you</Text>
+        <Text style={styles.sectionTitle}>{t('home.todaysPicks')}</Text>
         <OutfitCard />
 
         <View style={styles.recentHeader}>
-          <Text style={styles.recentTitle}>recent try-ons</Text>
+          <Text style={styles.recentTitle}>{t('home.recentTryOns')}</Text>
           <TouchableOpacity style={styles.viewAllBtn}>
-            <Text style={styles.viewAllText}>view all</Text>
+            <Text style={styles.viewAllText}>{t('home.viewAll')}</Text>
             <Ionicons
               name="arrow-forward"
               size={16}

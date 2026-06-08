@@ -1,4 +1,5 @@
 import { TouchableOpacity, Text, View, StyleSheet, Image } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
 
 const FLAG = {
@@ -6,12 +7,14 @@ const FLAG = {
   ar: '🇪🇬',
 };
 
-const LABEL = {
-  en: 'English',
-  ar: 'Arabic',
-};
-
 const LanguageContainer = ({ language, selected = false, onPress }) => {
+  const { t } = useTranslation();
+
+  const LABEL = {
+    en: t('language.english'),
+    ar: t('language.arabic'),
+  };
+
   return (
     <TouchableOpacity
       style={[styles.container, selected && styles.containerSelected]}

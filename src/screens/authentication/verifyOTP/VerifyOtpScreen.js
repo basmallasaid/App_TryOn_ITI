@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import { useTranslation } from 'react-i18next';
 import {
   verifyOtp,
   forgotPassword,
@@ -18,6 +19,7 @@ import SuccessModal from "../../../components/common/SuccessModal";
 import VerificationSucessComponent from "../../../components/authentication/VerificationSucessComponent";
 
 const VerifyOtpScreen = ({ route, navigation }) => {
+  const { t } = useTranslation();
   const { email } = route.params;
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
@@ -28,13 +30,13 @@ const VerifyOtpScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (countdown === 0) return;
-    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
   }, [countdown]);
 
   useEffect(() => {
     if (expireCountdown === 0) {
-      setError("Verification code has expired.");
+      setError(t('auth.verifyOtp.expiredError'));
       return;
     }
     const timer = setTimeout(() => setExpireCountdown((c) => c - 1), 1000);
@@ -51,11 +53,11 @@ const VerifyOtpScreen = ({ route, navigation }) => {
 
   const handleVerify = async () => {
     if (expireCountdown <= 0) {
-      setError("Verification code has expired. Please request a new code.");
+      setError(t('auth.verifyOtp.expiredRequestNew'));
       return;
     }
     if (otp.length !== 6) {
-      setError("Enter the 6-digit code");
+      setError(t('auth.verifyOtp.invalidCode'));
       return;
     }
     try {
@@ -64,7 +66,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
       await verifyOtp(email, otp);
       setShowModal(true);
     } catch (e) {
-      setError(e.response?.data?.message || "Invalid or expired code.");
+      setError(e.response?.data?.message || t('auth.verifyOtp.failed'));
     } finally {
       setLoading(false);
     }
@@ -78,7 +80,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
       setOtp("");
       setError("");
     } catch (e) {
-      setError("Could not resend. Try again.");
+      setError(t('auth.verifyOtp.resendFailed'));
     }
   };
 
@@ -91,12 +93,12 @@ const VerifyOtpScreen = ({ route, navigation }) => {
   return (
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Verification</Text>
+        <Text style={styles.title}>{t('auth.verifyOtp.title')}</Text>
         <Text style={styles.subtitle}>
-          Write down the code sent to your Email !
+          {t('auth.verifyOtp.subtitle')}
         </Text>
 
-        <Text style={styles.label}>OTP Code</Text>
+        <Text style={styles.label}>{t('auth.verifyOtp.label')}</Text>
 
         <OtpInput
           value={otp}
@@ -110,12 +112,12 @@ const VerifyOtpScreen = ({ route, navigation }) => {
         {error ? <Text style={styles.errorMsg}>{error}</Text> : null}
 
         <Text style={styles.expireText}>
-          Code won't be Valid after {formatTime(expireCountdown)}
+          {t('auth.verifyOtp.expireText', { time: formatTime(expireCountdown) })}
         </Text>
 
         <View style={styles.buttonWrap}>
           <CustomizeAppButtonFilled
-            label="Verify Code"
+            label={t('auth.verifyOtp.verifyButton')}
             onPress={handleVerify}
             loading={loading}
             backgroundColor={Colors.primary}
@@ -130,7 +132,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
           <Text
             style={[styles.resendText, countdown > 0 && styles.resendDisabled]}
           >
-            {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
+            {countdown > 0 ? t('auth.verifyOtp.resendCountdown', { count: countdown }) : t('auth.verifyOtp.resendCode')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

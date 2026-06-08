@@ -10,6 +10,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
+import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../../context/AuthContext";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
 import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
@@ -23,6 +24,7 @@ import BottomSheetLayout from "../../../components/authentication/BottomSheetLay
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const ForgotPasswordScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
   const handleSend = async () => {
     if (!email.includes("@")) {
-      setError("Enter a valid email");
+      setError(t('auth.forgotPassword.validEmail'));
       return;
     }
     try {
@@ -42,11 +44,9 @@ const ForgotPasswordScreen = ({ navigation }) => {
     } catch (e) {
       const msg = e.response?.data?.message || "";
       if (msg.toLowerCase().includes("verif")) {
-        setError(
-          "Verify your email first. Check your inbox for the verification link.",
-        );
+        setError(t('auth.forgotPassword.notVerified'));
       } else {
-        setError(msg || "Could not send code. Try again.");
+        setError(msg || t('auth.forgotPassword.failed'));
       }
     } finally {
       setLoading(false);
@@ -55,14 +55,14 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
   return (
     <BottomSheetLayout
-      title="Forgot Password?"
-      subtitle="No worries! Enter your email and we'll send you a reset link."
+      title={t('auth.forgotPassword.title')}
+      subtitle={t('auth.forgotPassword.subtitle')}
     >
       {/* Email input */}
 
       <CustomizeTextInput
-        label="Email"
-        placeholder="Enter your email"
+        label={t('auth.forgotPassword.email')}
+        placeholder={t('auth.forgotPassword.emailPlaceholder')}
         value={email}
         onChangeText={(v) => {
           setEmail(v);
@@ -76,7 +76,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
       <View style={styles.buttonWrap}>
         <CustomizeAppButtonFilled
-          label="Send reset link"
+          label={t('auth.forgotPassword.sendButton')}
           onPress={handleSend}
           loading={loading}
           backgroundColor={Colors.primary}
@@ -88,9 +88,9 @@ const ForgotPasswordScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("Login")}
         style={styles.loginLinkWrap}
       >
-        <Text style={styles.loginLinkText}>
-          <Text style={styles.loginLink}>Back to Login</Text>
-        </Text>
+          <Text style={styles.loginLinkText}>
+            <Text style={styles.loginLink}>{t('auth.forgotPassword.backToLogin')}</Text>
+          </Text>
       </TouchableOpacity>
     </BottomSheetLayout>
   );

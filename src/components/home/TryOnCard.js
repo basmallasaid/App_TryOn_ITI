@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
 export default function TryOnCard({ imageUri }) {
+  const { t } = useTranslation();
   const [isFavorite, setIsFavorite] = useState(false);
 
   return (
@@ -29,7 +31,7 @@ export default function TryOnCard({ imageUri }) {
 
     
       <TouchableOpacity style={styles.button} activeOpacity={0.8}>
-        <Text style={styles.buttonText}>View outfit</Text>
+        <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
         <Ionicons name="arrow-forward" size={16} color="white" style={styles.arrow} />
       </TouchableOpacity>
     </View>

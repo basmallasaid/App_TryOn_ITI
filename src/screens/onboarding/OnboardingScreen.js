@@ -3,6 +3,7 @@ import {
   View, Text, Animated,
   StyleSheet, Dimensions, StatusBar, PanResponder,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
 import CustomizeAppButtonOutlined from '../../components/common/CustomizeAppButtonOutlined';
 import Colors from '../../constants/theme/colors';
@@ -11,28 +12,29 @@ import { setOnboardingSeen } from '../../storage/TokenStorage';
 
 const { width: W, height: H } = Dimensions.get('window');
 
-const SLIDES = [
-  {
-    id: '1',
-    image: IMAGES.ONBOARDING_ONE,
-    title: 'Discover Your Style',
-    subtitle: 'Get personalized outfit ideas that match your unique vibe.',
-  },
-  {
-    id: '2',
-    image: IMAGES.ONBOARDING_TWO,
-    title: 'Try Before You Buy',
-    subtitle: 'See how clothes look on you with realistic AI try-on.',
-  },
-  {
-    id: '3',
-    image: IMAGES.ONBOARDING_THREE,
-    title: 'Your Smart Wardrobe',
-    subtitle: 'Organize, mix & match your looks all in one place.',
-  },
-];
-
 const OnboardingScreen = ({ navigation }) => {
+  const { t } = useTranslation();
+
+  const SLIDES = [
+    {
+      id: '1',
+      image: IMAGES.ONBOARDING_ONE,
+      title: t('onboarding.slides.0.title'),
+      subtitle: t('onboarding.slides.0.subtitle'),
+    },
+    {
+      id: '2',
+      image: IMAGES.ONBOARDING_TWO,
+      title: t('onboarding.slides.1.title'),
+      subtitle: t('onboarding.slides.1.subtitle'),
+    },
+    {
+      id: '3',
+      image: IMAGES.ONBOARDING_THREE,
+      title: t('onboarding.slides.2.title'),
+      subtitle: t('onboarding.slides.2.subtitle'),
+    },
+  ];
   const [activeIndex, setActiveIndex]         = useState(0);
   const [previousIndex, setPreviousIndex]     = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -141,7 +143,7 @@ const OnboardingScreen = ({ navigation }) => {
         {isLast ? (
           <View style={styles.fullWidth}>
             <CustomizeAppButtonFilled
-              label="Get Started"
+              label={t('onboarding.getStarted')}
               onPress={goToLogin}
               backgroundColor={Colors.primary}
             />
@@ -150,13 +152,13 @@ const OnboardingScreen = ({ navigation }) => {
           <>
             <View style={styles.halfBtn}>
               <CustomizeAppButtonOutlined
-                label="Skip"
+                label={t('onboarding.skip')}
                 onPress={goToLogin}
               />
             </View>
             <View style={styles.halfBtn}>
               <CustomizeAppButtonFilled
-                label="Next"
+                label={t('onboarding.next')}
                 onPress={handleNext}
                 backgroundColor={Colors.primary}
               />

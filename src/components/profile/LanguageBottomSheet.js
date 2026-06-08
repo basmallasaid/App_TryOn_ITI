@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { useTranslation } from 'react-i18next';
 import LanguageContainer from "../language/languageContainer";
 import Colors from "../../constants/theme/colors";
 
@@ -20,7 +21,9 @@ const LanguageBottomSheet = ({
   onSelect,
   onSave,
   onClose,
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <Modal
     visible={visible}
     transparent
@@ -33,7 +36,7 @@ const LanguageBottomSheet = ({
       <View style={styles.sheet}>
         <View style={styles.handle} />
 
-        <Text style={styles.title}>Select Language</Text>
+        <Text style={styles.title}>{t('language.selectLanguage')}</Text>
 
         {LANGUAGES.map((lang) => (
           <LanguageContainer
@@ -45,12 +48,13 @@ const LanguageBottomSheet = ({
         ))}
 
         <TouchableOpacity style={styles.saveBtn} onPress={onSave}>
-          <Text style={styles.saveText}>Save</Text>
+          <Text style={styles.saveText}>{t('language.save')}</Text>
         </TouchableOpacity>
       </View>
     </View>
   </Modal>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

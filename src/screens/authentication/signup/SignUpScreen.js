@@ -10,6 +10,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
+import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../../context/AuthContext";
 import { useGoogleAuth } from "../../../hooks/useGoogleAuth";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
@@ -41,6 +42,7 @@ const GoogleIcon = () => (
 );
 
 const SignUpScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const { register , updateProfile, loginWithGoogle } = useAuth();
   const { signInWithGoogle } = useGoogleAuth();
 
@@ -66,11 +68,11 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const validate = () => {
-    if (!form.email.includes("@")) return "Enter a valid email";
+    if (!form.email.includes("@")) return t('auth.signup.validEmail');
     if (form.password.length < 8)
-      return "Password must be at least 8 characters";
+      return t('auth.signup.passwordLength');
     if (form.password !== form.confirmPassword)
-      return "Password didn't match, try again!";
+      return t('auth.signup.passwordMismatch');
     return null;
   };
 
@@ -94,7 +96,7 @@ const SignUpScreen = ({ navigation }) => {
       setError(
         e.response?.data?.message ||
           e.message ||
-          "Registration failed. Try again.",
+          t('auth.signup.failed'),
       );
     } finally {
       setLoading(false);
@@ -112,8 +114,8 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <BottomSheetLayout
-      title="Create Your Style Profile"
-      subtitle="Start building your personalized wardrobe"
+      title={t('auth.signup.title')}
+      subtitle={t('auth.signup.subtitle')}
     >
       {/* Global error */}
       {error &&
@@ -126,15 +128,15 @@ const SignUpScreen = ({ navigation }) => {
       {/* Name */}
       <View style={styles.nameRow}>
         <CustomizeTextInput
-          label="First Name"
-          placeholder="First name"
+          label={t('auth.signup.firstName')}
+          placeholder={t('auth.signup.firstNamePlaceholder')}
           value={form.firstName}
           onChangeText={update("firstName")}
           wrapperStyle={styles.halfInput}
         />
         <CustomizeTextInput
-          label="Last Name"
-          placeholder="Last name"
+          label={t('auth.signup.lastName')}
+          placeholder={t('auth.signup.lastNamePlaceholder')}
           value={form.lastName}
           onChangeText={update("lastName")}
           wrapperStyle={styles.halfInput}
@@ -145,8 +147,8 @@ const SignUpScreen = ({ navigation }) => {
 
       {/* Email */}
       <CustomizeTextInput
-        label="Email"
-        placeholder="Enter your email"
+        label={t('auth.signup.email')}
+        placeholder={t('auth.signup.emailPlaceholder')}
         value={form.email}
         onChangeText={update("email")}
         keyboardType="email-address"
@@ -157,8 +159,8 @@ const SignUpScreen = ({ navigation }) => {
       <View style={{ height: 12 }} />
       {/* Password */}
       <CustomizeTextInput
-        label="Password"
-        placeholder="Enter your password"
+        label={t('auth.signup.password')}
+        placeholder={t('auth.signup.passwordPlaceholder')}
         value={form.password}
         onChangeText={update("password")}
         secureTextEntry
@@ -168,21 +170,21 @@ const SignUpScreen = ({ navigation }) => {
       <View style={{ height: 12 }} />
       {/* Confirm Password — live match feedback */}
       <CustomizeTextInput
-        label="Confirm Password"
-        placeholder="Re-enter your password"
+        label={t('auth.signup.confirmPassword')}
+        placeholder={t('auth.signup.confirmPlaceholder')}
         value={form.confirmPassword}
         onChangeText={update("confirmPassword")}
         secureTextEntry
         state={confirmState()}
         errorMessage={
-          confirmState() === "error" ? "Password didn't match, try again!" : ""
+          confirmState() === "error" ? t('auth.signup.passwordMismatch') : ""
         }
       />
 
       {/* Sign up button */}
       <View style={styles.buttonWrap}>
         <CustomizeAppButtonFilled
-          label="Sign Up"
+          label={t('auth.signup.signupButton')}
           onPress={handleRegister}
           loading={loading}
           backgroundColor={Colors.primary}
@@ -192,19 +194,19 @@ const SignUpScreen = ({ navigation }) => {
       {/* Divider */}
       <View style={styles.dividerRow}>
         <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>OR</Text>
+        <Text style={styles.dividerText}>{t('common.or')}</Text>
         <View style={styles.dividerLine} />
       </View>
 
       {/* Google button */}
       <CustomizeAppButtonFilled
-        label="Continue with Google"
+        label={t('auth.signup.continueGoogle')}
         onPress={async () => {
           try {
             const idToken = await signInWithGoogle();
             await loginWithGoogle(idToken);
           } catch (e) {
-            setError(e.message || "Google sign-up failed. Try again.");
+            setError(e.message || t('auth.signup.failed'));
           }
         }}
         outlined
@@ -213,8 +215,8 @@ const SignUpScreen = ({ navigation }) => {
       />
       {/* Login link */}
       <EnrichTextComponent
-        baseText="Already have an account? "
-        linkText="login now"
+        baseText={t('auth.signup.hasAccount')}
+        linkText={t('auth.signup.loginNow')}
         onPress={() => navigation.navigate("Login")}
       />
     </BottomSheetLayout>

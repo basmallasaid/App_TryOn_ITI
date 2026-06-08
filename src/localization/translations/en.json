@@ -1,0 +1,200 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "or": "OR"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back 👋",
+      "subtitle": "Continue your styling Journey",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot Password?",
+      "loginButton": "Login",
+      "noAccount": "Don't have an account?",
+      "signupNow": "sign-up now",
+      "continueGoogle": "Continue with Google",
+      "emailError": "Please verify your email before signing in.",
+      "loginFailed": "Login failed. Try again.",
+      "fillFields": "Please fill in all fields"
+    },
+    "signup": {
+      "title": "Create Your Style Profile",
+      "subtitle": "Start building your personalized wardrobe",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "First name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Last name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPassword": "Confirm Password",
+      "confirmPlaceholder": "Re-enter your password",
+      "signupButton": "Sign Up",
+      "hasAccount": "Already have an account?",
+      "loginNow": "login now",
+      "continueGoogle": "Continue with Google",
+      "passwordMismatch": "Password didn't match, try again!",
+      "passwordLength": "Password must be at least 8 characters",
+      "validEmail": "Enter a valid email",
+      "failed": "Registration failed. Try again."
+    },
+    "forgotPassword": {
+      "title": "Forgot Password?",
+      "subtitle": "No worries! Enter your email and we'll send you a reset link.",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "sendButton": "Send reset link",
+      "backToLogin": "Back to Login",
+      "notVerified": "Verify your email first. Check your inbox for the verification link.",
+      "failed": "Could not send code. Try again.",
+      "validEmail": "Enter a valid email"
+    },
+    "verifyOtp": {
+      "title": "Verification",
+      "subtitle": "Write down the code sent to your Email !",
+      "label": "OTP Code",
+      "verifyButton": "Verify Code",
+      "resendCountdown": "Resend code in {{count}}s",
+      "resendCode": "Resend code",
+      "invalidCode": "Enter the 6-digit code",
+      "expiredError": "Verification code has expired.",
+      "expiredRequestNew": "Verification code has expired. Please request a new code.",
+      "failed": "Invalid or expired code.",
+      "resendFailed": "Could not resend. Try again.",
+      "expireText": "Code won't be Valid after {{time}}",
+      "successTitle": "OTP Verified successfully",
+      "successSubtitle": "Memory unlocked! Let's get you a password you'll actually remember this time."
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "subtitle": "Almost done! Set your new password and you are ready to go.",
+      "newPassword": "New Password",
+      "newPlaceholder": "Enter new password",
+      "confirmPassword": "Confirm Password",
+      "confirmPlaceholder": "Re-enter new password",
+      "resetButton": "Reset Password",
+      "passwordLength": "Password must be at least 8 characters",
+      "passwordMismatch": "Passwords do not match",
+      "confirmMismatch": "Password didn't match, try again!",
+      "failed": "Reset failed. Try again.",
+      "success": "Password reset successfully. Please sign in."
+    },
+    "checkEmail": {
+      "title": "Check Your Inbox",
+      "subtitle": "We sent a verification link to\n{{email}}\nClick the link to activate your account.",
+      "spam": "Can't find it? Also check your",
+      "spamBold": "Spam or Junk",
+      "folder": "folder.",
+      "openGmail": "Open Email-app",
+      "resendEmail": "Resend Email",
+      "backToLogin": "Back to Login",
+      "resent": "Email resent!",
+      "failed": "Could not resend. Try again.",
+      "navMessage": "Verification email sent to {{email}}. Please verify before signing in."
+    }
+  },
+  "onboarding": {
+    "slides": [
+      { "title": "Discover Your Style", "subtitle": "Get personalized outfit ideas that match your unique vibe." },
+      { "title": "Try Before You Buy", "subtitle": "See how clothes look on you with realistic AI try-on." },
+      { "title": "Your Smart Wardrobe", "subtitle": "Organize, mix & match your looks all in one place." }
+    ],
+    "next": "Next",
+    "skip": "Skip",
+    "getStarted": "Get Started"
+  },
+  "language": {
+    "title": "Select a Language to get started",
+    "footer": "You can switch languages at any time through the settings.",
+    "continue": "Continue",
+    "english": "English",
+    "arabic": "Arabic",
+    "save": "Save",
+    "selectLanguage": "Select Language"
+  },
+  "navigation": {
+    "tab": {
+      "home": "Home",
+      "wardrobe": "Wardrobe",
+      "store": "Store",
+      "profile": "Profile"
+    }
+  },
+  "home": {
+    "hello": "Hello",
+    "guest": "Guest",
+    "guestInitial": "G",
+    "whatToDo": "What would you Like to do ?",
+    "todaysPicks": "Today's picks for you",
+    "recentTryOns": "recent try-ons",
+    "viewAll": "view all",
+    "hero": {
+      "title": "Your style, intelligently yours.",
+      "subtitle": "AI that understands your wardrobe and creates looks that fit you."
+    },
+    "outfitCard": {
+      "title": "Smart casual",
+      "subtitle": "Clean, comfortable and perfect for your day",
+      "location": "Cairo",
+      "viewOutfit": "View outfit"
+    },
+    "actions": {
+      "tryOn": "Try-on",
+      "tryOnSub": "see how clothes look on you",
+      "recycle": "Recycle",
+      "recycleSub": "Give clothes another life",
+      "generateOutfit": "Generate outfit",
+      "generateOutfitSub": "personalized style suggestions",
+      "matching": "Matching",
+      "matchingSub": "Find the perfect match for your clothes"
+    }
+  },
+  "profile": {
+    "hi": "Hi, {{name}} 👋",
+    "edit": "Edit",
+    "completeProfile": "Complete your profile to personalize your experience!",
+    "credits": "Your Credits",
+    "creditsAmount": "EGP 0.00",
+    "wishlist": "Wishlist",
+    "wishlistEmpty": "0 saved items",
+    "styleIdentity": "Style Identity",
+    "customize": "Customize",
+    "done": "Done",
+    "preferences": "Preferences & Privacy",
+    "notifications": "Notifications",
+    "language": "Language",
+    "payment": "Payment",
+    "logout": "Log Out",
+    "styleOptions": {
+      "streetwear": "Streetwear",
+      "minimalist": "Minimalist",
+      "avantGarde": "Avant-Garde",
+      "cyberpunk": "Cyberpunk",
+      "quietLuxury": "Quiet Luxury",
+      "bohemian": "Bohemian"
+    }
+  },
+  "editProfile": {
+    "title": "Edit Profile",
+    "email": "Email",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "dateOfBirth": "Date Of Birth",
+    "datePlaceholder": "5-10-1995",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "save": "Save",
+    "success": "Profile updated successfully.",
+    "failed": "Update failed. Try again."
+  }
+}

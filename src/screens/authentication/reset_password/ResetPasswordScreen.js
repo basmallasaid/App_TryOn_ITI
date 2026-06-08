@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Platform } from "react-native";
+import { useTranslation } from 'react-i18next';
 import { resetPassword } from "../../../api/auth_services/authServices";
 import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
@@ -8,6 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import BottomSheetLayout from "../../../components/authentication/BottomSheetLayout";
 
 const ResetPasswordScreen = ({ route, navigation }) => {
+  const { t } = useTranslation();
   const { email } = route.params;
 
   const [form, setForm] = useState({
@@ -33,12 +35,12 @@ const ResetPasswordScreen = ({ route, navigation }) => {
 
   const handleReset = async () => {
     if (form.password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError(t('auth.resetPassword.passwordLength'));
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
+      setError(t('auth.resetPassword.passwordMismatch'));
       return;
     }
 
@@ -49,10 +51,10 @@ const ResetPasswordScreen = ({ route, navigation }) => {
       await resetPassword(email, form.password, form.confirmPassword);
 
       navigation.navigate("Login", {
-        message: "Password reset successfully. Please sign in.",
+        message: t('auth.resetPassword.success'),
       });
     } catch (e) {
-      setError(e.response?.data?.message || "Reset failed. Try again.");
+      setError(e.response?.data?.message || t('auth.resetPassword.failed'));
     } finally {
       setLoading(false);
     }
@@ -60,12 +62,12 @@ const ResetPasswordScreen = ({ route, navigation }) => {
 
   return (
     <BottomSheetLayout
-      title="Reset password"
-      subtitle="Almost done!Set your new password and you are ready to go."
+      title={t('auth.resetPassword.title')}
+      subtitle={t('auth.resetPassword.subtitle')}
     >
       <CustomizeTextInput
-        label="New Password"
-        placeholder="Enter new password"
+        label={t('auth.resetPassword.newPassword')}
+        placeholder={t('auth.resetPassword.newPlaceholder')}
         value={form.password}
         onChangeText={update("password")}
         secureTextEntry
@@ -75,14 +77,14 @@ const ResetPasswordScreen = ({ route, navigation }) => {
       <View style={{ height: 20 }} />
 
       <CustomizeTextInput
-        label="Confirm Password"
-        placeholder="Re-enter new password"
+        label={t('auth.resetPassword.confirmPassword')}
+        placeholder={t('auth.resetPassword.confirmPlaceholder')}
         value={form.confirmPassword}
         onChangeText={update("confirmPassword")}
         secureTextEntry
         state={confirmState()}
         errorMessage={
-          confirmState() === "error" ? "Password didn't match, try again!" : ""
+          confirmState() === "error" ? t('auth.resetPassword.confirmMismatch') : ""
         }
       />
 
@@ -90,7 +92,7 @@ const ResetPasswordScreen = ({ route, navigation }) => {
 
       <View style={styles.buttonWrap}>
         <CustomizeAppButtonFilled
-          label="Reset Password"
+          label={t('auth.resetPassword.resetButton')}
           onPress={handleReset}
           loading={loading}
           backgroundColor={Colors.primary}

@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
 export default function OutfitCard() {
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
 
@@ -15,14 +17,14 @@ export default function OutfitCard() {
         />
       </View>
 
-  
+   
       <View style={styles.contentSection}>
-        <Text style={styles.title}>Smart casual</Text>
+        <Text style={styles.title}>{t('home.outfitCard.title')}</Text>
         <Text style={styles.subtitle}>
-          Clean,comfortable and perfect for your day
+          {t('home.outfitCard.subtitle')}
         </Text>
 
-     
+      
         <View style={styles.infoRow}>
           <View style={styles.infoItem}>
             <MaterialCommunityIcons name="weather-sunny" size={22} color="#FF8A3D" />
@@ -31,12 +33,12 @@ export default function OutfitCard() {
           
           <View style={styles.infoItem}>
             <Ionicons name="location-sharp" size={18} color="#A3C639" />
-            <Text style={styles.infoText}>Cairo</Text>
+            <Text style={styles.infoText}>{t('home.outfitCard.location')}</Text>
           </View>
         </View>
 
         <TouchableOpacity style={styles.button} activeOpacity={0.8}>
-          <Text style={styles.buttonText}>View outfit</Text>
+          <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
           <Ionicons name="arrow-forward" size={18} color="white" style={styles.arrowIcon} />
         </TouchableOpacity>
       </View>

@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
-
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../../constants/theme/colors';
@@ -14,6 +14,7 @@ const GenderOptionCard = ({
   selected,
   onPress,
 }) => {
+  const { t } = useTranslation();
 
   const isMale =
     gender === 'Male';
@@ -61,7 +62,7 @@ const GenderOptionCard = ({
           },
         ]}
       >
-        {gender}
+        {isMale ? t('editProfile.male') : t('editProfile.female')}
       </Text>
     </TouchableOpacity>
   );

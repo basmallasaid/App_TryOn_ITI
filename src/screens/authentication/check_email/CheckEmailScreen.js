@@ -8,6 +8,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import LottieView from 'lottie-react-native';
 import { sendVerification } from '../../../api/auth_services/authServices';
 import CustomizeAppButtonFilled from '../../../components/common/CustomizeAppButtonFilled';
@@ -17,6 +18,7 @@ import Typography  from '../../../constants/theme/typography';
 import { ANIMATIONS } from "../../../constants/images/animations";
 
 const CheckEmailScreen = ({ route, navigation }) => {
+  const { t } = useTranslation();
   const { email, token } = route.params;
   const [resent, setResent] = useState(false);
   const [error, setError] = useState('');
@@ -33,7 +35,7 @@ const CheckEmailScreen = ({ route, navigation }) => {
       setResent(true);
       setTimeout(() => setResent(false), 4000);
     } catch (e) {
-      setError(e.response?.data?.message || 'Could not resend. Try again.');
+      setError(e.response?.data?.message || t('auth.checkEmail.failed'));
     }
   };
 
@@ -45,13 +47,11 @@ const CheckEmailScreen = ({ route, navigation }) => {
       <View style={styles.container}>
 
         {/* Title */}
-        <Text style={styles.title}>Check Your Inbox</Text>
+        <Text style={styles.title}>{t('auth.checkEmail.title')}</Text>
 
         {/* Subtitle */}
         <Text style={styles.subtitle}>
-          We sent a verification link to{'\n'}
-          <Text style={styles.emailHighlight}>{email}</Text>
-          {'\n'}Click the link to activate your account.
+          {t('auth.checkEmail.subtitle', { email })}
         </Text>
 
         {/* Lottie animation */}
@@ -64,20 +64,20 @@ const CheckEmailScreen = ({ route, navigation }) => {
 
         {/* Resend feedback */}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        {resent ? <Text style={styles.successText}>Email resent!</Text> : null}
+        {resent ? <Text style={styles.successText}>{t('auth.checkEmail.resent')}</Text> : null}
 
         {/* Spam notice */}
         <Text style={styles.spamText}>
-          Can't find it? Also check your{' '}
-          <Text style={styles.spamBold}>Spam</Text> or{' '}
-          <Text style={styles.spamBold}>Junk</Text> folder.
+          {t('auth.checkEmail.spam')}{' '}
+          <Text style={styles.spamBold}>{t('auth.checkEmail.spamBold')}</Text>{' '}
+          {t('auth.checkEmail.folder')}
         </Text>
 
         <View style={styles.gap} />
 
         {/* Open Gmail */}
         <CustomizeAppButtonFilled
-          label="Open Email-app"
+          label={t('auth.checkEmail.openGmail')}
           onPress={openGmail}
           backgroundColor={Colors.primary}
         />
@@ -86,7 +86,7 @@ const CheckEmailScreen = ({ route, navigation }) => {
 
         {/* Resend email */}
         <CustomizeAppButtonOutlined
-          label="Resend Email"
+          label={t('auth.checkEmail.resendEmail')}
           onPress={handleResend}
           borderColor={Colors.success}
           textColor={Colors.success}
@@ -96,12 +96,12 @@ const CheckEmailScreen = ({ route, navigation }) => {
         <TouchableOpacity
           onPress={() =>
             navigation.navigate('Login', {
-              message: `Verification email sent to ${email}. Please verify before signing in.`,
+              message: t('auth.checkEmail.navMessage', { email }),
             })
           }
           style={styles.backWrap}
         >
-          <Text style={styles.backLink}>Back to Login</Text>
+          <Text style={styles.backLink}>{t('auth.checkEmail.backToLogin')}</Text>
         </TouchableOpacity>
 
       </View>

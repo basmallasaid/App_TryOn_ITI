@@ -19,7 +19,7 @@ import TryOnCard from "../../components/home/TryOnCard";
 import { IMAGES } from "../../constants/images/images";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const { t } = useTranslation();
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -41,6 +41,7 @@ export default function HomeScreen() {
             titleColor="#40B9FF"
             iconBgColor="#E9F7FE"
             iconColor="#40B9FF"
+            onPress={() => navigation.navigate("Wardrobe")}
           />
           <ActionCard
             title={t('home.actions.recycle')}

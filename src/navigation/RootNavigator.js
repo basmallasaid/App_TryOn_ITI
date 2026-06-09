@@ -43,7 +43,7 @@ export default function RootNavigator() {
     return <SplashScreen />;
   }
 
-  if (user) return <TryOnStack />;
+  if (user) return <AppStack />;
 
   const initialRoute = !languageSeen
     ? 'SelectLanguage'

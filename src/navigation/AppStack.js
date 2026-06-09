@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../constants/theme/colors';
 import ProfileStack from "../navigation/ProfileStack"
+import TryOnStack from "../navigation/TryOnStack"
 import HomeScreen from '../screens/home/HomeScreen';
 
 const Tab = createBottomTabNavigator();
@@ -62,7 +63,7 @@ export default function AppStack() {
       
       <Tab.Screen 
         name="Wardrobe" 
-        component={HomeScreen} 
+        component={TryOnStack} 
         options={{
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons name="tshirt-crew-outline" size={28} color={color} />

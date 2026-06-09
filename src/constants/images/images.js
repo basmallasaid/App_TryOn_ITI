@@ -10,6 +10,5 @@ export const IMAGES ={
     HOME_HERO:require("../../../assets/images/hero.jpg"),
     PICK:require("../../../assets/images/pick.jpg"),
     TRY_ON:require("../../../assets/images/try.jpg"),
-  
-    
+    AVATAR:require("../../../assets/images/avatar.png"),
 }

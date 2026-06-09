@@ -183,6 +183,18 @@
       "bohemian": "Bohemian"
     }
   },
+  "tryOn": {
+    "selectModel": {
+      "title": "Choose your model",
+      "subtitle": "How would you like to try on clothes?",
+      "next": "Next"
+    },
+    "createAvatar": {
+      "title": "Create Avatar",
+      "step": "Step 2 of 2",
+      "create": "Create Avatar"
+    }
+  },
   "editProfile": {
     "title": "Edit Profile",
     "email": "Email",

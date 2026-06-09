@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 
@@ -6,7 +6,11 @@ const ColorSelector = ({ label, options, selectedId, onSelect }) => {
   return (
     <View style={styles.container}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
-      <View style={styles.grid}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.row}
+      >
         {options.map((option) => {
           const isSelected = option.id === selectedId;
           return (
@@ -47,7 +51,7 @@ const ColorSelector = ({ label, options, selectedId, onSelect }) => {
             </TouchableOpacity>
           );
         })}
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -63,11 +67,10 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     marginBottom: 16,
   },
-  grid: {
+  row: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: 16,
-    justifyContent: "center",
+    paddingHorizontal: 4,
   },
   optionWrap: {
     alignItems: "center",

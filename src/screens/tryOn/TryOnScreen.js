@@ -17,6 +17,7 @@ import Colors from "../../constants/theme/colors";
 import { IMAGES } from "../../constants/images/images";
 import ActionTab from "../../components/tryOn/ActionTab";
 import WardrobeCard from "../../components/tryOn/WardrobeCard";
+import UploadBox from "../../components/tryOn/UploadBox";
 
 const WARDROBE_DATA = [
   { id: "1", image: IMAGES.ITEM_1 },
@@ -49,13 +50,17 @@ export default function TryOnScreen({ navigation }) {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.modelContainer}>
-          <Image
-            source={IMAGES.MODEL}
-            style={styles.modelImage}
-            resizeMode="contain"
-          />
-        </View>
+        {activeTab === "Gallery" ? (
+          <UploadBox label={t("tryOn.uploadPhoto.uploadLabel")} />
+        ) : (
+          <View style={styles.modelContainer}>
+            <Image
+              source={IMAGES.MODEL}
+              style={styles.modelImage}
+              resizeMode="contain"
+            />
+          </View>
+        )}
 
         <View style={styles.tabsRow}>
           <ActionTab

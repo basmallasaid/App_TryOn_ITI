@@ -6,8 +6,10 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../constants/theme/colors";
 import ProfileStack from "../navigation/ProfileStack";
 import TryOnStack from "../navigation/TryOnStack";
-import HomeScreen from "../screens/home/HomeScreen";
 import StoreScreen from "../screens/store/StoreScreen";
+
+import HomeScreen from '../screens/home/HomeScreen';
+import WardrobeStack from "./WardrobeStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -71,10 +73,10 @@ export default function AppStack() {
           ),
         }}
       />
-
-      <Tab.Screen
-        name="Wardrobe"
-        component={TryOnStack}
+      
+      <Tab.Screen 
+        name="Wardrobe" 
+        component={WardrobeStack} 
         options={{
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons

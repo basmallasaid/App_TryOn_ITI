@@ -1,15 +1,13 @@
-import { View, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import Colors from "../../constants/theme/colors";
+import { View, Image, StyleSheet } from 'react-native';
 
-const AvatarPreview = ({ children }) => {
+const AvatarPreview = ({ image, children }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.avatarCircle}>
-        {children || (
-          <Ionicons name="person" size={48} color={Colors.disabled} />
-        )}
-      </View>
+      {image ? (
+        <Image source={image} style={styles.image} resizeMode="contain" />
+      ) : (
+        <View style={styles.placeholder}>{children}</View>
+      )}
     </View>
   );
 };
@@ -18,17 +16,22 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 16,
+    paddingVertical: 8,
+    marginBottom: 12,
   },
-  avatarCircle: {
+  image: {
+    width: 210,
+    height: 280,
+  },
+  placeholder: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "#F4F4F5",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#F4F4F5',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 2,
-    borderColor: "#E9EBEE",
+    borderColor: '#E9EBEE',
   },
 });
 

@@ -14,10 +14,12 @@ import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import Typography from "../../constants/theme/typography";
 import AvatarPreview from "../../components/avatar/AvatarPreview";
-import AvatarTabs from "../../components/avatar/AvatarTabs";
 import MeasurementSlider from "../../components/avatar/MeasurementSlider";
 import ColorSelector from "../../components/avatar/ColorSelector";
+import GenderOptionCard from "../../components/profile/GenderOptionCard";
+import AvatarTabs from "../../components/avatar/AvatarTabs";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
+import { IMAGES } from "../../constants/images/images";
 
 const skinTones = [
   { id: "very-light", color: "#F6DFC8", label: "Very Light" },
@@ -36,6 +38,33 @@ const hairColors = [
   { id: "blonde", color: "#E6C27A", label: "Blonde" },
   { id: "red", color: "#A53A2A", label: "Red" },
 ];
+
+const GeneralInfoTab = ({ age, gender, onUpdate }) => (
+  <View style={styles.tabContent}>
+    <MeasurementSlider
+      label="Age"
+      value={age}
+      min={10}
+      max={100}
+      step={1}
+      unit="yrs"
+      onChange={(v) => onUpdate("age", v)}
+    />
+    <Text style={styles.genderLabel}>Gender</Text>
+    <View style={styles.genderRow}>
+      <GenderOptionCard
+        gender="Male"
+        selected={gender === "Male"}
+        onPress={() => onUpdate("gender", "Male")}
+      />
+      <GenderOptionCard
+        gender="Female"
+        selected={gender === "Female"}
+        onPress={() => onUpdate("gender", "Female")}
+      />
+    </View>
+  </View>
+);
 
 const MeasurementsTab = ({ height, weight, onUpdate }) => (
   <View style={styles.tabContent}>
@@ -82,7 +111,8 @@ const HairColorTab = ({ hairColor, onUpdate }) => (
   </View>
 );
 
-const tabConfig = [
+const tabs = [
+  { key: "general", label: "General", component: GeneralInfoTab },
   { key: "measurements", label: "Measurements", component: MeasurementsTab },
   { key: "skinTone", label: "Skin Tone", component: SkinToneTab },
   { key: "hairColor", label: "Hair Color", component: HairColorTab },
@@ -90,10 +120,14 @@ const tabConfig = [
 
 const CreateAvatarScreen = ({ navigation }) => {
   const { t } = useTranslation();
+  const [currentStep, setCurrentStep] = useState(0);
+  const totalSteps = tabs.length;
 
   const [avatarProfile, setAvatarProfile] = useState({
     height: 175,
     weight: 70,
+    age: 25,
+    gender: null,
     skinTone: "",
     hairColor: "",
   });
@@ -102,13 +136,37 @@ const CreateAvatarScreen = ({ navigation }) => {
     setAvatarProfile((prev) => ({ ...prev, [key]: value }));
   }, []);
 
-  const tabs = tabConfig.map((tab) => ({
+  const tabKeys = tabs.map((t) => t.key);
+  const activeTab = tabs[currentStep];
+  const ActiveComponent = activeTab.component;
+  const isLastStep = currentStep === totalSteps - 1;
+
+  const stepValidations = [
+    () => avatarProfile.gender !== null,
+    () => true,
+    () => avatarProfile.skinTone !== "",
+    () => avatarProfile.hairColor !== "",
+  ];
+  const canProceed = stepValidations[currentStep]();
+
+  const handleTabChange = (key) => {
+    const index = tabKeys.indexOf(key);
+    if (index !== -1) {
+      setCurrentStep(index);
+    }
+  };
+
+  const handleNext = () => {
+    if (isLastStep || !canProceed) {
+      return;
+    }
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  const tabsWithProps = tabs.map((tab) => ({
     ...tab,
     props: {
-      height: avatarProfile.height,
-      weight: avatarProfile.weight,
-      skinTone: avatarProfile.skinTone,
-      hairColor: avatarProfile.hairColor,
+      ...avatarProfile,
       onUpdate: updateProfile,
     },
   }));
@@ -124,29 +182,40 @@ const CreateAvatarScreen = ({ navigation }) => {
         </TouchableOpacity>
 
         <Text style={styles.title}>{t('tryOn.createAvatar.title')}</Text>
+        <Text style={styles.stepLabel}>
+          Step {currentStep + 1} of {totalSteps}
+        </Text>
 
-        <View style={styles.progressWrap}>
-          <View style={styles.progressTrack}>
-            <View style={styles.progressFill} />
-          </View>
-          <Text style={styles.progressText}>
-            {t('tryOn.createAvatar.step')}
-          </Text>
+        <View style={styles.progressTrack}>
+          <View
+            style={[
+              styles.progressFill,
+              { width: `${((currentStep + 1) / totalSteps) * 100}%` },
+            ]}
+          />
         </View>
 
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
-          <AvatarPreview />
-
-          <AvatarTabs tabs={tabs} />
-        </ScrollView>
+        <View style={styles.bodySection}>
+          <AvatarPreview image={IMAGES.AVATAR} />
+          <AvatarTabs
+            tabs={tabsWithProps}
+            activeKey={tabKeys[currentStep]}
+            onTabChange={handleTabChange}
+            hideContent
+          />
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <ActiveComponent {...tabsWithProps[currentStep].props} />
+          </ScrollView>
+        </View>
 
         <View style={styles.buttonWrap}>
           <CustomizeAppButtonFilled
-            label={t('tryOn.createAvatar.create')}
-            onPress={() => {}}
+            label={isLastStep ? "Generate Avatar" : "Next"}
+            onPress={handleNext}
+            disabled={!canProceed}
             backgroundColor={Colors.primary}
           />
         </View>
@@ -173,35 +242,49 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    ...Typography.screenTitleLarge,
-    marginBottom: 12,
+    fontSize: 24,
+    fontWeight: "700",
+    fontFamily: "Roboto_700Bold",
+    color: Colors.textPrimary,
+    textAlign: "center",
+    marginBottom: 4,
   },
-  progressWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
+  stepLabel: {
+    fontSize: 16,
+    fontFamily: "Roboto_400Regular",
+    color: Colors.textMuted,
+    textAlign: "center",
     marginBottom: 16,
   },
   progressTrack: {
-    flex: 1,
     height: 4,
     borderRadius: 2,
     backgroundColor: "#E9EBEE",
     overflow: "hidden",
+    marginBottom: 16,
   },
   progressFill: {
-    width: "100%",
     height: "100%",
     backgroundColor: Colors.primary,
     borderRadius: 2,
   },
-  progressText: {
-    fontSize: 12,
-    color: Colors.textMuted,
-    fontFamily: "Roboto_400Regular",
-  },
   scrollContent: {
     paddingBottom: 20,
+  },
+  bodySection: {
+    flex: 1,
+  },
+  genderLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Roboto_600SemiBold",
+    color: Colors.textPrimary,
+    marginBottom: 12,
+  },
+  genderRow: {
+    flexDirection: "row",
+    gap: 16,
+    marginBottom: 8,
   },
   tabContent: {
     paddingTop: 8,

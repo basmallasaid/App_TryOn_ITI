@@ -6,10 +6,10 @@ import Colors from "../../constants/theme/colors";
 export default function ActionCard({ 
   title, sub, mainIconName, innerIconName, 
   titleColor, iconBgColor, iconColor,
-  useIonicons
+  useIonicons, onPress
 }) {
   return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.8}>
+    <TouchableOpacity style={styles.card} activeOpacity={0.8} onPress={onPress}>
       <View style={[styles.iconContainer, { backgroundColor: iconBgColor }]}>
     
         {useIonicons ? (

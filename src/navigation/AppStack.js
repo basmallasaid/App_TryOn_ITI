@@ -1,13 +1,15 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import Colors from '../constants/theme/colors';
-import ProfileStack from "../navigation/ProfileStack"
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import Colors from "../constants/theme/colors";
+import ProfileStack from "../navigation/ProfileStack";
+import TryOnStack from "../navigation/TryOnStack";
+import StoreScreen from "../screens/store/StoreScreen";
+
 import HomeScreen from '../screens/home/HomeScreen';
 import WardrobeStack from "./WardrobeStack";
-import StoreScreen from '../screens/store/StoreScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,10 +17,10 @@ const ACTIVE_COLOR = Colors.primarybrand;
 const INACTIVE_COLOR = Colors.disabled;
 
 const TAB_LABELS = {
-  Home: 'navigation.tab.home',
-  Wardrobe: 'navigation.tab.wardrobe',
-  Store: 'navigation.tab.store',
-  Profile: 'navigation.tab.profile',
+  Home: "navigation.tab.home",
+  Wardrobe: "navigation.tab.wardrobe",
+  Store: "navigation.tab.store",
+  Profile: "navigation.tab.profile",
 };
 
 export default function AppStack() {
@@ -33,18 +35,24 @@ export default function AppStack() {
           height: 70,
           paddingBottom: 10,
           paddingTop: 10,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: "#FFFFFF",
           borderTopWidth: 1,
-          borderTopColor: '#F0F0F0',
+          borderTopColor: "#F0F0F0",
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '600',
+          fontWeight: "600",
         },
-        
+
         tabBarLabel: ({ focused, color }) => (
-          <View style={{ alignItems: 'center' }}>
-            <Text style={{ color, fontSize: 13, fontWeight: focused ? '700' : '500' }}>
+          <View style={{ alignItems: "center" }}>
+            <Text
+              style={{
+                color,
+                fontSize: 13,
+                fontWeight: focused ? "700" : "500",
+              }}
+            >
               {t(TAB_LABELS[route.name])}
             </Text>
             {focused && <View style={styles.activeIndicator} />}
@@ -52,12 +60,16 @@ export default function AppStack() {
         ),
       })}
     >
-      <Tab.Screen 
-        name="Home" 
-        component={HomeScreen} 
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "home" : "home-outline"} size={26} color={color} />
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={26}
+              color={color}
+            />
           ),
         }}
       />
@@ -67,27 +79,48 @@ export default function AppStack() {
         component={WardrobeStack} 
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <MaterialCommunityIcons name="tshirt-crew-outline" size={28} color={color} />
+            <MaterialCommunityIcons
+              name="tshirt-crew-outline"
+              size={28}
+              color={color}
+            />
           ),
         }}
       />
 
-      <Tab.Screen 
-        name="Store" 
-        component={StoreScreen} 
+      <Tab.Screen
+        name="TryOn"
+        component={TryOnStack}
+        options={{
+          tabBarButton: () => null,
+          tabBarItemStyle: { display: "none" }, // بيلغي المساحة المحجوزة تماماً
+        }}
+      />
+
+      <Tab.Screen
+        name="Store"
+        component={StoreScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <MaterialCommunityIcons name="store-plus-outline" size={26} color={color} />
+            <MaterialCommunityIcons
+              name="store-plus-outline"
+              size={26}
+              color={color}
+            />
           ),
         }}
       />
 
-      <Tab.Screen 
-        name="Profile" 
-        component={ProfileStack} 
+      <Tab.Screen
+        name="Profile"
+        component={ProfileStack}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "person" : "person-outline"} size={26} color={color} />
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={26}
+              color={color}
+            />
           ),
         }}
       />

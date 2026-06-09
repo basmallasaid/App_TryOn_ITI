@@ -183,6 +183,54 @@
       "bohemian": "بوهيمي"
     }
   },
+  "tryOn": {
+    "selectModel": {
+      "title": "اختر نموذجك",
+      "subtitle": "كيف تود تجربة الملابس؟",
+      "next": "التالي"
+    },
+    "createAvatar": {
+      "title": "إنشاء الصورة الرمزية",
+      "step": "الخطوة 2 من 2",
+      "create": "إنشاء الصورة الرمزية"
+    },
+    "uploadPhoto": {
+      "title": "ارفع صورتك",
+      "subtitle": "احصل على أفضل نتائج التجربة الافتراضية باتباع هذه القواعد البسيطة.",
+      "uploadLabel": "ارفع الصور هنا",
+      "uploadButton": "رفع الصورة",
+      "instructions": {
+        "fullBody": {
+          "title": "جسم كامل",
+          "description": "التقط طولك بالكامل من الرأس إلى أخمص القدمين."
+        },
+        "goodLighting": {
+          "title": "إضاءة جيدة",
+          "description": "الضوء الطبيعي يعمل بشكل أفضل للدقة."
+        },
+        "faceCamera": {
+          "title": "مواجهة الكاميرا",
+          "description": "قف مستقيماً وانظر مباشرة إلى العدسة."
+        },
+        "cleanWall": {
+          "title": "جدار نظيف",
+          "description": "قلل من الأشياء أو الفوضى في الخلفية."
+        }
+      }
+    },
+    "virtualTryOn": {
+      "title": "تجربة افتراضية",
+      "myWardrobe": "خزانة ملابسي",
+      "camera": "الكاميرا",
+      "gallery": "المعرض",
+      "activeWardrobe": "الملابس النشطة",
+      "seeAll": "عرض الكل",
+      "selectedItems": "العناصر المحددة ({{count}})",
+      "noItemsTitle": "لم يتم اختيار أي عنصر بعد",
+      "noItemsSub": "أضف عناصر من الأعلى لتجربتها.",
+      "generate": "توليد التجربة"
+    }
+  },
   "editProfile": {
     "title": "تعديل الملف الشخصي",
     "email": "البريد الإلكتروني",

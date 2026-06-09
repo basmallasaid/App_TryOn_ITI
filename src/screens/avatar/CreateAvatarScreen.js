@@ -157,9 +157,11 @@ const CreateAvatarScreen = ({ navigation }) => {
   };
 
   const handleNext = () => {
-    if (isLastStep || !canProceed) {
+    if (isLastStep) {
+      if (canProceed) navigation.navigate("TryOn");
       return;
     }
+    if (!canProceed) return;
     setCurrentStep((prev) => prev + 1);
   };
 

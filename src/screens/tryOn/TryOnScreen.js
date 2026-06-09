@@ -217,6 +217,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   disabledBtn: { backgroundColor: "#A0AEC0" },
-  activeBtn: { backgroundColor: "#1A202C" },
+  activeBtn: { backgroundColor: "#40B9FF" },
   generateBtnText: { color: "white", fontWeight: "700", fontSize: 16 },
 });

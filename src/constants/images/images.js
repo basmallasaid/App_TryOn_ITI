@@ -14,4 +14,7 @@ export const IMAGES ={
     MODEL:require("../../../assets/images/image 9.png"),
     ITEM_1:require("../../../assets/images/Item 1.png"),
     ITEM_3:require("../../../assets/images/Item 3.png"),
+    Store:require("../../../assets/images/store.jpg"),
+  
+    
 }

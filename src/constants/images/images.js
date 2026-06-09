@@ -11,4 +11,7 @@ export const IMAGES ={
     PICK:require("../../../assets/images/pick.jpg"),
     TRY_ON:require("../../../assets/images/try.jpg"),
     AVATAR:require("../../../assets/images/avatar.png"),
+    MODEL:require("../../../assets/images/image 9.png"),
+    ITEM_1:require("../../../assets/images/Item 1.png"),
+    ITEM_3:require("../../../assets/images/Item 3.png"),
 }

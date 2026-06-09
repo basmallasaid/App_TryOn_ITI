@@ -78,6 +78,8 @@ const SelectModelScreen = ({ navigation }) => {
   const handleNext = () => {
     if (selected === "avatar") {
       navigation.navigate("CreateAvatar");
+    } else if (selected === "photo") {
+      navigation.navigate("UploadPhoto");
     }
   };
 

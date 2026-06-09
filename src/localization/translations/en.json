@@ -193,6 +193,42 @@
       "title": "Create Avatar",
       "step": "Step 2 of 2",
       "create": "Create Avatar"
+    },
+    "uploadPhoto": {
+      "title": "Upload Your Photo",
+      "subtitle": "Get the best virtual try-on results by following these simple rules.",
+      "uploadLabel": "Upload images here",
+      "uploadButton": "Upload Photo",
+      "instructions": {
+        "fullBody": {
+          "title": "Full body",
+          "description": "Capture your entire height from head to toe."
+        },
+        "goodLighting": {
+          "title": "Good lighting",
+          "description": "Natural daylight works best for accuracy."
+        },
+        "faceCamera": {
+          "title": "Face camera",
+          "description": "Stand straight and look directly at the lens."
+        },
+        "cleanWall": {
+          "title": "Clean wall",
+          "description": "Minimize background objects or clutter."
+        }
+      }
+    },
+    "virtualTryOn": {
+      "title": "Virtual Try-On",
+      "myWardrobe": "My Wardrobe",
+      "camera": "Camera",
+      "gallery": "Gallery",
+      "activeWardrobe": "Active wardrobe",
+      "seeAll": "See All",
+      "selectedItems": "Selected Items ({{count}})",
+      "noItemsTitle": "No items selected yet",
+      "noItemsSub": "Add items from above to try them on.",
+      "generate": "Generate Try-on"
     }
   },
   "editProfile": {

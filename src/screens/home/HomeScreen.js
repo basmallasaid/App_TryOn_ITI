@@ -41,7 +41,7 @@ export default function HomeScreen({ navigation }) {
             titleColor="#40B9FF"
             iconBgColor="#E9F7FE"
             iconColor="#40B9FF"
-            onPress={() => navigation.navigate("Wardrobe")}
+            onPress={() => navigation.navigate("TryOn")}
           />
           <ActionCard
             title={t('home.actions.recycle')}

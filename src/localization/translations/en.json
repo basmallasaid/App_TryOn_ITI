@@ -187,7 +187,13 @@
     "selectModel": {
       "title": "Choose your model",
       "subtitle": "How would you like to try on clothes?",
-      "next": "Next"
+      "next": "Next",
+      "avatarTitle": "Avatar",
+      "avatarDesc": "Create your digital twin and try outfits instantly.",
+      "photoTitle": "Your Photo",
+      "photoDesc": "Upload your own photo for realistic try-on.",
+      "recommended": "Recommended",
+      "tapToUpload": "tap to upload"
     },
     "createAvatar": {
       "title": "Create Avatar",

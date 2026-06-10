@@ -187,7 +187,13 @@
     "selectModel": {
       "title": "اختر نموذجك",
       "subtitle": "كيف تود تجربة الملابس؟",
-      "next": "التالي"
+      "next": "التالي",
+      "avatarTitle": "الصورة الرمزية",
+      "avatarDesc": "أنشئ توأمك الرقمي وجرّب الإطلالات فوراً.",
+      "photoTitle": "صورتك",
+      "photoDesc": "ارفع صورتك الخاصة لتجربة واقعية.",
+      "recommended": "مُوصى به",
+      "tapToUpload": "اضغط للرفع"
     },
     "createAvatar": {
       "title": "إنشاء الصورة الرمزية",

@@ -16,14 +16,17 @@ import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import { IMAGES } from "../../constants/images/images";
 
-const PhotoPlaceholder = () => (
-  <View style={photoStyles.container}>
-    <View style={photoStyles.circle}>
-      <Ionicons name="camera" size={24} color="#6B7280" />
+const PhotoPlaceholder = () => {
+  const { t } = useTranslation();
+  return (
+    <View style={photoStyles.container}>
+      <View style={photoStyles.circle}>
+        <Ionicons name="camera" size={24} color="#6B7280" />
+      </View>
+      <Text style={photoStyles.label}>{t('tryOn.selectModel.tapToUpload')}</Text>
     </View>
-    <Text style={photoStyles.label}>tap to upload</Text>
-  </View>
-);
+  );
+};
 
 const photoStyles = StyleSheet.create({
   container: {
@@ -53,27 +56,27 @@ const photoStyles = StyleSheet.create({
   },
 });
 
-const MODELS = [
-  {
-    id: "avatar",
-    title: "Avatar",
-    description: "Create your digital twin and try outfits instantly.",
-    badge: "Recommended",
-    image: IMAGES.AVATAR,
-  },
-  {
-    id: "photo",
-    title: "Your Photo",
-    description: "Upload your own photo for realistic try-on.",
-    badge: null,
-    image: null,
-    rightContent: <PhotoPlaceholder />,
-  },
-];
-
 const SelectModelScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState(null);
+
+  const MODELS = [
+    {
+      id: "avatar",
+      title: t('tryOn.selectModel.avatarTitle'),
+      description: t('tryOn.selectModel.avatarDesc'),
+      badge: t('tryOn.selectModel.recommended'),
+      image: IMAGES.AVATAR,
+    },
+    {
+      id: "photo",
+      title: t('tryOn.selectModel.photoTitle'),
+      description: t('tryOn.selectModel.photoDesc'),
+      badge: null,
+      image: null,
+      rightContent: <PhotoPlaceholder />,
+    },
+  ];
 
   const handleNext = () => {
     if (selected === "avatar") {

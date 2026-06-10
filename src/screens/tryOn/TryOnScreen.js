@@ -24,10 +24,18 @@ const WARDROBE_DATA = [
   { id: "2", image: IMAGES.ITEM_3 },
 ];
 
-export default function TryOnScreen({ navigation }) {
+
+export default function TryOnScreen({ navigation, route }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedItems, setSelectedItems] = useState([]);
+  const [imageError, setImageError] = useState(false);
+  const avatarImage = route.params?.avatarImage;
+  const avatarUrl = avatarImage?.avatar?.image_url;
+  console.log("TryOn route params:", JSON.stringify(route.params));
+  console.log("TryOn avatar URL:", avatarUrl);
+
+  const imageSource = avatarUrl && !imageError ? { uri: avatarUrl } : IMAGES.MODEL;
 
   const toggleItem = (id) => {
     if (selectedItems.includes(id)) {
@@ -55,9 +63,10 @@ export default function TryOnScreen({ navigation }) {
         ) : (
           <View style={styles.modelContainer}>
             <Image
-              source={IMAGES.MODEL}
+              source={imageSource}
               style={styles.modelImage}
               resizeMode="contain"
+              onError={() => { console.warn("Avatar image failed to load:", avatarImage?.image_url); setImageError(true); }}
             />
           </View>
         )}

@@ -24,8 +24,9 @@ const WARDROBE_DATA = [
   { id: "2", image: IMAGES.ITEM_3 },
 ];
 
-export default function TryOnScreen({ navigation }) {
+export default function TryOnScreen({ navigation, route }) {
   const { t } = useTranslation();
+  const photoUri = route?.params?.photoUri;
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -55,7 +56,7 @@ export default function TryOnScreen({ navigation }) {
         ) : (
           <View style={styles.modelContainer}>
             <Image
-              source={IMAGES.MODEL}
+              source={photoUri ? { uri: photoUri } : IMAGES.MODEL}
               style={styles.modelImage}
               resizeMode="contain"
             />

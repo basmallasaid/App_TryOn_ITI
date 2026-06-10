@@ -199,6 +199,7 @@
       "subtitle": "Get the best virtual try-on results by following these simple rules.",
       "uploadLabel": "Upload images here",
       "uploadButton": "Upload Photo",
+      "goToTryOn": "Go to Try On",
       "instructions": {
         "fullBody": {
           "title": "Full body",

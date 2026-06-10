@@ -25,14 +25,16 @@ import WardrobeItemCard from "../../components/wardrobe/WardrobeItemCard";
 import Colors from "../../constants/theme/colors";
 import { useWardrobe } from "../../context/WardrobeContext";
 import * as ImageManipulator from "expo-image-manipulator";
-import {openCamera,openGallery} from "../../utils/cameraAccess"
+import { openCamera, openGallery } from "../../utils/cameraAccess";
+import SelectionModal from "../../components/wardrobe/SelectionModal";
+
 const WardrobeScreen = ({ navigation }) => {
   const { items, loading, error, refetch } = useWardrobe();
   const { profile } = useProfileContext();
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [analyzing, setAnalyzing] = useState(false);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
   // Refetch when screen comes back into focus (after adding item)
   useFocusEffect(
     useCallback(() => {
@@ -56,82 +58,102 @@ const WardrobeScreen = ({ navigation }) => {
   const listData = [{ _id: "add-item", type: "add" }, ...filteredItems];
 
   const handleAddItem = () => {
-    Alert.alert("Add Item", "Choose a source", [
-      { text: "Camera", onPress: () => pickImage("camera") },
-      { text: "Gallery", onPress: () => pickImage("gallery") },
-      { text: "Cancel", style: "cancel" },
-    ]);
+    setIsModalVisible(true);
   };
 
   const pickImage = async (source) => {
-    let result;
+    setIsModalVisible(false);
 
-    if (source === "camera") {
-      openCamera()
-    } else {
-      openGallery()
+    try {
+      // Direct assignment with await is safer
+      const result =
+        source === "camera" ? await openCamera() : await openGallery();
+
+      // Ensure result exists and has assets before proceeding
+      if (
+        !result ||
+        result.canceled ||
+        !result.assets ||
+        result.assets.length === 0
+      ) {
+        return;
+      }
+
+      const asset = result.assets[0];
+      await handleAnalyze(asset);
+    } catch (err) {
+      console.error("Picker Error Details:", err);
+      Alert.alert("Error", "An error occurred while selecting the image.");
     }
-
-    if (result.canceled) return;
-
-    const asset = result.assets[0];
-    await handleAnalyze(asset);
   };
 
-  // ── Analyze image ──────────────────────────────────────────────────────────
+  // Analyze image
   const handleAnalyze = async (asset) => {
-  try {
-    setAnalyzing(true);
+    try {
+      setAnalyzing(true);
 
-    // 1. Compress the image
-    const compressed = await ImageManipulator.manipulateAsync(
-      asset.uri,
-      [{ resize: { width: 800 } }],
-      {
-        compress: 0.7,
-        format: ImageManipulator.SaveFormat.JPEG,
+      // 1. Compress the image
+      const compressed = await ImageManipulator.manipulateAsync(
+        asset.uri,
+        [{ resize: { width: 800 } }],
+        {
+          compress: 0.7,
+          format: ImageManipulator.SaveFormat.JPEG,
+        },
+      );
+
+      // 2. Prepare Form Data
+      const formData = new FormData();
+
+      // Create the file object
+      // In React Native, the object must have 'uri', 'name', and 'type'
+      const filename = compressed.uri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : `image/jpeg`;
+
+      formData.append("image", {
+        uri:
+          Platform.OS === "android"
+            ? compressed.uri
+            : compressed.uri.replace("file://", ""),
+        name: filename,
+        type: type,
+      });
+
+      // 3. Send to API
+      const analysisResult = await analyzeGarment(formData);
+
+      navigation.navigate("VerifyItem", {
+        imageUri: compressed.uri,
+        analysisResult,
+      });
+    } catch (e) {
+      console.log("Full Error Object:", e);
+      if (e.response) {
+        console.log("Server Data Error:", e.response.data);
       }
-    );
-
-    // 2. Prepare Form Data
-    const formData = new FormData();
-    
-    // Create the file object
-    // In React Native, the object must have 'uri', 'name', and 'type'
-    const filename = compressed.uri.split('/').pop();
-    const match = /\.(\w+)$/.exec(filename);
-    const type = match ? `image/${match[1]}` : `image/jpeg`;
-
-    formData.append('image', {
-      uri: Platform.OS === 'android' ? compressed.uri : compressed.uri.replace('file://', ''),
-      name: filename,
-      type: type,
-    });
-
-    // 3. Send to API
-    const analysisResult = await analyzeGarment(formData);
-
-    navigation.navigate("VerifyItem", {
-      imageUri: compressed.uri,
-      analysisResult,
-    });
-  } catch (e) {
-    console.log("Full Error Object:", e);
-    if (e.response) {
-      console.log("Server Data Error:", e.response.data);
+      Alert.alert(
+        "Analysis Failed",
+        e.response?.data?.error ||
+          e.response?.data?.message ||
+          "Could not analyze this image.",
+      );
+    } finally {
+      setAnalyzing(false);
     }
-    Alert.alert(
-      "Analysis Failed",
-      e.response?.data?.error || e.response?.data?.message || "Could not analyze this image."
-    );
-  } finally {
-    setAnalyzing(false);
-  }
-};
-
+  };
 
   return (
     <View style={styles.root}>
+      {/* Add Modal */}
+      <SelectionModal
+        visible={isModalVisible}
+        title="Add Item"
+        subtitle="Choose a source"
+        onClose={() => setIsModalVisible(false)}
+        onCamera={() => pickImage("camera")}
+        onGallery={() => pickImage("gallery")}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         stickyHeaderIndices={[2]} // make category filter sticky

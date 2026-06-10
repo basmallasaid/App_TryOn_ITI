@@ -58,24 +58,30 @@ const WardrobeScreen = ({ navigation }) => {
   const listData = [{ _id: "add-item", type: "add" }, ...filteredItems];
 
   const handleAddItem = () => {
-    setIsModalVisible(true);
+    if (Platform.OS === "ios") {
+      // iOS: Use native Alert
+      Alert.alert("Add Item", "Choose a source", [
+        { text: "Camera", onPress: () => pickImage("camera") },
+        { text: "Gallery", onPress: () => pickImage("gallery") },
+        { text: "Cancel", style: "cancel" },
+      ]);
+    } else {
+      // Android: Show custom SelectionModal
+      setIsModalVisible(true);
+    }
   };
 
   const pickImage = async (source) => {
-    setIsModalVisible(false);
+    // Only call this for Android; it's harmless on iOS
+    if (Platform.OS === "android") {
+      setIsModalVisible(false);
+    }
 
     try {
-      // Direct assignment with await is safer
       const result =
         source === "camera" ? await openCamera() : await openGallery();
 
-      // Ensure result exists and has assets before proceeding
-      if (
-        !result ||
-        result.canceled ||
-        !result.assets ||
-        result.assets.length === 0
-      ) {
+      if (!result || result.canceled || !result.assets || result.assets.length === 0) {
         return;
       }
 
@@ -145,15 +151,18 @@ const WardrobeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.root}>
-      {/* Add Modal */}
-      <SelectionModal
-        visible={isModalVisible}
-        title="Add Item"
-        subtitle="Choose a source"
-        onClose={() => setIsModalVisible(false)}
-        onCamera={() => pickImage("camera")}
-        onGallery={() => pickImage("gallery")}
-      />
+       {/* 1. Conditionally render Modal only for Android */}
+      {Platform.OS === "android" && (
+        <SelectionModal
+          visible={isModalVisible}
+          title="Add Item"
+          subtitle="Choose a source"
+          onClose={() => setIsModalVisible(false)}
+          onCamera={() => pickImage("camera")}
+          onGallery={() => pickImage("gallery")}
+        />
+      )}
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         stickyHeaderIndices={[2]} // make category filter sticky
@@ -267,7 +276,8 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   row: {
-    justifyContent: "space-between",
+    gap:12,
+    //justifyContent: "space-between",
     marginBottom: 16,
   },
   loadingWrap: {

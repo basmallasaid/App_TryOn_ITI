@@ -15,5 +15,5 @@ export const ENDPOINTS = {
   GET_ALL_STORE:"/stores",
   ANALYZE:"/analyze",
   SAVETOWARDROBE:'/wardrobe/from-analysis',
-  WARDROBE:"/wardrobe"
+  WARDROBE:"/wardrobe",
 };

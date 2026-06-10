@@ -13,5 +13,6 @@ export const ENDPOINTS = {
   GET_USER_PROFILE:"/users",
   GET_ALL_PRODUCT:"/products",
   GET_ALL_STORE:"/stores",
-  GENERATE_AVATAR:"/avatars"
+  GENERATE_AVATAR:"/avatars",
+  GET_AVATAR:"/avatars"
 };

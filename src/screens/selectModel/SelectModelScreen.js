@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
   StatusBar,
+  Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,6 +16,8 @@ import Typography from "../../constants/theme/typography";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import { IMAGES } from "../../constants/images/images";
+import { useAuth } from "../../context/AuthContext";
+import { getUserProfile } from "../../api/user_services/userService";
 
 const PhotoPlaceholder = () => {
   const { t } = useTranslation();
@@ -58,7 +61,9 @@ const photoStyles = StyleSheet.create({
 
 const SelectModelScreen = ({ navigation }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const MODELS = [
     {
@@ -78,9 +83,22 @@ const SelectModelScreen = ({ navigation }) => {
     },
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selected === "avatar") {
-      navigation.navigate("CreateAvatar");
+      setLoading(true);
+      try {
+        const profile = await getUserProfile(user._id);
+        const avatars = profile?.avatars;
+        if (avatars && avatars.length > 0) {
+          navigation.navigate("TryOn", { avatarId: avatars[0]._id || avatars[0] });
+        } else {
+          navigation.navigate("CreateAvatar");
+        }
+      } catch {
+        navigation.navigate("CreateAvatar");
+      } finally {
+        setLoading(false);
+      }
     } else if (selected === "photo") {
       navigation.navigate("UploadPhoto");
     }
@@ -121,6 +139,7 @@ const SelectModelScreen = ({ navigation }) => {
             label={t('tryOn.selectModel.next')}
             onPress={handleNext}
             disabled={!selected}
+            loading={loading}
             backgroundColor={Colors.primary}
           />
         </View>

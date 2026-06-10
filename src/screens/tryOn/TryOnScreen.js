@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   FlatList,
   Platform,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -18,6 +19,7 @@ import { IMAGES } from "../../constants/images/images";
 import ActionTab from "../../components/tryOn/ActionTab";
 import WardrobeCard from "../../components/tryOn/WardrobeCard";
 import UploadBox from "../../components/tryOn/UploadBox";
+import { getAvatarById } from "../../api/avatar_services/avatarService";
 
 const WARDROBE_DATA = [
   { id: "1", image: IMAGES.ITEM_1 },
@@ -30,10 +32,23 @@ export default function TryOnScreen({ navigation, route }) {
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedItems, setSelectedItems] = useState([]);
   const [imageError, setImageError] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [fetchingAvatar, setFetchingAvatar] = useState(false);
+
   const avatarImage = route.params?.avatarImage;
-  const avatarUrl = avatarImage?.avatar?.image_url;
-  console.log("TryOn route params:", JSON.stringify(route.params));
-  console.log("TryOn avatar URL:", avatarUrl);
+  const avatarId = route.params?.avatarId;
+
+  useEffect(() => {
+    if (avatarImage?.avatar?.image_url) {
+      setAvatarUrl(avatarImage.avatar.image_url);
+    } else if (avatarId) {
+      setFetchingAvatar(true);
+      getAvatarById(avatarId)
+        .then((res) => setAvatarUrl(res?.avatar?.image_url || res?.image_url))
+        .catch(() => setAvatarUrl(null))
+        .finally(() => setFetchingAvatar(false));
+    }
+  }, [avatarImage, avatarId]);
 
   const imageSource = avatarUrl && !imageError ? { uri: avatarUrl } : IMAGES.MODEL;
 
@@ -62,12 +77,16 @@ export default function TryOnScreen({ navigation, route }) {
           <UploadBox label={t("tryOn.uploadPhoto.uploadLabel")} />
         ) : (
           <View style={styles.modelContainer}>
-            <Image
-              source={imageSource}
-              style={styles.modelImage}
-              resizeMode="contain"
-              onError={() => { console.warn("Avatar image failed to load:", avatarImage?.image_url); setImageError(true); }}
-            />
+            {fetchingAvatar ? (
+              <ActivityIndicator size="large" color={Colors.primary} />
+            ) : (
+              <Image
+                source={imageSource}
+                style={styles.modelImage}
+                resizeMode="contain"
+                onError={() => { console.warn("Avatar image failed to load:", avatarUrl); setImageError(true); }}
+              />
+            )}
           </View>
         )}
 

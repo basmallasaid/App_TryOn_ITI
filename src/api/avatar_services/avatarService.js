@@ -8,3 +8,8 @@ export const generateAvatar = async (payload) => {
   console.log("Avatar generated successfully:", JSON.stringify(data, null, 2));
   return data;
 };
+
+export const getAvatarById = async (id) => {
+  const { data } = await apiClient.get(`${ENDPOINTS.GET_AVATAR}/${id}`);
+  return data;
+};

@@ -11,7 +11,9 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
+  Alert,
 } from "react-native";
+import { File, Directory, Paths } from "expo-file-system";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
@@ -23,6 +25,7 @@ import ItemSelector from "../../components/tryOn/ItemSelector";
 import { openCamera, openGallery } from "../../utils/cameraAccess";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
+import { virtualTryOn, virtualTryOnOutfit } from "../../api/virtual_tryon_services/virtualTryonService";
 
 export default function TryOnScreen({ navigation, route }) {
   const { t } = useTranslation();
@@ -65,6 +68,8 @@ export default function TryOnScreen({ navigation, route }) {
   const [cameraImages, setCameraImages] = useState([]);
   const [cameraItemTypes, setCameraItemTypes] = useState([]);
   const [galleryItemTypes, setGalleryItemTypes] = useState([]);
+  const [generating, setGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState(null);
 
   const handleCameraCapture = async () => {
     const result = await openCamera();
@@ -137,6 +142,102 @@ export default function TryOnScreen({ navigation, route }) {
     } else if (selectedWardrobeIds.length < 2 && selectedItems.length < 2) {
       setSelectedWardrobeIds([...selectedWardrobeIds, id]);
       setSelectedItems((prev) => [...prev, id]);
+    }
+  };
+
+  const resolveToFile = async (uri) => {
+    if (!uri) return null;
+
+    if (uri.startsWith("data:image")) {
+      const matches = uri.match(/^data:image\/(\w+);base64,(.+)$/);
+      if (!matches) return uri;
+      const ext = matches[1] === "jpeg" ? "jpg" : matches[1];
+      const file = new File(Paths.cache, `garment_${Date.now()}.${ext}`);
+      file.create({ idempotent: true });
+      file.write(Uint8Array.from(atob(matches[2]), (c) => c.charCodeAt(0)));
+      return file.uri;
+    }
+
+    if (uri.startsWith("http")) {
+      const file = await File.downloadFileAsync(uri, new Directory(Paths.cache), { idempotent: true });
+      return file.uri;
+    }
+
+    return uri;
+  };
+
+  const resolveItem = async (itemId) => {
+    let uri, type;
+
+    if (selectedWardrobeIds.includes(itemId)) {
+      const item = wardrobeItems.find((i) => i._id === itemId || i.id === itemId);
+      uri = typeof item?.image === "string" ? item.image : null;
+      type = item?.category || null;
+    } else if (cameraImages.includes(itemId)) {
+      const idx = cameraImages.indexOf(itemId);
+      uri = itemId;
+      type = cameraItemTypes[idx] || null;
+    } else if (galleryImages.includes(itemId)) {
+      const idx = galleryImages.indexOf(itemId);
+      uri = itemId;
+      type = galleryItemTypes[idx] || null;
+    }
+
+    if (!uri) throw new Error("Could not resolve item image");
+    return { uri: await resolveToFile(uri), type };
+  };
+
+  const classifyPosition = (type) => {
+    if (!type) return null;
+    const t = type.toLowerCase();
+    if (["tops", "top", "tshirt", "shirt", "jacket", "blouse", "hoodie", "sweater"].includes(t)) return "top";
+    if (["pants", "bottom", "jeans", "trousers", "skirt", "shorts", "leggings"].includes(t)) return "bottom";
+    if (["dresses", "dress", "jumpsuit", "overall", "gown", "robe"].includes(t)) return "bottom";
+    return null;
+  };
+
+  const appendToFormData = (fd, fieldName, uri) => {
+    const name = uri.split("/").pop() || `${fieldName}.jpg`;
+    fd.append(fieldName, {
+      uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
+      name,
+      type: `image/${name.split(".").pop() || "jpeg"}`,
+    });
+  };
+
+  const handleGenerate = async () => {
+    if (selectedItems.length === 0 || !displayUri) return;
+    setGenerating(true);
+    setGenerateError(null);
+
+    try {
+      const personUri = await resolveToFile(displayUri);
+      const items = await Promise.all(selectedItems.map(resolveItem));
+
+      const formData = new FormData();
+      appendToFormData(formData, "personImage", personUri);
+
+      let result;
+      if (items.length === 1) {
+        appendToFormData(formData, "garmentImage", items[0].uri);
+        result = await virtualTryOn(formData);
+      } else {
+        const classified = items.map((it) => ({ ...it, position: classifyPosition(it.type) }));
+        const topItem = classified.find((p) => p.position === "top") || classified[0];
+        const bottomItem = classified.find((p) => p.position === "bottom") || classified[classified.length - 1];
+        appendToFormData(formData, "topImage", topItem.uri);
+        appendToFormData(formData, "bottomImage", bottomItem.uri);
+        result = await virtualTryOnOutfit(formData);
+      }
+
+      navigation.navigate("TryOnResult", { result });
+    } catch (e) {
+      const serverMsg = e.response?.data?.message || e.response?.data?.error || JSON.stringify(e.response?.data);
+      const msg = serverMsg || e.message || "Virtual try-on failed";
+      setGenerateError(msg);
+      Alert.alert("Error", msg);
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -324,17 +425,23 @@ export default function TryOnScreen({ navigation, route }) {
           <TouchableOpacity
             style={[
               styles.generateBtn,
-              selectedItems.length > 0 ? styles.activeBtn : styles.disabledBtn,
+              (selectedItems.length > 0 && !generating) ? styles.activeBtn : styles.disabledBtn,
             ]}
+            onPress={handleGenerate}
+            disabled={selectedItems.length === 0 || generating}
           >
-            <MaterialCommunityIcons
-              name="auto-fix"
-              size={20}
-              color="white"
-              style={{ marginRight: 8 }}
-            />
+            {generating ? (
+              <ActivityIndicator size="small" color="white" style={{ marginRight: 8 }} />
+            ) : (
+              <MaterialCommunityIcons
+                name="auto-fix"
+                size={20}
+                color="white"
+                style={{ marginRight: 8 }}
+              />
+            )}
             <Text style={styles.generateBtnText}>
-              {t("tryOn.virtualTryOn.generate")}
+              {generating ? t("tryOn.virtualTryOn.generating") || "Generating..." : t("tryOn.virtualTryOn.generate")}
             </Text>
           </TouchableOpacity>
         </View>

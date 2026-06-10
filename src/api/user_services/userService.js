@@ -10,3 +10,8 @@ export const getAllProducts = async () => {
   const { data } = await apiClient.get(ENDPOINTS.GET_ALL_PRODUCT);
   return data;
 };
+
+export const saveLatestTryon = async (payload) => {
+  const { data } = await apiClient.post(ENDPOINTS.LATEST_TRYON, payload);
+  return data;
+};

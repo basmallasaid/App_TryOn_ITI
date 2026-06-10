@@ -20,28 +20,28 @@ import PhotoInstructionCard from "../../components/tryOn/PhotoInstructionCard";
 const instructions = [
   {
     key: "fullBody",
-    mainIconName: "👤",
+    mainIconName: "human",
     iconBgColor: "#DBE8FF",
     titleKey: "tryOn.uploadPhoto.instructions.fullBody.title",
     descKey: "tryOn.uploadPhoto.instructions.fullBody.description",
   },
   {
     key: "goodLighting",
-    mainIconName: "☀️",
+    mainIconName: "weather-sunny",
     iconBgColor: "#FFF3DB",
     titleKey: "tryOn.uploadPhoto.instructions.goodLighting.title",
     descKey: "tryOn.uploadPhoto.instructions.goodLighting.description",
   },
   {
     key: "faceCamera",
-    mainIconName: "📷",
+    mainIconName: "camera",
     iconBgColor: "#E8F0FE",
     titleKey: "tryOn.uploadPhoto.instructions.faceCamera.title",
     descKey: "tryOn.uploadPhoto.instructions.faceCamera.description",
   },
   {
     key: "cleanWall",
-    mainIconName: "🖼️",
+    mainIconName: "image-outline",
     iconBgColor: "#F0EBFF",
     titleKey: "tryOn.uploadPhoto.instructions.cleanWall.title",
     descKey: "tryOn.uploadPhoto.instructions.cleanWall.description",

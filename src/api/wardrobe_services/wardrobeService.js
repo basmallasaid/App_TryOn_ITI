@@ -2,22 +2,6 @@ import apiClient from '../auth_services/apiClient';
 
 const HF_TOKEN = process.env.EXPO_PUBLIC_HF_TOKEN;
 
-/**
- * Step 1 — Analyze image, returns analysis_id + garments[]
- * @param {string} imageBase64 
- * @param {string} mimeType   
- */
-// export const analyzeGarment = async (imageBase64, mimeType = 'image/jpeg') => {
-//   const { data } = await apiClient.post(
-//     '/analyze',
-//     { image: imageBase64},
-//     {
-//       headers: { 'x-hf-token': HF_TOKEN },
-//       timeout: 60000,
-//     }
-//   );
-//   return data; // { analysis_id, garments[], detectionType }
-// };
 export const analyzeGarment = async (formData) => {
   const { data } = await apiClient.post(
     '/analyze',

@@ -25,6 +25,7 @@ import WardrobeItemCard from "../../components/wardrobe/WardrobeItemCard";
 import Colors from "../../constants/theme/colors";
 import { useWardrobe } from "../../context/WardrobeContext";
 import * as ImageManipulator from "expo-image-manipulator";
+import {openCamera,openGallery} from "../../utils/cameraAccess"
 const WardrobeScreen = ({ navigation }) => {
   const { items, loading, error, refetch } = useWardrobe();
   const { profile } = useProfileContext();
@@ -66,28 +67,9 @@ const WardrobeScreen = ({ navigation }) => {
     let result;
 
     if (source === "camera") {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission needed", "Camera permission is required.");
-        return;
-      }
-      result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-        base64: true,
-      });
+      openCamera()
     } else {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission needed", "Gallery permission is required.");
-        return;
-      }
-      result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-        base64: true,
-      });
+      openGallery()
     }
 
     if (result.canceled) return;

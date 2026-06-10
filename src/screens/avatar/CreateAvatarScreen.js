@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Platform,
   StatusBar,
+  Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,6 +21,7 @@ import GenderOptionCard from "../../components/profile/GenderOptionCard";
 import AvatarTabs from "../../components/avatar/AvatarTabs";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import { IMAGES } from "../../constants/images/images";
+import { generateAvatar } from "../../api/avatar_services/avatarService";
 
 const skinTones = [
   { id: "very-light", color: "#F6DFC8", label: "Very Light" },
@@ -121,6 +123,7 @@ const tabs = [
 const CreateAvatarScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
+  const [loading, setLoading] = useState(false);
   const totalSteps = tabs.length;
 
   const [avatarProfile, setAvatarProfile] = useState({
@@ -135,6 +138,32 @@ const CreateAvatarScreen = ({ navigation }) => {
   const updateProfile = useCallback((key, value) => {
     setAvatarProfile((prev) => ({ ...prev, [key]: value }));
   }, []);
+
+  const handleGenerate = useCallback(async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        age: `${avatarProfile.age}y`,
+        height: `${avatarProfile.height}cm`,
+        weight: `${avatarProfile.weight}kg`,
+        gender: avatarProfile.gender.toLowerCase(),
+        skin_tone: avatarProfile.skinTone,
+        face_shape: "oval",
+        hair_color: avatarProfile.hairColor,
+        eye_color: "brown eyes",
+        beard_style: "clean shave",
+        facial_expression: "smiling",
+      };
+      const response = await generateAvatar(payload);
+      console.log("Avatar API Response:", JSON.stringify(response, null, 2));
+      navigation.navigate("TryOn", { avatarImage: response });
+    } catch (error) {
+      console.error("Avatar generation failed:", error.response?.data || error.message);
+      Alert.alert("Error", error.response?.data?.message || "Failed to generate avatar");
+    } finally {
+      setLoading(false);
+    }
+  }, [avatarProfile, navigation]);
 
   const tabKeys = tabs.map((t) => t.key);
   const activeTab = tabs[currentStep];
@@ -158,7 +187,7 @@ const CreateAvatarScreen = ({ navigation }) => {
 
   const handleNext = () => {
     if (isLastStep) {
-      if (canProceed) navigation.navigate("TryOn");
+      if (canProceed && !loading) handleGenerate();
       return;
     }
     if (!canProceed) return;
@@ -218,6 +247,7 @@ const CreateAvatarScreen = ({ navigation }) => {
             label={isLastStep ? "Generate Avatar" : "Next"}
             onPress={handleNext}
             disabled={!canProceed}
+            loading={loading}
             backgroundColor={Colors.primary}
           />
         </View>

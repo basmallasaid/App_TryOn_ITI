@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
   StatusBar,
+  Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,15 +16,20 @@ import Typography from "../../constants/theme/typography";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import { IMAGES } from "../../constants/images/images";
+import { useAuth } from "../../context/AuthContext";
+import { getUserProfile } from "../../api/user_services/userService";
 
-const PhotoPlaceholder = () => (
-  <View style={photoStyles.container}>
-    <View style={photoStyles.circle}>
-      <Ionicons name="camera" size={24} color="#6B7280" />
+const PhotoPlaceholder = () => {
+  const { t } = useTranslation();
+  return (
+    <View style={photoStyles.container}>
+      <View style={photoStyles.circle}>
+        <Ionicons name="camera" size={24} color="#6B7280" />
+      </View>
+      <Text style={photoStyles.label}>{t('tryOn.selectModel.tapToUpload')}</Text>
     </View>
-    <Text style={photoStyles.label}>tap to upload</Text>
-  </View>
-);
+  );
+};
 
 const photoStyles = StyleSheet.create({
   container: {
@@ -53,31 +59,46 @@ const photoStyles = StyleSheet.create({
   },
 });
 
-const MODELS = [
-  {
-    id: "avatar",
-    title: "Avatar",
-    description: "Create your digital twin and try outfits instantly.",
-    badge: "Recommended",
-    image: IMAGES.AVATAR,
-  },
-  {
-    id: "photo",
-    title: "Your Photo",
-    description: "Upload your own photo for realistic try-on.",
-    badge: null,
-    image: null,
-    rightContent: <PhotoPlaceholder />,
-  },
-];
-
 const SelectModelScreen = ({ navigation }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleNext = () => {
+  const MODELS = [
+    {
+      id: "avatar",
+      title: t('tryOn.selectModel.avatarTitle'),
+      description: t('tryOn.selectModel.avatarDesc'),
+      badge: t('tryOn.selectModel.recommended'),
+      image: IMAGES.AVATAR,
+    },
+    {
+      id: "photo",
+      title: t('tryOn.selectModel.photoTitle'),
+      description: t('tryOn.selectModel.photoDesc'),
+      badge: null,
+      image: null,
+      rightContent: <PhotoPlaceholder />,
+    },
+  ];
+
+  const handleNext = async () => {
     if (selected === "avatar") {
-      navigation.navigate("CreateAvatar");
+      setLoading(true);
+      try {
+        const profile = await getUserProfile(user._id);
+        const avatars = profile?.avatars;
+        if (avatars && avatars.length > 0) {
+          navigation.navigate("TryOn", { avatarId: avatars[0]._id || avatars[0] });
+        } else {
+          navigation.navigate("CreateAvatar");
+        }
+      } catch {
+        navigation.navigate("CreateAvatar");
+      } finally {
+        setLoading(false);
+      }
     } else if (selected === "photo") {
       navigation.navigate("UploadPhoto");
     }
@@ -118,6 +139,7 @@ const SelectModelScreen = ({ navigation }) => {
             label={t('tryOn.selectModel.next')}
             onPress={handleNext}
             disabled={!selected}
+            loading={loading}
             backgroundColor={Colors.primary}
           />
         </View>

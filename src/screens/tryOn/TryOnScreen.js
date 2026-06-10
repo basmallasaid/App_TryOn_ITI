@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   FlatList,
   Platform,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -21,11 +22,42 @@ import UploadBox from "../../components/tryOn/UploadBox";
 import ItemSelector from "../../components/tryOn/ItemSelector";
 import { openCamera, openGallery } from "../../utils/cameraAccess";
 import { useWardrobe } from "../../context/WardrobeContext";
+import { getAvatarById } from "../../api/avatar_services/avatarService";
 
 export default function TryOnScreen({ navigation, route }) {
   const { t } = useTranslation();
   const { items: wardrobeItems } = useWardrobe();
   const photoUri = route?.params?.photoUri;
+  const avatarImage = route?.params?.avatarImage;
+  const avatarId = route?.params?.avatarId;
+  const [avatarFetchedUri, setAvatarFetchedUri] = useState(null);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+
+  const avatarUri =
+    typeof avatarImage === "string"
+      ? avatarImage
+      : avatarImage?.avatar?.image_url
+      || avatarImage?.image
+      || avatarImage?.imageUrl
+      || avatarImage?.url
+      || null;
+
+  useEffect(() => {
+    if (avatarId) {
+      setAvatarLoading(true);
+      getAvatarById(avatarId)
+        .then((res) => {
+          const avatar = res?.avatar || res;
+          const uri = typeof avatar === "string" ? avatar : avatar?.image_url || avatar?.image || avatar?.imageUrl || avatar?.url || null;
+          setAvatarFetchedUri(uri);
+        })
+        .catch(() => {})
+        .finally(() => setAvatarLoading(false));
+    }
+  }, [avatarId]);
+
+  const displayUri = avatarUri || avatarFetchedUri || photoUri;
+
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedItems, setSelectedItems] = useState([]);
   const [galleryImages, setGalleryImages] = useState([]);
@@ -156,11 +188,21 @@ export default function TryOnScreen({ navigation, route }) {
           </>
         ) : (
           <View style={styles.modelContainer}>
-            <Image
-              source={photoUri ? { uri: photoUri } : IMAGES.MODEL}
-              style={styles.modelImage}
-              resizeMode="contain"
-            />
+            {avatarLoading ? (
+              <ActivityIndicator size="large" color={Colors.primary} />
+            ) : displayUri ? (
+              <Image
+                source={{ uri: displayUri }}
+                style={styles.modelImage}
+                resizeMode="contain"
+              />
+            ) : !avatarId ? (
+              <Image
+                source={IMAGES.MODEL}
+                style={styles.modelImage}
+                resizeMode="contain"
+              />
+            ) : null}
           </View>
         )}
 

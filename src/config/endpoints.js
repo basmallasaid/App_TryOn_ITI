@@ -12,5 +12,8 @@ export const ENDPOINTS = {
   SELECT_LANG:"/users/settings/language",
   GET_USER_PROFILE:"/users",
   GET_ALL_PRODUCT:"/products",
-  GET_ALL_STORE:"/stores"
+  GET_ALL_STORE:"/stores",
+  ANALYZE:"/analyze",
+  SAVETOWARDROBE:'/wardrobe/from-analysis',
+  WARDROBE:"/wardrobe"
 };

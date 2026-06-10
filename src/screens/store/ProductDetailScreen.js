@@ -3,21 +3,11 @@ import {
   StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, 
   ActivityIndicator, SafeAreaView, Dimensions, StatusBar, Linking, Platform 
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'; 
 import { getProductById } from '../../api/user_services/userService'; 
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
-
-const COLOR_MAP = {
-  darkblue: '#1B2C41',
-  black: '#1A1C24',
-  white: '#FFFFFF',
-  red: '#E53935',
-  grey: '#9E9E9E',
-  beige: '#F5F5DC'
-};
-
 export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
   const { productId } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
@@ -89,7 +79,7 @@ export default function ProductDetailScreen({ route }) {
           <View style={styles.rowBetween}>
             <View style={{flex: 1}}>
               <Text style={styles.productTitle}>{product?.name}</Text>
-              <TouchableOpacity onPress={() => openUrl(product?.store_id?.website_url)}>
+              <TouchableOpacity onPress={() => openUrl(product?.purchase_url)}>
                 <Text style={styles.brandName}>{product?.store_id?.name || 'Official Store'} <Ionicons name="open-outline" size={12} /></Text>
               </TouchableOpacity>
             </View>
@@ -119,7 +109,14 @@ export default function ProductDetailScreen({ route }) {
                   onPress={() => setSelectedColor(color)}
                   style={[styles.colorRing, selectedColor === color && { borderColor: '#5CC1FF' }]}
                 >
-                  <View style={[styles.colorInside, { backgroundColor: COLOR_MAP[color.toLowerCase()] || '#EEE' }]} />
+                  <View 
+                    style={[
+                      styles.colorInside, 
+                      { 
+                        backgroundColor: color.toLowerCase().trim().replace(/\s+/g, '') || '#EEE' 
+                      }
+                    ]} 
+                  />
                 </TouchableOpacity>
               ))}
             </View>
@@ -168,8 +165,6 @@ export default function ProductDetailScreen({ route }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  
- 
   headerFixed: { 
     position: 'absolute', 
     top: 0, 
@@ -215,14 +210,15 @@ const styles = StyleSheet.create({
   sizeLabel: { fontSize: 15, fontWeight: 'bold', color: '#1A1C24' },
   activeSizeLabel: { color: '#FFFFFF' },
 
+  // Matching
   matchScroll: { marginTop: 5 },
   matchCard: { width: 110, height: 130, backgroundColor: '#F9FAFB', borderRadius: 20, marginRight: 12, padding: 8, justifyContent: 'center', alignItems: 'center', borderColor: '#8ED321', borderWidth: 1 },
   matchImg: { width: '85%', height: '85%', resizeMode: 'contain' },
   matchPercent: { position: 'absolute', top: 8, right: 8, backgroundColor: '#8ED321', paddingHorizontal: 5, paddingVertical: 2, borderRadius: 6, zIndex: 1 },
   matchPercentText: { color: '#FFF', fontSize: 10, fontWeight: 'bold' },
 
+  // Footer Actions
   actionRow: { flexDirection: 'row', alignItems: 'center', marginTop: 35, paddingBottom: 20 },
-  buyBtn: { width: 60, height: 60, borderRadius: 18, borderWidth: 1.5, borderColor: '#5CC1FF', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
   mainBtn: { flex: 1, backgroundColor: '#5CC1FF', height: 60, borderRadius: 18, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#5CC1FF', shadowOpacity: 0.25, shadowRadius: 8 },
   mainBtnText: { color: 'white', fontSize: 16, fontWeight: '800', marginLeft: 10 }
 });

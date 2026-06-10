@@ -10,3 +10,9 @@ export const getAllProducts = async () => {
   const { data } = await apiClient.get(ENDPOINTS.GET_ALL_PRODUCT);
   return data;
 };
+
+export const getProductById = async (productId) => {
+  const endpoint = ENDPOINTS.GET_PRODUCT.replace('${id}', productId);
+  const { data } = await apiClient.get(endpoint);
+  return data?.product ?? data;
+};

@@ -8,9 +8,9 @@ const options = [
   { id: "Dresses", label: "Dresses", icon: "human-female-dance" },
 ];
 
-export default function ItemSelector({ label, selectedType, onSelectType }) {
+export default function ItemSelector({ label, selectedType, onSelectType, disabled }) {
   return (
-    <View style={[styles.mainCard, { borderColor: selectedType ? "#40B9FF" : "#A0AEC0" }]}>
+    <View style={[styles.mainCard, { borderColor: selectedType ? "#40B9FF" : "#A0AEC0", opacity: disabled ? 0.5 : 1 }]}>
       <Text style={styles.title}>{label}</Text>
       <Text style={styles.subtitle}>select from below to start try-on</Text>
 
@@ -21,8 +21,11 @@ export default function ItemSelector({ label, selectedType, onSelectType }) {
           return (
             <TouchableOpacity
               key={item.id}
-              onPress={() => onSelectType(item.id)}
-              activeOpacity={0.7}
+              onPress={() => {
+                if (disabled) return;
+                onSelectType(isActive ? null : item.id);
+              }}
+              activeOpacity={disabled ? 1 : 0.7}
               style={[
                 styles.optionButton,
                 isActive ? styles.activeOption : styles.inactiveOption,

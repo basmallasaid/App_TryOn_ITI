@@ -60,6 +60,7 @@ export default function TryOnScreen({ navigation, route }) {
 
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedWardrobeIds, setSelectedWardrobeIds] = useState([]);
   const [galleryImages, setGalleryImages] = useState([]);
   const [cameraImages, setCameraImages] = useState([]);
   const [cameraItemTypes, setCameraItemTypes] = useState([]);
@@ -98,34 +99,44 @@ export default function TryOnScreen({ navigation, route }) {
   };
 
   const handleSelectCameraType = (index, type) => {
-    const wasNull = !cameraItemTypes[index];
+    const prevType = cameraItemTypes[index];
     setCameraItemTypes((prev) => {
       const updated = [...prev];
       updated[index] = type;
       return updated;
     });
-    if (wasNull && cameraImages[index]) {
-      setSelectedItems((prev) => [...prev, cameraImages[index]]);
+    if (type && !prevType && cameraImages[index]) {
+      setSelectedItems((prev) =>
+        prev.length >= 2 ? prev : [...prev, cameraImages[index]]
+      );
+    } else if (!type && prevType && cameraImages[index]) {
+      setSelectedItems((prev) => prev.filter((id) => id !== cameraImages[index]));
     }
   };
 
   const handleSelectGalleryType = (index, type) => {
-    const wasNull = !galleryItemTypes[index];
+    const prevType = galleryItemTypes[index];
     setGalleryItemTypes((prev) => {
       const updated = [...prev];
       updated[index] = type;
       return updated;
     });
-    if (wasNull && galleryImages[index]) {
-      setSelectedItems((prev) => [...prev, galleryImages[index]]);
+    if (type && !prevType && galleryImages[index]) {
+      setSelectedItems((prev) =>
+        prev.length >= 2 ? prev : [...prev, galleryImages[index]]
+      );
+    } else if (!type && prevType && galleryImages[index]) {
+      setSelectedItems((prev) => prev.filter((id) => id !== galleryImages[index]));
     }
   };
 
   const toggleItem = (id) => {
-    if (selectedItems.includes(id)) {
-      setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
-    } else {
-      setSelectedItems([...selectedItems, id]);
+    if (selectedWardrobeIds.includes(id)) {
+      setSelectedWardrobeIds(selectedWardrobeIds.filter((i) => i !== id));
+      setSelectedItems((prev) => prev.filter((itemId) => itemId !== id));
+    } else if (selectedWardrobeIds.length < 2 && selectedItems.length < 2) {
+      setSelectedWardrobeIds([...selectedWardrobeIds, id]);
+      setSelectedItems((prev) => [...prev, id]);
     }
   };
 
@@ -155,7 +166,7 @@ export default function TryOnScreen({ navigation, route }) {
                   </View>
                 ))}
                 {cameraImages.length < 2 && (
-                  <View style={[styles.galleryItem, { marginLeft: 10 }]}>
+                  <View style={styles.galleryItem}>
                     <UploadBox label="Open Camera" onPress={handleCameraCapture} style={styles.compactUploadBox} />
                   </View>
                 )}
@@ -177,7 +188,7 @@ export default function TryOnScreen({ navigation, route }) {
                   </View>
                 ))}
                 {galleryImages.length < 2 && (
-                  <View style={[styles.galleryItem, { marginLeft: 10 }]}>
+                  <View style={styles.galleryItem}>
                     <UploadBox label="Upload image here" onPress={handleGalleryPick} style={styles.compactUploadBox} />
                   </View>
                 )}
@@ -254,8 +265,9 @@ export default function TryOnScreen({ navigation, route }) {
               renderItem={({ item }) => (
                 <WardrobeCard
                   item={item}
-                  isSelected={selectedItems.includes(item._id)}
+                  isSelected={selectedWardrobeIds.includes(item._id)}
                   onToggle={toggleItem}
+                  disabled={selectedItems.length >= 2}
                 />
               )}
             />
@@ -290,6 +302,7 @@ export default function TryOnScreen({ navigation, route }) {
                 label={index === 0 ? "First Image" : "Second Image"}
                 selectedType={cameraItemTypes[index]}
                 onSelectType={(type) => handleSelectCameraType(index, type)}
+                disabled={selectedItems.length >= 2 && !cameraItemTypes[index]}
               />
             ))}
           </View>
@@ -301,6 +314,7 @@ export default function TryOnScreen({ navigation, route }) {
                 label={index === 0 ? "First Image" : "Second Image"}
                 selectedType={galleryItemTypes[index]}
                 onSelectType={(type) => handleSelectGalleryType(index, type)}
+                disabled={selectedItems.length >= 2 && !galleryItemTypes[index]}
               />
             ))}
           </View>
@@ -362,6 +376,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 16,
     flexDirection: "row",
+    gap: 12,
   },
   galleryItem: {
     flex: 1,
@@ -369,7 +384,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: "hidden",
     position: "relative",
-    marginRight: 0,
   },
   galleryItemImage: {
     width: "100%",

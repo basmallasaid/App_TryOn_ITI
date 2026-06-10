@@ -140,6 +140,11 @@ const CreateAvatarScreen = ({ navigation }) => {
   }, []);
 
   const handleGenerate = useCallback(async () => {
+    if (!avatarProfile.gender || !avatarProfile.skinTone || !avatarProfile.hairColor) {
+      Alert.alert("Missing Fields", "Please fill in all required fields before generating your avatar.");
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const payload = {

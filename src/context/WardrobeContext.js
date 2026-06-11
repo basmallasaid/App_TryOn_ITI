@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getWardrobeItems } from '../api/wardrobe_services/wardrobeService';
+import { getWardrobeItems,deleteWardrobeItem } from '../api/wardrobe_services/wardrobeService';
 import { useAuth } from './AuthContext';
 
 const WardrobeContext = createContext();
@@ -38,6 +38,12 @@ export const WardrobeProvider = ({ children }) => {
     setItems((prev) => prev.filter((i) => i._id !== itemId));
   };
 
+  const updateItem = (itemId, updates) => {
+    setItems((prev) =>
+      prev.map((i) => (i._id === itemId ? { ...i, ...updates } : i)),
+    );
+  };
+
   return (
     <WardrobeContext.Provider value={{
       items,
@@ -46,6 +52,7 @@ export const WardrobeProvider = ({ children }) => {
       refetch: fetchItems,
       addItem,
       removeItem,
+      updateItem,
     }}>
       {children}
     </WardrobeContext.Provider>

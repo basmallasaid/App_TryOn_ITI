@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo-google-fonts/roboto": "^0.4.3",
+    "@expo/vector-icons": "^15.0.3",
     "@formatjs/intl-locale": "^5.3.9",
     "@formatjs/intl-numberformat": "^9.3.11",
     "@formatjs/intl-pluralrules": "^6.3.10",

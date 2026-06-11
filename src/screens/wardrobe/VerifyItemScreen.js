@@ -1,159 +1,175 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   Image,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
   Platform,
   StatusBar,
+  KeyboardAvoidingView,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Colors from "../../constants/theme/colors";
+import { useWardrobe } from "../../context/WardrobeContext";
 import { saveToWardrobe } from "../../api/wardrobe_services/wardrobeService";
+import SelectionChip from "../../components/wardrobe/SelectionChip";
+import QuestionGroup from "../../components/wardrobe/QuestionGroup";
 import CustomizeTextInput from "../../components/common/CustomizeTextInput";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
-import SaveResultModal from "../../components/wardrobe/SaveResultModal";
-import Colors from "../../constants/theme/colors";
-import { useWardrobe} from "../../context/WardrobeContext";
+import CustomizeAppButtonOutlined from "../../components/common/CustomizeAppButtonOutlined";
+import CustomBackButton from "../../components/common/CustomBackButton";
+
+const CATEGORIES = ["Basic", "Bottom", "Top", "Bag", "Shoes", "Jacket", "Accessories"];
+const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
+const STYLES = ["Casual", "Basic", "Formal"];
+
+const normalize = (value) => {
+  if (!value) return [];
+  const arr = Array.isArray(value) ? value : [value];
+  return arr.map((v) => v.charAt(0).toUpperCase() + v.slice(1).toLowerCase());
+};
+
+const matchToOptions = (values, options) =>
+  values.filter((v) => options.includes(v));
 
 const VerifyItemScreen = ({ route, navigation }) => {
   const { imageUri, analysisResult } = route.params;
-  // analysisResult = { analysis_id, garments[], detectionType }
   const garment = analysisResult?.garments?.[0] ?? {};
   const { refetch } = useWardrobe();
+
   const [form, setForm] = useState({
     name: garment.specificType || "",
-    category: garment.category || "",
-    style: garment.style || "",
-    season: garment.season?.join(", ") || "",
-    color: garment.colors?.[0]?.color || "",
+    categories: matchToOptions(normalize(garment.category), CATEGORIES),
+    seasons: matchToOptions(normalize(garment.season), SEASONS),
+    styles: matchToOptions(normalize(garment.style), STYLES),
   });
 
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [saveMessage, setSaveMessage] = useState("");
 
-  const update = (field) => (val) => setForm((f) => ({ ...f, [field]: val }));
+  const toggleSelection = (field, value) => {
+    setForm((prev) => {
+      const current = prev[field];
+      const isSelected = current.includes(value);
+      return {
+        ...prev,
+        [field]: isSelected
+          ? current.filter((item) => item !== value)
+          : [...current, value],
+      };
+    });
+  };
 
   const handleSave = async () => {
     try {
       setLoading(true);
       await saveToWardrobe(analysisResult.analysis_id, 0);
-      await refetch(); // sync wardrobe context — all features get updated data
-      setSaveSuccess(true);
+      await refetch();
+      navigation.navigate("WardrobeMain");
     } catch (e) {
-      setSaveSuccess(false);
-      setSaveMessage(e.response?.data?.message || "Failed to save item.");
+      console.log(e);
     } finally {
       setLoading(false);
-      setModalVisible(true);
-    }
-  };
-
-  const handleModalClose = () => {
-    setModalVisible(false);
-    if (saveSuccess) {
-      navigation.navigate("WardrobeMain"); // go back to wardrobe
     }
   };
 
   return (
     <View style={styles.root}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}
-      >
-        {/* Back */}
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.back}
-        >
-          <Ionicons name="arrow-back" size={22} color={Colors.textPrimary} />
-        </TouchableOpacity>
-
-        <Text style={styles.title}>Verify Item Details</Text>
-        <Text style={styles.subtitle}>
-          Review the details we detected. You can edit anything before saving.
-        </Text>
-
-        {/* Image preview */}
-        {imageUri && (
-          <Image
-            source={{ uri: imageUri }}
-            style={styles.preview}
-            resizeMode="cover"
-          />
-        )}
-
-        {/* Editable fields */}
-        <View style={styles.form}>
-          <CustomizeTextInput
-            label="Name"
-            placeholder="Item name"
-            value={form.name}
-            onChangeText={update("name")}
-          />
-          <CustomizeTextInput
-            label="Category"
-            placeholder="e.g. dress, shirt"
-            value={form.category}
-            onChangeText={update("category")}
-          />
-          <CustomizeTextInput
-            label="Style"
-            placeholder="e.g. casual, formal"
-            value={form.style}
-            onChangeText={update("style")}
-          />
-          <CustomizeTextInput
-            label="Season"
-            placeholder="e.g. spring, summer"
-            value={form.season}
-            onChangeText={update("season")}
-          />
-          <CustomizeTextInput
-            label="Primary Color"
-            placeholder="e.g. light blue"
-            value={form.color}
-            onChangeText={update("color")}
-          />
-        </View>
-
-        {/* Colors breakdown */}
-        {garment.colors?.length > 0 && (
-          <View style={styles.colorsWrap}>
-            <Text style={styles.colorsTitle}>Detected Colors</Text>
-            <View style={styles.colorsList}>
-              {garment.colors.map((c, i) => (
-                <View key={i} style={styles.colorChip}>
-                  <Text style={styles.colorText}>
-                    {c.color} {c.percentage}%
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* Save button */}
-        <View style={styles.buttonWrap}>
-          <CustomizeAppButtonFilled
-            label="Save to Wardrobe"
-            onPress={handleSave}
-            loading={loading}
-            backgroundColor={Colors.primary}
-          />
-        </View>
-      </ScrollView>
-
-      <SaveResultModal
-        visible={modalVisible}
-        success={saveSuccess}
-        message={saveMessage}
-        onClose={handleModalClose}
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
       />
+
+      {/* 1. Back Arrow - Wrapped in View to ensure zIndex and absolute position work */}
+      <View style={styles.backBtnWrapper}>
+        <CustomBackButton
+          onPress={() => navigation.goBack()}
+          iconColor={Colors.borderDefault}
+          borderColor={Colors.textMuted}
+          backgroundColor={"transparent"}
+        />
+      </View>
+
+      {/* 2. Header - Behind the overlay */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>Add to Wardrobe</Text>
+        <Text style={styles.subtitle}>Review & confirm details</Text>
+      </View>
+
+      {/* ── Image ── */}
+      <View style={styles.imageContainer}>
+        <Image
+          source={{ uri: imageUri }}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      </View>
+
+      {/* ── Dark overlay + bottom sheet ── */}
+      <View style={styles.overlay}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keyboardView}
+        >
+          <View style={styles.bottomSheet}>
+            <ScrollView
+              contentContainerStyle={styles.sheetContent}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.handle} />
+              <View style={styles.inputGap}>
+                <CustomizeTextInput
+                  label="Name"
+                  placeholder="Enter item name"
+                  value={form.name}
+                  onChangeText={(v) => setForm((prev) => ({ ...prev, name: v }))}
+                />
+              </View>
+
+              <QuestionGroup title="What is this item?">
+                {CATEGORIES.map((cat) => (
+                  <SelectionChip
+                    key={cat}
+                    label={cat}
+                    isSelected={form.categories.includes(cat)}
+                    onPress={() => toggleSelection("categories", cat)}
+                  />
+                ))}
+              </QuestionGroup>
+
+              <QuestionGroup title="For which season?">
+                {SEASONS.map((s) => (
+                  <SelectionChip
+                    key={s}
+                    label={s}
+                    isSelected={form.seasons.includes(s)}
+                    onPress={() => toggleSelection("seasons", s)}
+                  />
+                ))}
+              </QuestionGroup>
+
+              <QuestionGroup title="Which style?">
+                {STYLES.map((s) => (
+                  <SelectionChip
+                    key={s}
+                    label={s}
+                    isSelected={form.styles.includes(s)}
+                    onPress={() => toggleSelection("styles", s)}
+                  />
+                ))}
+              </QuestionGroup>
+
+              <View style={styles.footer}>            
+                  <CustomizeAppButtonFilled
+                    label="Save to Wardrobe"
+                    onPress={handleSave}
+                    loading={loading}
+                  />
+              </View>
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
     </View>
   );
 };
@@ -161,72 +177,81 @@ const VerifyItemScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#F5F6F7",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: Colors.backgroundColor,
   },
-  scroll: {
-    paddingHorizontal: 16,
-    paddingTop: 24,
-    paddingBottom: 40,
+  headerContainer: {
+    paddingTop: Platform.OS === "ios" ? 60 : (StatusBar.currentHeight ?? 40) + 12,
+    alignItems: "center",
+    position: "absolute",
+    top: 30,
+    left: 0,
+    right: 0,
   },
-  back: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    marginBottom: 12,
+  backBtnWrapper: {
+    position: "absolute",
+    left: 16,
+    top: Platform.OS === "ios" ? 60 : (StatusBar.currentHeight ?? 40) + 12,
+    zIndex: 20, // Above overlay
   },
   title: {
     fontFamily: "Roboto_700Bold",
-    fontSize: 24,
-    color: "#121826",
-    marginBottom: 6,
+    fontSize: 22,
+    color: Colors.textPrimary,
   },
   subtitle: {
     fontFamily: "Roboto_400Regular",
     fontSize: 13,
-    color: "#6B7280",
-    marginBottom: 20,
-    lineHeight: 18,
+    color: Colors.textSecondary,
+    marginTop: 4,
   },
-  preview: {
+  imageContainer: {
+    width: "90%",
+    height: 280,
+    marginTop: 140,
+    alignSelf: "center",
+    borderRadius: 20,
+    overflow: "hidden",
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
+  },
+  image: {
     width: "100%",
-    height: 260,
-    borderRadius: 16,
-    marginBottom: 24,
-    backgroundColor: "#E9EBEE",
+    height: "100%",
+    resizeMode: "contain",
   },
-  form: {
-    gap: 4,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(12,12,12,0.75)",
+    justifyContent: "flex-end",
+    zIndex: 10,
   },
-  colorsWrap: {
-    marginTop: 16,
+  keyboardView: {
+    justifyContent: "flex-end",
+  },
+  bottomSheet: {
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    height: "65%",
+    width: "100%",
+  },
+  sheetContent: {
+    padding: 24,
+    paddingBottom: 30,
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#D5D9DE",
+    alignSelf: "center",
+  },
+  inputGap: {
     marginBottom: 8,
   },
-  colorsTitle: {
-    fontFamily: "Roboto_500Medium",
-    fontSize: 13,
-    color: "#121826",
-    marginBottom: 10,
-  },
-  colorsList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  colorChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: "#E9EBEE",
-  },
-  colorText: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: "#475569",
-    textTransform: "capitalize",
-  },
-  buttonWrap: {
-    marginTop: 28,
+  footer: {
+    marginTop: 60,
   },
 });
 

@@ -18,9 +18,13 @@ import OutfitCard from "../../components/home/OutfitCard";
 import TryOnCard from "../../components/home/TryOnCard";
 import { IMAGES } from "../../constants/images/images";
 import { Ionicons } from "@expo/vector-icons";
+import { useProfileContext } from "../../context/ProfileContext";
 
 export default function HomeScreen({ navigation }) {
   const { t } = useTranslation();
+  const { profile } = useProfileContext();
+  const latestTryOn = profile?.latestTryOn || [];
+  const latestRecycle = profile?.latestRecycle || [];
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -69,6 +73,7 @@ export default function HomeScreen({ navigation }) {
             titleColor="#FF8A3D"
             iconBgColor="#FFF3E0"
             iconColor="#FF8A3D"
+            onPress={() => navigation.navigate("Matching")}
           />
         </View>
 
@@ -93,9 +98,35 @@ export default function HomeScreen({ navigation }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollPadding}
         >
-          <TryOnCard imageUri={IMAGES.TRY_ON} />
-          <TryOnCard imageUri={IMAGES.TRY_ON} />
-          <TryOnCard imageUri={IMAGES.TRY_ON} />
+          {latestTryOn.length === 0 ? (
+            <TryOnCard imageUri={null} />
+          ) : (
+            latestTryOn.map((item, index) => (
+              <TryOnCard key={item._id?.$oid || item._id || index} imageUri={item.imageUrl} />
+            ))
+          )}
+        </ScrollView>
+
+        <View style={styles.recentHeader}>
+          <Text style={styles.recentTitle}>Recent Recycles</Text>
+          <TouchableOpacity style={styles.viewAllBtn} onPress={() => navigation.navigate("Recycle")}>
+            <Text style={styles.viewAllText}>{t('home.viewAll')}</Text>
+            <Ionicons name="arrow-forward" size={16} color="#1A1C24" style={styles.arrowIcon} />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollPadding}
+        >
+          {latestRecycle.length === 0 ? (
+            <TryOnCard imageUri={null} />
+          ) : (
+            latestRecycle.map((item, index) => (
+              <TryOnCard key={item._id?.$oid || item._id || index} imageUri={item.imageUrl} />
+            ))
+          )}
         </ScrollView>
       </ScrollView>
     </SafeAreaView>

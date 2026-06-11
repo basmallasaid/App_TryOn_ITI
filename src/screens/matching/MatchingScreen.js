@@ -1,0 +1,665 @@
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView,
+  FlatList,
+  Platform,
+  StatusBar,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import { Ionicons, MaterialCommunityIcons, Feather, AntDesign } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
+import Colors from "../../constants/theme/colors";
+import ActionTab from "../../components/tryOn/ActionTab";
+import UploadBox from "../../components/tryOn/UploadBox";
+import ItemSelector from "../../components/tryOn/ItemSelector";
+import { openCamera, openGallery } from "../../utils/cameraAccess";
+import { useWardrobe } from "../../context/WardrobeContext";
+import { getWardrobeMatches } from "../../api/matching_services/matchingService";
+import { getAllProducts } from "../../api/user_services/userService";
+
+
+
+export default function MatchingScreen({ navigation }) {
+  const { t } = useTranslation();
+  const { items: wardrobeItems } = useWardrobe();
+
+  const [activeTab, setActiveTab] = useState("My Wardrobe");
+  const [selectedWardrobeId, setSelectedWardrobeId] = useState(null);
+  const [cameraImage, setCameraImage] = useState(null);
+  const [cameraItemType, setCameraItemType] = useState(null);
+  const [galleryImage, setGalleryImage] = useState(null);
+  const [galleryItemType, setGalleryItemType] = useState(null);
+  const [generating, setGenerating] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [wardrobeMatches, setWardrobeMatches] = useState([]);
+  const [storeMatches, setStoreMatches] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+
+  useEffect(() => {
+    getAllProducts().then((data) => setAllProducts(Array.isArray(data) ? data : [])).catch(() => {});
+  }, []);
+
+  const handleCameraCapture = async () => {
+    const result = await openCamera();
+    if (result && !result.canceled) {
+      setShowResults(false);
+      setCameraImage(result.assets[0].uri);
+      setCameraItemType(null);
+    }
+  };
+
+  const removeCameraImage = () => {
+    setShowResults(false);
+    setCameraImage(null);
+    setCameraItemType(null);
+  };
+
+  const handleGalleryPick = async () => {
+    const result = await openGallery();
+    if (result && !result.canceled) {
+      setShowResults(false);
+      setGalleryImage(result.assets[0].uri);
+      setGalleryItemType(null);
+    }
+  };
+
+  const removeGalleryImage = () => {
+    setShowResults(false);
+    setGalleryImage(null);
+    setGalleryItemType(null);
+  };
+
+  const toggleItem = (id) => {
+    setShowResults(false);
+    setWardrobeMatches([]);
+    setStoreMatches([]);
+    setSelectedWardrobeId((prev) => (prev === id ? null : id));
+  };
+
+  const isButtonReady = activeTab === "My Wardrobe"
+    ? !!selectedWardrobeId
+    : activeTab === "Camera"
+    ? !!(cameraImage && cameraItemType)
+    : !!(galleryImage && galleryItemType);
+
+  const hasCameraItem = !!(cameraImage && cameraItemType);
+  const hasGalleryItem = !!(galleryImage && galleryItemType);
+  const hasWardrobeItem = !!selectedWardrobeId;
+  const hasItem = hasCameraItem || hasGalleryItem || hasWardrobeItem;
+
+  const selectedTitle = hasItem ? "1 items selected" : "No items selected yet";
+  const selectedSubtitle = hasItem
+    ? hasWardrobeItem
+      ? "Item selected from your wardrobe"
+      : "Item captured from camera or gallery"
+    : "Select an item to see matching suggestions";
+
+  const handleSeeMatching = async () => {
+    if (hasWardrobeItem) {
+      console.log("Selected wardrobe item ID:", selectedWardrobeId);
+      console.log("Request body:", JSON.stringify({ wardrobe_item_id: selectedWardrobeId }));
+      setGenerating(true);
+      try {
+        const res = await getWardrobeMatches(selectedWardrobeId);
+        const raw = res?.matches || res?.data?.matches || (Array.isArray(res) ? res : []);
+        const wardrobe = raw.filter((m) => m.item?.source === "wardrobe");
+        const store = raw.filter((m) => m.item?.source === "store");
+        setWardrobeMatches(wardrobe);
+        setStoreMatches(store);
+      } catch (e) {
+        const msg = e.response?.data || e.message;
+        Alert.alert("Match Error", typeof msg === "string" ? msg : JSON.stringify(msg));
+        setWardrobeMatches([]);
+        setStoreMatches([]);
+      } finally {
+        setGenerating(false);
+      }
+    }
+    setShowResults(true);
+  };
+
+  const getImageSource = (item) => {
+    if (!item) return null;
+    const uri = typeof item.image === "string" ? item.image : item.image?.uri;
+    return uri ? { uri } : null;
+  };
+
+  const getMatchImage = (match) => {
+    if (!match?.item) return null;
+    const source = match.item.source;
+    if (source === "wardrobe") {
+      const wardrobeItem = wardrobeItems.find(
+        (wi) => wi._id === match.item.id || wi.id === match.item.id
+      );
+      if (wardrobeItem) {
+        const uri = typeof wardrobeItem.image === "string" ? wardrobeItem.image : wardrobeItem.image?.uri;
+        if (uri) return { uri };
+      }
+      return null;
+    }
+    if (source === "store") {
+      const productId = match.item.id?.replace("store_", "");
+      const product = allProducts.find((p) => p._id === productId || p.id === productId);
+      if (product) {
+        const raw = product.images || product.image;
+        const first = Array.isArray(raw) ? raw[0] : raw;
+        const uri = typeof first === "string" ? first : first?.url || first?.uri;
+        if (uri) return { uri };
+      }
+      return null;
+    }
+    return null;
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color={Colors.iconGray} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Matching</Text>
+        <TouchableOpacity>
+          <Feather name="help-circle" size={24} color={Colors.iconGray} />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.sectionPadding}>
+          <Text style={styles.sectionTitle}>{t('home.actions.matching')}</Text>
+          <Text style={styles.sectionSubtitle}>{t('home.actions.matchingSub')}</Text>
+        </View>
+
+        <View style={styles.uploadOptions}>
+          <ActionTab
+            label={t("tryOn.virtualTryOn.myWardrobe")}
+            iconName="shirt-outline"
+            isActive={activeTab === "My Wardrobe"}
+            onPress={() => setActiveTab("My Wardrobe")}
+          />
+          <ActionTab
+            label={t("tryOn.virtualTryOn.camera")}
+            iconName="camera-outline"
+            isActive={activeTab === "Camera"}
+            onPress={() => setActiveTab("Camera")}
+          />
+          <ActionTab
+            label={t("tryOn.virtualTryOn.gallery")}
+            iconName="images-outline"
+            isActive={activeTab === "Gallery"}
+            onPress={() => setActiveTab("Gallery")}
+          />
+        </View>
+
+        {activeTab === "Camera" && (
+          cameraImage ? (
+            <>
+              <View style={styles.singleImageContainer}>
+                <Image source={{ uri: cameraImage }} style={styles.singleImage} resizeMode="cover" />
+                <TouchableOpacity style={styles.removeBtn} onPress={removeCameraImage}>
+                  <Ionicons name="close" size={16} color="white" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.selectorPadding}>
+                <ItemSelector
+                  label="What is this item?"
+                  selectedType={cameraItemType}
+                  onSelectType={(type) => setCameraItemType(type === cameraItemType ? null : type)}
+                  disabled={false}
+                />
+              </View>
+            </>
+          ) : (
+            <UploadBox label="Open Camera" onPress={handleCameraCapture} />
+          )
+        )}
+
+        {activeTab === "Gallery" && (
+          galleryImage ? (
+            <>
+              <View style={styles.singleImageContainer}>
+                <Image source={{ uri: galleryImage }} style={styles.singleImage} resizeMode="cover" />
+                <TouchableOpacity style={styles.removeBtn} onPress={removeGalleryImage}>
+                  <Ionicons name="close" size={16} color="white" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.selectorPadding}>
+                <ItemSelector
+                  label="What is this item?"
+                  selectedType={galleryItemType}
+                  onSelectType={(type) => setGalleryItemType(type === galleryItemType ? null : type)}
+                  disabled={false}
+                />
+              </View>
+            </>
+          ) : (
+            <UploadBox label="Upload image here" onPress={handleGalleryPick} />
+          )
+        )}
+
+        {activeTab === "My Wardrobe" && (
+          <>
+            <View style={styles.rowBetween}>
+              <Text style={styles.sectionTitleSmall}>select from wardrobe</Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Wardrobe", { screen: "WardrobeMain" })}>
+                <Text style={styles.seeAllText}>See All</Text>
+              </TouchableOpacity>
+            </View>
+
+            <FlatList
+              horizontal
+              data={wardrobeItems}
+              keyExtractor={(item) => item._id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.wardrobeList}
+              ListEmptyComponent={
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateText}>{t("tryOn.virtualTryOn.noItemsTitle")}</Text>
+                </View>
+              }
+              renderItem={({ item }) => {
+                const isSelected = selectedWardrobeId === item._id;
+                const imageSrc = getImageSource(item);
+                return (
+                  <TouchableOpacity onPress={() => toggleItem(item._id)} activeOpacity={0.7}>
+                    {isSelected ? (
+                      <View style={styles.selectedBorder}>
+                        <View style={styles.wardrobeItemCard}>
+                          {imageSrc && (
+                            <Image source={imageSrc} style={styles.wardrobeImg} resizeMode="contain" />
+                          )}
+                          <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.checkIcon} />
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={styles.wardrobeItemCard}>
+                        {imageSrc && (
+                          <Image source={imageSrc} style={styles.wardrobeImg} resizeMode="contain" />
+                        )}
+                        <Ionicons name="checkmark-circle" size={20} color="#9BA5B7" style={styles.checkIcon} />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              }}
+            />
+
+          </>
+        )}
+
+        <View style={styles.selectedSection}>
+          <View style={styles.noItemsBox}>
+            <View style={styles.iconCircle}>
+              <MaterialCommunityIcons name="hanger" size={24} color="#1A202C" />
+            </View>
+            <View>
+              <Text style={styles.noItemsTitle}>{selectedTitle}</Text>
+              <Text style={styles.noItemsSub}>{selectedSubtitle}</Text>
+            </View>
+          </View>
+        </View>
+
+        {showResults && (
+          <>
+            <View style={styles.sectionPadding}>
+              <Text style={styles.sectionTitleSmall}>items match in your wardrobe</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.matchList}
+            >
+              {wardrobeMatches.length === 0 ? (
+                <View style={styles.emptyMatches}>
+                  <Text style={styles.emptyMatchesText}>No matches found</Text>
+                </View>
+              ) : (
+                  wardrobeMatches.map((match, index) => {
+                  const imgSrc = getMatchImage(match);
+                  const imageUri = imgSrc?.uri;
+                  return (
+                    <TouchableOpacity
+                      key={match.item?.id || index}
+                      onPress={() => navigation.navigate("MatchingResultDetails", { match, imageUri })}
+                    >
+                      <View style={styles.matchCard}>
+                        <View style={styles.scoreBadge}>
+                          <Text style={styles.scoreText}>{match.score}%</Text>
+                        </View>
+                        {imgSrc ? (
+                          <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
+                        ) : (
+                          <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color="#CBD5E0" />
+                        )}
+                        <Text style={styles.matchItemName} numberOfLines={1}>{match.item?.name}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })
+              )}
+            </ScrollView>
+
+            <View style={styles.sectionPadding}>
+              <Text style={styles.sectionTitleSmall}>see what matching in store</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.matchList}
+            >
+              {storeMatches.length === 0 ? (
+                <View style={styles.emptyMatches}>
+                  <Text style={styles.emptyMatchesText}>No store matches found</Text>
+                </View>
+              ) : (
+                storeMatches.map((match, index) => {
+                  const imgSrc = getMatchImage(match);
+                  const imageUri = imgSrc?.uri;
+                  return (
+                    <TouchableOpacity
+                      key={match.item?.id || index}
+                      onPress={() => navigation.navigate("MatchingResultDetails", { match, imageUri })}
+                    >
+                      <View style={styles.matchCard}>
+                        <View style={styles.scoreBadge}>
+                          <Text style={styles.scoreText}>{match.score}%</Text>
+                        </View>
+                        <AntDesign name="hearto" size={18} color="#1A2530" style={styles.heartIcon} />
+                        {imgSrc ? (
+                          <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
+                        ) : (
+                          <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color="#CBD5E0" />
+                        )}
+                        <Text style={styles.matchItemName} numberOfLines={1}>{match.item?.name}</Text>
+                        {match.item?.price && (
+                          <Text style={styles.matchPrice}>{match.item?.currency || "$"}{match.item?.price}</Text>
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })
+              )}
+            </ScrollView>
+          </>
+        )}
+      </ScrollView>
+
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          style={[styles.mainButton, isButtonReady && styles.activeButton]}
+          onPress={handleSeeMatching}
+          disabled={!isButtonReady || generating}
+        >
+          {generating ? (
+            <ActivityIndicator size="small" color="#FFF" style={{ marginRight: 8 }} />
+          ) : (
+            <MaterialCommunityIcons name="auto-fix" size={20} color="#FFF" />
+          )}
+          <Text style={styles.buttonText}>See matching</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#F8F9FB",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#1A2530",
+  },
+  scrollContent: {
+    paddingBottom: 100,
+  },
+  sectionPadding: {
+    paddingHorizontal: 20,
+    marginTop: 15,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#1A2530",
+  },
+  sectionSubtitle: {
+    fontSize: 13,
+    color: "#7D848D",
+    marginTop: 4,
+  },
+  uploadOptions: {
+    flexDirection: "row",
+    paddingHorizontal: 15,
+    marginTop: 25,
+  },
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  sectionTitleSmall: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#1A2530",
+    marginBottom: 10,
+  },
+  seeAllText: {
+    fontSize: 12,
+    color: "#1A2530",
+  },
+  wardrobeList: {
+    paddingLeft: 20,
+    marginTop: 5,
+  },
+  wardrobeItemCard: {
+    width: 90,
+    height: 110,
+    backgroundColor: "#FFF",
+    borderRadius: 12,
+    marginRight: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
+  },
+  wardrobeImg: {
+    width: 70,
+    height: 80,
+  },
+  checkIcon: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+  },
+  selectedBorder: {
+    borderWidth: 1.5,
+    borderColor: "#FF9E7A",
+    borderRadius: 14,
+    padding: 2,
+    marginRight: 12,
+  },
+  matchList: {
+    paddingLeft: 20,
+    marginTop: 5,
+  },
+  matchCard: {
+    width: 150,
+    height: 180,
+    backgroundColor: "#FFF",
+    borderRadius: 15,
+    marginRight: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: "#E0F4BE",
+    position: "relative",
+  },
+  matchImg: {
+    width: 100,
+    height: 110,
+  },
+  matchItemName: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#1A2530",
+    textAlign: "center",
+    marginTop: 6,
+    paddingHorizontal: 8,
+    textTransform: "capitalize",
+  },
+  matchPrice: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#44BEFF",
+    marginTop: 2,
+  },
+  scoreBadge: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#A5E142",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    zIndex: 1,
+  },
+  scoreText: {
+    color: "#FFF",
+    fontSize: 11,
+    fontWeight: "bold",
+  },
+  heartIcon: {
+    position: "absolute",
+    top: 12,
+    right: 45,
+    zIndex: 1,
+  },
+  selectedSection: {
+    paddingHorizontal: 20,
+    marginTop: 25,
+  },
+  noItemsBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F0F4FF",
+    padding: 15,
+    borderRadius: 15,
+    marginTop: 15,
+  },
+  iconCircle: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    backgroundColor: "#DBE9FF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 15,
+  },
+  noItemsTitle: {
+    fontWeight: "700",
+    color: "#1A202C",
+    fontSize: 14,
+  },
+  noItemsSub: {
+    color: "#718096",
+    fontSize: 12,
+    marginTop: 2,
+  },
+  emptyMatches: {
+    width: 200,
+    height: 120,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyMatchesText: {
+    color: "#A0AEC0",
+    fontSize: 14,
+  },
+  emptyState: {
+    width: 200,
+    height: 120,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyStateText: {
+    color: "#A0AEC0",
+    fontSize: 14,
+  },
+  singleImageContainer: {
+    width: "90%",
+    height: 450,
+    alignSelf: "center",
+    marginVertical: 16,
+    borderRadius: 16,
+    overflow: "hidden",
+    position: "relative",
+  },
+  singleImage: {
+    width: "100%",
+    height: "100%",
+  },
+  removeBtn: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  selectorPadding: {
+    paddingHorizontal: 20,
+  },
+  compactUploadBox: {
+    width: "100%",
+    height: "100%",
+    alignSelf: "stretch",
+    marginVertical: 0,
+    borderRadius: 16,
+  },
+  bottomContainer: {
+    position: "absolute",
+    bottom: 25,
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  mainButton: {
+    backgroundColor: "#9BA5B7",
+    flexDirection: "row",
+    height: 55,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    gap: 8,
+  },
+  activeButton: {
+    backgroundColor: "#44BEFF",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});

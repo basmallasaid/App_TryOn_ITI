@@ -68,6 +68,7 @@ export default function HomeScreen({ navigation }) {
             titleColor="#FF8A3D"
             iconBgColor="#FFF3E0"
             iconColor="#FF8A3D"
+            onPress={() => navigation.navigate("Matching")}
           />
         </View>
 

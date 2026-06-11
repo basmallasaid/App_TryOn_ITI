@@ -10,6 +10,7 @@ import StoreStack from "./StoreStack";
 
 import HomeScreen from '../screens/home/HomeScreen';
 import WardrobeStack from "./WardrobeStack";
+import MatchingStack from "./MatchingStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -94,6 +95,15 @@ export default function AppStack() {
         options={{
           tabBarButton: () => null,
           tabBarItemStyle: { display: "none" }, // بيلغي المساحة المحجوزة تماماً
+        }}
+      />
+
+      <Tab.Screen
+        name="Matching"
+        component={MatchingStack}
+        options={{
+          tabBarButton: () => null,
+          tabBarItemStyle: { display: "none" },
         }}
       />
 

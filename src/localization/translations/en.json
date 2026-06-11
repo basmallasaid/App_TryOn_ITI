@@ -104,9 +104,18 @@
   },
   "onboarding": {
     "slides": [
-      { "title": "Discover Your Style", "subtitle": "Get personalized outfit ideas that match your unique vibe." },
-      { "title": "Try Before You Buy", "subtitle": "See how clothes look on you with realistic AI try-on." },
-      { "title": "Your Smart Wardrobe", "subtitle": "Organize, mix & match your looks all in one place." }
+      {
+        "title": "Discover Your Style",
+        "subtitle": "Get personalized outfit ideas that match your unique vibe."
+      },
+      {
+        "title": "Try Before You Buy",
+        "subtitle": "See how clothes look on you with realistic AI try-on."
+      },
+      {
+        "title": "Your Smart Wardrobe",
+        "subtitle": "Organize, mix & match your looks all in one place."
+      }
     ],
     "next": "Next",
     "skip": "Skip",
@@ -136,6 +145,7 @@
     "whatToDo": "What would you Like to do ?",
     "todaysPicks": "Today's picks for you",
     "recentTryOns": "recent try-ons",
+    "recentRecycles": "recent recycles",
     "viewAll": "view all",
     "hero": {
       "title": "Your style, intelligently yours.",
@@ -165,6 +175,7 @@
     "credits": "Your Credits",
     "creditsAmount": "EGP 0.00",
     "wishlist": "Wishlist",
+    "wishlistCount": "{{count}} saved items",
     "wishlistEmpty": "0 saved items",
     "styleIdentity": "Style Identity",
     "customize": "Customize",
@@ -302,6 +313,19 @@
     "saveFailedMessage": "Could not save your design. Please try again.",
     "alreadySaved": "Already Saved",
     "alreadySavedMessage": "This design is already in your collection."
+  },
+  "favorites": {
+    "title": "Favorites",
+    "emptyTitle": "Your favorites are lonely.",
+    "emptySubtitle": "Start exploring our curated collections to build your digital favorite screen.",
+    "categories": {
+      "all": "All",
+      "wardrobe": "Wardrobe",
+      "store": "Store",
+      "try on": "Try On",
+      "recycle": "Recycle"
+    },
+    "noItemsInCategory": "No items in this category"
   },
   "editProfile": {
     "title": "Edit Profile",

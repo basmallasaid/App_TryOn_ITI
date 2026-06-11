@@ -20,6 +20,7 @@ import { Inter_700Bold } from "@expo-google-fonts/inter";
 import { resetOnboardingAndLanguage } from "./src/utils/devReset";
 import { ProfileProvider } from "./src/context/ProfileContext";
 import { WardrobeProvider } from './src/context/WardrobeContext';
+import { FavoritesProvider } from './src/context/FavoritesContext';
 I18nManager.allowRTL(true);
 
 // DEV ONLY — comment out when done testing
@@ -55,9 +56,11 @@ export default function App() {
       <AuthProvider>
         <ProfileProvider>
           <WardrobeProvider>
+          <FavoritesProvider>
           <NavigationContainer>
             <RootNavigator />
           </NavigationContainer>
+          </FavoritesProvider>
           </WardrobeProvider>
         </ProfileProvider>
       </AuthProvider>

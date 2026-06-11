@@ -9,6 +9,7 @@ import { getProductById } from '../../api/user_services/userService';
 import { useNavigation } from '@react-navigation/native';
 import { useWardrobe } from '../../context/WardrobeContext';
 import { analyzeImage, getMatchesByAnalysis } from '../../api/matching_services/matchingService';
+import { ROUTES, SOURCE } from '../../navigation/routes';
 
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
@@ -203,7 +204,7 @@ export default function ProductDetailScreen({ route }) {
                   return (
                     <TouchableOpacity
                       key={match.item?.id || index}
-                      onPress={() => navigation.navigate('Matching', { screen: 'MatchingResultDetails', params: { match, imageUri: imgSrc?.uri } })}
+                      onPress={() => navigation.navigate(ROUTES.MATCHING, { screen: ROUTES.MATCHING_RESULT_DETAILS, params: { match, imageUri: imgSrc?.uri } })}
                     >
                       <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>
@@ -224,7 +225,7 @@ export default function ProductDetailScreen({ route }) {
           </View>
 
           <View style={styles.actionRow}>
-            <TouchableOpacity style={styles.mainBtn} activeOpacity={0.8} onPress={() => navigation.navigate('TryOn', { screen: 'SelectModel', params: { productImage: product?.images?.[0], productName: product?.name } })}>
+            <TouchableOpacity style={styles.mainBtn} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.STORE, itemId: productId, itemType: product?.category, productImage: product?.images?.[0], productName: product?.name } })}>
               <Ionicons name="sparkles" size={20} color="white" />
               <Text style={styles.mainBtnText}>Generate Try-on</Text>
             </TouchableOpacity>

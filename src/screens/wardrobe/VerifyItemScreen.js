@@ -21,6 +21,7 @@ import QuestionGroup from "../../components/wardrobe/QuestionGroup";
 import CustomizeTextInput from "../../components/common/CustomizeTextInput";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import CustomBackButton from "../../components/common/CustomBackButton"; // Added Import
+import { ROUTES } from "../../navigation/routes";
 import { saveToWardrobe, editWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 const { height: SCREEN_H } = Dimensions.get("window");
 
@@ -129,7 +130,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
   //     setLoading(true);
   //     await saveToWardrobe(analysisResult.analysis_id, 0);
   //     await refetch();
-  //     navigation.navigate("WardrobeMain");
+    //     navigation.navigate(ROUTES.WARDROBE_MAIN);
   //   } catch (e) {
   //     console.log(e);
   //   } finally {
@@ -158,7 +159,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
 
       // 4. Sync context and go home
       await refetch();
-      navigation.navigate("WardrobeMain");
+      navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (e) {
       console.log("Logically failed to save:", e);
       alert("Failed to save item. Please try again.");

@@ -20,6 +20,7 @@ import { IMAGES } from "../../../constants/images/images";
 import { ICONS } from "../../../constants/images/icons";
 import { forgotPassword } from "../../../api/auth_services/authServices";
 import BottomSheetLayout from "../../../components/authentication/BottomSheetLayout";
+import { ROUTES } from "../../../navigation/routes";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -40,7 +41,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       setLoading(true);
       setError("");
       await forgotPassword(email.toLowerCase().trim());
-      navigation.navigate("VerifyOtp", { email: email.toLowerCase().trim() });
+      navigation.navigate(ROUTES.VERIFY_OTP, { email: email.toLowerCase().trim() });
     } catch (e) {
       const msg = e.response?.data?.message || "";
       if (msg.toLowerCase().includes("verif")) {
@@ -85,7 +86,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
       {/* Back to login link */}
       <TouchableOpacity
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => navigation.navigate(ROUTES.LOGIN)}
         style={styles.loginLinkWrap}
       >
           <Text style={styles.loginLinkText}>

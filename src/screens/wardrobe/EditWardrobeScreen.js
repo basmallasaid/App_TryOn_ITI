@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  SafeAreaView,
   Platform,
   StatusBar,
 } from "react-native";
@@ -18,6 +19,7 @@ import CategoryChip from "../../components/wardrobe/CategoryChip";
 import WardrobeItemCard from "../../components/wardrobe/WardrobeItemCard";
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
 import { getCategoriesByGender } from "../../constants/wardrobe/wardrobeCategories";
+import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
 
 const EditWardrobeScreen = ({ navigation, route }) => {
@@ -56,7 +58,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
       // Update local context
       selectedIds.forEach((id) => removeItem(id));
       setModalVisible(false);
-      navigation.navigate("WardrobeMain");
+      navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (error) {
       console.error("Delete failed", error);
     } finally {
@@ -65,7 +67,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.root}>
+    <SafeAreaView style={styles.root}>
       {/* Header */}
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
@@ -135,7 +137,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
         onClose={() => setModalVisible(false)}
         onConfirm={handleDelete}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -143,7 +145,6 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: "#F5F6F7",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: "row",

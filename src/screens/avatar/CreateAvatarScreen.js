@@ -208,7 +208,11 @@ const CreateAvatarScreen = ({ navigation }) => {
   }));
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+  <SafeAreaView style={styles.safeArea}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.scrollContainer}
+    >
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.backBtn}
@@ -233,18 +237,15 @@ const CreateAvatarScreen = ({ navigation }) => {
 
         <View style={styles.bodySection}>
           <AvatarPreview image={IMAGES.AVATAR} />
+
           <AvatarTabs
             tabs={tabsWithProps}
             activeKey={tabKeys[currentStep]}
             onTabChange={handleTabChange}
             hideContent
           />
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
-          >
-            <ActiveComponent {...tabsWithProps[currentStep].props} />
-          </ScrollView>
+
+          <ActiveComponent {...tabsWithProps[currentStep].props} />
         </View>
 
         <View style={styles.buttonWrap}>
@@ -257,8 +258,9 @@ const CreateAvatarScreen = ({ navigation }) => {
           />
         </View>
       </View>
-    </SafeAreaView>
-  );
+    </ScrollView>
+  </SafeAreaView>
+);
 };
 
 const styles = StyleSheet.create({
@@ -330,6 +332,9 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     paddingTop: 12,
   },
+  scrollContainer: {
+  flexGrow: 1,
+},
 });
 
 export default CreateAvatarScreen;

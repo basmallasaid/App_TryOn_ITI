@@ -23,7 +23,9 @@ const TryOnResult = ({ navigation, route }) => {
   const result = route?.params?.result || {};
   const productImage = route?.params?.productImage;
   const avatarImage = route?.params?.avatarImage;
-  const isStoreFlow = !!(productImage && avatarImage);
+  const photoUri = route?.params?.photoUri;
+  const personImage = avatarImage || photoUri;
+  const isStoreFlow = !!(productImage && personImage);
   const resultImage = result?.image_url || result?.image || result?.imageUrl || result?.url || null;
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -69,7 +71,7 @@ const TryOnResult = ({ navigation, route }) => {
     setGenerating(true);
     setGenerateError(null);
     try {
-      const personUri = await resolveToFile(avatarImage);
+      const personUri = await resolveToFile(personImage);
       const garmentUri = await resolveToFile(productImage);
       const formData = new FormData();
       appendToFormData(formData, "personImage", personUri);

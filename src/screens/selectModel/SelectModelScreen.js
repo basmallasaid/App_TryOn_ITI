@@ -115,7 +115,7 @@ const SelectModelScreen = ({ navigation, route }) => {
         setLoading(false);
       }
     } else if (selected === "photo") {
-      navigation.navigate("UploadPhoto");
+      navigation.navigate("UploadPhoto", isStoreFlow ? { productImage } : undefined);
     }
   };
 

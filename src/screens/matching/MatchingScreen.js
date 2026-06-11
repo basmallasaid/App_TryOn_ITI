@@ -21,7 +21,7 @@ import UploadBox from "../../components/tryOn/UploadBox";
 import ItemSelector from "../../components/tryOn/ItemSelector";
 import { openCamera, openGallery } from "../../utils/cameraAccess";
 import { useWardrobe } from "../../context/WardrobeContext";
-import { getWardrobeMatches } from "../../api/matching_services/matchingService";
+import { getWardrobeMatches, analyzeImage, getMatchesByAnalysis } from "../../api/matching_services/matchingService";
 import { getAllProducts } from "../../api/user_services/userService";
 
 
@@ -101,26 +101,46 @@ export default function MatchingScreen({ navigation }) {
       : "Item captured from camera or gallery"
     : "Select an item to see matching suggestions";
 
+  const processMatches = (raw) => {
+    const list = raw?.matches || raw?.data?.matches || (Array.isArray(raw) ? raw : []);
+    setWardrobeMatches(list.filter((m) => m.item?.source === "wardrobe"));
+    setStoreMatches(list.filter((m) => m.item?.source === "store"));
+  };
+
   const handleSeeMatching = async () => {
-    if (hasWardrobeItem) {
-      console.log("Selected wardrobe item ID:", selectedWardrobeId);
-      console.log("Request body:", JSON.stringify({ wardrobe_item_id: selectedWardrobeId }));
-      setGenerating(true);
-      try {
+    setGenerating(true);
+    try {
+      if (hasWardrobeItem) {
+        console.log("Selected wardrobe item ID:", selectedWardrobeId);
+        console.log("Request body:", JSON.stringify({ wardrobe_item_id: selectedWardrobeId }));
         const res = await getWardrobeMatches(selectedWardrobeId);
-        const raw = res?.matches || res?.data?.matches || (Array.isArray(res) ? res : []);
-        const wardrobe = raw.filter((m) => m.item?.source === "wardrobe");
-        const store = raw.filter((m) => m.item?.source === "store");
-        setWardrobeMatches(wardrobe);
-        setStoreMatches(store);
-      } catch (e) {
-        const msg = e.response?.data || e.message;
-        Alert.alert("Match Error", typeof msg === "string" ? msg : JSON.stringify(msg));
-        setWardrobeMatches([]);
-        setStoreMatches([]);
-      } finally {
-        setGenerating(false);
+        processMatches(res);
+      } else if (hasCameraItem) {
+        console.log("Analyzing camera image:", cameraImage);
+        const analysisRes = await analyzeImage(cameraImage);
+        const analysisId = analysisRes?.analysis_id || analysisRes?.id || analysisRes?.data?.analysis_id;
+        console.log("Analysis ID:", analysisId);
+        if (analysisId) {
+          const matchRes = await getMatchesByAnalysis(analysisId, 30.0444, 31.2357);
+          processMatches(matchRes);
+        }
+      } else if (hasGalleryItem) {
+        console.log("Analyzing gallery image:", galleryImage);
+        const analysisRes = await analyzeImage(galleryImage);
+        const analysisId = analysisRes?.analysis_id || analysisRes?.id || analysisRes?.data?.analysis_id;
+        console.log("Analysis ID:", analysisId);
+        if (analysisId) {
+          const matchRes = await getMatchesByAnalysis(analysisId, 30.0444, 31.2357);
+          processMatches(matchRes);
+        }
       }
+    } catch (e) {
+      const msg = e.response?.data || e.message;
+      Alert.alert("Match Error", typeof msg === "string" ? msg : JSON.stringify(msg));
+      setWardrobeMatches([]);
+      setStoreMatches([]);
+    } finally {
+      setGenerating(false);
     }
     setShowResults(true);
   };
@@ -133,6 +153,10 @@ export default function MatchingScreen({ navigation }) {
 
   const getMatchImage = (match) => {
     if (!match?.item) return null;
+    if (match.item.image) {
+      const uri = typeof match.item.image === "string" ? match.item.image : match.item.image?.uri;
+      if (uri) return { uri };
+    }
     const source = match.item.source;
     if (source === "wardrobe") {
       const wardrobeItem = wardrobeItems.find(

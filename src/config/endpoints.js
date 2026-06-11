@@ -23,5 +23,6 @@ export const ENDPOINTS = {
   WARDROBE:"/wardrobe",
   GET_PRODUCT:"/products/${id}",
   GET_ALL_STORE:"/stores",
-  MATCHES:"/matches"
+  MATCHES:"/matches",
+  MATCHES_ANALYSIS:"/matches/analysis"
 };

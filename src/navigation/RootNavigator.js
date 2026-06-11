@@ -1,11 +1,12 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useAuth } from "../context/AuthContext";
-import AuthStack from "./AuthStack";
-import AppStack from "./AppStack";
-import SplashScreen from "../screens/splash/SplashScreen";
-import { useState, useEffect } from "react";
-import { useLanguage } from "../context/LanguageContext";
-import { getOnboardingSeen,getLanguageSeen } from "../storage/TokenStorage"; 
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useAuth } from '../context/AuthContext';
+import AuthStack from './AuthStack';
+import AppStack from './AppStack';
+import SplashScreen from '../screens/splash/SplashScreen';
+import { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
+import { getOnboardingSeen, getLanguageSeen } from '../storage/TokenStorage';
+import TryOnStack from './TryOnStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,8 +27,8 @@ export default function RootNavigator() {
   useEffect(() => {
     Promise.all([getOnboardingSeen(), getLanguageSeen()]).then(
       ([onboarding, language]) => {
-        setOnboardingSeen(onboarding === "true");
-        setLanguageSeen(language === "true");
+        setOnboardingSeen(onboarding === 'true');
+        setLanguageSeen(language === 'true');
       },
     );
   }, []);
@@ -45,10 +46,10 @@ export default function RootNavigator() {
   if (user) return <AppStack />;
 
   const initialRoute = !languageSeen
-    ? "SelectLanguage"
+    ? 'SelectLanguage'
     : !onboardingSeen
-      ? "Onboarding"
-      : "Login";
+      ? 'Onboarding'
+      : 'Login';
 
   return <AuthStack initialRoute={initialRoute} />;
 }

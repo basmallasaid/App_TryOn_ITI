@@ -24,7 +24,7 @@ const BANNERS = [
     id: '2',
     title: 'New\nCollection ✨',
     subtitle: 'Discover the latest trends\nfor this season.',
-    image: IMAGES.ONBOARDING_TWO,
+    image: IMAGES.PICK,
   },
 ];
 

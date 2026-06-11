@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,15 +10,19 @@ import {
   Platform,
   StatusBar,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Svg, Path, Defs, ClipPath, Rect } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
+import { saveRecycleResult, getLatestRecycle } from "../../api/recycle_services/recycleService";
 
 export default function RecycleResultScreen({ route, navigation }) {
   const { t, i18n } = useTranslation();
+  const [saving, setSaving] = useState(false);
+  const [alreadySaved, setAlreadySaved] = useState(false);
   const {
     resultImageUri,
     designTitle,
@@ -31,9 +35,42 @@ export default function RecycleResultScreen({ route, navigation }) {
   const displayTitle = isAr && designTitleAr ? designTitleAr : designTitle;
   const displayDescription = isAr && designDescriptionAr ? designDescriptionAr : designDescription;
 
-  const handleSaveToWardrobe = () => {
-    Alert.alert(t("recycleResult.saved"), t("recycleResult.savedMessage"));
-    navigation.popToTop();
+  useEffect(() => {
+    const checkIfSaved = async () => {
+      try {
+        const data = await getLatestRecycle();
+        const exists = data.latestRecycle?.some((item) => item.imageUrl === resultImageUri);
+        if (exists) setAlreadySaved(true);
+      } catch (e) {
+        // ignore
+      }
+    };
+    if (resultImageUri) checkIfSaved();
+  }, [resultImageUri]);
+
+  const handleSaveToWardrobe = async () => {
+    setSaving(true);
+    try {
+      await saveRecycleResult({
+        imageUrl: resultImageUri,
+        designTitle,
+        designTitleAr,
+        designDescription,
+        designDescriptionAr,
+      });
+      setAlreadySaved(true);
+      Alert.alert(t("recycleResult.saved"), t("recycleResult.savedMessage"));
+      navigation.popToTop();
+    } catch (error) {
+      if (error.response?.status === 409) {
+        setAlreadySaved(true);
+        Alert.alert(t("recycleResult.alreadySaved"), t("recycleResult.alreadySavedMessage"));
+      } else {
+        Alert.alert(t("recycleResult.saveFailed"), t("recycleResult.saveFailedMessage"));
+      }
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleTryAgain = () => {
@@ -81,8 +118,10 @@ export default function RecycleResultScreen({ route, navigation }) {
           <View style={styles.buttonRow}>
             <View style={styles.buttonSave}>
               <CustomizeAppButtonFilled
-                label={t("recycleResult.save")}
+                label={alreadySaved ? t("recycleResult.alreadySaved") : saving ? t("recycleResult.saving") : t("recycleResult.save")}
                 onPress={handleSaveToWardrobe}
+                disabled={saving || alreadySaved}
+                loading={saving}
                 backgroundColor={Colors.primary}
               />
             </View>

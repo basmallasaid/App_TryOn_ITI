@@ -30,3 +30,19 @@ export const getRecycleSession = async (sessionId) => {
   const { data } = await apiClient.get(`/recycle/${sessionId}`);
   return data;
 };
+
+export const saveRecycleResult = async ({ imageUrl, designTitle, designTitleAr, designDescription, designDescriptionAr }) => {
+  const { data } = await apiClient.post("/users/latest-recycle", {
+    imageUrl,
+    designTitle,
+    designTitleAr,
+    designDescription,
+    designDescriptionAr,
+  });
+  return data;
+};
+
+export const getLatestRecycle = async () => {
+  const { data } = await apiClient.get("/users/latest-recycle");
+  return data;
+};

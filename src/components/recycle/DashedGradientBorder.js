@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import { Svg, Rect, Defs, LinearGradient as SvgGradient, Stop } from "react-native-svg";
 import Colors from "../../constants/theme/colors";
@@ -8,17 +8,24 @@ const PADDING_HORIZONTAL = 40;
 const DEFAULT_WIDTH = SCREEN_WIDTH - PADDING_HORIZONTAL;
 
 export default function DashedGradientBorder({ children, width, height, borderRadius = 16, borderWidth = 2 }) {
-  const svgWidth = typeof width === "number" ? width : DEFAULT_WIDTH;
+  const [measuredWidth, setMeasuredWidth] = useState(null);
+  const isFlex = !width || width === "100%";
+  const svgWidth = isFlex ? (measuredWidth || DEFAULT_WIDTH) : (typeof width === "number" ? width : DEFAULT_WIDTH);
 
   return (
-    <View style={[styles.wrap, { width: svgWidth, height }]}>
+    <View
+      style={[styles.wrap, isFlex ? { width: "100%" } : { width: svgWidth }, { height }]}
+      onLayout={(e) => {
+        if (isFlex) setMeasuredWidth(e.nativeEvent.layout.width);
+      }}
+    >
       <Svg
         width={svgWidth}
         height={height}
         style={StyleSheet.absoluteFill}
       >
         <Defs>
-          <SvgGradient id="gradDashed" x1="0" y1="0" x2="1" y2="1">
+          <SvgGradient id={`gradDashed-${svgWidth}`} x1="0" y1="0" x2="1" y2="1">
             <Stop offset="0" stopColor="#FF8C42" />
             <Stop offset="0.5" stopColor="#40B9FF" />
             <Stop offset="1" stopColor="#8ED321" />
@@ -32,7 +39,7 @@ export default function DashedGradientBorder({ children, width, height, borderRa
           rx={borderRadius}
           ry={borderRadius}
           fill="none"
-          stroke="url(#gradDashed)"
+          stroke={`url(#gradDashed-${svgWidth})`}
           strokeWidth={borderWidth}
           strokeDasharray="10 6"
         />

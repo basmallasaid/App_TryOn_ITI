@@ -348,34 +348,27 @@ export default function RecycleScreen({ navigation }) {
           </DashedGradientBorder>
         </TouchableOpacity>
       ) : (
-        <View>
-          <Text style={styles.sectionTitle}>{t("recycle.capturedPhotos", { count: capturedImages.length, max: MAX_ITEMS })}</Text>
-          <FlatList
-            horizontal
-            data={capturedImages}
-            keyExtractor={(_, index) => index.toString()}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.wardrobeList}
-            renderItem={({ item, index }) => (
-              <View style={styles.wardrobeItemWrap}>
-                <View style={styles.wardrobeItemCard}>
-                  <Image source={{ uri: item.uri }} style={styles.wardrobeItemImage} resizeMode="cover" />
-                  <TouchableOpacity
-                    style={styles.removeBtn}
-                    onPress={() => removeCapturedImage(index)}
-                  >
-                    <Ionicons name="close" size={14} color="#FFFFFF" />
-                  </TouchableOpacity>
-                </View>
-                <Text style={styles.wardrobeItemName}>{t("recycle.photo")} {index + 1}</Text>
-              </View>
-            )}
-          />
+        <View style={styles.galleryRow}>
+          {capturedImages.map((item, index) => (
+            <View key={index} style={styles.galleryItem}>
+              <Image source={{ uri: item.uri }} style={styles.galleryItemImage} resizeMode="cover" />
+              <TouchableOpacity
+                style={styles.galleryRemoveBtn}
+                onPress={() => removeCapturedImage(index)}
+              >
+                <Ionicons name="close" size={14} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+          ))}
           {capturedImages.length < MAX_ITEMS && (
-            <TouchableOpacity style={styles.addMoreBtn} onPress={handleCamera}>
-              <Ionicons name="add" size={20} color={Colors.primary} />
-              <Text style={styles.addMoreText}>{t("recycle.addMore")}</Text>
-            </TouchableOpacity>
+            <View style={styles.galleryItem}>
+              <DashedGradientBorder width="100%" height={160} borderRadius={12}>
+                <TouchableOpacity onPress={handleCamera} style={styles.compactUploadInner}>
+                  <Ionicons name="add" size={24} color={Colors.primary} />
+                  <Text style={styles.compactUploadText}>{t("recycle.addMore")}</Text>
+                </TouchableOpacity>
+              </DashedGradientBorder>
+            </View>
           )}
         </View>
       )}
@@ -394,34 +387,27 @@ export default function RecycleScreen({ navigation }) {
           </DashedGradientBorder>
         </TouchableOpacity>
       ) : (
-        <View>
-          <Text style={styles.sectionTitle}>{t("recycle.uploadedPhotos", { count: uploadedImages.length, max: MAX_ITEMS })}</Text>
-          <FlatList
-            horizontal
-            data={uploadedImages}
-            keyExtractor={(_, index) => index.toString()}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.wardrobeList}
-            renderItem={({ item, index }) => (
-              <View style={styles.wardrobeItemWrap}>
-                <View style={styles.wardrobeItemCard}>
-                  <Image source={{ uri: item.uri }} style={styles.wardrobeItemImage} resizeMode="cover" />
-                  <TouchableOpacity
-                    style={styles.removeBtn}
-                    onPress={() => removeUploadedImage(index)}
-                  >
-                    <Ionicons name="close" size={14} color="#FFFFFF" />
-                  </TouchableOpacity>
-                </View>
-                <Text style={styles.wardrobeItemName}>{t("recycle.photo")} {index + 1}</Text>
-              </View>
-            )}
-          />
+        <View style={styles.galleryRow}>
+          {uploadedImages.map((item, index) => (
+            <View key={index} style={styles.galleryItem}>
+              <Image source={{ uri: item.uri }} style={styles.galleryItemImage} resizeMode="cover" />
+              <TouchableOpacity
+                style={styles.galleryRemoveBtn}
+                onPress={() => removeUploadedImage(index)}
+              >
+                <Ionicons name="close" size={14} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+          ))}
           {uploadedImages.length < MAX_ITEMS && (
-            <TouchableOpacity style={styles.addMoreBtn} onPress={handleGallery}>
-              <Ionicons name="add" size={20} color={Colors.primary} />
-              <Text style={styles.addMoreText}>{t("recycle.addMore")}</Text>
-            </TouchableOpacity>
+            <View style={styles.galleryItem}>
+              <DashedGradientBorder width="100%" height={160} borderRadius={12}>
+                <TouchableOpacity onPress={handleGallery} style={styles.compactUploadInner}>
+                  <Ionicons name="add" size={24} color={Colors.primary} />
+                  <Text style={styles.compactUploadText}>{t("recycle.addMore")}</Text>
+                </TouchableOpacity>
+              </DashedGradientBorder>
+            </View>
           )}
         </View>
       )}
@@ -446,6 +432,10 @@ export default function RecycleScreen({ navigation }) {
       >
         <Text style={styles.subtitle}>{t("recycle.subtitle")}</Text>
 
+        {activeTab === "Wardrobe" && renderWardrobeTab()}
+        {activeTab === "Camera" && renderCameraTab()}
+        {activeTab === "Gallery" && renderGalleryTab()}
+
         <View style={styles.tabsRow}>
           <SourceTab
             label={t("recycle.tabs.wardrobe")}
@@ -466,10 +456,6 @@ export default function RecycleScreen({ navigation }) {
             onPress={() => handleTabChange("Gallery")}
           />
         </View>
-
-        {activeTab === "Wardrobe" && renderWardrobeTab()}
-        {activeTab === "Camera" && renderCameraTab()}
-        {activeTab === "Gallery" && renderGalleryTab()}
 
         {selectedItems.length > 0 && activeTab === "Wardrobe" && (
           <Text style={styles.selectedCount}>{t("recycle.selectedCount", { count: selectedItems.length, max: MAX_ITEMS })}</Text>
@@ -584,6 +570,7 @@ const styles = StyleSheet.create({
   tabsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 16,
     marginBottom: 16,
   },
   sectionHeader: {
@@ -669,6 +656,44 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto_500Medium",
     fontSize: 14,
     color: Colors.textMuted,
+  },
+  galleryRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  galleryItem: {
+    flex: 1,
+    height: 160,
+    borderRadius: 12,
+    overflow: "hidden",
+    position: "relative",
+  },
+  galleryItemImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 12,
+  },
+  galleryRemoveBtn: {
+    position: "absolute",
+    top: 6,
+    right: 6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#FF4444",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  compactUploadInner: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 6,
+  },
+  compactUploadText: {
+    fontFamily: "Roboto_500Medium",
+    fontSize: 11,
+    color: Colors.primary,
   },
   removeBtn: {
     position: "absolute",

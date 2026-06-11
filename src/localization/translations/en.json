@@ -286,7 +286,12 @@
     "saveToWardrobe": "Save to Wardrobe",
     "tryAgain": "Try again",
     "saved": "Saved!",
-    "savedMessage": "Your recycled design has been saved to your wardrobe."
+    "savedMessage": "Your recycled design has been saved to your collection.",
+    "saving": "Saving...",
+    "saveFailed": "Save failed",
+    "saveFailedMessage": "Could not save your design. Please try again.",
+    "alreadySaved": "Already Saved",
+    "alreadySavedMessage": "This design is already in your collection."
   },
   "editProfile": {
     "title": "Edit Profile",

@@ -14,6 +14,8 @@ export const getAllProducts = async () => {
 export const saveLatestTryon = async (payload) => {
   const { data } = await apiClient.post(ENDPOINTS.LATEST_TRYON, payload);
   return data;
+}
+
 export const getProductById = async (productId) => {
   const endpoint = ENDPOINTS.GET_PRODUCT.replace('${id}', productId);
   const { data } = await apiClient.get(endpoint);

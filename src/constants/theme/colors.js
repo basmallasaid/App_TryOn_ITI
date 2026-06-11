@@ -15,6 +15,7 @@ const Colors = {
   white:          '#FFFFFF',
   borderStrong:   '#D5D9DE',
   iconGray:       '#6B7280',
+  borderDefault:"#E9EBEE",
  
   // States
   error:          '#FF8A3D',

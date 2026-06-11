@@ -18,4 +18,9 @@ export const ENDPOINTS = {
   VIRTUAL_TRYON:"/virtual-tryon",
   VIRTUAL_TRYON_OUTFIT:"/virtual-tryon/outfit",
   LATEST_TRYON:"/users/latest-tryon"
+  ANALYZE:"/analyze",
+  SAVETOWARDROBE:'/wardrobe/from-analysis',
+  WARDROBE:"/wardrobe",
+  GET_PRODUCT:"/products/${id}",
+  GET_ALL_STORE:"/stores"
 };

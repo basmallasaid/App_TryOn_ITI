@@ -53,6 +53,7 @@ export const ROUTES = {
   // Profile stack
   PROFILE_MAIN: 'Profile',
   EDIT_PROFILE: 'EditProfile',
+  FAVORITES: 'Favorites',
 };
 
 // Entry source constants

@@ -125,7 +125,7 @@ const ProfileScreen = ({ navigation }) => {
               icon="heart-outline"
               title={t('profile.wishlist')}
               subtitle={t('profile.wishlistCount', { count: favorites.length })}
-              onPress={() => navigation.navigate("Favorites")}
+              onPress={() => navigation.navigate(ROUTES.FAVORITES)}
             />
           </View>
         </View>

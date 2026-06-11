@@ -1,21 +1,22 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Svg, Rect, Defs, LinearGradient as SvgGradient, Stop } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 
 const CARD_WIDTH = 260;
-const CARD_HEIGHT = 200;
+const COLLAPSED_HEIGHT = 200;
+const EXPANDED_HEIGHT = 340;
 const BORDER_RADIUS = 16;
 const BORDER_WIDTH = 2;
 
-function DashedGradientBorder({ children }) {
+function DashedGradientBorder({ children, height }) {
   return (
-    <View style={styles.gradientBorderWrap}>
+    <View style={[styles.gradientBorderWrap, { height }]}>
       <Svg
         width={CARD_WIDTH}
-        height={CARD_HEIGHT}
+        height={height}
         style={StyleSheet.absoluteFill}
       >
         <Defs>
@@ -29,7 +30,7 @@ function DashedGradientBorder({ children }) {
           x={BORDER_WIDTH / 2}
           y={BORDER_WIDTH / 2}
           width={CARD_WIDTH - BORDER_WIDTH}
-          height={CARD_HEIGHT - BORDER_WIDTH}
+          height={height - BORDER_WIDTH}
           rx={BORDER_RADIUS}
           ry={BORDER_RADIUS}
           fill="none"
@@ -38,7 +39,7 @@ function DashedGradientBorder({ children }) {
           strokeDasharray="10 6"
         />
       </Svg>
-      <View style={styles.inner}>
+      <View style={[styles.inner, { height: height - BORDER_WIDTH * 2 }]}>
         {children}
       </View>
     </View>
@@ -54,6 +55,13 @@ export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
   const displayTitle = isAr && idea.title_ar ? idea.title_ar : idea.title;
   const displayDescription = isAr && idea.design_description_ar ? idea.design_description_ar : idea.design_description;
 
+  const cardHeight = expanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT;
+
+  const handleToggle = (e) => {
+    e.stopPropagation?.();
+    setExpanded(!expanded);
+  };
+
   const cardContent = (
     <>
       <View style={styles.header}>
@@ -67,19 +75,26 @@ export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
       <Text style={[styles.title, isSelected && styles.selectedTitle]}>
         {displayTitle}
       </Text>
-      <Text
-        style={[styles.description, isSelected && styles.selectedDescription]}
-        numberOfLines={expanded ? undefined : 3}
-      >
-        {displayDescription}
-      </Text>
+      {expanded ? (
+        <ScrollView style={styles.descScroll} showsVerticalScrollIndicator={false}>
+          <Text style={[styles.description, isSelected && styles.selectedDescription]}>
+            {displayDescription}
+          </Text>
+        </ScrollView>
+      ) : (
+        <Text
+          style={[styles.description, isSelected && styles.selectedDescription]}
+          numberOfLines={3}
+          ellipsizeMode="tail"
+        >
+          {displayDescription}
+        </Text>
+      )}
       <TouchableOpacity
-        onPress={(e) => {
-          e.stopPropagation?.();
-          setExpanded(!expanded);
-        }}
+        onPress={handleToggle}
         onPressIn={(e) => e.stopPropagation?.()}
         hitSlop={{ top: 8, bottom: 8 }}
+        style={styles.seeMoreBtn}
       >
         <Text style={[styles.seeMore, isSelected && styles.selectedSeeMore]}>
           {expanded ? t("recycle.seeLess") : t("recycle.seeMore")}
@@ -91,7 +106,7 @@ export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
   if (isSelected) {
     return (
       <TouchableOpacity onPress={onSelect} activeOpacity={0.85}>
-        <DashedGradientBorder>
+        <DashedGradientBorder height={cardHeight}>
           {cardContent}
         </DashedGradientBorder>
       </TouchableOpacity>
@@ -99,7 +114,7 @@ export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
   }
 
   return (
-    <TouchableOpacity onPress={onSelect} activeOpacity={0.85} style={styles.card}>
+    <TouchableOpacity onPress={onSelect} activeOpacity={0.85} style={[styles.card, { height: cardHeight }]}>
       {cardContent}
     </TouchableOpacity>
   );
@@ -114,10 +129,10 @@ const styles = StyleSheet.create({
     padding: 14,
     width: CARD_WIDTH,
     marginRight: 12,
+    overflow: "hidden",
   },
   gradientBorderWrap: {
     width: CARD_WIDTH,
-    height: CARD_HEIGHT,
     marginRight: 12,
   },
   inner: {
@@ -125,10 +140,10 @@ const styles = StyleSheet.create({
     top: BORDER_WIDTH,
     left: BORDER_WIDTH,
     right: BORDER_WIDTH,
-    bottom: BORDER_WIDTH,
     borderRadius: BORDER_RADIUS - 1,
     backgroundColor: Colors.white,
     padding: 14,
+    overflow: "hidden",
   },
   header: {
     flexDirection: "row",
@@ -169,12 +184,18 @@ const styles = StyleSheet.create({
   selectedDescription: {
     color: Colors.textSecondary,
   },
+  descScroll: {
+    flex: 1,
+  },
+  seeMoreBtn: {
+    marginTop: 4,
+    alignSelf: "flex-start",
+  },
   seeMore: {
     fontFamily: "Roboto_500Medium",
     fontWeight: "500",
     fontSize: 11,
     color: Colors.primary,
-    marginTop: 6,
   },
   selectedSeeMore: {
     color: Colors.primary,

@@ -263,6 +263,8 @@
     "uploadedPhotos": "الصور المرفوعة ({{count}}/{{max}})",
     "tapToCapture": "اضغط لالتقاط صورة",
     "tapToSelect": "اضغط للاختيار من المعرض",
+    "openCamera": "فتح الكاميرا",
+    "uploadFromGallery": "رفع من المعرض",
     "addMore": "إضافة المزيد",
     "wardrobeEmpty": "خزانة ملابسك فارغة.\nأضف عناصر أولاً لإعادة تدويرها.",
     "maxReached": "تم الوصول للحد الأقصى",
@@ -278,7 +280,15 @@
     "cancel": "إلغاء",
     "photo": "صورة",
     "seeMore": "عرض المزيد",
-    "seeLess": "عرض أقل"
+    "seeLess": "عرض أقل",
+    "noUploadsTitle": "لا توجد عناصر مرفوعة بعد",
+    "noUploadsSub": "أضف عناصر من الأعلى لإعادة تدويرها.",
+    "noItemsCount": "لا عناصر  (0)",
+    "itemsCount": "عناصر  ({{count}})",
+    "oneItemTitle": "تم التقاط عنصر واحد",
+    "oneItemSub": "يمكنك إضافة عنصر آخر من الأعلى لإعادة تدويرهما.",
+    "twoItemsTitle": "تم رفع عنصران",
+    "twoItemsSub": "يمكنك إعادة تدويرهما."
   },
   "recycleResult": {
     "title": "تصميمك",

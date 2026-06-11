@@ -263,6 +263,8 @@
     "uploadedPhotos": "Uploaded photos ({{count}}/{{max}})",
     "tapToCapture": "Tap to take a photo",
     "tapToSelect": "Tap to select from gallery",
+    "openCamera": "Open Camera",
+    "uploadFromGallery": "Upload from Gallery",
     "addMore": "Add more",
     "wardrobeEmpty": "Your wardrobe is empty.\nAdd items first to recycle them.",
     "maxReached": "Maximum reached",
@@ -278,7 +280,15 @@
     "cancel": "Cancel",
     "photo": "Photo",
     "seeMore": "See More",
-    "seeLess": "See Less"
+    "seeLess": "See Less",
+    "noUploadsTitle": "No items uploaded yet",
+    "noUploadsSub": "Add items from above to recycle them.",
+    "noItemsCount": "No Items  (0)",
+    "itemsCount": "Items  ({{count}})",
+    "oneItemTitle": "1 item captured",
+    "oneItemSub": "You can add 1 more from above to recycle them.",
+    "twoItemsTitle": "2 items uploaded",
+    "twoItemsSub": "You can recycle them."
   },
   "recycleResult": {
     "title": "Your Design",

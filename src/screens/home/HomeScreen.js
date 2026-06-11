@@ -50,6 +50,7 @@ export default function HomeScreen({ navigation }) {
             titleColor="#A6E22E"
             iconBgColor="#F1F8E9"
             iconColor="#A6E22E"
+            onPress={() => navigation.navigate("Recycle")}
           />
           <ActionCard
             title={t('home.actions.generateOutfit')}

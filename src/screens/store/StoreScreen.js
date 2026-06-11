@@ -8,6 +8,7 @@ import { CategoryTabs } from '../../components/store/CategoryTabs';
 import Colors from '../../constants/theme/colors';
 import { getAllProducts } from '../../api/user_services/userService';
 import { FilterModal } from './FilterModal';
+import { useFavorites } from '../../context/FavoritesContext';
 
 const mapProductToCard = (product) => ({
     id: product._id,
@@ -60,6 +61,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function StoreScreen() {
     const navigation = useNavigation();
+    const { isFavorite, addItem, removeItem, refetch: refetchFavorites } = useFavorites();
     const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -201,6 +203,18 @@ export default function StoreScreen() {
                 renderItem={({ item }) => (
                     <ProductCard
                         {...item}
+                        isFavorite={isFavorite(item.id)}
+                        onToggleFavorite={async () => {
+                            try {
+                                if (isFavorite(item.id)) {
+                                    await removeItem(item.id);
+                                } else {
+                                    await addItem(item.id, "PRODUCT");
+                                }
+                            } catch (e) {
+                                refetchFavorites();
+                            }
+                        }}
                         onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
                         onTryOnPress={() => handleTryOn(item)}
                     />

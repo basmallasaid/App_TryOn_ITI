@@ -4,7 +4,7 @@ export const ENDPOINTS = {
   FORGOT_PASSWORD:"/auth/forgot-password",
   RESET_PASSWORD:"/auth/reset-password",
   VERIFY_FORGET_PASSWORD_OTP:"/auth/verify-otp",
-  SEND_VERIFICATION:  '/auth/send-verification', 
+  SEND_VERIFICATION:  '/auth/send-verification',
   UPDATE_PROFILE: '/users/profile',
   DELETE_ACCOUNT:"/users/account",
   LOGIN_WITH_GOOGLE:"/auth/google",
@@ -25,4 +25,7 @@ export const ENDPOINTS = {
   GET_ALL_STORE:"/stores",
   MATCHES:"/matches",
   MATCHES_ANALYSIS:"/matches/analysis"
+  GET_FAVORITES:"/users/favorites",
+  ADD_FAVORITE:"/users/favorites",
+  REMOVE_FAVORITE:"/users/favorites"
 };

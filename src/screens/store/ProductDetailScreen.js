@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { 
   StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, 
-  ActivityIndicator, SafeAreaView, Dimensions, StatusBar, Linking, Platform 
+  ActivityIndicator, Alert, SafeAreaView, Dimensions, StatusBar, Linking, Platform 
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { File, Directory, Paths } from 'expo-file-system';
 import { getProductById } from '../../api/user_services/userService'; 
 import { useNavigation } from '@react-navigation/native';
+import { useWardrobe } from '../../context/WardrobeContext';
+import { analyzeImage, getMatchesByAnalysis } from '../../api/matching_services/matchingService';
 
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
@@ -19,6 +22,9 @@ export default function ProductDetailScreen({ route }) {
   const [selectedSize, setSelectedSize] = useState('M');
 
   const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
+  const { items: wardrobeItems } = useWardrobe();
+  const [wardrobeMatches, setWardrobeMatches] = useState([]);
+  const [matchingLoading, setMatchingLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -35,10 +41,57 @@ export default function ProductDetailScreen({ route }) {
     fetchProduct();
   }, [productId]);
 
+  const resolveImage = async (uri) => {
+    if (!uri?.startsWith("http")) return uri;
+    const file = await File.downloadFileAsync(uri, new Directory(Paths.cache), { idempotent: true });
+    return file.uri;
+  };
+
+  useEffect(() => {
+    if (!product?.images?.[0]) {
+      setMatchingLoading(false);
+      return;
+    }
+    setMatchingLoading(true);
+    const fetchMatches = async () => {
+      try {
+        const localUri = await resolveImage(product.images[0]);
+        const analysisRes = await analyzeImage(localUri);
+        const analysisId = analysisRes?.analysis_id || analysisRes?.id || analysisRes?.data?.analysis_id;
+        if (analysisId) {
+          const matchRes = await getMatchesByAnalysis(analysisId, 30.0444, 31.2357);
+          const list = matchRes?.matches || matchRes?.data?.matches || (Array.isArray(matchRes) ? matchRes : []);
+          setWardrobeMatches(list.filter((m) => m.item?.source === "wardrobe"));
+        }
+      } catch (e) {
+        const msg = e.response?.data || e.message;
+        Alert.alert("Match Error", typeof msg === "string" ? msg : JSON.stringify(msg));
+        setWardrobeMatches([]);
+      } finally {
+        setMatchingLoading(false);
+      }
+    };
+    fetchMatches();
+  }, [product, wardrobeItems]);
+
   const openUrl = (url) => {
     if (url) {
       Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
     }
+  };
+
+  const getMatchImage = (match) => {
+    if (!match?.item) return null;
+    if (match.item.image) {
+      const uri = typeof match.item.image === "string" ? match.item.image : match.item.image?.uri;
+      if (uri) return { uri };
+    }
+    const wardrobeItem = wardrobeItems.find((wi) => wi._id === match.item.id || wi.id === match.item.id);
+    if (wardrobeItem) {
+      const uri = typeof wardrobeItem.image === "string" ? wardrobeItem.image : wardrobeItem.image?.uri;
+      if (uri) return { uri };
+    }
+    return null;
   };
 
   if (loading) return (
@@ -139,14 +192,35 @@ export default function ProductDetailScreen({ route }) {
 
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Wardrobe Matches ✨</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.matchScroll}>
-              {[100, 95, 85].map((val, i) => (
-                <View key={i} style={styles.matchCard}>
-                  <View style={styles.matchPercent}><Text style={styles.matchPercentText}>{val}%</Text></View>
-                  <Image source={{ uri: product?.images?.[0] }} style={styles.matchImg} />
-                </View>
-              ))}
-            </ScrollView>
+            {matchingLoading ? (
+              <ActivityIndicator size="small" color="#5CC1FF" style={{ marginVertical: 20 }} />
+            ) : wardrobeMatches.length === 0 ? (
+              <Text style={styles.noMatchText}>No matching wardrobe items found</Text>
+            ) : (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.matchScroll}>
+                {wardrobeMatches.map((match, index) => {
+                  const imgSrc = getMatchImage(match);
+                  return (
+                    <TouchableOpacity
+                      key={match.item?.id || index}
+                      onPress={() => navigation.navigate('Matching', { screen: 'MatchingResultDetails', params: { match, imageUri: imgSrc?.uri } })}
+                    >
+                      <View style={styles.matchCard}>
+                        <View style={styles.scoreBadge}>
+                          <Text style={styles.scoreText}>{match.score}%</Text>
+                        </View>
+                        {imgSrc ? (
+                          <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
+                        ) : (
+                          <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color="#CBD5E0" />
+                        )}
+                        <Text style={styles.matchItemName} numberOfLines={1}>{match.item?.name}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            )}
           </View>
 
           <View style={styles.actionRow}>
@@ -212,10 +286,12 @@ const styles = StyleSheet.create({
 
   // Matching
   matchScroll: { marginTop: 5 },
-  matchCard: { width: 110, height: 130, backgroundColor: '#F9FAFB', borderRadius: 20, marginRight: 12, padding: 8, justifyContent: 'center', alignItems: 'center', borderColor: '#8ED321', borderWidth: 1 },
-  matchImg: { width: '85%', height: '85%', resizeMode: 'contain' },
-  matchPercent: { position: 'absolute', top: 8, right: 8, backgroundColor: '#8ED321', paddingHorizontal: 5, paddingVertical: 2, borderRadius: 6, zIndex: 1 },
-  matchPercentText: { color: '#FFF', fontSize: 10, fontWeight: 'bold' },
+  matchCard: { width: 150, height: 180, backgroundColor: '#FFF', borderRadius: 15, marginRight: 15, justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: '#E0F4BE', position: 'relative' },
+  matchImg: { width: 100, height: 110 },
+  matchItemName: { fontSize: 11, fontWeight: '600', color: '#1A2530', textAlign: 'center', marginTop: 6, paddingHorizontal: 8, textTransform: 'capitalize' },
+  scoreBadge: { position: 'absolute', top: 10, right: 10, backgroundColor: '#A5E142', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, zIndex: 1 },
+  scoreText: { color: '#FFF', fontSize: 11, fontWeight: 'bold' },
+  noMatchText: { color: '#718096', fontSize: 14, marginVertical: 10 },
 
   // Footer Actions
   actionRow: { flexDirection: 'row', alignItems: 'center', marginTop: 35, paddingBottom: 20 },

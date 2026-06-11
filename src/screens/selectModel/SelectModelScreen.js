@@ -20,6 +20,7 @@ import { IMAGES } from "../../constants/images/images";
 import { useAuth } from "../../context/AuthContext";
 import { getUserProfile } from "../../api/user_services/userService";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
+import { ROUTES, SOURCE } from "../../navigation/routes";
 
 const PhotoPlaceholder = () => {
   const { t } = useTranslation();
@@ -102,20 +103,20 @@ const SelectModelScreen = ({ navigation, route }) => {
             const avatarImg = typeof avatarObj === "string"
               ? avatarObj
               : avatarObj?.image_url || avatarObj?.image || avatarObj?.imageUrl || avatarObj?.url || null;
-            navigation.navigate("TryOnResult", { productImage, avatarImage: avatarImg || avatarId });
+            navigation.navigate(ROUTES.TRY_ON_RESULT, { productImage, avatarImage: avatarImg || avatarId, source: SOURCE.STORE });
           } else {
-            navigation.navigate("TryOn", { avatarId });
+            navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarId, source: SOURCE.HOME });
           }
         } else {
-          navigation.navigate("CreateAvatar");
+          navigation.navigate(ROUTES.CREATE_AVATAR);
         }
       } catch {
-        navigation.navigate("CreateAvatar");
+        navigation.navigate(ROUTES.CREATE_AVATAR);
       } finally {
         setLoading(false);
       }
     } else if (selected === "photo") {
-      navigation.navigate("UploadPhoto", isStoreFlow ? { productImage } : undefined);
+      navigation.navigate(ROUTES.UPLOAD_PHOTO, isStoreFlow ? { productImage, source: SOURCE.STORE } : { source: SOURCE.HOME });
     }
   };
 

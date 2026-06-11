@@ -9,6 +9,7 @@ import CustomizeAppButtonOutlined from '../../components/common/CustomizeAppButt
 import Colors from '../../constants/theme/colors';
 import { IMAGES } from '../../constants/images/images';
 import { setOnboardingSeen } from '../../storage/TokenStorage';
+import { ROUTES } from '../../navigation/routes';
 
 const { width: W, height: H } = Dimensions.get('window');
 
@@ -53,7 +54,7 @@ const OnboardingScreen = ({ navigation }) => {
   const isLast    = activeIndex === SLIDES.length - 1;
   const goToLogin =async () => {
     await setOnboardingSeen();
-    navigation.replace('Login');};
+    navigation.replace(ROUTES.LOGIN);};
 
   const transitionTo = (nextIndex) => {
     if (isTransitioningRef.current) return;

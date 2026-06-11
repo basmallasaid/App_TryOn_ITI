@@ -24,6 +24,7 @@ import Colors from "../../constants/theme/colors";
 import { useWardrobe } from "../../context/WardrobeContext";
 import * as ImageManipulator from "expo-image-manipulator";
 import { openCamera, openGallery } from "../../utils/cameraAccess";
+import { ROUTES } from "../../navigation/routes";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = 150; // Based on your WardrobeItemCard width
 const GAP = 15;
@@ -108,7 +109,7 @@ const WardrobeScreen = ({ navigation }) => {
       });
 
       const analysisResult = await analyzeGarment(formData);
-      navigation.navigate("VerifyItem", {
+      navigation.navigate(ROUTES.VERIFY_ITEM, {
         imageUri: compressed.uri,
         analysisResult,
       });
@@ -189,13 +190,13 @@ const WardrobeScreen = ({ navigation }) => {
               <WardrobeItemCard
                 item={item}
                 onPress={() =>
-                  navigation.navigate("ItemDetails", { 
+                  navigation.navigate(ROUTES.ITEM_DETAILS, { 
                     itemId: item._id,
                     analysisId: item.analysis_id 
                   })
                 }
                 onLongPress={() =>
-                  navigation.navigate("EditWardrobe", {
+                  navigation.navigate(ROUTES.EDIT_WARDROBE, {
                     initialSelectedId: item._id,
                   })
                 }

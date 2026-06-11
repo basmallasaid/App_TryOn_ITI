@@ -18,6 +18,7 @@ import Typography from "../../constants/theme/typography";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import PhotoInstructionCard from "../../components/tryOn/PhotoInstructionCard";
 import { openGallery } from "../../utils/cameraAccess";
+import { ROUTES, SOURCE } from "../../navigation/routes";
 
 const instructions = [
   {
@@ -60,9 +61,9 @@ const UploadPhotoScreen = ({ navigation, route }) => {
   const handleUploadPress = async () => {
     if (selectedImage) {
       if (isStoreFlow) {
-        navigation.navigate("TryOnResult", { productImage, photoUri: selectedImage });
+        navigation.navigate(ROUTES.TRY_ON_RESULT, { productImage, photoUri: selectedImage, source: SOURCE.STORE });
       } else {
-        navigation.navigate("TryOn", { photoUri: selectedImage });
+        navigation.navigate(ROUTES.TRY_ON_SCREEN, { photoUri: selectedImage, source: SOURCE.HOME });
       }
       return;
     }
@@ -156,9 +157,9 @@ const UploadPhotoScreen = ({ navigation, route }) => {
             label={t("tryOn.uploadPhoto.goToTryOn")}
             onPress={() => {
               if (isStoreFlow) {
-                navigation.navigate("TryOnResult", { productImage, photoUri: selectedImage });
+                navigation.navigate(ROUTES.TRY_ON_RESULT, { productImage, photoUri: selectedImage, source: SOURCE.STORE });
               } else {
-                navigation.navigate("TryOn", { photoUri: selectedImage });
+                navigation.navigate(ROUTES.TRY_ON_SCREEN, { photoUri: selectedImage, source: SOURCE.HOME });
               }
             }}
             backgroundColor={Colors.primary}

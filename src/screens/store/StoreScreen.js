@@ -57,6 +57,7 @@ const buildCategoriesFromProducts = (products) => {
 };
 
 import { useNavigation } from '@react-navigation/native';
+import { ROUTES, SOURCE } from '../../navigation/routes';
 
 export default function StoreScreen() {
     const navigation = useNavigation();
@@ -79,9 +80,15 @@ export default function StoreScreen() {
     };
 
     const handleTryOn = (item) => {
-        navigation.navigate('TryOn', {
-            screen: 'SelectModel',
-            params: { productImage: item.image, productName: item.name }
+        navigation.navigate(ROUTES.TRY_ON, {
+            screen: ROUTES.SELECT_MODEL,
+            params: { 
+                source: SOURCE.STORE,
+                itemId: item.id,
+                itemType: item.name,
+                productImage: item.image, 
+                productName: item.name 
+            }
         });
     };
 
@@ -201,7 +208,7 @@ export default function StoreScreen() {
                 renderItem={({ item }) => (
                     <ProductCard
                         {...item}
-                        onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+                        onPress={() => navigation.navigate(ROUTES.PRODUCT_DETAIL, { productId: item.id })}
                         onTryOnPress={() => handleTryOn(item)}
                     />
                 )}

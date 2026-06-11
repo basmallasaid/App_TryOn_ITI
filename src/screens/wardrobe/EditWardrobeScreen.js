@@ -18,6 +18,7 @@ import CategoryChip from "../../components/wardrobe/CategoryChip";
 import WardrobeItemCard from "../../components/wardrobe/WardrobeItemCard";
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
 import { getCategoriesByGender } from "../../constants/wardrobe/wardrobeCategories";
+import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
 
 const EditWardrobeScreen = ({ navigation, route }) => {
@@ -56,7 +57,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
       // Update local context
       selectedIds.forEach((id) => removeItem(id));
       setModalVisible(false);
-      navigation.navigate("WardrobeMain");
+      navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (error) {
       console.error("Delete failed", error);
     } finally {

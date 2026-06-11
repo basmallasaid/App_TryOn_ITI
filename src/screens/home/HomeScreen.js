@@ -19,6 +19,7 @@ import TryOnCard from "../../components/home/TryOnCard";
 import { IMAGES } from "../../constants/images/images";
 import { Ionicons } from "@expo/vector-icons";
 import { useProfileContext } from "../../context/ProfileContext";
+import { ROUTES, SOURCE } from "../../navigation/routes";
 
 export default function HomeScreen({ navigation }) {
   const { t } = useTranslation();
@@ -45,7 +46,7 @@ export default function HomeScreen({ navigation }) {
             titleColor="#40B9FF"
             iconBgColor="#E9F7FE"
             iconColor="#40B9FF"
-            onPress={() => navigation.navigate("TryOn")}
+            onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.HOME } })}
           />
           <ActionCard
             title={t('home.actions.recycle')}
@@ -54,7 +55,7 @@ export default function HomeScreen({ navigation }) {
             titleColor="#A6E22E"
             iconBgColor="#F1F8E9"
             iconColor="#A6E22E"
-            onPress={() => navigation.navigate("Recycle")}
+            onPress={() => navigation.navigate(ROUTES.RECYCLE)}
           />
           <ActionCard
             title={t('home.actions.generateOutfit')}
@@ -73,7 +74,7 @@ export default function HomeScreen({ navigation }) {
             titleColor="#FF8A3D"
             iconBgColor="#FFF3E0"
             iconColor="#FF8A3D"
-            onPress={() => navigation.navigate("Matching")}
+            onPress={() => navigation.navigate(ROUTES.MATCHING)}
           />
         </View>
 
@@ -109,7 +110,7 @@ export default function HomeScreen({ navigation }) {
 
         <View style={styles.recentHeader}>
           <Text style={styles.recentTitle}>Recent Recycles</Text>
-          <TouchableOpacity style={styles.viewAllBtn} onPress={() => navigation.navigate("Recycle")}>
+          <TouchableOpacity style={styles.viewAllBtn} onPress={() => navigation.navigate(ROUTES.RECYCLE)}>
             <Text style={styles.viewAllText}>{t('home.viewAll')}</Text>
             <Ionicons name="arrow-forward" size={16} color="#1A1C24" style={styles.arrowIcon} />
           </TouchableOpacity>

@@ -19,6 +19,7 @@ import StyleChip from "../../components/profile/StyleChip";
 import LanguageBottomSheet from "../../components/profile/LanguageBottomSheet";
 import CustomizeAppButtonOutlined from "../../components/common/CustomizeAppButtonOutlined";
 import Colors from "../../constants/theme/colors";
+import { ROUTES } from "../../navigation/routes";
 
 const ProfileScreen = ({ navigation }) => {
   const { t } = useTranslation();
@@ -90,7 +91,7 @@ const ProfileScreen = ({ navigation }) => {
             </View>
             <TouchableOpacity
               style={styles.editBtn}
-              onPress={() => navigation.navigate("EditProfile")}
+              onPress={() => navigation.navigate(ROUTES.EDIT_PROFILE)}
             >
               <Text style={styles.editText}>{t('profile.edit')}</Text>
             </TouchableOpacity>

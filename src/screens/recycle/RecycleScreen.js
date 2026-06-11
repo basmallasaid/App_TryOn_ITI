@@ -25,6 +25,7 @@ import SourceTab from "../../components/recycle/SourceTab";
 import DesignIdeaCard from "../../components/recycle/DesignIdeaCard";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import SparkleIcon from "../../components/recycle/SparkleIcon";
+import { ROUTES } from "../../navigation/routes";
 import GradientBorder from "../../components/recycle/GradientBorder";
 import DashedGradientBorder from "../../components/recycle/DashedGradientBorder";
 
@@ -251,7 +252,7 @@ export default function RecycleScreen({ navigation }) {
 
       if (result.success) {
         const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId);
-        navigation.navigate("RecycleResult", {
+        navigation.navigate(ROUTES.RECYCLE_RESULT, {
           resultImageUri: result.image_url,
           designTitle: selectedIdea?.title || "Generated Design",
           designTitleAr: selectedIdea?.title_ar || null,

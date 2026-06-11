@@ -21,6 +21,7 @@ import { ICONS } from "../../../constants/images/icons";
 import { IMAGES } from "../../../constants/images/images";
 import BottomSheetLayout from "../../../components/authentication/BottomSheetLayout";
 import EnrichTextComponent from "../../../components/common/EnrichTextComponent";
+import { ROUTES } from "../../../navigation/routes";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -91,7 +92,7 @@ const SignUpScreen = ({ navigation }) => {
         form.confirmPassword,
       );
       await updateProfile(token,form.firstName,form.lastName);
-      navigation.navigate("CheckEmail", { email, token });
+      navigation.navigate(ROUTES.CHECK_EMAIL, { email, token });
     } catch (e) {
       setError(
         e.response?.data?.message ||
@@ -217,7 +218,7 @@ const SignUpScreen = ({ navigation }) => {
       <EnrichTextComponent
         baseText={t('auth.signup.hasAccount')}
         linkText={t('auth.signup.loginNow')}
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => navigation.navigate(ROUTES.LOGIN)}
       />
     </BottomSheetLayout>
   );

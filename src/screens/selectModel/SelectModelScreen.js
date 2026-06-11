@@ -8,6 +8,7 @@ import {
   Platform,
   StatusBar,
   Alert,
+  ScrollView
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,6 +19,7 @@ import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButton
 import { IMAGES } from "../../constants/images/images";
 import { useAuth } from "../../context/AuthContext";
 import { getUserProfile } from "../../api/user_services/userService";
+import { getAvatarById } from "../../api/avatar_services/avatarService";
 
 const PhotoPlaceholder = () => {
   const { t } = useTranslation();
@@ -59,11 +61,13 @@ const photoStyles = StyleSheet.create({
   },
 });
 
-const SelectModelScreen = ({ navigation }) => {
+const SelectModelScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
+  const productImage = route?.params?.productImage;
+  const isStoreFlow = !!productImage;
 
   const MODELS = [
     {
@@ -90,7 +94,18 @@ const SelectModelScreen = ({ navigation }) => {
         const profile = await getUserProfile(user._id);
         const avatars = profile?.avatars;
         if (avatars && avatars.length > 0) {
-          navigation.navigate("TryOn", { avatarId: avatars[0]._id || avatars[0] });
+          const avatarInfo = avatars[0];
+          const avatarId = avatarInfo._id || avatarInfo;
+          if (isStoreFlow) {
+            const avatarData = await getAvatarById(avatarId);
+            const avatarObj = avatarData?.avatar || avatarData;
+            const avatarImg = typeof avatarObj === "string"
+              ? avatarObj
+              : avatarObj?.image_url || avatarObj?.image || avatarObj?.imageUrl || avatarObj?.url || null;
+            navigation.navigate("TryOnResult", { productImage, avatarImage: avatarImg || avatarId });
+          } else {
+            navigation.navigate("TryOn", { avatarId });
+          }
         } else {
           navigation.navigate("CreateAvatar");
         }
@@ -106,45 +121,57 @@ const SelectModelScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={24} color={Colors.iconGray} />
-        </TouchableOpacity>
+  <ScrollView
+    contentContainerStyle={styles.scrollContent}
+    showsVerticalScrollIndicator={false}
+  >
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.backBtn}
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons
+          name="chevron-back"
+          size={24}
+          color={Colors.iconGray}
+        />
+      </TouchableOpacity>
 
-        <Text style={styles.title}>{t('tryOn.selectModel.title')}</Text>
-        <Text style={styles.subtitle}>
-          {t('tryOn.selectModel.subtitle')}
-        </Text>
+      <Text style={styles.title}>
+        {t('tryOn.selectModel.title')}
+      </Text>
 
-        <View style={styles.optionsWrap}>
-          {MODELS.map((model) => (
-            <AvatarOptionCard
-              key={model.id}
-              title={model.title}
-              description={model.description}
-              badge={model.badge}
-              image={model.image}
-              rightContent={model.rightContent}
-              selected={selected === model.id}
-              onPress={() => setSelected(model.id)}
-            />
-          ))}
-        </View>
+      <Text style={styles.subtitle}>
+        {t('tryOn.selectModel.subtitle')}
+      </Text>
 
-        <View style={styles.buttonWrap}>
-          <CustomizeAppButtonFilled
-            label={t('tryOn.selectModel.next')}
-            onPress={handleNext}
-            disabled={!selected}
-            loading={loading}
-            backgroundColor={Colors.primary}
+      <View style={styles.optionsWrap}>
+        {MODELS.map((model) => (
+          <AvatarOptionCard
+            key={model.id}
+            title={model.title}
+            description={model.description}
+            badge={model.badge}
+            image={model.image}
+            rightContent={model.rightContent}
+            selected={selected === model.id}
+            onPress={() => setSelected(model.id)}
           />
-        </View>
+        ))}
       </View>
-    </SafeAreaView>
+
+      <View style={styles.buttonWrap}>
+        <CustomizeAppButtonFilled
+          label={isStoreFlow ? t('tryOn.virtualTryOn.generate') : t('tryOn.selectModel.next')}
+          onPress={handleNext}
+          disabled={!selected}
+          loading={loading}
+          backgroundColor={Colors.primary}
+        />
+      </View>
+    </View>
+  </ScrollView>
+</SafeAreaView>
   );
 };
 
@@ -186,6 +213,9 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     paddingTop: 50,
   },
+  scrollContent: {
+  flexGrow: 1,
+},
 });
 
 export default SelectModelScreen;

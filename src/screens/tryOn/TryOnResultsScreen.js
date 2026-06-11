@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -13,23 +13,85 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { File, Directory, Paths } from 'expo-file-system';
 import { saveLatestTryon } from '../../api/user_services/userService';
+import { virtualTryOn } from '../../api/virtual_tryon_services/virtualTryonService';
 
 const { width } = Dimensions.get('window');
 
 const TryOnResult = ({ navigation, route }) => {
   const result = route?.params?.result || {};
+  const productImage = route?.params?.productImage;
+  const avatarImage = route?.params?.avatarImage;
+  const isStoreFlow = !!(productImage && avatarImage);
   const resultImage = result?.image_url || result?.image || result?.imageUrl || result?.url || null;
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [storeResult, setStoreResult] = useState(null);
+  const [generateError, setGenerateError] = useState(null);
+
+  const displayImage = storeResult?.image_url || storeResult?.image || storeResult?.imageUrl || storeResult?.url || resultImage;
+
+  useEffect(() => {
+    if (isStoreFlow) {
+      handleStoreGenerate();
+    }
+  }, []);
+
+  const resolveToFile = async (uri) => {
+    if (!uri) return null;
+    if (uri.startsWith("data:image")) {
+      const matches = uri.match(/^data:image\/(\w+);base64,(.+)$/);
+      if (!matches) return uri;
+      const ext = matches[1] === "jpeg" ? "jpg" : matches[1];
+      const file = new File(Paths.cache, `store_garment_${Date.now()}.${ext}`);
+      file.create({ idempotent: true });
+      file.write(Uint8Array.from(atob(matches[2]), (c) => c.charCodeAt(0)));
+      return file.uri;
+    }
+    if (uri.startsWith("http")) {
+      const file = await File.downloadFileAsync(uri, new Directory(Paths.cache), { idempotent: true });
+      return file.uri;
+    }
+    return uri;
+  };
+
+  const appendToFormData = (fd, fieldName, uri) => {
+    const name = uri.split("/").pop() || `${fieldName}.jpg`;
+    fd.append(fieldName, {
+      uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
+      name,
+      type: `image/${name.split(".").pop() || "jpeg"}`,
+    });
+  };
+
+  const handleStoreGenerate = async () => {
+    setGenerating(true);
+    setGenerateError(null);
+    try {
+      const personUri = await resolveToFile(avatarImage);
+      const garmentUri = await resolveToFile(productImage);
+      const formData = new FormData();
+      appendToFormData(formData, "personImage", personUri);
+      appendToFormData(formData, "garmentImage", garmentUri);
+      const res = await virtualTryOn(formData);
+      setStoreResult(res);
+    } catch (e) {
+      const msg = e.response?.data?.message || e.response?.data?.error || e.message || "Generation failed";
+      setGenerateError(msg);
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   const handleSave = async () => {
-    if (!resultImage) return;
+    if (!displayImage) return;
     setSaving(true);
     try {
       await saveLatestTryon({
-        imageUrl: resultImage,
-        taskId: result?.taskId,
-        model: result?.model,
+        imageUrl: displayImage,
+        taskId: (storeResult || result)?.taskId,
+        model: (storeResult || result)?.model,
       });
       Alert.alert("Saved", "Try-on result saved successfully.");
     } catch (e) {
@@ -53,9 +115,21 @@ const TryOnResult = ({ navigation, route }) => {
       </View>
 
       <View style={styles.imageContainer}>
-        {resultImage ? (
+        {generating ? (
+          <View style={styles.generatingOverlay}>
+            <ActivityIndicator size="large" color="#4AB8FF" />
+            <Text style={styles.generatingText}>Generating try-on result...</Text>
+          </View>
+        ) : generateError ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{generateError}</Text>
+            <TouchableOpacity style={styles.retryBtn} onPress={handleStoreGenerate}>
+              <Text style={styles.retryBtnText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        ) : displayImage ? (
           <Image
-            source={{ uri: resultImage }}
+            source={{ uri: displayImage }}
             style={styles.mainImage}
             resizeMode="contain"
           />
@@ -78,7 +152,13 @@ const TryOnResult = ({ navigation, route }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.tryAgainButton}
-          onPress={() => navigation.navigate("SelectModel")}
+          onPress={() => {
+            if (isStoreFlow) {
+              navigation.navigate("SelectModel", { productImage });
+            } else {
+              navigation.navigate("SelectModel");
+            }
+          }}
         >
           <Text style={styles.tryAgainText}>Try again</Text>
         </TouchableOpacity>
@@ -125,6 +205,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingBottom: 30,
     paddingTop: 10,
+  },
+  generatingOverlay: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  generatingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#718096',
+  },
+  errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    color: '#D32F2F',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  retryBtn: {
+    backgroundColor: '#4AB8FF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   saveButton: {
     backgroundColor: '#4AB8FF',

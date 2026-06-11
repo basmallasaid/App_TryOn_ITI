@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, {  useState, useRef, useCallback  } from "react";
 import {
   View,
   Text,
@@ -16,13 +16,12 @@ import {
 } from "react-native";
 import Colors from "../../constants/theme/colors";
 import { useWardrobe } from "../../context/WardrobeContext";
-import { saveToWardrobe } from "../../api/wardrobe_services/wardrobeService";
 import SelectionChip from "../../components/wardrobe/SelectionChip";
 import QuestionGroup from "../../components/wardrobe/QuestionGroup";
 import CustomizeTextInput from "../../components/common/CustomizeTextInput";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import CustomBackButton from "../../components/common/CustomBackButton"; // Added Import
-
+import { saveToWardrobe, editWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 const { height: SCREEN_H } = Dimensions.get("window");
 
 const SHEET_EXPANDED_H = SCREEN_H * 0.65;
@@ -32,6 +31,8 @@ const CATEGORIES = [
   "Basic",
   "Bottom",
   "Top",
+  "Dress",
+  "Suit",
   "Bag",
   "Shoes",
   "Jacket",
@@ -108,23 +109,59 @@ const VerifyItemScreen = ({ route, navigation }) => {
     setForm((prev) => {
       const current = prev[field];
       const isSelected = current.includes(value);
+      if (field === "seasons") {
+        return {
+          ...prev,
+          [field]: isSelected
+            ? current.filter((item) => item !== value)
+            : [...current, value],
+        };
+      }
       return {
         ...prev,
-        [field]: isSelected
-          ? current.filter((item) => item !== value)
-          : [...current, value],
+        [field]: isSelected ? [] : [value],
       };
     });
   };
 
-  const handleSave = async () => {
+  // const handleSave = async () => {
+  //   try {
+  //     setLoading(true);
+  //     await saveToWardrobe(analysisResult.analysis_id, 0);
+  //     await refetch();
+  //     navigation.navigate("WardrobeMain");
+  //   } catch (e) {
+  //     console.log(e);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+   const handleSave = async () => {
     try {
       setLoading(true);
-      await saveToWardrobe(analysisResult.analysis_id, 0);
+
+      // 1. First, save the analyzed item to the wardrobe to get a permanent ID
+      // This endpoint usually returns the created item/analysis record
+      const saveResponse = await saveToWardrobe(analysisResult.analysis_id, 0);
+      const newItemId = saveResponse.analysis?._id || analysisResult.analysis_id;
+
+      // 2. Prepare the user's manual selections
+      const updateData = {
+        name: form.name,
+        category: form.categories[0] || garment.category, // single select
+        style: form.styles[0] || garment.style,           // single select
+        season: form.seasons,                             // multi-select array
+      };
+
+      // 3. Call the edit endpoint to update the wardrobe item with user's choices
+      await editWardrobeItem(newItemId, garment, updateData);
+
+      // 4. Sync context and go home
       await refetch();
       navigation.navigate("WardrobeMain");
     } catch (e) {
-      console.log(e);
+      console.log("Logically failed to save:", e);
+      alert("Failed to save item. Please try again.");
     } finally {
       setLoading(false);
     }

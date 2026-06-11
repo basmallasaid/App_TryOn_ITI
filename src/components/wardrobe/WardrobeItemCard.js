@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Text, ImageBackground, StyleSheet, Platform } f
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 
-const WardrobeItemCard = ({ item, onPress }) => {
+const WardrobeItemCard = ({ item, onPress ,onLongPress}) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const imageSource = item.image ? { uri: item.image } : null;
@@ -16,6 +16,8 @@ const WardrobeItemCard = ({ item, onPress }) => {
     <TouchableOpacity
       style={styles.card}
       onPress={onPress}
+      onLongPress={onLongPress} 
+      delayLongPress={500}
       activeOpacity={0.8}
     >
       <ImageBackground

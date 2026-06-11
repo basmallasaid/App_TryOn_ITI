@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Rect, Defs, LinearGradient as SvgGradient, Stop } from "react-native-svg";
 import Colors from "../../constants/theme/colors";
 
-export default function UploadBox({ label }) {
+export default function UploadBox({ label, onPress, style }) {
   const [layout, setLayout] = useState({ width: 0, height: 0 });
 
   return (
-    <View
-      style={styles.container}
+    <TouchableOpacity
+      style={[styles.container, style]}
+      activeOpacity={0.8}
+      onPress={onPress}
       onLayout={(e) => setLayout(e.nativeEvent.layout)}
     >
       {layout.width > 0 && (
@@ -39,7 +41,7 @@ export default function UploadBox({ label }) {
         <Ionicons name="cloud-upload-outline" size={48} color={Colors.textMuted} />
         <Text style={styles.text}>{label}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

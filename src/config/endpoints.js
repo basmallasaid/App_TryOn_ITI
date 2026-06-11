@@ -13,6 +13,11 @@ export const ENDPOINTS = {
   GET_USER_PROFILE:"/users",
   GET_ALL_PRODUCT:"/products",
   GET_ALL_STORE:"/stores",
+  GENERATE_AVATAR:"/avatars",
+  GET_AVATAR:"/avatars",
+  VIRTUAL_TRYON:"/virtual-tryon",
+  VIRTUAL_TRYON_OUTFIT:"/virtual-tryon/outfit",
+  LATEST_TRYON:"/users/latest-tryon"
   ANALYZE:"/analyze",
   SAVETOWARDROBE:'/wardrobe/from-analysis',
   WARDROBE:"/wardrobe",

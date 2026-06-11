@@ -24,7 +24,7 @@ export default function TryOnCard({ imageUri }) {
 
      
       <Image 
-        source={IMAGES.TRY_ON} 
+        source={imageUri ? { uri: imageUri } : IMAGES.TRY_ON} 
         style={styles.image} 
         resizeMode="contain"
       />

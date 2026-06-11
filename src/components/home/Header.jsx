@@ -25,7 +25,7 @@ export default function Header() {
           <Image
             source={profileImage}
             style={styles.profileImage}
-            onError={() => setProfileImage(null)}
+
           />
         ) : (
           <View style={styles.profilePlaceholder}>

@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, View, Text, ImageBackground, StyleSheet, Platform } from 'react-native';
+import React from 'react';
+import {
+  TouchableOpacity,
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 
-const WardrobeItemCard = ({ item, onPress ,onLongPress}) => {
-  const [isFavorite, setIsFavorite] = useState(false);
-
+const WardrobeItemCard = ({ item, onPress, onLongPress, isFavorite, onToggleFavorite }) => {
   const imageSource = item.image ? { uri: item.image } : null;
-
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-  };
 
   return (
     <TouchableOpacity
       style={styles.card}
       onPress={onPress}
-      onLongPress={onLongPress} 
+      onLongPress={onLongPress}
       delayLongPress={500}
       activeOpacity={0.8}
     >
@@ -26,26 +27,29 @@ const WardrobeItemCard = ({ item, onPress ,onLongPress}) => {
         imageStyle={styles.imageStyle}
         resizeMode="cover"
       >
-        {/* Favorite Heart Icon with Glass Background */}
-        <TouchableOpacity 
-          style={styles.favoriteBtnContainer} 
-          onPress={toggleFavorite}
+        <TouchableOpacity
+          style={styles.favoriteBtnContainer}
+          onPress={onToggleFavorite}
           activeOpacity={0.7}
         >
           <View style={styles.blurCircle}>
-            <Ionicons 
-              name={isFavorite ? "heart" : "heart-outline"} 
-              size={16} 
-              color={isFavorite ? Colors.error : "#FFFFFF"} 
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={16}
+              color={isFavorite ? Colors.error : '#FFFFFF'}
             />
           </View>
         </TouchableOpacity>
 
         {/* Modern Bottom Scrim Overlay */}
         <View style={styles.overlay}>
-          <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.name} numberOfLines={1}>
+            {item.name}
+          </Text>
           <View style={styles.categoryBadge}>
-            <Text style={styles.category} numberOfLines={1}>{item.category}</Text>
+            <Text style={styles.category} numberOfLines={1}>
+              {item.category}
+            </Text>
           </View>
         </View>
       </ImageBackground>

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  SafeAreaView,
   Platform,
   StatusBar,
 } from "react-native";
@@ -66,7 +67,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.root}>
+    <SafeAreaView style={styles.root}>
       {/* Header */}
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
@@ -136,7 +137,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
         onClose={() => setModalVisible(false)}
         onConfirm={handleDelete}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -144,7 +145,6 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: "#F5F6F7",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: "row",

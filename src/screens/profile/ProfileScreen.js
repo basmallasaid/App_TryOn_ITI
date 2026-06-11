@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useProfileContext } from "../../context/ProfileContext";
+import { useFavorites } from "../../context/FavoritesContext";
 import ProfileAvatar from "../../components/profile/ProfileAvatar";
 import StatCard from "../../components/profile/StatCard";
 import PrefRow from "../../components/profile/PrefRow";
@@ -25,7 +26,8 @@ const ProfileScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { logout } = useAuth();
   const { language, selectLanguage, syncLanguage } = useLanguage();
-  const { profile } = useProfileContext() ;
+  const { profile } = useProfileContext();
+  const { items: favorites } = useFavorites();
 
   const STYLE_OPTIONS = [
     t('profile.styleOptions.streetwear'),
@@ -122,7 +124,8 @@ const ProfileScreen = ({ navigation }) => {
             <StatCard
               icon="heart-outline"
               title={t('profile.wishlist')}
-              subtitle={t('profile.wishlistEmpty')}
+              subtitle={t('profile.wishlistCount', { count: favorites.length })}
+              onPress={() => navigation.navigate("Favorites")}
             />
           </View>
         </View>

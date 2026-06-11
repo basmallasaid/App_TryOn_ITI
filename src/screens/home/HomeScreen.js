@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   Platform,
   StatusBar,
+  I18nManager,
+  Alert,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
@@ -20,12 +22,16 @@ import { IMAGES } from "../../constants/images/images";
 import { Ionicons } from "@expo/vector-icons";
 import { useProfileContext } from "../../context/ProfileContext";
 import { ROUTES, SOURCE } from "../../navigation/routes";
+import { useFavorites } from "../../context/FavoritesContext";
 
 export default function HomeScreen({ navigation }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { profile } = useProfileContext();
+  const { isFavorite, addItem, removeItem } = useFavorites();
+  const isRTL = i18n.language === "ar" || I18nManager.isRTL;
   const latestTryOn = profile?.latestTryOn || [];
   const latestRecycle = profile?.latestRecycle || [];
+  const arrowName = isRTL ? "arrow-back" : "arrow-forward";
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -86,7 +92,7 @@ export default function HomeScreen({ navigation }) {
           <TouchableOpacity style={styles.viewAllBtn}>
             <Text style={styles.viewAllText}>{t('home.viewAll')}</Text>
             <Ionicons
-              name="arrow-forward"
+              name={arrowName}
               size={16}
               color="#1A1C24"
               style={styles.arrowIcon}
@@ -103,16 +109,31 @@ export default function HomeScreen({ navigation }) {
             <TryOnCard imageUri={null} />
           ) : (
             latestTryOn.map((item, index) => (
-              <TryOnCard key={item._id?.$oid || item._id || index} imageUri={item.imageUrl} />
+              <TryOnCard
+                key={item._id?.$oid || item._id || index}
+                imageUri={item.imageUrl}
+                isFavorite={isFavorite(item._id)}
+                onToggleFavorite={async () => {
+                  try {
+                    if (isFavorite(item._id)) {
+                      await removeItem(item._id);
+                    } else {
+                      await addItem(item._id, 'TRYON');
+                    }
+                  } catch (e) {
+                    Alert.alert('Error', e.response?.data?.message || 'Failed to update favorite');
+                  }
+                }}
+              />
             ))
           )}
         </ScrollView>
 
         <View style={styles.recentHeader}>
-          <Text style={styles.recentTitle}>Recent Recycles</Text>
+          <Text style={styles.recentTitle}>{t('home.recentRecycles')}</Text>
           <TouchableOpacity style={styles.viewAllBtn} onPress={() => navigation.navigate(ROUTES.RECYCLE)}>
             <Text style={styles.viewAllText}>{t('home.viewAll')}</Text>
-            <Ionicons name="arrow-forward" size={16} color="#1A1C24" style={styles.arrowIcon} />
+            <Ionicons name={arrowName} size={16} color="#1A1C24" style={styles.arrowIcon} />
           </TouchableOpacity>
         </View>
 
@@ -125,7 +146,22 @@ export default function HomeScreen({ navigation }) {
             <TryOnCard imageUri={null} />
           ) : (
             latestRecycle.map((item, index) => (
-              <TryOnCard key={item._id?.$oid || item._id || index} imageUri={item.imageUrl} />
+              <TryOnCard
+                key={item._id?.$oid || item._id || index}
+                imageUri={item.imageUrl}
+                isFavorite={isFavorite(item._id)}
+                onToggleFavorite={async () => {
+                  try {
+                    if (isFavorite(item._id)) {
+                      await removeItem(item._id);
+                    } else {
+                      await addItem(item._id, 'TRYON');
+                    }
+                  } catch (e) {
+                    Alert.alert('Error', e.response?.data?.message || 'Failed to update favorite');
+                  }
+                }}
+              />
             ))
           )}
         </ScrollView>

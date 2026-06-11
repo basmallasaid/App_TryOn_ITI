@@ -10,7 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 
-const WardrobeItemCard = ({ item, onPress, isFavorite, onToggleFavorite }) => {
+const WardrobeItemCard = ({ item, onPress, onLongPress, isFavorite, onToggleFavorite }) => {
   const imageSource = item.image ? { uri: item.image } : null;
 
   return (

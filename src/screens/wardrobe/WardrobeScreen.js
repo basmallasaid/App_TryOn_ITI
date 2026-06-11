@@ -194,6 +194,7 @@ const WardrobeScreen = ({ navigation }) => {
             ) : (
               <WardrobeItemCard
                 item={item}
+                isFavorite={isFavorite(item._id)}
                 onPress={() =>
                   navigation.navigate('ItemDetails', {
                     itemId: item._id,

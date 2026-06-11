@@ -145,6 +145,7 @@
     "whatToDo": "What would you Like to do ?",
     "todaysPicks": "Today's picks for you",
     "recentTryOns": "recent try-ons",
+    "recentRecycles": "recent recycles",
     "viewAll": "view all",
     "hero": {
       "title": "Your style, intelligently yours.",
@@ -311,7 +312,8 @@
       "all": "All",
       "wardrobe": "Wardrobe",
       "store": "Store",
-      "matching": "Matching"
+      "try on": "Try On",
+      "recycle": "Recycle"
     },
     "noItemsInCategory": "No items in this category"
   },

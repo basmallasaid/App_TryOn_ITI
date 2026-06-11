@@ -21,12 +21,7 @@ const CARD_GAP = 12;
 const HORIZONTAL_PADDING = 16;
 const CARD_WIDTH = (width - HORIZONTAL_PADDING * 2 - CARD_GAP) / 2;
 
-const CATEGORIES = ["All", "Wardrobe", "Store", "Matching"];
-const CATEGORY_TYPE_MAP = {
-  Wardrobe: "WARDROBE",
-  Store: "PRODUCT",
-  Matching: "MATCHING",
-};
+const CATEGORIES = ["All", "Wardrobe", "Store", "Try On", "Recycle"];
 
 const FavoriteItemCard = ({ item, onRemove }) => {
   const imageSource = item.image ? { uri: item.image } : null;
@@ -72,8 +67,7 @@ const FavoritesScreen = ({ navigation }) => {
 
   const filteredItems = useMemo(() => {
     if (selectedCategory === "All") return items;
-    const filterType = CATEGORY_TYPE_MAP[selectedCategory];
-    return items.filter((item) => item.itemType === filterType);
+    return items.filter((item) => item.category === selectedCategory);
   }, [items, selectedCategory]);
 
   const handleRemove = async (favoriteItem) => {

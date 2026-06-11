@@ -50,14 +50,20 @@ const instructions = [
   },
 ];
 
-const UploadPhotoScreen = ({ navigation }) => {
+const UploadPhotoScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
   const [layout, setLayout] = useState({ width: 0, height: 0 });
   const [selectedImage, setSelectedImage] = useState(null);
+  const productImage = route?.params?.productImage;
+  const isStoreFlow = !!productImage;
 
   const handleUploadPress = async () => {
     if (selectedImage) {
-      navigation.navigate("TryOn", { photoUri: selectedImage });
+      if (isStoreFlow) {
+        navigation.navigate("TryOnResult", { productImage, photoUri: selectedImage });
+      } else {
+        navigation.navigate("TryOn", { photoUri: selectedImage });
+      }
       return;
     }
     const result = await openGallery();
@@ -147,8 +153,14 @@ const UploadPhotoScreen = ({ navigation }) => {
 
         <View style={styles.buttonWrap}>
           <CustomizeAppButtonFilled
-            label={selectedImage ? t("tryOn.uploadPhoto.goToTryOn") : t("tryOn.uploadPhoto.goToTryOn")}
-            onPress={() => navigation.navigate("TryOn", { photoUri: selectedImage })}
+            label={t("tryOn.uploadPhoto.goToTryOn")}
+            onPress={() => {
+              if (isStoreFlow) {
+                navigation.navigate("TryOnResult", { productImage, photoUri: selectedImage });
+              } else {
+                navigation.navigate("TryOn", { photoUri: selectedImage });
+              }
+            }}
             backgroundColor={Colors.primary}
             disabled={!selectedImage}
           />

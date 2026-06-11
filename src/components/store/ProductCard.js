@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export const ProductCard = ({ name, brand, price, image, badge, badgeColor, isOutlined, onPress }) => (
+export const ProductCard = ({ name, brand, price, image, badge, badgeColor, isOutlined, onPress, onTryOnPress }) => (
   <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onPress}>
     <View style={styles.imageWrapper}>
       <Image source={{ uri: image }} style={styles.img} resizeMode="cover" />
@@ -28,7 +28,7 @@ export const ProductCard = ({ name, brand, price, image, badge, badgeColor, isOu
         <Text style={styles.price} numberOfLines={1}>{price}</Text>
         
         {isOutlined ? (
-          <TouchableOpacity style={styles.tryOnBtn}>
+          <TouchableOpacity style={styles.tryOnBtn} onPress={onTryOnPress}>
             <Text style={styles.tryOnText}>Try On</Text>
           </TouchableOpacity>
         ) : (

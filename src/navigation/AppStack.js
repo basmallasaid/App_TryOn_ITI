@@ -6,6 +6,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../constants/theme/colors";
 import ProfileStack from "../navigation/ProfileStack";
 import TryOnStack from "../navigation/TryOnStack";
+import RecycleStack from "../navigation/RecycleStack";
 import StoreScreen from "../screens/store/StoreScreen";
 
 import HomeScreen from '../screens/home/HomeScreen';
@@ -93,7 +94,16 @@ export default function AppStack() {
         component={TryOnStack}
         options={{
           tabBarButton: () => null,
-          tabBarItemStyle: { display: "none" }, // بيلغي المساحة المحجوزة تماماً
+          tabBarItemStyle: { display: "none" },
+        }}
+      />
+
+      <Tab.Screen
+        name="Recycle"
+        component={RecycleStack}
+        options={{
+          tabBarButton: () => null,
+          tabBarItemStyle: { display: "none" },
         }}
       />
 

@@ -1,6 +1,7 @@
 import {
   View,
   Text,
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -16,32 +17,33 @@ import Colors from "../../constants/theme/colors";
 import Typography from "../../constants/theme/typography";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import PhotoInstructionCard from "../../components/tryOn/PhotoInstructionCard";
+import { openGallery } from "../../utils/cameraAccess";
 
 const instructions = [
   {
     key: "fullBody",
-    mainIconName: "👤",
+    mainIconName: "human",
     iconBgColor: "#DBE8FF",
     titleKey: "tryOn.uploadPhoto.instructions.fullBody.title",
     descKey: "tryOn.uploadPhoto.instructions.fullBody.description",
   },
   {
     key: "goodLighting",
-    mainIconName: "☀️",
+    mainIconName: "weather-sunny",
     iconBgColor: "#FFF3DB",
     titleKey: "tryOn.uploadPhoto.instructions.goodLighting.title",
     descKey: "tryOn.uploadPhoto.instructions.goodLighting.description",
   },
   {
     key: "faceCamera",
-    mainIconName: "📷",
+    mainIconName: "camera",
     iconBgColor: "#E8F0FE",
     titleKey: "tryOn.uploadPhoto.instructions.faceCamera.title",
     descKey: "tryOn.uploadPhoto.instructions.faceCamera.description",
   },
   {
     key: "cleanWall",
-    mainIconName: "🖼️",
+    mainIconName: "image-outline",
     iconBgColor: "#F0EBFF",
     titleKey: "tryOn.uploadPhoto.instructions.cleanWall.title",
     descKey: "tryOn.uploadPhoto.instructions.cleanWall.description",
@@ -51,6 +53,18 @@ const instructions = [
 const UploadPhotoScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const [layout, setLayout] = useState({ width: 0, height: 0 });
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleUploadPress = async () => {
+    if (selectedImage) {
+      navigation.navigate("TryOn", { photoUri: selectedImage });
+      return;
+    }
+    const result = await openGallery();
+    if (result && !result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -73,8 +87,10 @@ const UploadPhotoScreen = ({ navigation }) => {
             {t("tryOn.uploadPhoto.subtitle")}
           </Text>
 
-          <View
+          <TouchableOpacity
             style={styles.uploadBoxContainer}
+            activeOpacity={0.8}
+            onPress={handleUploadPress}
             onLayout={(e) => setLayout(e.nativeEvent.layout)}
           >
             {layout.width > 0 && (
@@ -100,17 +116,21 @@ const UploadPhotoScreen = ({ navigation }) => {
                 />
               </Svg>
             )}
-            <View style={styles.uploadInnerContent}>
-              <Ionicons
-                name="cloud-upload-outline"
-                size={48}
-                color={Colors.textMuted}
-              />
-              <Text style={styles.uploadText}>
-                {t("tryOn.uploadPhoto.uploadLabel")}
-              </Text>
-            </View>
-          </View>
+            {selectedImage ? (
+              <Image source={{ uri: selectedImage }} style={styles.selectedImage} resizeMode="contain" />
+            ) : (
+              <View style={styles.uploadInnerContent}>
+                <Ionicons
+                  name="cloud-upload-outline"
+                  size={48}
+                  color={Colors.textMuted}
+                />
+                <Text style={styles.uploadText}>
+                  {t("tryOn.uploadPhoto.uploadLabel")}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
 
           <View style={styles.grid}>
             {instructions.map((item) => (
@@ -127,9 +147,10 @@ const UploadPhotoScreen = ({ navigation }) => {
 
         <View style={styles.buttonWrap}>
           <CustomizeAppButtonFilled
-            label={t("tryOn.uploadPhoto.uploadButton")}
-            onPress={() => navigation.navigate("TryOn")}
+            label={selectedImage ? t("tryOn.uploadPhoto.goToTryOn") : t("tryOn.uploadPhoto.goToTryOn")}
+            onPress={() => navigation.navigate("TryOn", { photoUri: selectedImage })}
             backgroundColor={Colors.primary}
+            disabled={!selectedImage}
           />
         </View>
       </View>
@@ -178,6 +199,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "transparent",
+    overflow: "hidden",
+  },
+  selectedImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 24,
   },
   uploadInnerContent: {
     justifyContent: "center",

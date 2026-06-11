@@ -8,6 +8,7 @@ import ProfileStack from "../navigation/ProfileStack";
 import TryOnStack from "../navigation/TryOnStack";
 import RecycleStack from "../navigation/RecycleStack";
 import StoreScreen from "../screens/store/StoreScreen";
+import StoreStack from "./StoreStack";
 
 import HomeScreen from '../screens/home/HomeScreen';
 import WardrobeStack from "./WardrobeStack";
@@ -109,7 +110,7 @@ export default function AppStack() {
 
       <Tab.Screen
         name="Store"
-        component={StoreScreen}
+        component={StoreStack}
         options={{
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons

@@ -2,11 +2,20 @@ import React from "react";
 import { TouchableOpacity, View, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function WardrobeCard({ item, isSelected, onToggle }) {
+export default function WardrobeCard({ item, isSelected, onToggle, disabled }) {
+  const imageSource = typeof item.image === "string" ? { uri: item.image } : item.image;
+
   return (
-    <TouchableOpacity style={styles.cardContainer} onPress={() => onToggle(item.id)}>
+    <TouchableOpacity
+      style={[styles.cardContainer, disabled && !isSelected && { opacity: 0.5 }]}
+      onPress={() => {
+        if (disabled && !isSelected) return;
+        onToggle(item._id || item.id);
+      }}
+      activeOpacity={disabled && !isSelected ? 1 : 0.7}
+    >
       <View style={[styles.imageWrapper, isSelected && styles.activeImageWrapper]}>
-        <Image source={item.image} style={styles.itemImage} resizeMode="contain" />
+        <Image source={imageSource} style={styles.itemImage} resizeMode="contain" />
         <View style={[styles.checkCircle, isSelected && styles.activeCheckCircle]}>
           <Ionicons name="checkmark" size={14} color="white" />
         </View>

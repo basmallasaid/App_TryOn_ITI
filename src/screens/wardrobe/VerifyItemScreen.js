@@ -1,159 +1,263 @@
-import { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import {
   View,
   Text,
   Image,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
   Platform,
   StatusBar,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+  Animated,
+  PanResponder,
+  Dimensions,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Colors from "../../constants/theme/colors";
+import { useWardrobe } from "../../context/WardrobeContext";
 import { saveToWardrobe } from "../../api/wardrobe_services/wardrobeService";
+import SelectionChip from "../../components/wardrobe/SelectionChip";
+import QuestionGroup from "../../components/wardrobe/QuestionGroup";
 import CustomizeTextInput from "../../components/common/CustomizeTextInput";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
-import SaveResultModal from "../../components/wardrobe/SaveResultModal";
-import Colors from "../../constants/theme/colors";
-import { useWardrobe} from "../../context/WardrobeContext";
+import CustomBackButton from "../../components/common/CustomBackButton"; // Added Import
+
+const { height: SCREEN_H } = Dimensions.get("window");
+
+const SHEET_EXPANDED_H = SCREEN_H * 0.65;
+const SHEET_PEEK_H = 80; 
+
+const CATEGORIES = [
+  "Basic",
+  "Bottom",
+  "Top",
+  "Bag",
+  "Shoes",
+  "Jacket",
+  "Accessories",
+];
+const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
+const STYLES = ["Casual", "Basic", "Formal"];
+
+const normalize = (value) => {
+  if (!value) return [];
+  const arr = Array.isArray(value) ? value : [value];
+  return arr.map((v) => v.charAt(0).toUpperCase() + v.slice(1).toLowerCase());
+};
+
+const matchToOptions = (values, options) =>
+  values.filter((v) => options.includes(v));
 
 const VerifyItemScreen = ({ route, navigation }) => {
   const { imageUri, analysisResult } = route.params;
-  // analysisResult = { analysis_id, garments[], detectionType }
   const garment = analysisResult?.garments?.[0] ?? {};
   const { refetch } = useWardrobe();
+
   const [form, setForm] = useState({
     name: garment.specificType || "",
-    category: garment.category || "",
-    style: garment.style || "",
-    season: garment.season?.join(", ") || "",
     color: garment.colors?.[0]?.color || "",
+    categories: matchToOptions(normalize(garment.category), CATEGORIES),
+    seasons: matchToOptions(normalize(garment.season), SEASONS),
+    styles: matchToOptions(normalize(garment.style), STYLES),
+  });
+  const [loading, setLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const sheetAnim = useRef(new Animated.Value(0)).current;
+
+  const expandSheet = useCallback(() => {
+    setIsExpanded(true);
+    Animated.spring(sheetAnim, {
+      toValue: 1,
+      useNativeDriver: false,
+      bounciness: 4,
+    }).start();
+  }, [sheetAnim]);
+
+  const collapseSheet = useCallback(() => {
+    setIsExpanded(false);
+    Animated.spring(sheetAnim, {
+      toValue: 0,
+      useNativeDriver: false,
+      bounciness: 4,
+    }).start();
+  }, [sheetAnim]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderRelease: (_, g) => {
+        if (g.dy < -20) expandSheet(); 
+        if (g.dy > 20) collapseSheet(); 
+      },
+    }),
+  ).current;
+
+  const sheetHeight = sheetAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [SHEET_PEEK_H, SHEET_EXPANDED_H],
   });
 
-  const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [saveMessage, setSaveMessage] = useState("");
+  const overlayOpacity = sheetAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 0.75],
+  });
 
-  const update = (field) => (val) => setForm((f) => ({ ...f, [field]: val }));
+  const toggleSelection = (field, value) => {
+    setForm((prev) => {
+      const current = prev[field];
+      const isSelected = current.includes(value);
+      return {
+        ...prev,
+        [field]: isSelected
+          ? current.filter((item) => item !== value)
+          : [...current, value],
+      };
+    });
+  };
 
   const handleSave = async () => {
     try {
       setLoading(true);
       await saveToWardrobe(analysisResult.analysis_id, 0);
-      await refetch(); // sync wardrobe context — all features get updated data
-      setSaveSuccess(true);
+      await refetch();
+      navigation.navigate("WardrobeMain");
     } catch (e) {
-      setSaveSuccess(false);
-      setSaveMessage(e.response?.data?.message || "Failed to save item.");
+      console.log(e);
     } finally {
       setLoading(false);
-      setModalVisible(true);
-    }
-  };
-
-  const handleModalClose = () => {
-    setModalVisible(false);
-    if (saveSuccess) {
-      navigation.navigate("WardrobeMain"); // go back to wardrobe
     }
   };
 
   return (
     <View style={styles.root}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}
-      >
-        {/* Back */}
+      <StatusBar
+        barStyle="dark-content"
+        translucent
+        backgroundColor="transparent"
+      />
+
+      {/* ── Header: stacked layout ── */}
+      <View style={styles.header}>
+        <CustomBackButton onPress={() => navigation.goBack()} />
+        <View style={styles.headerText}>
+          <Text style={styles.title}>Add to Wardrobe</Text>
+          <Text style={styles.subtitle}>Analysis</Text>
+        </View>
+      </View>
+
+      {/* ── Image ── */}
+      <View style={styles.imageContainer}>
+        <Image
+          source={{ uri: imageUri }}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      </View>
+
+      {isExpanded && (
+        <TouchableWithoutFeedback onPress={collapseSheet}>
+          <Animated.View
+            style={[
+              StyleSheet.absoluteFillObject,
+              styles.overlay,
+              { opacity: overlayOpacity },
+            ]}
+            pointerEvents={isExpanded ? "auto" : "none"}
+          />
+        </TouchableWithoutFeedback>
+      )}
+
+      <Animated.View style={[styles.sheet, { height: sheetHeight }]}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.back}
+          style={styles.handleWrap}
+          onPress={isExpanded ? collapseSheet : expandSheet}
+          activeOpacity={0.8}
+          {...panResponder.panHandlers}
         >
-          <Ionicons name="arrow-back" size={22} color={Colors.textPrimary} />
+          <View style={styles.handle} />
+          {!isExpanded && (
+            <Text style={styles.peekHint}>Swipe up to review details</Text>
+          )}
         </TouchableOpacity>
 
-        <Text style={styles.title}>Verify Item Details</Text>
-        <Text style={styles.subtitle}>
-          Review the details we detected. You can edit anything before saving.
-        </Text>
+        {isExpanded && (
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+          >
+            <ScrollView
+              contentContainerStyle={styles.sheetContent}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              <View style={styles.inputGap}>
+                <CustomizeTextInput
+                  label="Name"
+                  placeholder="Enter item name"
+                  value={form.name}
+                  onChangeText={(v) =>
+                    setForm((prev) => ({ ...prev, name: v }))
+                  }
+                />
+              </View>
 
-        {/* Image preview */}
-        {imageUri && (
-          <Image
-            source={{ uri: imageUri }}
-            style={styles.preview}
-            resizeMode="cover"
-          />
+              <View style={styles.inputGap}>
+                <CustomizeTextInput
+                  label="Primary Color"
+                  placeholder="—"
+                  value={form.color}
+                  onChangeText={() => {}} 
+                  editable={false}
+                  state="default"
+                />
+              </View>
+
+              <QuestionGroup title="What is this item?">
+                {CATEGORIES.map((cat) => (
+                  <SelectionChip
+                    key={cat}
+                    label={cat}
+                    isSelected={form.categories.includes(cat)}
+                    onPress={() => toggleSelection("categories", cat)}
+                  />
+                ))}
+              </QuestionGroup>
+
+              <QuestionGroup title="For which season?">
+                {SEASONS.map((s) => (
+                  <SelectionChip
+                    key={s}
+                    label={s}
+                    isSelected={form.seasons.includes(s)}
+                    onPress={() => toggleSelection("seasons", s)}
+                  />
+                ))}
+              </QuestionGroup>
+
+              <QuestionGroup title="Which style?">
+                {STYLES.map((s) => (
+                  <SelectionChip
+                    key={s}
+                    label={s}
+                    isSelected={form.styles.includes(s)}
+                    onPress={() => toggleSelection("styles", s)}
+                  />
+                ))}
+              </QuestionGroup>
+
+              <View style={styles.footer}>
+                <CustomizeAppButtonFilled
+                  label="Save to Wardrobe"
+                  onPress={handleSave}
+                  loading={loading}
+                />
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
         )}
-
-        {/* Editable fields */}
-        <View style={styles.form}>
-          <CustomizeTextInput
-            label="Name"
-            placeholder="Item name"
-            value={form.name}
-            onChangeText={update("name")}
-          />
-          <CustomizeTextInput
-            label="Category"
-            placeholder="e.g. dress, shirt"
-            value={form.category}
-            onChangeText={update("category")}
-          />
-          <CustomizeTextInput
-            label="Style"
-            placeholder="e.g. casual, formal"
-            value={form.style}
-            onChangeText={update("style")}
-          />
-          <CustomizeTextInput
-            label="Season"
-            placeholder="e.g. spring, summer"
-            value={form.season}
-            onChangeText={update("season")}
-          />
-          <CustomizeTextInput
-            label="Primary Color"
-            placeholder="e.g. light blue"
-            value={form.color}
-            onChangeText={update("color")}
-          />
-        </View>
-
-        {/* Colors breakdown */}
-        {garment.colors?.length > 0 && (
-          <View style={styles.colorsWrap}>
-            <Text style={styles.colorsTitle}>Detected Colors</Text>
-            <View style={styles.colorsList}>
-              {garment.colors.map((c, i) => (
-                <View key={i} style={styles.colorChip}>
-                  <Text style={styles.colorText}>
-                    {c.color} {c.percentage}%
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* Save button */}
-        <View style={styles.buttonWrap}>
-          <CustomizeAppButtonFilled
-            label="Save to Wardrobe"
-            onPress={handleSave}
-            loading={loading}
-            backgroundColor={Colors.primary}
-          />
-        </View>
-      </ScrollView>
-
-      <SaveResultModal
-        visible={modalVisible}
-        success={saveSuccess}
-        message={saveMessage}
-        onClose={handleModalClose}
-      />
+      </Animated.View>
     </View>
   );
 };
@@ -162,71 +266,88 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: "#F5F6F7",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
-  scroll: {
+  header: {
+    paddingTop:
+      Platform.OS === "ios" ? 60 : (StatusBar.currentHeight ?? 32) + 12,
     paddingHorizontal: 16,
-    paddingTop: 24,
-    paddingBottom: 40,
+    paddingBottom: 12,
   },
-  back: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    marginBottom: 12,
+  headerText: {
+    alignItems: "center",
+    marginTop: 10,
+    gap: 4,
   },
   title: {
     fontFamily: "Roboto_700Bold",
     fontSize: 24,
-    color: "#121826",
-    marginBottom: 6,
+    color: Colors.textPrimary,
+    textAlign: "center",
   },
   subtitle: {
     fontFamily: "Roboto_400Regular",
-    fontSize: 13,
+    fontSize: 16,
     color: "#6B7280",
-    marginBottom: 20,
-    lineHeight: 18,
+    textAlign: "center",
   },
-  preview: {
-    width: "100%",
-    height: 260,
-    borderRadius: 16,
-    marginBottom: 24,
+  imageContainer: {
+    flex: 1,
+    marginHorizontal: 20,
+    marginBottom: SHEET_PEEK_H + 20,
+    borderRadius: 20,
+    overflow: "hidden",
     backgroundColor: "#E9EBEE",
+    borderWidth: 1,
+    borderColor: "#E9EBEE",
   },
-  form: {
-    gap: 4,
+  image: {
+    width: "100%",
+    height: "100%",
   },
-  colorsWrap: {
-    marginTop: 16,
-    marginBottom: 8,
+  overlay: {
+    backgroundColor: "#0C0C0C",
+    zIndex: 10,
   },
-  colorsTitle: {
-    fontFamily: "Roboto_500Medium",
-    fontSize: 13,
-    color: "#121826",
-    marginBottom: 10,
+  sheet: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    zIndex: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 12,
   },
-  colorsList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+  handleWrap: {
+    alignItems: "center",
+    paddingVertical: 14,
     gap: 8,
   },
-  colorChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: "#E9EBEE",
+  handle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#D5D9DE",
   },
-  colorText: {
+  peekHint: {
     fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: "#475569",
-    textTransform: "capitalize",
+    fontSize: 13,
+    color: "#6B7280",
   },
-  buttonWrap: {
-    marginTop: 28,
+  sheetContent: {
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+  },
+  inputGap: {
+    marginBottom: 8,
+  },
+  footer: {
+    marginTop: 24,
   },
 });
 

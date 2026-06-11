@@ -56,7 +56,10 @@ const buildCategoriesFromProducts = (products) => {
     return categories;
 };
 
+import { useNavigation } from '@react-navigation/native';
+
 export default function StoreScreen() {
+    const navigation = useNavigation();
     const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -188,7 +191,12 @@ export default function StoreScreen() {
                         />
                     </View>
                 )}
-                renderItem={({ item }) => <ProductCard {...item} />}
+                renderItem={({ item }) => (
+                    <ProductCard
+                        {...item}
+                        onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+                    />
+                )}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ paddingBottom: 20 }}
                 ListEmptyComponent={() => (

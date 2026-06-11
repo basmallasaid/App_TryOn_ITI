@@ -1,26 +1,10 @@
 import apiClient from '../auth_services/apiClient';
-
+import { ENDPOINTS } from '../../config/endpoints';
 const HF_TOKEN = process.env.EXPO_PUBLIC_HF_TOKEN;
 
-/**
- * Step 1 — Analyze image, returns analysis_id + garments[]
- * @param {string} imageBase64 
- * @param {string} mimeType   
- */
-// export const analyzeGarment = async (imageBase64, mimeType = 'image/jpeg') => {
-//   const { data } = await apiClient.post(
-//     '/analyze',
-//     { image: imageBase64},
-//     {
-//       headers: { 'x-hf-token': HF_TOKEN },
-//       timeout: 60000,
-//     }
-//   );
-//   return data; // { analysis_id, garments[], detectionType }
-// };
 export const analyzeGarment = async (formData) => {
   const { data } = await apiClient.post(
-    '/analyze',
+    ENDPOINTS.ANALYZE,
     formData, // Send the FormData object directly
     {
       headers: { 
@@ -33,6 +17,7 @@ export const analyzeGarment = async (formData) => {
       timeout: 60000,
     }
   );
+  console.log(data)
   return data; 
 };
 
@@ -42,7 +27,7 @@ export const analyzeGarment = async (formData) => {
  * @param {number} garment_index — default 0 for single detection
  */
 export const saveToWardrobe = async (analysis_id, garment_index = 0) => {
-  const { data } = await apiClient.post('/wardrobe/from-analysis', {
+  const { data } = await apiClient.post(ENDPOINTS.SAVETOWARDROBE, {
     analysis_id,
     garment_index,
   });
@@ -53,7 +38,7 @@ export const saveToWardrobe = async (analysis_id, garment_index = 0) => {
  * Get all wardrobe items for the current user
  */
 export const getWardrobeItems = async () => {
-  const { data } = await apiClient.get('/wardrobe');
+  const { data } = await apiClient.get(ENDPOINTS.WARDROBE);
   return data.items; // array of wardrobe items
 };
 
@@ -61,6 +46,6 @@ export const getWardrobeItems = async () => {
  * Delete a wardrobe item by id
  */
 export const deleteWardrobeItem = async (itemId) => {
-  const { data } = await apiClient.delete(`/wardrobe/${itemId}`);
+  const { data } = await apiClient.delete(`${ENDPOINTS.WARDROBE}/${itemId}`);
   return data;
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 
 export default function PhotoInstructionCard({
@@ -8,11 +9,12 @@ export default function PhotoInstructionCard({
   mainIconName,
   titleColor,
   iconBgColor,
+  iconColor,
 }) {
   return (
     <View style={styles.card}>
       <View style={[styles.iconContainer, { backgroundColor: iconBgColor || "#DBE8FF" }]}>
-        <Text style={styles.emoji}>{mainIconName || "📷"}</Text>
+        <MaterialCommunityIcons name={mainIconName} size={22} color={iconColor || Colors.iconGray} />
       </View>
       <Text style={[styles.cardTitle, { color: titleColor || Colors.textPrimary }]}>{title}</Text>
       <Text style={styles.cardSub} numberOfLines={3}>{sub}</Text>
@@ -35,9 +37,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
-  },
-  emoji: {
-    fontSize: 18,
   },
   cardTitle: {
     fontSize: 14,

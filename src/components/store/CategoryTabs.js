@@ -50,7 +50,7 @@ export const CategoryTabs = ({ categories = [{ id: 'all', name: 'All', icon: nul
             }}
             style={[styles.tab, active === cat.id && styles.activeTab]}
           >
-            {iconName && <MaterialCommunityIcons name={iconName} size={20} color={active === cat.id ? '#FFF' : '#27AE60'} style={{ marginRight: 8 }} />}
+            {iconName && <MaterialCommunityIcons name={iconName} size={20} color={active === cat.id ? '#FFF' : '#8ED321'} style={{ marginRight: 8 }} />}
             <Text style={[styles.tabText, active === cat.id && styles.activeTabText]}>{cat.name}</Text>
           </TouchableOpacity>
         );

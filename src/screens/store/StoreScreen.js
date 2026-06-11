@@ -78,6 +78,13 @@ export default function StoreScreen() {
         setSearchQuery((prevQuery) => prevQuery.trim());
     };
 
+    const handleTryOn = (item) => {
+        navigation.navigate('TryOn', {
+            screen: 'SelectModel',
+            params: { productImage: item.image, productName: item.name }
+        });
+    };
+
     const handleFilterApply = (values) => {
         setFilterValues(values);
         setFilterVisible(false);
@@ -195,6 +202,7 @@ export default function StoreScreen() {
                     <ProductCard
                         {...item}
                         onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+                        onTryOnPress={() => handleTryOn(item)}
                     />
                 )}
                 keyExtractor={(item) => item.id}

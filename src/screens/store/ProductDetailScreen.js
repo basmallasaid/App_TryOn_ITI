@@ -150,7 +150,7 @@ export default function ProductDetailScreen({ route }) {
           </View>
 
           <View style={styles.actionRow}>
-            <TouchableOpacity style={styles.mainBtn} activeOpacity={0.8}>
+            <TouchableOpacity style={styles.mainBtn} activeOpacity={0.8} onPress={() => navigation.navigate('TryOn', { screen: 'SelectModel', params: { productImage: product?.images?.[0], productName: product?.name } })}>
               <Ionicons name="sparkles" size={20} color="white" />
               <Text style={styles.mainBtnText}>Generate Try-on</Text>
             </TouchableOpacity>

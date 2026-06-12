@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./src/utils/navigationRef";
-import { AuthProvider } from "./src/context/AuthContext";
+import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { LanguageProvider } from "./src/context/LanguageContext";
 import RootNavigator from "./src/navigation/RootNavigator";
 import { useEffect } from "react";
@@ -24,6 +24,9 @@ import { WardrobeProvider } from './src/context/WardrobeContext';
 import { NotificationProvider } from "./src/context/NotificationContext";
 import { FavoritesProvider } from './src/context/FavoritesContext';
 import { RecommendationProvider } from './src/context/RecommendationContext';
+import { RecentTryOnsProvider } from './src/context/RecentTryOnsContext';
+import { RecentRecyclesProvider } from './src/context/RecentRecyclesContext';
+import { registerDailyRecommendationTask } from './src/background/DailyRecommendationTask';
 I18nManager.allowRTL(true);
 
 // DEV ONLY — comment out when done testing
@@ -39,6 +42,15 @@ i18n.on("languageChanged", async (lang) => {
   }
 });
 
+function RecommendationProviderWithAuthKey({ children }) {
+  const { user } = useAuth();
+  return (
+    <RecommendationProvider key={user?._id || 'guest'}>
+      {children}
+    </RecommendationProvider>
+  );
+}
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     Roboto_400Regular,
@@ -49,7 +61,10 @@ export default function App() {
   });
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+      registerDailyRecommendationTask();
+    }
   }, [fontsLoaded]);
 
   if (!fontsLoaded) return null;
@@ -61,11 +76,15 @@ export default function App() {
           <WardrobeProvider>
             <NotificationProvider>
               <FavoritesProvider>
-                <RecommendationProvider>
+                <RecentTryOnsProvider>
+                  <RecentRecyclesProvider>
+                    <RecommendationProviderWithAuthKey>
                   <NavigationContainer ref={navigationRef}>
                     <RootNavigator />
                   </NavigationContainer>
-                </RecommendationProvider>
+                    </RecommendationProviderWithAuthKey>
+                  </RecentRecyclesProvider>
+                </RecentTryOnsProvider>
               </FavoritesProvider>
             </NotificationProvider>
           </WardrobeProvider>

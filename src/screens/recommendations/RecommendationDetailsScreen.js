@@ -63,7 +63,7 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
                 {Object.entries(outfit.breakdown).map(([key, val]) => (
                   <View key={key} style={styles.breakdownChip}>
                     <Text style={styles.breakdownLabel}>{key}</Text>
-                    <Text style={styles.breakdownValue}>{val}/10</Text>
+                    <Text style={styles.breakdownValue}>{val}</Text>
                   </View>
                 ))}
               </View>

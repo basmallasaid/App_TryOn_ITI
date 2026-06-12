@@ -20,6 +20,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as FileSystem from "expo-file-system";
 import Colors from "../../constants/theme/colors";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { analyzeRecycle, generateRecycleIdea } from "../../api/recycle_services/recycleService";
 import SourceTab from "../../components/recycle/SourceTab";
@@ -427,9 +428,7 @@ export default function RecycleScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={24} color={Colors.iconGray} />
-        </TouchableOpacity>
+        <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>{t("recycle.title")}</Text>
         <View style={{ width: 40 }} />
       </View>
@@ -608,11 +607,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 20,
     color: Colors.textPrimary,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
   },
   container: {
     flex: 1,

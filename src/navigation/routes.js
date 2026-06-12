@@ -55,12 +55,22 @@ export const ROUTES = {
 
   // Recommendation inner screens
   RECOMMENDATIONS_HISTORY: 'RecommendationsHistory',
+  RECOMMENDATIONS_GRID: 'RecommendationsGrid',
   RECOMMENDATION_DETAIL: 'RecommendationDetail',
+
+  // Notifications
+  NOTIFICATIONS: 'Notifications',
+
+  // Recent screens
+  RECENT_TRYONS: 'RecentTryOns',
+  RECENT_RECYCLES: 'RecentRecycles',
 
   // Profile stack
   PROFILE_MAIN: 'Profile',
   EDIT_PROFILE: 'EditProfile',
   FAVORITES: 'Favorites',
+  AVATAR_DETAIL: 'AvatarDetail',
+  SUBSCRIPTION: 'Subscription',
 };
 
 // Entry source constants

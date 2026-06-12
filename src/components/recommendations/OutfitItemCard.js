@@ -49,8 +49,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   name: {
+    fontFamily: 'Roboto_500Medium',
     fontSize: 12,
-    fontWeight: "500",
     color: Colors.textPrimary,
     textAlign: "center",
   },

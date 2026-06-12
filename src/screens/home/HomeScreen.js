@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   SafeAreaView,
   ScrollView,
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Platform,
   StatusBar,
   I18nManager,
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import Header from "../../components/home/Header";
@@ -18,22 +18,27 @@ import ActionCard from "../../components/home/ActionCard";
 import OutfitCard from "../../components/home/OutfitCard";
 import TryOnCard from "../../components/home/TryOnCard";
 import { IMAGES } from "../../constants/images/images";
-import { Ionicons } from "@expo/vector-icons";
 import { useProfileContext } from "../../context/ProfileContext";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 import { useFavorites } from "../../context/FavoritesContext";
 import { useRecommendation } from "../../context/RecommendationContext";
+import HorizontalScrollSection from "../../components/common/HorizontalScrollSection";
 
 export default function HomeScreen({ navigation }) {
   const { t, i18n } = useTranslation();
-  const { profile } = useProfileContext();
+  const { profile, refreshProfile } = useProfileContext();
   const { isFavorite, addItem, removeItem } = useFavorites();
   const { todaysOutfit, todaysWeather, history } = useRecommendation();
   const activeOutfit = todaysOutfit || history?.[0] || null;
   const isRTL = i18n.language === "ar" || I18nManager.isRTL;
+  useFocusEffect(
+    useCallback(() => {
+      refreshProfile();
+    }, [refreshProfile]),
+  );
+
   const latestTryOn = profile?.latestTryOn || [];
   const latestRecycle = profile?.latestRecycle || [];
-  const arrowName = isRTL ? "arrow-back" : "arrow-forward";
 
   const goToHistory = () =>
     navigation.navigate(ROUTES.RECOMMENDATION, { screen: ROUTES.RECOMMENDATIONS_HISTORY });
@@ -106,84 +111,55 @@ export default function HomeScreen({ navigation }) {
           todaysWeather={todaysWeather || activeOutfit?.weather}
         />
 
-        <View style={styles.recentHeader}>
-          <Text style={styles.recentTitle}>{t('home.recentTryOns')}</Text>
-          <TouchableOpacity style={styles.viewAllBtn}>
-            <Text style={styles.viewAllText}>{t('home.viewAll')}</Text>
-            <Ionicons
-              name={arrowName}
-              size={16}
-              color="#1A1C24"
-              style={styles.arrowIcon}
+        <HorizontalScrollSection
+          title={t('home.recentTryOns')}
+          items={latestTryOn}
+          isRTL={isRTL}
+          onViewAll={() => navigation.navigate(ROUTES.RECENT_TRYONS)}
+          renderItem={(item) => (
+            <TryOnCard
+              imageUri={item.imageUrl}
+              isFavorite={isFavorite(item._id)}
+              onToggleFavorite={async () => {
+                try {
+                  if (isFavorite(item._id)) {
+                    await removeItem(item._id);
+                  } else {
+                    await addItem(item._id, 'TRYON');
+                  }
+                } catch (e) {
+                  Alert.alert('Error', e.response?.data?.message || 'Failed to update favorite');
+                }
+              }}
             />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollPadding}
-        >
-          {latestTryOn.length === 0 ? (
-            <TryOnCard imageUri={null} />
-          ) : (
-            latestTryOn.map((item, index) => (
-              <TryOnCard
-                key={item._id?.$oid || item._id || index}
-                imageUri={item.imageUrl}
-                isFavorite={isFavorite(item._id)}
-                onToggleFavorite={async () => {
-                  try {
-                    if (isFavorite(item._id)) {
-                      await removeItem(item._id);
-                    } else {
-                      await addItem(item._id, 'TRYON');
-                    }
-                  } catch (e) {
-                    Alert.alert('Error', e.response?.data?.message || 'Failed to update favorite');
-                  }
-                }}
-              />
-            ))
           )}
-        </ScrollView>
+          seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginRight: 15 }}
+        />
 
-        <View style={styles.recentHeader}>
-          <Text style={styles.recentTitle}>{t('home.recentRecycles')}</Text>
-          <TouchableOpacity style={styles.viewAllBtn} onPress={() => navigation.navigate(ROUTES.RECYCLE)}>
-            <Text style={styles.viewAllText}>{t('home.viewAll')}</Text>
-            <Ionicons name={arrowName} size={16} color="#1A1C24" style={styles.arrowIcon} />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollPadding}
-        >
-          {latestRecycle.length === 0 ? (
-            <TryOnCard imageUri={null} />
-          ) : (
-            latestRecycle.map((item, index) => (
-              <TryOnCard
-                key={item._id?.$oid || item._id || index}
-                imageUri={item.imageUrl}
-                isFavorite={isFavorite(item._id)}
-                onToggleFavorite={async () => {
-                  try {
-                    if (isFavorite(item._id)) {
-                      await removeItem(item._id);
-                    } else {
-                      await addItem(item._id, 'TRYON');
-                    }
-                  } catch (e) {
-                    Alert.alert('Error', e.response?.data?.message || 'Failed to update favorite');
+        <HorizontalScrollSection
+          title={t('home.recentRecycles')}
+          items={latestRecycle}
+          isRTL={isRTL}
+          onViewAll={() => navigation.navigate(ROUTES.RECENT_RECYCLES)}
+          renderItem={(item) => (
+            <TryOnCard
+              imageUri={item.imageUrl}
+              isFavorite={isFavorite(item._id)}
+              onToggleFavorite={async () => {
+                try {
+                  if (isFavorite(item._id)) {
+                    await removeItem(item._id);
+                  } else {
+                    await addItem(item._id, 'TRYON');
                   }
-                }}
-              />
-            ))
+                } catch (e) {
+                  Alert.alert('Error', e.response?.data?.message || 'Failed to update favorite');
+                }
+              }}
+            />
           )}
-        </ScrollView>
+          seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginRight: 15 }}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -205,8 +181,8 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   sectionTitle: {
+    fontFamily: 'Roboto_700Bold',
     fontSize: 18,
-    fontWeight: "700",
     marginVertical: 25,
     color: Colors.textPrimary,
   },
@@ -216,33 +192,5 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 5,
   },
-  recentHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 50,
-    marginBottom: 20,
-  },
-  recentTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#1A1C24",
-    textTransform: "capitalize",
-  },
-  viewAllBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  viewAllText: {
-    fontSize: 14,
-    color: "#1A1C24",
-    marginRight: 5,
-  },
-  scrollPadding: {
-    paddingBottom: 10,
-    paddingRight: 20,
-  },
-  arrowIcon: {
-    marginTop: 3,
-  },
+
 });

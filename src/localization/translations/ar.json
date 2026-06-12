@@ -6,7 +6,9 @@
     "edit": "تعديل",
     "loading": "جارٍ التحميل...",
     "error": "حدث خطأ ما",
-    "or": "أو"
+    "or": "أو",
+    "camera": "الكاميرا",
+    "gallery": "المعرض"
   },
   "auth": {
     "login": {
@@ -147,6 +149,8 @@
     "recentTryOns": "آخر التجارب",
     "recentRecycles": "آخر عمليات إعادة التدوير",
     "viewAll": "عرض الكل",
+    "noRecentTryOns": "لا توجد تجارب حديثة بعد",
+    "noRecentRecycles": "لا توجد عمليات إعادة تدوير حديثة بعد",
     "hero": {
       "title": "أناقتك، بذكاء.",
       "subtitle": "ذكاء اصطناعي يفهم خزانة ملابسك ويصنع إطلالات تناسبك."
@@ -181,13 +185,18 @@
     "wishlistCount": "{{count}} عناصر محفوظة",
     "wishlistEmpty": "0 عناصر محفوظة",
     "styleIdentity": "هوية الأسلوب",
+    "changePhoto": "تغيير الصورة",
     "customize": "تخصيص",
     "done": "تم",
     "preferences": "التفضيلات والخصوصية",
     "notifications": "الإشعارات",
     "language": "اللغة",
+    "darkMode": "الوضع الداكن",
     "payment": "الدفع",
     "logout": "تسجيل الخروج",
+    "deleteAccount": "حذف الحساب",
+    "deleteConfirmTitle": "هل أنت متأكد من حذف حسابك؟",
+    "deleteConfirmSubtitle": "لا يمكن التراجع عن هذا الإجراء.",
     "styleOptions": {
       "streetwear": "ستريت وير",
       "minimalist": "مينيمالست",
@@ -196,6 +205,11 @@
       "quietLuxury": "الفخامة الهادئة",
       "bohemian": "بوهيمي"
     }
+  },
+  "subscription": {
+    "title": "افتح المميزات",
+    "subtitle": "اشترك لتفعيل تخصيص الصورة الرمزية والمزيد",
+    "subscribe": "اشترك الآن"
   },
   "tryOn": {
     "selectModel": {

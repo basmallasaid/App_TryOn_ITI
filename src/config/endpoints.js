@@ -33,4 +33,8 @@ export const ENDPOINTS = {
   ADD_FAVORITE: '/users/favorites',
   REMOVE_FAVORITE: '/users/favorites',
   RECOMMENDATIONS: '/recommendations',
+  USER_SETTINGS: '/users/settings',
+  USER_NOTIFICATIONS: '/users/settings/notifications',
+  USER_DARK_MODE: '/users/settings/dark-mode',
+  USER_IMAGE: '/users/user-image',
 };

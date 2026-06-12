@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   label: {
+    fontFamily: 'Roboto_600SemiBold',
     color: Colors.white,
-    fontWeight: "600",
   },
 });

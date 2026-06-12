@@ -5,7 +5,7 @@ import Colors from '../../constants/theme/colors';
 import CustomizeAppButtonFilled from '../common/CustomizeAppButtonFilled';
 import CustomizeAppButtonOutlined from '../common/CustomizeAppButtonOutlined';
 
-const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading }) => {
+const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading, title, subtitle }) => {
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -15,8 +15,8 @@ const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading }) => {
           </View>
           
           <View style={styles.textContainer}>
-            <Text style={styles.title}>Are you sure you want to delete the selected products?</Text>
-            <Text style={styles.subtitle}>This action cannot be undone.</Text>
+            <Text style={styles.title}>{title || 'Are you sure you want to delete the selected products?'}</Text>
+            <Text style={styles.subtitle}>{subtitle || 'This action cannot be undone.'}</Text>
           </View>
 
           <View style={styles.footer}>

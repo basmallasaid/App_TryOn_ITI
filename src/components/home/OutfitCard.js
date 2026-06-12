@@ -6,21 +6,25 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
 import { getWeatherIcon } from "../../constants/weatherIcons";
-import { getItemsList } from "../../utils/getItemImage";
+import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
 
 const FALLBACK_IMAGE = IMAGES.PICK;
 
 export default function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
   const { t } = useTranslation();
 
+  const compositeImage = getCompositeImage(todaysOutfit);
   const items = getItemsList(todaysOutfit);
   const validImages = items.filter(i => i._image);
-  const hasOutfit = validImages.length > 0;
+  const hasOutfit = !!compositeImage || validImages.length > 0;
   const weatherIcon = getWeatherIcon(todaysWeather?.condition).material;
   const temp = todaysWeather?.temperature;
   const label = items.map(i => i._name).filter(Boolean).join(", ");
 
   const renderImages = () => {
+    if (compositeImage) {
+      return <Image source={{ uri: compositeImage }} style={styles.fitImage} resizeMode="contain" />;
+    }
     if (validImages.length === 0) {
       return <Image source={FALLBACK_IMAGE} style={styles.fitImage} resizeMode="contain" />;
     }
@@ -59,7 +63,6 @@ export default function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
 
         <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={onPress}>
           <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
-          <Ionicons name="arrow-forward" size={18} color="white" style={styles.arrowIcon} />
         </TouchableOpacity>
       </View>
     </View>
@@ -99,12 +102,13 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   title: {
+    fontFamily: 'Roboto_700Bold',
     fontSize: 22,
-    fontWeight: 'bold',
     color: '#1A1C24',
     marginBottom: 5,
   },
   subtitle: {
+    fontFamily: 'Roboto',
     fontSize: 13,
     color: Colors.textSecondary,
     lineHeight: 18,
@@ -122,9 +126,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   infoText: {
+    fontFamily: 'Roboto_600SemiBold',
     fontSize: 14,
     color: Colors.textPrimary,
-    fontWeight: '600',
     marginLeft: 5,
   },
   button: {
@@ -136,8 +140,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   buttonText: {
+    fontFamily: 'Roboto_700Bold',
     color: Colors.white,
-    fontWeight: 'bold',
     fontSize: 16,
   },
   arrowIcon: {

@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useWardrobe } from '../../context/WardrobeContext';
 import { analyzeImage, getMatchesByAnalysis } from '../../api/matching_services/matchingService';
 import { ROUTES, SOURCE } from '../../navigation/routes';
+import CustomBackButton from '../../components/common/CustomBackButton';
 
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
@@ -107,9 +108,7 @@ export default function ProductDetailScreen({ route }) {
       <View style={styles.headerFixed}>
         <SafeAreaView>
           <View style={styles.headerContent}>
-            <TouchableOpacity style={styles.iconCircle} onPress={() => navigation.goBack()}>
-              <Ionicons name="chevron-back" size={24} color="#1A1C24" />
-            </TouchableOpacity>
+            <CustomBackButton onPress={() => navigation.goBack()} borderColor="#D5D9DE" />
             <View style={styles.headerRight}>
               <TouchableOpacity style={[styles.iconCircle, {marginLeft: 12}]}>
                 <Ionicons name="heart-outline" size={24} color="#1A1C24" />

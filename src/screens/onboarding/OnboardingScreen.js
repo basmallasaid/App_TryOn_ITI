@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import {
   View, Text, Animated,
-  StyleSheet, Dimensions, StatusBar, PanResponder,
+  StyleSheet, Dimensions, StatusBar, PanResponder, Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
@@ -176,9 +176,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F2F2F3',
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     paddingBottom: 40,
-    marginTop:40,
+    marginTop: 40,
   },
   slidesArea: {
   height: H * 0.72, 

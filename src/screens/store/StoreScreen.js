@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View, Text } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View, Text, Platform, StatusBar } from 'react-native';
 import { StoreHeader } from '../../components/store/StoreHeader';
 import { ProductCard } from '../../components/store/ProductCard';
 import { SearchBar } from '../../components/store/SearchBar';
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
      screenWrapper: {
         flex: 1,
         backgroundColor: Colors.backgroundColor,
-        paddingTop: 30,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
     listContent: {
         paddingHorizontal: 12, 

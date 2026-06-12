@@ -10,6 +10,7 @@ const CustomizeAppButtonFilled = ({
   loading = false,
   disabled = false,
   icon,
+  iconPosition = 'left',
 }) => {
   const isDisabled = disabled || loading;
 
@@ -39,8 +40,9 @@ const CustomizeAppButtonFilled = ({
         <ActivityIndicator color={resolvedText} />
       ) : (
         <View style={styles.inner}>
-          {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
+          {icon && iconPosition === 'left' ? <View style={styles.iconWrap}>{icon}</View> : null}
           <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
+          {icon && iconPosition === 'right' ? <View style={styles.iconWrap}>{icon}</View> : null}
         </View>
       )}
     </TouchableOpacity>

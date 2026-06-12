@@ -8,11 +8,13 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
+  I18nManager,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import CustomBackButton from "../../components/common/CustomBackButton";
+import HorizontalScrollSection from "../../components/common/HorizontalScrollSection";
 import WeatherCard from "../../components/recommendations/WeatherCard";
 import OutfitOverviewCard from "../../components/recommendations/OutfitOverviewCard";
 import { useProfileContext } from "../../context/ProfileContext";
@@ -21,11 +23,12 @@ import { ROUTES } from "../../navigation/routes";
 import { getGreeting } from "../../utils/greeting";
 
 export default function RecommendationScreen({ navigation }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { profile } = useProfileContext();
   const { todaysOutfit, todaysWeather, history, loading } = useRecommendation();
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
   const weather = todaysWeather || todaysOutfit?.weather || history[0]?.weather || null;
+  const isRTL = i18n.language === "ar" || I18nManager.isRTL;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -72,24 +75,17 @@ export default function RecommendationScreen({ navigation }) {
               </>
             )}
 
-            <Text style={styles.sectionTitle}>{t('recommendation.lastRecommendations')}</Text>
-            {history.length === 0 ? (
-              <View style={styles.emptyState}>
-                <MaterialCommunityIcons name="wardrobe-outline" size={48} color={Colors.disabled} />
-                <Text style={styles.emptyText}>{t('recommendation.emptyHistory')}</Text>
-              </View>
-            ) : (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.historyScroll}
-              >
-                {history.map((item, index) => (
+            <View style={styles.recentSection}>
+              <HorizontalScrollSection
+                title={t('recommendation.lastRecommendations')}
+                items={history}
+                isRTL={isRTL}
+                onViewAll={() => navigation.navigate(ROUTES.RECOMMENDATIONS_GRID)}
+                renderItem={(item) => (
                   <OutfitOverviewCard
-                    key={index}
                     outfit={item}
                     width={177}
-                    height={138}
+                    height={180}
                     borderRadius={16}
                     borderColor={Colors.borderDefault}
                     labelFontSize={11}
@@ -97,9 +93,16 @@ export default function RecommendationScreen({ navigation }) {
                       navigation.navigate(ROUTES.RECOMMENDATION_DETAIL, { outfit: item })
                     }
                   />
-                ))}
-              </ScrollView>
-            )}
+                )}
+                seeMoreCardStyle={{ width: 177, height: 180, borderRadius: 16 }}
+              />
+              {history.length === 0 && (
+                <View style={styles.emptyState}>
+                  <MaterialCommunityIcons name="wardrobe-outline" size={48} color={Colors.disabled} />
+                  <Text style={styles.emptyText}>{t('recommendation.emptyHistory')}</Text>
+                </View>
+              )}
+            </View>
           </>
         )}
       </ScrollView>
@@ -131,8 +134,8 @@ const styles = StyleSheet.create({
     marginTop:20,
   },
   greetingText: {
+    fontFamily: 'Roboto_700Bold',
     fontSize: 20,
-    fontWeight: "700",
     color: Colors.textPrimary,
   },
   wave: {
@@ -152,21 +155,21 @@ const styles = StyleSheet.create({
     marginTop: 80,
   },
   sectionTitle: {
+    fontFamily: 'Roboto_700Bold',
     fontSize: 18,
-    fontWeight: "700",
     color: Colors.textPrimary,
-    marginTop: 28,
-    marginBottom: 14,
+    marginBottom:15,
+    marginTop:35,
   },
-  historyScroll: {
-    paddingRight: 20,
-    paddingBottom: 10,
+  recentSection: {
+    marginTop: 28,
   },
   emptyState: {
     alignItems: "center",
     marginTop: 40,
   },
   emptyText: {
+    fontFamily: 'Roboto',
     fontSize: 14,
     color: Colors.textMuted,
     marginTop: 12,

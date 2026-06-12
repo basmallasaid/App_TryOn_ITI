@@ -6,7 +6,9 @@
     "edit": "Edit",
     "loading": "Loading...",
     "error": "Something went wrong",
-    "or": "OR"
+    "or": "OR",
+    "camera": "Camera",
+    "gallery": "Gallery"
   },
   "auth": {
     "login": {
@@ -144,9 +146,11 @@
     "guestInitial": "G",
     "whatToDo": "What would you Like to do ?",
     "todaysPicks": "Today's picks for you",
-    "recentTryOns": "recent try-ons",
-    "recentRecycles": "recent recycles",
-    "viewAll": "view all",
+    "recentTryOns": "Recent Try-ons",
+    "recentRecycles": "Recent Recycles",
+    "viewAll": "View all",
+    "noRecentTryOns": "No recent try-ons yet",
+    "noRecentRecycles": "No recent recycles yet",
     "hero": {
       "title": "Your style, intelligently yours.",
       "subtitle": "AI that understands your wardrobe and creates looks that fit you."
@@ -181,13 +185,23 @@
     "wishlistCount": "{{count}} saved items",
     "wishlistEmpty": "0 saved items",
     "styleIdentity": "Style Identity",
+    "changePhoto": "Change Photo",
     "customize": "Customize",
     "done": "Done",
     "preferences": "Preferences & Privacy",
     "notifications": "Notifications",
     "language": "Language",
+    "darkMode": "Dark Mode",
     "payment": "Payment",
     "logout": "Log Out",
+    "deleteAccount": "Delete Account",
+    "deleteConfirmTitle": "Are you sure you want to delete your account?",
+    "deleteConfirmSubtitle": "This action cannot be undone.",
+    "avatarTitle": "My Avatar",
+    "avatarDesc": "Customize your 3D avatar for a personalized try-on experience",
+    "customizeAvatar": "Customize",
+    "noAvatar": "No avatar yet",
+    "noAvatarDesc": "Create your 3D avatar to see how clothes fit on you",
     "styleOptions": {
       "streetwear": "Streetwear",
       "minimalist": "Minimalist",
@@ -196,6 +210,11 @@
       "quietLuxury": "Quiet Luxury",
       "bohemian": "Bohemian"
     }
+  },
+  "subscription": {
+    "title": "Unlock Premium",
+    "subtitle": "Subscribe to access avatar customization and more",
+    "subscribe": "Subscribe Now"
   },
   "tryOn": {
     "selectModel": {

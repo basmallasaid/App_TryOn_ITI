@@ -5,13 +5,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   Platform,
   StatusBar,
   Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import Typography from "../../constants/theme/typography";
 import AvatarPreview from "../../components/avatar/AvatarPreview";
@@ -20,6 +18,7 @@ import ColorSelector from "../../components/avatar/ColorSelector";
 import GenderOptionCard from "../../components/profile/GenderOptionCard";
 import AvatarTabs from "../../components/avatar/AvatarTabs";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import { IMAGES } from "../../constants/images/images";
 import { generateAvatar } from "../../api/avatar_services/avatarService";
 import { ROUTES, SOURCE } from "../../navigation/routes";
@@ -215,12 +214,7 @@ const CreateAvatarScreen = ({ navigation }) => {
       contentContainerStyle={styles.scrollContainer}
     >
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={24} color={Colors.iconGray} />
-        </TouchableOpacity>
+        <CustomBackButton onPress={() => navigation.goBack()} />
 
         <Text style={styles.title}>{t('tryOn.createAvatar.title')}</Text>
         <Text style={styles.stepLabel}>
@@ -274,12 +268,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    marginBottom: 8,
   },
   title: {
     fontSize: 24,

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import CustomBackButton from '../../components/common/CustomBackButton';
 import Slider from '@react-native-community/slider';
 import { getAllProducts } from '../../api/user_services/userService';
 
@@ -86,14 +87,12 @@ export const FilterModal = ({
     <Modal visible={visible} animationType="slide" transparent={false}>
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={onClose}>
-             <Ionicons name="chevron-back" size={28} color="#1A1C24" />
-          </TouchableOpacity>
+          <CustomBackButton onPress={onClose} />
           <Text style={styles.headerTitle}>Filters</Text>
           <View style={{ width: 28 }} /> 
         </View>
 
-        <ScrollView style={styles.content}>
+        <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 40 }}>
           {/* Brands */}
           <FilterSection title="Brands">
             <CheckboxItem

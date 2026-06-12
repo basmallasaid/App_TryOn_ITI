@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../context/AuthContext";
+import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
 import Colors from "../../constants/theme/colors";
 
@@ -12,28 +13,31 @@ export default function Header() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigation = useNavigation();
-  const [isNotification, setIsNotification] = useState(false);
-  const { profile } = useProfileContext();
-  const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
+  const { profile, settings } = useProfileContext();
 
-  const profileImage = profile?.avatars?.[0]
-    ? { uri: profile.avatars[0] }
-    : null;
+  const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
+  const lastName = profile?.profile?.last_name || "";
+  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || t('home.guestInitial');
+
+  const [imgErr, setImgErr] = useState(false);
+  const rawImage = profile?.userImage;
+  const isValid = typeof rawImage === 'string' && rawImage.length > 0 && rawImage !== 'null' && rawImage !== 'undefined';
+  const showImage = isValid && !imgErr;
+
+  console.log('[Header] profile:', !!profile, 'showImage:', showImage, 'rawImage:', rawImage, 'initials:', initials, 'firstName:', firstName);
 
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
-        {profileImage ? (
+        {showImage ? (
           <Image
-            source={profileImage}
+            source={{ uri: rawImage }}
             style={styles.profileImage}
-
+            onError={() => setImgErr(true)}
           />
         ) : (
           <View style={styles.profilePlaceholder}>
-            <Text style={styles.profilePlaceholderText}>
-              {firstName ? firstName.charAt(0).toUpperCase() : t('home.guestInitial')}
-            </Text>
+            <Text style={styles.profilePlaceholderText}>{initials}</Text>
           </View>
         )}
 
@@ -46,14 +50,11 @@ export default function Header() {
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => {
-          setIsNotification((v) => !v);
-          navigation.navigate("Profile", { screen: "Notifications" });
-        }}>
+      <TouchableOpacity onPress={() => navigation.navigate(ROUTES.NOTIFICATIONS)}>
         <Ionicons
           name="notifications"
           size={26}
-          color={isNotification ? Colors.error : Colors.disabled}
+          color={settings?.notifications ? Colors.error : Colors.disabled}
         />
       </TouchableOpacity>
     </View>

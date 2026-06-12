@@ -23,6 +23,7 @@ import WardrobeCard from "../../components/tryOn/WardrobeCard";
 import UploadBox from "../../components/tryOn/UploadBox";
 import ItemSelector from "../../components/tryOn/ItemSelector";
 import { openCamera, openGallery } from "../../utils/cameraAccess";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
 import { virtualTryOn, virtualTryOnOutfit } from "../../api/virtual_tryon_services/virtualTryonService";
@@ -245,16 +246,14 @@ export default function TryOnScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={24} color={Colors.iconGray} />
-        </TouchableOpacity>
+        <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>
           {t("tryOn.virtualTryOn.title")}
         </Text>
         <Ionicons name="help-circle-outline" size={24} color={Colors.iconGray} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {activeTab === "Camera" ? (
           <>
             {cameraImages.length > 0 ? (
@@ -466,11 +465,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   headerTitle: { fontSize: 20, fontWeight: "700", color: "#1A202C" },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-  },
 
   modelContainer: {
     width: "100%",
@@ -672,4 +666,5 @@ const styles = StyleSheet.create({
   disabledBtn: { backgroundColor: "#A0AEC0" },
   activeBtn: { backgroundColor: "#40B9FF" },
   generateBtnText: { color: "white", fontWeight: "700", fontSize: 16 },
+  scrollContent: { paddingBottom: 40, flexGrow: 1 },
 });

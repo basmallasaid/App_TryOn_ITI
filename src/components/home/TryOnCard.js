@@ -29,7 +29,6 @@ export default function TryOnCard({ imageUri, isFavorite, onToggleFavorite }) {
 
       <TouchableOpacity style={styles.button} activeOpacity={0.8}>
         <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
-        <Ionicons name="arrow-forward" size={16} color="white" style={styles.arrow} />
       </TouchableOpacity>
     </View>
   );
@@ -72,8 +71,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonText: {
+    fontFamily: 'Roboto_600SemiBold',
     color: 'white',
-    fontWeight: '600',
     fontSize: 14,
   },
   arrow: {

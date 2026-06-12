@@ -37,7 +37,12 @@ export function getCompositeImage(outfit) {
     return null;
   }
   const realOutfit = outfit.outfits?.[0] || outfit;
-  const raw = realOutfit.compositeImage || null;
+  const raw =
+    realOutfit.compositeImage ||
+    realOutfit.composite_image ||
+    outfit.compositeImage ||
+    outfit.composite_image ||
+    null;
   console.log(`[getCompositeImage] raw=${raw ? `"${raw.slice(0, 80)}..."` : "null"}, outfit keys=${Object.keys(outfit).join(",")}, realOutfit keys=${Object.keys(realOutfit).join(",")}`);
   return raw ? ensureImageUri(raw) : null;
 }

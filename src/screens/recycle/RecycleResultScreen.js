@@ -12,11 +12,11 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Svg, Path, Defs, ClipPath, Rect } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import { saveRecycleResult, getLatestRecycle } from "../../api/recycle_services/recycleService";
 
 export default function RecycleResultScreen({ route, navigation }) {
@@ -80,9 +80,7 @@ export default function RecycleResultScreen({ route, navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={handleTryAgain}>
-          <Ionicons name="chevron-back" size={24} color={Colors.iconGray} />
-        </TouchableOpacity>
+        <CustomBackButton onPress={handleTryAgain} />
         <Text style={styles.headerTitle}>{t("recycleResult.title")}</Text>
         <TouchableOpacity style={styles.infoBtn}>
           <Svg width={20} height={20} viewBox="0 0 20 20" fill="none">
@@ -162,11 +160,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 20,
     color: Colors.textPrimary,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
   },
   infoBtn: {
     width: 40,

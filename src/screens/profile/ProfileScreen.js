@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,8 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Switch,
+  Alert,
+  Platform,
+  StatusBar,
 } from "react-native";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -18,34 +21,47 @@ import StatCard from "../../components/profile/StatCard";
 import PrefRow from "../../components/profile/PrefRow";
 import StyleChip from "../../components/profile/StyleChip";
 import LanguageBottomSheet from "../../components/profile/LanguageBottomSheet";
+import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import CustomizeAppButtonOutlined from "../../components/common/CustomizeAppButtonOutlined";
+import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
 import Colors from "../../constants/theme/colors";
 import { ROUTES } from "../../navigation/routes";
+import * as ImagePicker from "expo-image-picker";
+import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import { deleteAccount } from "../../api/user_services/userService";
+import { getAvatarById } from "../../api/avatar_services/avatarService";
+import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 
 const ProfileScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { logout } = useAuth();
-  const { language, selectLanguage, syncLanguage } = useLanguage();
-  const { profile } = useProfileContext();
+  const { language, selectLanguage } = useLanguage();
+  const {
+    profile,
+    settings,
+    updateNotifications,
+    updateDarkMode,
+    updateLanguage,
+    updateUserImage,
+  } = useProfileContext();
   const { items: favorites } = useFavorites();
-
-  const STYLE_OPTIONS = [
-    t('profile.styleOptions.streetwear'),
-    t('profile.styleOptions.minimalist'),
-    t('profile.styleOptions.avantGarde'),
-    t('profile.styleOptions.cyberpunk'),
-    t('profile.styleOptions.quietLuxury'),
-    t('profile.styleOptions.bohemian'),
-  ];
-
-
-  const [customizeMode, setCustomizeMode] = useState(false);
-  const [selectedStyles, setSelectedStyles] = useState([]);
-  const [notifications, setNotifications] = useState(
-    profile?.settings?.notifications_enabled ?? true,
-  );
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [tempLang, setTempLang] = useState(language);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [avatarImage, setAvatarImage] = useState(null);
+
+  useEffect(() => {
+    if (profile?.avatars?.length) {
+      const lastId = profile.avatars[profile.avatars.length - 1];
+      getAvatarById(lastId)
+        .then((res) => {
+          const uri = res?.avatar?.image_url || res?.image || res?.imageUrl || res?.url || null;
+          setAvatarImage(uri);
+        })
+        .catch(() => {});
+    }
+  }, [profile?.avatars]);
 
   const completionScore = () => {
     if (!profile) return 0;
@@ -59,17 +75,64 @@ const ProfileScreen = ({ navigation }) => {
     return fields.filter(Boolean).length / fields.length;
   };
 
-  const toggleStyle = (style) => {
-    if (!customizeMode) return;
-    setSelectedStyles((prev) =>
-      prev.includes(style) ? prev.filter((s) => s !== style) : [...prev, style],
-    );
-  };
-
   const handleLanguageSave = async () => {
     await selectLanguage(tempLang);
-    syncLanguage();
+    updateLanguage(tempLang);
     setLangModalVisible(false);
+  };
+
+  const pickImage = async (pickerFn) => {
+    const { status } = await pickerFn();
+    if (status !== "granted") return;
+    const options = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.5,
+      allowsEditing: true,
+      aspect: [1, 1],
+    };
+    const result =
+      pickerFn === ImagePicker.requestCameraPermissionsAsync
+        ? await ImagePicker.launchCameraAsync(options)
+        : await ImagePicker.launchImageLibraryAsync(options);
+    if (result?.assets?.[0]?.uri) {
+      const manipResult = await manipulateAsync(
+        result.assets[0].uri,
+        [{ resize: { width: 300 } }],
+        { compress: 0.4, format: SaveFormat.JPEG, base64: true },
+      );
+      if (manipResult.base64) {
+        updateUserImage(`data:image/jpeg;base64,${manipResult.base64}`);
+      }
+    }
+  };
+
+  const handlePickImage = () => {
+    Alert.alert(t("profile.changePhoto"), "", [
+      {
+        text: t("common.camera"),
+        onPress: () => pickImage(ImagePicker.requestCameraPermissionsAsync),
+      },
+      {
+        text: t("common.gallery"),
+        onPress: () =>
+          pickImage(ImagePicker.requestMediaLibraryPermissionsAsync),
+      },
+      { text: t("common.cancel"), style: "cancel" },
+    ]);
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await deleteAccount(profile?.email);
+      setDeleteModalVisible(false);
+      logout();
+    } catch (err) {
+      setDeleteModalVisible(false);
+      Alert.alert(t('common.error'), err.response?.data?.message || t('common.error'));
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const firstName = profile?.profile?.first_name || "there";
@@ -85,9 +148,17 @@ const ProfileScreen = ({ navigation }) => {
           {/* Row 1: Avatar + name + edit */}
           <View style={styles.profileRow}>
             <View style={styles.profileLeft}>
-              <ProfileAvatar name={profile?.profile?.first_name} />
+              <TouchableOpacity onPress={handlePickImage}>
+                <ProfileAvatar
+                  firstName={profile?.profile?.first_name}
+                  lastName={profile?.profile?.last_name}
+                  imageUri={profile?.userImage}
+                />
+              </TouchableOpacity>
               <View style={styles.profileInfo}>
-                <Text style={styles.hiName}>{t('profile.hi', { name: firstName })}</Text>
+                <Text style={styles.hiName}>
+                  {t("profile.hi", { name: firstName })}
+                </Text>
                 <Text style={styles.email}>{profile?.email ?? ""}</Text>
               </View>
             </View>
@@ -95,7 +166,7 @@ const ProfileScreen = ({ navigation }) => {
               style={styles.editBtn}
               onPress={() => navigation.navigate(ROUTES.EDIT_PROFILE)}
             >
-              <Text style={styles.editText}>{t('profile.edit')}</Text>
+              <Text style={styles.editText}>{t("profile.edit")}</Text>
             </TouchableOpacity>
           </View>
 
@@ -110,7 +181,7 @@ const ProfileScreen = ({ navigation }) => {
               />
             </View>
             <Text style={styles.progressLabel}>
-              {t('profile.completeProfile')}
+              {t("profile.completeProfile")}
             </Text>
           </View>
 
@@ -118,63 +189,61 @@ const ProfileScreen = ({ navigation }) => {
           <View style={styles.statRow}>
             <StatCard
               icon="card-outline"
-              title={t('profile.credits')}
-              subtitle={t('profile.creditsAmount')}
+              title={t("profile.credits")}
+              subtitle={t("profile.creditsAmount")}
             />
             <StatCard
               icon="heart-outline"
-              title={t('profile.wishlist')}
-              subtitle={t('profile.wishlistCount', { count: favorites.length })}
+              title={t("profile.wishlist")}
+              subtitle={t("profile.wishlistCount", { count: favorites.length })}
               onPress={() => navigation.navigate(ROUTES.FAVORITES)}
             />
           </View>
         </View>
 
-        {/* ── Card 2: Style Identity ── */}
-        <View style={styles.card}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>{t('profile.styleIdentity')}</Text>
-            <TouchableOpacity onPress={() => setCustomizeMode((v) => !v)}>
-              <Text style={styles.customizeText}>
-                {customizeMode ? t('profile.done') : t('profile.customize')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.styleGrid}>
-            {STYLE_OPTIONS.map((style) => (
-              <StyleChip
-                key={style}
-                label={style}
-                selected={selectedStyles.includes(style)}
-                customizeMode={customizeMode}
-                onPress={() => toggleStyle(style)}
-              />
-            ))}
-          </View>
-        </View>
+        {/* ── Avatar Card ── */}
+        <AvatarOptionCard
+          title={profile?.avatars?.length ? t('profile.avatarTitle') : t('profile.noAvatar')}
+          description={profile?.avatars?.length ? t('profile.avatarDesc') : t('profile.noAvatarDesc')}
+          image={avatarImage ? { uri: avatarImage } : null}
+          badge={t('common.edit')}
+          onPress={() => navigation.navigate(ROUTES.AVATAR_DETAIL, { avatarUri: avatarImage })}
+        />
 
         {/* ── Card 3: Preferences & Privacy ── */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>{t('profile.preferences')}</Text>
+          <Text style={styles.sectionTitle}>{t("profile.preferences")}</Text>
 
           <PrefRow
             icon="notifications-outline"
-            title={t('profile.notifications')}
+            title={t("profile.notifications")}
             right={
               <Switch
-                value={notifications}
-                onValueChange={setNotifications}
+                value={settings.notifications}
+                onValueChange={updateNotifications}
                 trackColor={{ false: Colors.disabled, true: Colors.primary }}
                 thumbColor="#FFFFFF"
                 style={styles.switch}
               />
             }
           />
-
+          <PrefRow
+            icon="moon-outline"
+            title={t("profile.darkMode")}
+            right={
+              <Switch
+                value={settings.darkMode}
+                onValueChange={updateDarkMode}
+                trackColor={{ false: Colors.disabled, true: Colors.primary }}
+                thumbColor="#FFFFFF"
+                style={styles.switch}
+              />
+            }
+          />
+          
           <PrefRow
             icon="flag-outline"
-            title={t('profile.language')}
+            title={t("profile.language")}
             onPress={() => {
               setTempLang(language);
               setLangModalVisible(true);
@@ -186,7 +255,7 @@ const ProfileScreen = ({ navigation }) => {
 
           <PrefRow
             icon="card-outline"
-            title={t('profile.payment')}
+            title={t("profile.payment")}
             borderBottom={false}
             onPress={() => {}}
             right={
@@ -195,15 +264,25 @@ const ProfileScreen = ({ navigation }) => {
           />
         </View>
 
-        {/* ── Logout ── */}
+        {/* ── Logout & Delete ── */}
         <View style={styles.logoutWrap}>
-          <CustomizeAppButtonOutlined
-            label={t('profile.logout')}
+          <CustomizeAppButtonFilled
+            label={t("profile.logout")}
             onPress={logout}
+            backgroundColor={Colors.error}
+            textColor="#fff"
+            iconPosition="right"
+            icon={
+              <Ionicons name="log-out-outline" size={18} color="#fff" />
+            }
+          />
+          <CustomizeAppButtonOutlined
+            label={t("profile.deleteAccount")}
+            onPress={() => setDeleteModalVisible(true)}
             borderColor={Colors.error}
             textColor={Colors.error}
             icon={
-              <Ionicons name="log-out-outline" size={18} color={Colors.error} />
+              <Ionicons name="trash-outline" size={18} color={Colors.error} />
             }
           />
         </View>
@@ -217,6 +296,16 @@ const ProfileScreen = ({ navigation }) => {
         onSave={handleLanguageSave}
         onClose={() => setLangModalVisible(false)}
       />
+
+      {/* ── Delete account confirmation ── */}
+      <DeleteConfirmationModal
+        visible={deleteModalVisible}
+        onClose={() => setDeleteModalVisible(false)}
+        onConfirm={handleDeleteAccount}
+        loading={deleting}
+        title={t('profile.deleteConfirmTitle')}
+        subtitle={t('profile.deleteConfirmSubtitle')}
+      />
     </View>
   );
 };
@@ -228,7 +317,7 @@ const styles = StyleSheet.create({
   },
   scroll: {
     paddingHorizontal: 16,
-    paddingTop: 58,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     paddingBottom: 40,
     gap: 16,
   },
@@ -332,6 +421,7 @@ const styles = StyleSheet.create({
   },
   logoutWrap: {
     marginTop: 8,
+    gap: 12,
   },
 });
 

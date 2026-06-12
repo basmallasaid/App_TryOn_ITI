@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import {
@@ -150,7 +152,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.backgroundColor,
     paddingHorizontal: 24,
-    paddingTop: 124,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    paddingBottom: 40,
   },
   title: {
     ...Typography.screenTitleLarge,

@@ -4,7 +4,6 @@ import {
   Text,
   SafeAreaView,
   StyleSheet,
-  TouchableOpacity,
   Platform,
   StatusBar,
   Alert,
@@ -16,6 +15,7 @@ import Colors from "../../constants/theme/colors";
 import Typography from "../../constants/theme/typography";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import { IMAGES } from "../../constants/images/images";
 import { useAuth } from "../../context/AuthContext";
 import { getUserProfile } from "../../api/user_services/userService";
@@ -127,16 +127,7 @@ const SelectModelScreen = ({ navigation, route }) => {
     showsVerticalScrollIndicator={false}
   >
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backBtn}
-        onPress={() => navigation.goBack()}
-      >
-        <Ionicons
-          name="chevron-back"
-          size={24}
-          color={Colors.iconGray}
-        />
-      </TouchableOpacity>
+      <CustomBackButton onPress={() => navigation.goBack()} />
 
       <Text style={styles.title}>
         {t('tryOn.selectModel.title')}
@@ -186,12 +177,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    marginBottom: 16,
   },
   title: {
     ...Typography.screenTitleLarge,

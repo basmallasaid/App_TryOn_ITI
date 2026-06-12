@@ -6,6 +6,9 @@ import TryOnStack from './TryOnStack';
 import RecycleStack from './RecycleStack';
 import MatchingStack from './MatchingStack';
 import RecommendationsStack from './RecommendationsStack';
+import RecentTryOnsScreen from '../screens/home/RecentTryOnsScreen';
+import RecentRecyclesScreen from '../screens/home/RecentRecyclesScreen';
+import NotificationsScreen from '../screens/notifications/NotificationsScreen';
 import SplashScreen from '../screens/splash/SplashScreen';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
@@ -71,6 +74,21 @@ export default function RootNavigator() {
             name={ROUTES.RECOMMENDATION}
             component={RecommendationsStack}
             options={{ animation: 'slide_from_bottom' }}
+          />
+          <Stack.Screen
+            name={ROUTES.RECENT_TRYONS}
+            component={RecentTryOnsScreen}
+            options={{ animation: 'slide_from_right' }}
+          />
+          <Stack.Screen
+            name={ROUTES.RECENT_RECYCLES}
+            component={RecentRecyclesScreen}
+            options={{ animation: 'slide_from_right' }}
+          />
+          <Stack.Screen
+            name={ROUTES.NOTIFICATIONS}
+            component={NotificationsScreen}
+            options={{ animation: 'slide_from_right' }}
           />
         </>
       ) : (

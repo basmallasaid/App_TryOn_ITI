@@ -11,12 +11,14 @@ import {
   StatusBar,
   ActivityIndicator,
   Alert,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { File, Directory, Paths } from 'expo-file-system';
 import { saveLatestTryon } from '../../api/user_services/userService';
 import { virtualTryOn } from '../../api/virtual_tryon_services/virtualTryonService';
 import { ROUTES, SOURCE } from '../../navigation/routes';
+import CustomBackButton from '../../components/common/CustomBackButton';
 
 const { width } = Dimensions.get('window');
 
@@ -107,65 +109,68 @@ const TryOnResult = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={28} color="#546e7a" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Try-On Result</Text>
-        <TouchableOpacity>
-          <Icon name="help-circle-outline" size={28} color="#546e7a" />
-        </TouchableOpacity>
-      </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.header}>
+          <CustomBackButton onPress={() => navigation.goBack()} />
+          <Text style={styles.headerTitle}>Try-On Result</Text>
+          <TouchableOpacity>
+            <Icon name="help-circle-outline" size={28} color="#546e7a" />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.imageContainer}>
-        {generating ? (
-          <View style={styles.generatingOverlay}>
-            <ActivityIndicator size="large" color="#4AB8FF" />
-            <Text style={styles.generatingText}>Generating try-on result...</Text>
-          </View>
-        ) : generateError ? (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{generateError}</Text>
-            <TouchableOpacity style={styles.retryBtn} onPress={handleStoreGenerate}>
-              <Text style={styles.retryBtnText}>Retry</Text>
-            </TouchableOpacity>
-          </View>
-        ) : displayImage ? (
-          <Image
-            source={{ uri: displayImage }}
-            style={styles.mainImage}
-            resizeMode="contain"
-          />
-        ) : (
-          <Text style={styles.placeholderText}>No result image available</Text>
-        )}
-      </View>
-
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[styles.saveButton, saving && { opacity: 0.6 }]}
-          onPress={handleSave}
-          disabled={saving}
-        >
-          {saving ? (
-            <ActivityIndicator size="small" color="#fff" />
+        <View style={styles.imageContainer}>
+          {generating ? (
+            <View style={styles.generatingOverlay}>
+              <ActivityIndicator size="large" color="#4AB8FF" />
+              <Text style={styles.generatingText}>Generating try-on result...</Text>
+            </View>
+          ) : generateError ? (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{generateError}</Text>
+              <TouchableOpacity style={styles.retryBtn} onPress={handleStoreGenerate}>
+                <Text style={styles.retryBtnText}>Retry</Text>
+              </TouchableOpacity>
+            </View>
+          ) : displayImage ? (
+            <Image
+              source={{ uri: displayImage }}
+              style={styles.mainImage}
+              resizeMode="contain"
+            />
           ) : (
-            <Text style={styles.saveButtonText}>Save</Text>
+            <Text style={styles.placeholderText}>No result image available</Text>
           )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.tryAgainButton}
-          onPress={() => {
-            if (isStoreFlow) {
-              navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { productImage, source: SOURCE.STORE } });
-            } else {
-              navigation.navigate(ROUTES.SELECT_MODEL);
-            }
-          }}
-        >
-          <Text style={styles.tryAgainText}>Try again</Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={[styles.saveButton, saving && { opacity: 0.6 }]}
+            onPress={handleSave}
+            disabled={saving}
+          >
+            {saving ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.saveButtonText}>Save</Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.tryAgainButton}
+            onPress={() => {
+              if (isStoreFlow) {
+                navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { productImage, source: SOURCE.STORE } });
+              } else {
+                navigation.navigate(ROUTES.SELECT_MODEL);
+              }
+            }}
+          >
+            <Text style={styles.tryAgainText}>Try again</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -175,6 +180,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F9FA',
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
   },
   header: {
     flexDirection: 'row',

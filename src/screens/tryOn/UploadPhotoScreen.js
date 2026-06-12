@@ -16,6 +16,7 @@ import Svg, { Rect, Defs, LinearGradient as SvgGradient, Stop } from "react-nati
 import Colors from "../../constants/theme/colors";
 import Typography from "../../constants/theme/typography";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import PhotoInstructionCard from "../../components/tryOn/PhotoInstructionCard";
 import { openGallery } from "../../utils/cameraAccess";
 import { ROUTES, SOURCE } from "../../navigation/routes";
@@ -76,12 +77,7 @@ const UploadPhotoScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={24} color={Colors.iconGray} />
-        </TouchableOpacity>
+        <CustomBackButton onPress={() => navigation.goBack()} />
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -181,12 +177,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    marginBottom: 8,
   },
   scrollContent: {
     paddingBottom: 100,

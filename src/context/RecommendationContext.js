@@ -17,10 +17,13 @@ import {
   setDailyOutfitData,
   getDailyOutfitData,
 } from "../storage/TokenStorage";
+import { useAuth } from "./AuthContext";
 
 const RecommendationContext = createContext();
 
 export const RecommendationProvider = ({ children }) => {
+  const { user } = useAuth();
+  const userId = user?._id;
   const [todaysOutfit, setTodaysOutfit] = useState(null);
   const [todaysWeather, setTodaysWeather] = useState(null);
   const [history, setHistory] = useState([]);
@@ -53,41 +56,14 @@ export const RecommendationProvider = ({ children }) => {
     }
   }, []);
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const today = new Date().toISOString().split("T")[0];
-      const lastDate = await getDailyOutfitDate();
-
-      if (lastDate === today) {
-        const cached = await getDailyOutfitData();
-        if (cached?.outfits?.[0]) {
-          logOutfitItems("cached outfit", cached.outfits[0]);
-          setTodaysOutfit(cached.outfits[0]);
-          setTodaysWeather(cached.weather || cached.outfits[0]?.weather || null);
-        }
-      } else {
-        setTodaysOutfit(null);
-        setTodaysWeather(null);
-      }
-
-      await fetchHistory();
-    } catch (e) {
-      setError(e.message || "Failed to load recommendations");
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchHistory]);
-
   const checkAndFetchDaily = useCallback(async () => {
     try {
       const today = new Date().toISOString().split("T")[0];
       const currentHour = new Date().getHours();
-      const lastDate = await getDailyOutfitDate();
+      const lastDate = await getDailyOutfitDate(userId);
 
       if (lastDate === today) {
-        const cached = await getDailyOutfitData();
+        const cached = await getDailyOutfitData(userId);
         if (cached?.outfits?.[0]) {
           logOutfitItems("cached on foreground", cached.outfits[0]);
           setTodaysOutfit(cached.outfits[0]);
@@ -103,8 +79,8 @@ export const RecommendationProvider = ({ children }) => {
           const result = await requestRecommendations();
           console.log(`[RecommendationContext] requestRecommendations: outfits.length=${result.outfits?.length}, weather=`, result.weather ? "present" : "null");
           if (result.outfits?.[0]) logOutfitItems("fresh API", result.outfits[0]);
-          await setDailyOutfitDate(today);
-          await setDailyOutfitData(result);
+          await setDailyOutfitDate(today, userId);
+          await setDailyOutfitData(result, userId);
           if (result?.outfits?.[0]) {
             setTodaysOutfit(result.outfits[0]);
             setTodaysWeather(result.weather || result.outfits[0]?.weather || null);
@@ -120,7 +96,7 @@ export const RecommendationProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [fetchHistory]);
+  }, [fetchHistory, userId]);
 
   useEffect(() => {
     checkAndFetchDaily();
@@ -147,7 +123,7 @@ export const RecommendationProvider = ({ children }) => {
         history,
         loading,
         error,
-        refresh,
+        refresh: checkAndFetchDaily,
       }}
     >
       {children}

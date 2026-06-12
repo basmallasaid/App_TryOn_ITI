@@ -6,6 +6,8 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import { IMAGES } from "../../constants/images/images";
@@ -87,7 +89,7 @@ const styles = StyleSheet.create({
   scroll: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 100,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 60,
     paddingBottom: 40,
     alignItems: "center",
   },

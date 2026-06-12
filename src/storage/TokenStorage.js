@@ -35,20 +35,22 @@ export const clearUserId = ()  => SecureStore.deleteItemAsync(USER_ID_KEY);
 const DAILY_OUTFIT_DATE_KEY = 'daily_outfit_date';
 const DAILY_OUTFIT_DATA_KEY = 'daily_outfit_data';
 
-export const setDailyOutfitDate = (date) =>
-  SecureStore.setItemAsync(DAILY_OUTFIT_DATE_KEY, date);
+const dailyKey = (key, userId) => userId ? `${key}_${userId}` : key;
 
-export const getDailyOutfitDate = () =>
-  SecureStore.getItemAsync(DAILY_OUTFIT_DATE_KEY);
+export const setDailyOutfitDate = (date, userId) =>
+  SecureStore.setItemAsync(dailyKey(DAILY_OUTFIT_DATE_KEY, userId), date);
 
-export const setDailyOutfitData = (data) =>
-  SecureStore.setItemAsync(DAILY_OUTFIT_DATA_KEY, JSON.stringify(data));
+export const getDailyOutfitDate = (userId) =>
+  SecureStore.getItemAsync(dailyKey(DAILY_OUTFIT_DATE_KEY, userId));
 
-export const getDailyOutfitData = async () => {
-  const raw = await SecureStore.getItemAsync(DAILY_OUTFIT_DATA_KEY);
+export const setDailyOutfitData = (data, userId) =>
+  SecureStore.setItemAsync(dailyKey(DAILY_OUTFIT_DATA_KEY, userId), JSON.stringify(data));
+
+export const getDailyOutfitData = async (userId) => {
+  const raw = await SecureStore.getItemAsync(dailyKey(DAILY_OUTFIT_DATA_KEY, userId));
   return raw ? JSON.parse(raw) : null;
 };
 
-export const clearDailyOutfit = () =>
-  SecureStore.deleteItemAsync(DAILY_OUTFIT_DATE_KEY)
-    .then(() => SecureStore.deleteItemAsync(DAILY_OUTFIT_DATA_KEY));
+export const clearDailyOutfit = (userId) =>
+  SecureStore.deleteItemAsync(dailyKey(DAILY_OUTFIT_DATE_KEY, userId))
+    .then(() => SecureStore.deleteItemAsync(dailyKey(DAILY_OUTFIT_DATA_KEY, userId)));

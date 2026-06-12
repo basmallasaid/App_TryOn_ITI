@@ -8,6 +8,8 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -197,7 +199,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: 58,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     paddingBottom: 12,
     backgroundColor: "#F5F6F7",
   },

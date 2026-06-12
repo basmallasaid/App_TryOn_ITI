@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from "react-native";
 import { Ionicons, AntDesign, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import Colors from "../../constants/theme/colors";
 
 const { width } = Dimensions.get("window");
@@ -75,9 +76,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
         <View style={styles.searchRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color={Colors.iconGray} />
-          </TouchableOpacity>
+          <CustomBackButton onPress={() => navigation.goBack()} iconColor={Colors.iconGray} />
           <View style={styles.searchBar}>
             <Ionicons name="search-outline" size={20} color="#8E8E93" style={{ marginRight: 10 }} />
             <TextInput placeholder="Tap to search" style={styles.searchInput} />

@@ -13,14 +13,17 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { Ionicons, MaterialCommunityIcons, Feather, AntDesign } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
+import { getItemImage } from "../../utils/getItemImage";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import ActionTab from "../../components/tryOn/ActionTab";
 import UploadBox from "../../components/tryOn/UploadBox";
 import ItemSelector from "../../components/tryOn/ItemSelector";
 import { openCamera, openGallery } from "../../utils/cameraAccess";
 import { useWardrobe } from "../../context/WardrobeContext";
+import GradientBorder from "../../components/recycle/GradientBorder";
 import { getWardrobeMatches, analyzeImage, getMatchesByAnalysis } from "../../api/matching_services/matchingService";
 import { getAllProducts } from "../../api/user_services/userService";
 import { ROUTES } from "../../navigation/routes";
@@ -148,23 +151,21 @@ export default function MatchingScreen({ navigation }) {
 
   const getImageSource = (item) => {
     if (!item) return null;
-    const uri = typeof item.image === "string" ? item.image : item.image?.uri;
+    const uri = getItemImage(item) || (typeof item.image === "string" ? item.image : item.image?.uri);
     return uri ? { uri } : null;
   };
 
   const getMatchImage = (match) => {
     if (!match?.item) return null;
-    if (match.item.image) {
-      const uri = typeof match.item.image === "string" ? match.item.image : match.item.image?.uri;
-      if (uri) return { uri };
-    }
+    const directUri = getItemImage(match.item);
+    if (directUri) return { uri: directUri };
     const source = match.item.source;
     if (source === "wardrobe") {
       const wardrobeItem = wardrobeItems.find(
         (wi) => wi._id === match.item.id || wi.id === match.item.id
       );
       if (wardrobeItem) {
-        const uri = typeof wardrobeItem.image === "string" ? wardrobeItem.image : wardrobeItem.image?.uri;
+        const uri = getItemImage(wardrobeItem) || (typeof wardrobeItem.image === "string" ? wardrobeItem.image : wardrobeItem.image?.uri);
         if (uri) return { uri };
       }
       return null;
@@ -186,9 +187,7 @@ export default function MatchingScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color={Colors.iconGray} />
-        </TouchableOpacity>
+        <CustomBackButton onPress={() => navigation.goBack()} iconColor={Colors.iconGray} />
         <Text style={styles.headerTitle}>Matching</Text>
         <TouchableOpacity>
           <Feather name="help-circle" size={24} color={Colors.iconGray} />
@@ -294,13 +293,15 @@ export default function MatchingScreen({ navigation }) {
                 return (
                   <TouchableOpacity onPress={() => toggleItem(item._id)} activeOpacity={0.7}>
                     {isSelected ? (
-                      <View style={styles.selectedBorder}>
-                        <View style={styles.wardrobeItemCard}>
-                          {imageSrc && (
-                            <Image source={imageSrc} style={styles.wardrobeImg} resizeMode="contain" />
-                          )}
-                          <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.checkIcon} />
-                        </View>
+                      <View style={{ marginRight: 12 }}>
+                        <GradientBorder width={90} height={110} borderRadius={12} borderWidth={2}>
+                          <View style={styles.selectedContent}>
+                            {imageSrc && (
+                              <Image source={imageSrc} style={styles.wardrobeImg} resizeMode="contain" />
+                            )}
+                            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.checkIcon} />
+                          </View>
+                        </GradientBorder>
                       </View>
                     ) : (
                       <View style={styles.wardrobeItemCard}>
@@ -395,7 +396,7 @@ export default function MatchingScreen({ navigation }) {
                         <View style={styles.scoreBadge}>
                           <Text style={styles.scoreText}>{match.score}%</Text>
                         </View>
-                        <AntDesign name="hearto" size={18} color="#1A2530" style={styles.heartIcon} />
+                        <MaterialCommunityIcons name="heart-outline" size={18} color="#1A2530" style={styles.heartIcon} />
                         {imgSrc ? (
                           <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
                         ) : (
@@ -515,12 +516,10 @@ const styles = StyleSheet.create({
     top: 5,
     right: 5,
   },
-  selectedBorder: {
-    borderWidth: 1.5,
-    borderColor: "#FF9E7A",
-    borderRadius: 14,
-    padding: 2,
-    marginRight: 12,
+  selectedContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   matchList: {
     paddingLeft: 20,

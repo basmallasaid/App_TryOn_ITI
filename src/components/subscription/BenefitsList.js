@@ -1,15 +1,15 @@
 import { View, Text, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 
-export default function BenefitsList({ title, items }) {
+export default function BenefitsList({ title, items, iconColor = Colors.error }) {
   return (
     <View style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
       <View style={styles.list}>
         {items.map((item, index) => (
           <View key={index} style={styles.row}>
-            <Ionicons name="checkmark-circle" size={18} color={Colors.success} />
+            <MaterialCommunityIcons name="check-bold" size={16} color={iconColor} />
             <Text style={styles.text}>{item}</Text>
           </View>
         ))}

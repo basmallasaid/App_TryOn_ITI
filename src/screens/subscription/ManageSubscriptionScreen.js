@@ -198,7 +198,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
         </View>
 
         <View style={styles.benefitsSection}>
-          <BenefitsList title="Your benefits" items={BENEFITS} />
+          <BenefitsList title="Your benefits" items={BENEFITS} iconColor={Colors.disabled} />
         </View>
 
         <View style={styles.cancelWrap}>

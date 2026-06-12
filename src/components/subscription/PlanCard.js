@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 import CustomizeAppButtonOutlined from "../common/CustomizeAppButtonOutlined";
@@ -7,6 +8,7 @@ export default function PlanCard({
   badge,
   name,
   price,
+  perUnit,
   description,
   features,
   buttonLabel,
@@ -16,35 +18,60 @@ export default function PlanCard({
   highlighted,
   footerText,
   onButtonPress,
+  planNameStyle,
+  cardStyle,
+  priceStyle,
+  perUnitStyle,
+  featureTextStyle,
+  buttonBorderColor,
+  buttonTextColor,
+  badgeStyle,
+  badgeTextStyle,
+  descriptionStyle,
+  featuresListStyle,
+  footerStyle,
+  contentWrapStyle,
 }) {
   return (
-    <View style={[styles.card, highlighted && styles.cardHighlighted]}>
+    <View style={[styles.card, highlighted && styles.cardHighlighted, cardStyle]}>
       {badge && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{badge}</Text>
+        <View style={[styles.badge, badgeStyle]}>
+          <Text style={[styles.badgeText, badgeTextStyle]}>{badge}</Text>
         </View>
       )}
 
-      <Text style={styles.planName}>{name}</Text>
-      <Text style={styles.price}>{price}</Text>
+      <View style={styles.namePriceWrap}>
+        <Text style={[styles.planName, planNameStyle]}>{name}</Text>
 
-      {description && <Text style={styles.description}>{description}</Text>}
-
-      <View style={styles.featuresList}>
-        {features.map((feature, index) => (
-          <View key={index} style={styles.featureRow}>
-            <Text style={styles.checkmark}>✓</Text>
-            <Text style={styles.featureText}>{feature}</Text>
+        {perUnit ? (
+          <View style={styles.priceRow}>
+            <Text style={[styles.price, priceStyle]}>{price}</Text>
+            <Text style={[styles.perUnit, perUnitStyle]}>{perUnit}</Text>
           </View>
-        ))}
+        ) : (
+          <Text style={[styles.price, priceStyle]}>{price}</Text>
+        )}
+      </View>
+
+      <View style={contentWrapStyle}>
+        {description && <Text style={[styles.description, descriptionStyle]}>{description}</Text>}
+
+        <View style={[styles.featuresList, featuresListStyle]}>
+          {features.map((feature, index) => (
+            <View key={index} style={styles.featureRow}>
+              <MaterialCommunityIcons name="check-bold" size={16} color={Colors.primary} />
+              <Text style={[styles.featureText, featureTextStyle]}>{feature}</Text>
+            </View>
+          ))}
+        </View>
       </View>
 
       {buttonOutlined ? (
         <CustomizeAppButtonOutlined
           label={buttonLabel}
           onPress={onButtonPress}
-          borderColor={Colors.borderStrong}
-          textColor={Colors.textMuted}
+          borderColor={buttonBorderColor || Colors.borderStrong}
+          textColor={buttonTextColor || Colors.textMuted}
           disabled
         />
       ) : (
@@ -58,7 +85,7 @@ export default function PlanCard({
         />
       )}
 
-      {footerText && <Text style={styles.footerText}>{footerText}</Text>}
+      {footerText && <Text style={[styles.footerText, footerStyle]}>{footerText}</Text>}
     </View>
   );
 }
@@ -89,15 +116,29 @@ const styles = StyleSheet.create({
     color: Colors.white,
     letterSpacing: 1,
   },
+  namePriceWrap: {
+    gap: 0,
+    marginBottom: 8,
+  },
   planName: {
-    fontFamily: "Roboto_700Bold",
-    fontSize: 20,
+    fontFamily: "Roboto_400Regular",
+    fontSize: 16,
     color: Colors.textPrimary,
+  },
+  priceRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
   },
   price: {
     fontFamily: "Roboto_700Bold",
     fontSize: 28,
     color: Colors.textPrimary,
+  },
+  perUnit: {
+    fontFamily: "Roboto_400Regular",
+    fontSize: 16,
+    color: Colors.iconGray,
+    lineHeight: 16,
   },
   description: {
     fontFamily: "Roboto_400Regular",
@@ -111,18 +152,13 @@ const styles = StyleSheet.create({
   featureRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-  },
-  checkmark: {
-    fontFamily: "Roboto_600SemiBold",
-    fontSize: 14,
-    color: Colors.success,
-    width: 16,
+    gap: 12,
   },
   featureText: {
     fontFamily: "Roboto_400Regular",
-    fontSize: 14,
-    color: Colors.textSecondary,
+    fontSize: 15,
+    color: Colors.iconGray,
+    lineHeight: 15,
   },
   footerText: {
     fontFamily: "Roboto_400Regular",

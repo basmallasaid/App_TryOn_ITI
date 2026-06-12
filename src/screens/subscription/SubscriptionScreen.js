@@ -41,10 +41,11 @@ export default function SubscriptionScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const isYearly = billing === "Yearly";
-  const proPrice = isYearly ? "$12.19/yr" : "$16.19/mo";
+  const proPrice = isYearly ? "$12.19" : "$16.19";
+  const proPerUnit = isYearly ? "/yr" : "/mo";
   const proFooter = isYearly
-    ? "7 days free, then $12.19/year. Cancel anytime."
-    : "7 days free, then $16.19/month. Cancel anytime.";
+    ? "$12.19/year. Auto Renewal. Cancel Anytime."
+    : "$16.19/month. Auto Renewal. Cancel Anytime.";
 
   const isSubscribed = false;
 
@@ -74,7 +75,7 @@ export default function SubscriptionScreen({ navigation }) {
         "pro",
         billing.toLowerCase() === "yearly" ? "year" : "month",
         redirectUrl,
-        redirectUrl
+        redirectUrl,
       );
 
       if (data.url) {
@@ -89,7 +90,8 @@ export default function SubscriptionScreen({ navigation }) {
       navigation.navigate(ROUTES.MANAGE_SUBSCRIPTION);
     } catch (err) {
       const message =
-        err.response?.data?.message || "Something went wrong. Please try again.";
+        err.response?.data?.message ||
+        "Something went wrong. Please try again.";
       Alert.alert("Checkout Error", message);
     } finally {
       setLoading(false);
@@ -121,11 +123,22 @@ export default function SubscriptionScreen({ navigation }) {
 
         <PlanCard
           name="Essential"
-          price="$0/mo"
+          price="$0"
+          perUnit="/mo"
           features={FEATURES_ESSENTIAL}
           buttonLabel="Current Plan"
           buttonDisabled
           buttonOutlined
+          cardStyle={{ padding: 24, backgroundColor: "transparent", gap: 8 }}
+          priceStyle={{
+            fontFamily: "PlusJakartaSans_700Bold",
+            fontSize: 36,
+            lineHeight: 38,
+          }}
+          planNameStyle={{ paddingBottom: 0 }}
+          featuresListStyle={{ marginBottom: 22 }}
+          buttonBorderColor={Colors.borderStrong}
+          buttonTextColor={Colors.iconGray}
         />
 
         <View style={styles.plansGap} />
@@ -134,13 +147,67 @@ export default function SubscriptionScreen({ navigation }) {
           badge="POPULAR"
           name="Pro Stylist"
           price={proPrice}
+          perUnit={proPerUnit}
           description="Includes everything in Essential, plus:"
           features={FEATURES_PRO}
           buttonLabel={isSubscribed ? "Manage Subscription" : "Subscribe Now"}
           highlighted
           footerText={proFooter}
           buttonLoading={loading}
-          onButtonPress={isSubscribed ? () => navigation.navigate(ROUTES.MANAGE_SUBSCRIPTION) : handleSubscribe}
+          planNameStyle={{
+            fontFamily: "PlusJakartaSans_400Regular",
+            fontSize: 16,
+            lineHeight: 24,
+            paddingBottom: 0,
+          }}
+          cardStyle={{ padding: 24, backgroundColor: "transparent", gap: 8 }}
+          priceStyle={{
+            fontFamily: "PlusJakartaSans_700Bold",
+            fontSize: 36,
+            lineHeight: 38,
+          }}
+          badgeStyle={{
+            width: 116,
+            height: 23,
+            borderRadius: 8,
+            paddingVertical: 4,
+            paddingHorizontal: 12,
+            marginBottom: 16,
+          }}
+          badgeTextStyle={{
+            fontFamily: "Roboto_500Medium",
+            fontSize: 12,
+            lineHeight: 12,
+            letterSpacing: 0,
+            textAlign: "center",
+          }}
+          descriptionStyle={{
+            fontFamily: "Roboto_600SemiBold",
+            fontSize: 16,
+            lineHeight: 16,
+            color: Colors.primary,
+          }}
+          featuresListStyle={{ gap: 8, paddingBottom: 8 }}
+          featureTextStyle={{
+            fontSize: 16,
+            lineHeight: 16,
+            color: Colors.textPrimary,
+          }}
+          contentWrapStyle={{ width: 315, gap: 24, marginBottom: 22 }}
+          footerStyle={{
+            marginTop: 16,
+            fontFamily: "Roboto_400Regular",
+            fontSize: 16,
+            lineHeight: 16,
+            letterSpacing: 0,
+            color: Colors.iconGray,
+            textAlign: "center",
+          }}
+          onButtonPress={
+            isSubscribed
+              ? () => navigation.navigate(ROUTES.MANAGE_SUBSCRIPTION)
+              : handleSubscribe
+          }
         />
 
         <View style={styles.divider} />
@@ -177,14 +244,14 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "Roboto_700Bold",
     fontSize: 24,
+    lineHeight: 38.4,
     color: Colors.textPrimary,
   },
   subtitle: {
     fontFamily: "Roboto_400Regular",
-    fontSize: 14,
-    color: Colors.textSecondary,
+    fontSize: 12,
+    color: Colors.iconGray,
     textAlign: "center",
-    lineHeight: 18,
   },
   plansGap: {
     height: 16,
@@ -196,9 +263,10 @@ const styles = StyleSheet.create({
   },
   disclaimer: {
     fontFamily: "Roboto_400Regular",
-    fontSize: 11,
-    color: Colors.textMuted,
+    fontSize: 12,
+    color: Colors.iconGray,
     textAlign: "center",
-    lineHeight: 16,
+    lineHeight: 12,
+    letterSpacing: 0,
   },
 });

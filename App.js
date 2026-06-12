@@ -18,6 +18,9 @@ import {
   Roboto_700Bold,
 } from "@expo-google-fonts/roboto";
 import { Inter_700Bold } from "@expo-google-fonts/inter";
+
+const PlusJakartaSans_400Regular = require("@expo-google-fonts/plus-jakarta-sans/400Regular/PlusJakartaSans_400Regular.ttf");
+const PlusJakartaSans_700Bold = require("@expo-google-fonts/plus-jakarta-sans/700Bold/PlusJakartaSans_700Bold.ttf");
 import { resetOnboardingAndLanguage } from "./src/utils/devReset";
 import { ProfileProvider } from "./src/context/ProfileContext";
 import { WardrobeProvider } from './src/context/WardrobeContext';
@@ -46,6 +49,8 @@ export default function App() {
     Roboto_600SemiBold,
     Roboto_700Bold,
     Inter_700Bold,
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_700Bold,
   });
 
   useEffect(() => {

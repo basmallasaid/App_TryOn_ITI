@@ -5,6 +5,7 @@ import AppStack from './AppStack';
 import TryOnStack from './TryOnStack';
 import RecycleStack from './RecycleStack';
 import MatchingStack from './MatchingStack';
+import RecommendationsStack from './RecommendationsStack';
 import SplashScreen from '../screens/splash/SplashScreen';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
@@ -64,6 +65,11 @@ export default function RootNavigator() {
           <Stack.Screen
             name={ROUTES.MATCHING}
             component={MatchingStack}
+            options={{ animation: 'slide_from_bottom' }}
+          />
+          <Stack.Screen
+            name={ROUTES.RECOMMENDATION}
+            component={RecommendationsStack}
             options={{ animation: 'slide_from_bottom' }}
           />
         </>

@@ -50,6 +50,13 @@ export const ROUTES = {
   MATCHING_MAIN: 'MatchingMain',
   MATCHING_RESULT_DETAILS: 'MatchingResultDetails',
 
+  // Recommendation stack (root-level)
+  RECOMMENDATION: 'Recommendation',
+
+  // Recommendation inner screens
+  RECOMMENDATIONS_HISTORY: 'RecommendationsHistory',
+  RECOMMENDATION_DETAIL: 'RecommendationDetail',
+
   // Profile stack
   PROFILE_MAIN: 'Profile',
   EDIT_PROFILE: 'EditProfile',

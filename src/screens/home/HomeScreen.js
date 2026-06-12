@@ -9,7 +9,6 @@ import {
   Platform,
   StatusBar,
   I18nManager,
-  Alert,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
@@ -23,15 +22,30 @@ import { Ionicons } from "@expo/vector-icons";
 import { useProfileContext } from "../../context/ProfileContext";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 import { useFavorites } from "../../context/FavoritesContext";
+import { useRecommendation } from "../../context/RecommendationContext";
 
 export default function HomeScreen({ navigation }) {
   const { t, i18n } = useTranslation();
   const { profile } = useProfileContext();
   const { isFavorite, addItem, removeItem } = useFavorites();
+  const { todaysOutfit, todaysWeather, history } = useRecommendation();
+  const activeOutfit = todaysOutfit || history?.[0] || null;
   const isRTL = i18n.language === "ar" || I18nManager.isRTL;
   const latestTryOn = profile?.latestTryOn || [];
   const latestRecycle = profile?.latestRecycle || [];
   const arrowName = isRTL ? "arrow-back" : "arrow-forward";
+
+  const goToHistory = () =>
+    navigation.navigate(ROUTES.RECOMMENDATION, { screen: ROUTES.RECOMMENDATIONS_HISTORY });
+
+  const goToDetail = () => {
+    console.log("[HomeScreen] goToDetail: activeOutfit=", activeOutfit ? "present" : "null");
+    navigation.navigate(ROUTES.RECOMMENDATION, {
+      screen: ROUTES.RECOMMENDATION_DETAIL,
+      params: { outfit: activeOutfit },
+    });
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -40,7 +54,7 @@ export default function HomeScreen({ navigation }) {
         contentContainerStyle={styles.scrollContent}
       >
         <Header />
-        <HeroBanner />
+        <HeroBanner onPress={goToHistory} />
 
         <Text style={styles.sectionTitle}>{t('home.whatToDo')}</Text>
         <View style={styles.grid}>
@@ -71,6 +85,7 @@ export default function HomeScreen({ navigation }) {
             titleColor="#FF7D9A"
             iconBgColor="#FFF0F3"
             iconColor="#FF6B8B"
+            onPress={goToHistory}
           />
           <ActionCard
             title={t('home.actions.matching')}
@@ -85,7 +100,11 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         <Text style={styles.sectionTitle}>{t('home.todaysPicks')}</Text>
-        <OutfitCard />
+        <OutfitCard
+          onPress={goToDetail}
+          todaysOutfit={activeOutfit}
+          todaysWeather={todaysWeather || activeOutfit?.weather}
+        />
 
         <View style={styles.recentHeader}>
           <Text style={styles.recentTitle}>{t('home.recentTryOns')}</Text>

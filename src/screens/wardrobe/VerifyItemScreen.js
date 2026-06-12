@@ -40,12 +40,17 @@ const CATEGORIES = [
   "Accessories",
 ];
 const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
-const STYLES = ["Casual", "Basic", "Formal"];
+const STYLES = ["Casual", "Basic", "Formal","Mart-Casual"];
 
 const normalize = (value) => {
   if (!value) return [];
   const arr = Array.isArray(value) ? value : [value];
-  return arr.map((v) => v.charAt(0).toUpperCase() + v.slice(1).toLowerCase());
+  return arr.map((v) =>
+    v
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join("-")
+  );
 };
 
 const matchToOptions = (values, options) =>

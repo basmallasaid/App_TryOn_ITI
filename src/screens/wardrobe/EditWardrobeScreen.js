@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Platform,
   StatusBar,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useWardrobe } from "../../context/WardrobeContext";
@@ -21,6 +22,12 @@ import DeleteConfirmationModal from "../../components/common/DeleteConfirmationM
 import { getCategoriesByGender } from "../../constants/wardrobe/wardrobeCategories";
 import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const CARD_WIDTH = 175;
+const GAP = 15;
+const TOTAL_GRID_WIDTH = CARD_WIDTH * 2 + GAP;
+const HORIZONTAL_PADDING = (SCREEN_WIDTH - TOTAL_GRID_WIDTH) / 2;
 
 const EditWardrobeScreen = ({ navigation, route }) => {
   const { initialSelectedId } = route.params || {};
@@ -145,6 +152,7 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: "#F5F6F7",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: "row",
@@ -161,7 +169,7 @@ const styles = StyleSheet.create({
   },
   categoryBar: { paddingVertical: 25 },
   categoryScroll: { paddingHorizontal: 16, gap: 8 },
-  row: { paddingHorizontal: 16, justifyContent: "space-between" },
+  row: { paddingHorizontal: Math.max(16, HORIZONTAL_PADDING), gap: GAP },
   listContent: { paddingBottom: 30 },
   cardContainer: { position: "relative" },
   overlay: {

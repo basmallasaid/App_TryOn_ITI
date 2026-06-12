@@ -23,9 +23,9 @@ import { getGreeting } from "../../utils/greeting";
 export default function RecommendationScreen({ navigation }) {
   const { t } = useTranslation();
   const { profile } = useProfileContext();
-  const { todaysOutfit, history, loading } = useRecommendation();
+  const { todaysOutfit, todaysWeather, history, loading } = useRecommendation();
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
-  const weather = todaysOutfit?.weather || history[0]?.weather || null;
+  const weather = todaysWeather || todaysOutfit?.weather || history[0]?.weather || null;
 
   return (
     <SafeAreaView style={styles.safeArea}>

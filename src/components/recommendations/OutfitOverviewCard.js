@@ -1,20 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "../../constants/theme/colors";
-import { getItemsList } from "../../utils/getItemImage";
+import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
 
 export default function OutfitOverviewCard({ outfit, onPress, width, height, borderRadius, borderColor, labelFontSize }) {
+  const [imageError, setImageError] = useState(false);
   const items = getItemsList(outfit);
+  const compositeImage = getCompositeImage(outfit);
   const validImages = items.filter(i => i._image);
+  const isComposite = !!compositeImage;
+  const fallbackImage = validImages[0]?._image || null;
+  const imageUri = (!imageError && compositeImage) ? compositeImage : fallbackImage;
+  console.log(`[OutfitOverviewCard] compositeImage=${compositeImage ? compositeImage.slice(0, 60) + "..." : "null"}, validImages.length=${validImages.length}, imageUri=${imageUri ? imageUri.slice(0, 60) + "..." : "null"}, imageError=${imageError}`);
   const label = items.map(i => i._name).filter(Boolean).join(", ");
 
   const renderImages = () => {
-    if (validImages.length === 0) {
+    if (!imageUri) {
       return <View style={styles.imagePlaceholder} />;
     }
     return (
-      <Image source={{ uri: validImages[0]._image }} style={styles.image} resizeMode="contain" />
+      <Image
+        source={{ uri: imageUri }}
+        style={styles.image}
+        resizeMode="contain"
+        onError={(e) => {
+          console.log(`[OutfitOverviewCard] Image load error: ${e.nativeEvent?.error}, uri=${imageUri.slice(0, 80)}`);
+          if (isComposite) {
+            setImageError(true);
+          }
+        }}
+      />
     );
   };
 

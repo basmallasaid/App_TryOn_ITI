@@ -61,6 +61,8 @@ export const ROUTES = {
   PROFILE_MAIN: 'Profile',
   EDIT_PROFILE: 'EditProfile',
   FAVORITES: 'Favorites',
+  SUBSCRIPTION: 'Subscription',
+  MANAGE_SUBSCRIPTION: 'ManageSubscription',
 };
 
 // Entry source constants

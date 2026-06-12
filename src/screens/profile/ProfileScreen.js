@@ -188,7 +188,7 @@ const ProfileScreen = ({ navigation }) => {
             icon="card-outline"
             title={t('profile.payment')}
             borderBottom={false}
-            onPress={() => {}}
+            onPress={() => navigation.navigate(ROUTES.MANAGE_SUBSCRIPTION)}
             right={
               <Ionicons name="chevron-forward" size={16} color="#6B7280" />
             }

@@ -33,4 +33,7 @@ export const ENDPOINTS = {
   ADD_FAVORITE: '/users/favorites',
   REMOVE_FAVORITE: '/users/favorites',
   RECOMMENDATIONS: '/recommendations',
+  CREATE_CHECKOUT_SESSION: '/payments/create-checkout-session',
+  CANCEL_SUBSCRIPTION: '/payments/cancel-subscription',
+  SYNC_SUBSCRIPTION: '/payments/sync-subscription',
 };

@@ -25,19 +25,22 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "Roboto_600SemiBold",
     fontSize: 16,
+    lineHeight: 16,
     color: Colors.textPrimary,
   },
   list: {
-    gap: 12,
+    gap: 8,
+    paddingBottom: 8,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
   },
   text: {
     fontFamily: "Roboto_400Regular",
-    fontSize: 14,
-    color: Colors.textSecondary,
+    fontSize: 15,
+    lineHeight: 15,
+    color: Colors.disabled,
   },
 });

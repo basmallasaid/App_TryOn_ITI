@@ -166,45 +166,49 @@ export default function ManageSubscriptionScreen({ navigation }) {
           </Text>
         </View>
 
-        <View style={styles.subscriptionCard}>
-          <View style={styles.badgeRow}>
-            <View style={styles.activeBadge}>
-              <Text style={styles.activeBadgeText}>ACTIVE</Text>
+        <View style={styles.contentCard}>
+          <View style={styles.outerWrap}>
+            <View style={styles.infoSection}>
+              <View style={styles.planWrap}>
+                <View style={styles.badgeRow}>
+                  <View style={styles.activeBadge}>
+                    <Text style={styles.activeBadgeText}>ACTIVE</Text>
+                  </View>
+                </View>
+
+                <Text style={styles.planName}>
+                  {subscription.subscriptionPlan === "pro"
+                    ? "Pro Stylist"
+                    : "Premium"}
+                </Text>
+                <Text style={styles.planSubtitle}>Your current plan</Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <View style={styles.infoBox}>
+                  <Text style={styles.infoLabel}>Billing</Text>
+                  <Text style={styles.infoValue}>
+                    {formatBilling(subscription)}
+                  </Text>
+                </View>
+                <View style={styles.infoBox}>
+                  <Text style={styles.infoLabel}>Renews</Text>
+                  <Text style={styles.infoValue}>
+                    {formatDate(subscription.subscriptionEndDate)}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.benefitsSection}>
+              <BenefitsList
+                title="Your benefits"
+                items={BENEFITS}
+                iconColor={Colors.disabled}
+              />
             </View>
           </View>
 
-          <Text style={styles.planName}>
-            {subscription.subscriptionPlan === "pro"
-              ? "Pro Stylist"
-              : "Premium"}
-          </Text>
-          <Text style={styles.planSubtitle}>Your current plan</Text>
-
-          <View style={styles.infoRow}>
-            <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Billing</Text>
-              <Text style={styles.infoValue}>
-                {formatBilling(subscription)}
-              </Text>
-            </View>
-            <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Renews</Text>
-              <Text style={styles.infoValue}>
-                {formatDate(subscription.subscriptionEndDate)}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.benefitsSection}>
-          <BenefitsList
-            title="Your benefits"
-            items={BENEFITS}
-            iconColor={Colors.disabled}
-          />
-        </View>
-
-        <View style={styles.cancelWrap}>
           <CustomizeAppButtonFilled
             label="Cancel Subscription"
             onPress={() => setModalVisible(true)}
@@ -254,28 +258,42 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    gap: 6,
+    gap: 4,
     marginTop: 20,
     marginBottom: 24,
   },
   title: {
     fontFamily: "Roboto_700Bold",
     fontSize: 24,
+    lineHeight: 38.4,
     color: Colors.textPrimary,
   },
   subtitle: {
     fontFamily: "Roboto_400Regular",
-    fontSize: 14,
-    color: Colors.textSecondary,
+    fontSize: 12,
+    lineHeight: 12,
+    color: Colors.iconGray,
     textAlign: "center",
   },
-  subscriptionCard: {
+  outerWrap: {
+    gap: 39,
+  },
+  infoSection: {
+    gap: 24,
+  },
+  contentCard: {
     backgroundColor: Colors.white,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: Colors.borderStrong,
-    padding: 20,
-    gap: 12,
+    padding: 24,
+    gap: 32,
+  },
+  benefitsSection: {
+    gap: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderStrong,
   },
   badgeRow: {
     flexDirection: "row",
@@ -292,52 +310,57 @@ const styles = StyleSheet.create({
     color: Colors.white,
     letterSpacing: 0.5,
   },
+  planWrap: {
+    gap: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderStrong,
+  },
   planName: {
     fontFamily: "Roboto_700Bold",
-    fontSize: 22,
+    fontSize: 24,
+    lineHeight: 38.4,
     color: Colors.textPrimary,
-    textTransform: "uppercase",
+    textAlign: "left",
   },
   planSubtitle: {
     fontFamily: "Roboto_400Regular",
-    fontSize: 13,
-    color: Colors.textSecondary,
+    fontSize: 12,
+    lineHeight: 12,
+    color: Colors.iconGray,
+    textAlign: "left",
   },
   infoRow: {
     flexDirection: "row",
-    gap: 12,
-    marginTop: 4,
+    justifyContent: "space-between",
+    gap: 16,
+    paddingBottom: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderStrong,
   },
   infoBox: {
     flex: 1,
     backgroundColor: Colors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: Colors.borderStrong,
-    padding: 14,
-    gap: 6,
-  },
-  infoLabel: {
-    fontFamily: "Roboto_500Medium",
-    fontSize: 11,
-    color: Colors.textMuted,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  infoValue: {
-    fontFamily: "Roboto_600SemiBold",
-    fontSize: 14,
-    color: Colors.textPrimary,
-  },
-  benefitsSection: {
-    marginTop: 28,
-    backgroundColor: Colors.white,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: Colors.borderStrong,
-    padding: 20,
+    paddingTop: 8,
+    paddingRight: 16,
+    paddingBottom: 8,
+    paddingLeft: 16,
+    gap: 8,
   },
-  cancelWrap: {
-    marginTop: 32,
+  infoLabel: {
+    fontFamily: "Roboto_600SemiBold",
+    fontSize: 16,
+    lineHeight: 16,
+    color: Colors.textPrimary,
   },
+  infoValue: {
+    fontFamily: "Roboto_500Medium",
+    fontSize: 14,
+    lineHeight: 16.38,
+    color: Colors.textSecondary,
+  },
+
 });

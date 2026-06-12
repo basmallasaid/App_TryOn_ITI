@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import CustomBackButton from "../../components/common/CustomBackButton";
@@ -20,14 +21,8 @@ import * as paymentService from "../../api/payment_services/paymentService";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
 
-const BENEFITS = [
-  "Unlimited Lookbooks",
-  "Hyper-Realistic Lookbooks",
-  "Personal Style Coaching",
-  "Early Access to Collections",
-];
-
 export default function ManageSubscriptionScreen({ navigation }) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -108,13 +103,13 @@ export default function ManageSubscriptionScreen({ navigation }) {
   const formatBilling = (sub) => {
     const interval = sub?.interval || sub?.subscriptionInterval;
     const amount = sub?.amount || sub?.subscriptionAmount;
+    const perUnit = interval === "year" ? t("subscription.perYear") : t("subscription.perMonth");
     if (amount) {
       const num = parseFloat(amount);
-      return interval === "year"
-        ? `$${num.toFixed(2)}/yr`
-        : `$${num.toFixed(2)}/mo`;
+      return `$${num.toFixed(2)}${perUnit}`;
     }
-    return interval === "year" ? "$12.19/yr" : "$16.19/mo";
+    const price = interval === "year" ? "$12.19" : "$16.19";
+    return `${price}${perUnit}`;
   };
 
   const handleCancelConfirm = async () => {
@@ -126,8 +121,8 @@ export default function ManageSubscriptionScreen({ navigation }) {
       setSuccessVisible(true);
     } catch (err) {
       const message =
-        err.response?.data?.message || "Failed to cancel subscription.";
-      Alert.alert("Error", message);
+        err.response?.data?.message || t("subscription.cancelFailed");
+      Alert.alert(t("common.error"), message);
     } finally {
       setCancelling(false);
     }
@@ -158,11 +153,11 @@ export default function ManageSubscriptionScreen({ navigation }) {
         />
 
         <View style={styles.header}>
-          <Text style={styles.title}>Manage Subscription</Text>
+          <Text style={styles.title}>{t("subscription.manageTitle")}</Text>
           <Text style={styles.subtitle}>
             {subscription.subscriptionPlan === "pro"
-              ? "Pro Stylist Plan"
-              : "Premium Plan"}
+              ? t("subscription.manageSubtitle")
+              : t("subscription.premiumSubtitle")}
           </Text>
         </View>
 
@@ -172,27 +167,27 @@ export default function ManageSubscriptionScreen({ navigation }) {
               <View style={styles.planWrap}>
                 <View style={styles.badgeRow}>
                   <View style={styles.activeBadge}>
-                    <Text style={styles.activeBadgeText}>ACTIVE</Text>
+                    <Text style={styles.activeBadgeText}>{t("subscription.active")}</Text>
                   </View>
                 </View>
 
                 <Text style={styles.planName}>
                   {subscription.subscriptionPlan === "pro"
-                    ? "Pro Stylist"
-                    : "Premium"}
+                    ? t("subscription.proStylist")
+                    : t("subscription.premium")}
                 </Text>
-                <Text style={styles.planSubtitle}>Your current plan</Text>
+                <Text style={styles.planSubtitle}>{t("subscription.currentPlanLabel")}</Text>
               </View>
 
               <View style={styles.infoRow}>
                 <View style={styles.infoBox}>
-                  <Text style={styles.infoLabel}>Billing</Text>
+                  <Text style={styles.infoLabel}>{t("subscription.billing")}</Text>
                   <Text style={styles.infoValue}>
                     {formatBilling(subscription)}
                   </Text>
                 </View>
                 <View style={styles.infoBox}>
-                  <Text style={styles.infoLabel}>Renews</Text>
+                  <Text style={styles.infoLabel}>{t("subscription.renews")}</Text>
                   <Text style={styles.infoValue}>
                     {formatDate(subscription.subscriptionEndDate)}
                   </Text>
@@ -202,15 +197,15 @@ export default function ManageSubscriptionScreen({ navigation }) {
 
             <View style={styles.benefitsSection}>
               <BenefitsList
-                title="Your benefits"
-                items={BENEFITS}
+                title={t("subscription.yourBenefits")}
+                items={t("subscription.benefitsList", { returnObjects: true })}
                 iconColor={Colors.disabled}
               />
             </View>
           </View>
 
           <CustomizeAppButtonFilled
-            label="Cancel Subscription"
+            label={t("subscription.cancelSubscription")}
             onPress={() => setModalVisible(true)}
             backgroundColor={Colors.error}
           />
@@ -219,8 +214,8 @@ export default function ManageSubscriptionScreen({ navigation }) {
 
       <CancelSubscriptionModal
         visible={modalVisible}
-        keepLabel="Keep Subscription"
-        confirmLabel="Confirm Cancellation"
+        keepLabel={t("subscription.keepSubscription")}
+        confirmLabel={t("subscription.confirmCancellation")}
         onKeep={() => setModalVisible(false)}
         onConfirm={handleCancelConfirm}
         loading={cancelling}

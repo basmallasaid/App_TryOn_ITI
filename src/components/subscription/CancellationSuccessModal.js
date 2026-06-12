@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
-import { Modal, View, Text, Animated, StyleSheet, Dimensions } from "react-native";
+import { Modal, View, Text, Animated, Pressable, StyleSheet, Dimensions } from "react-native";
+import { useTranslation } from "react-i18next";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
@@ -7,6 +8,7 @@ import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 const { width } = Dimensions.get("window");
 
 export default function CancellationSuccessModal({ visible, onClose }) {
+  const { t } = useTranslation();
   const scaleAnim = useRef(new Animated.Value(0.6)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -33,7 +35,7 @@ export default function CancellationSuccessModal({ visible, onClose }) {
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
+      <Pressable style={styles.overlay} onPress={onClose}>
         <Animated.View
           style={[
             styles.container,
@@ -47,20 +49,19 @@ export default function CancellationSuccessModal({ visible, onClose }) {
             <MaterialCommunityIcons name="check-circle-outline" size={48} color={Colors.success} />
           </View>
 
-          <Text style={styles.title}>Subscription Cancelled</Text>
+          <Text style={styles.title}>{t("subscription.cancelSuccessTitle")}</Text>
 
           <Text style={styles.body}>
-            Your subscription has been cancelled. You'll continue enjoying Pro
-            Stylist features until the end of your current billing period.
+            {t("subscription.cancelSuccessBody")}
           </Text>
 
           <CustomizeAppButtonFilled
-            label="OK"
+            label={t("subscription.ok")}
             onPress={onClose}
             backgroundColor={Colors.error}
           />
         </Animated.View>
-      </View>
+      </Pressable>
     </Modal>
   );
 }

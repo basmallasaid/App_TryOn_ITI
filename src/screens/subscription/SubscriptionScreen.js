@@ -21,31 +21,21 @@ import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
 import * as paymentService from "../../api/payment_services/paymentService";
 
-const FEATURES_ESSENTIAL = [
-  "AI Wardrobe Sync",
-  "3 Daily Lookbooks",
-  "Basic Virtual Try-On",
-];
-
-const FEATURES_PRO = [
-  "Unlimited Lookbooks",
-  "Hyper-Realistic Try-On",
-  "Personal Style Coaching",
-  "Early Access to Collections",
-];
-
 export default function SubscriptionScreen({ navigation }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [billing, setBilling] = useState("Monthly");
   const [loading, setLoading] = useState(false);
 
+  const FEATURES_ESSENTIAL = t("subscription.featuresEssential", { returnObjects: true });
+  const FEATURES_PRO = t("subscription.featuresPro", { returnObjects: true });
+
   const isYearly = billing === "Yearly";
   const proPrice = isYearly ? "$12.19" : "$16.19";
-  const proPerUnit = isYearly ? "/yr" : "/mo";
+  const proPerUnit = isYearly ? t("subscription.perYear") : t("subscription.perMonth");
   const proFooter = isYearly
-    ? "$12.19/year. Auto Renewal. Cancel Anytime."
-    : "$16.19/month. Auto Renewal. Cancel Anytime.";
+    ? t("subscription.footerYearly")
+    : t("subscription.footerMonthly");
 
   const isSubscribed = false;
 
@@ -111,9 +101,9 @@ export default function SubscriptionScreen({ navigation }) {
         />
 
         <View style={styles.header}>
-          <Text style={styles.title}>Choose Your Plan</Text>
+          <Text style={styles.title}>{t("subscription.choosePlan")}</Text>
           <Text style={styles.subtitle}>
-            Unlock the full potential of your digital atelier.
+            {t("subscription.choosePlanSub")}
           </Text>
         </View>
 
@@ -122,11 +112,11 @@ export default function SubscriptionScreen({ navigation }) {
         <View style={styles.plansGap} />
 
         <PlanCard
-          name="Essential"
+          name={t("subscription.essential")}
           price="$0"
           perUnit="/mo"
           features={FEATURES_ESSENTIAL}
-          buttonLabel="Current Plan"
+          buttonLabel={t("subscription.currentPlan")}
           buttonDisabled
           buttonOutlined
           cardStyle={{ padding: 24, backgroundColor: "transparent", gap: 8 }}
@@ -144,13 +134,13 @@ export default function SubscriptionScreen({ navigation }) {
         <View style={styles.plansGap} />
 
         <PlanCard
-          badge="POPULAR"
-          name="Pro Stylist"
+          badge={t("subscription.popular")}
+          name={t("subscription.proStylist")}
           price={proPrice}
           perUnit={proPerUnit}
-          description="Includes everything in Essential, plus:"
+          description={t("subscription.includesEverything")}
           features={FEATURES_PRO}
-          buttonLabel={isSubscribed ? "Manage Subscription" : "Subscribe Now"}
+          buttonLabel={isSubscribed ? t("subscription.manageSubscription") : t("subscription.subscribeNow")}
           highlighted
           footerText={proFooter}
           buttonLoading={loading}
@@ -213,9 +203,7 @@ export default function SubscriptionScreen({ navigation }) {
         <View style={styles.divider} />
 
         <Text style={styles.disclaimer}>
-          By subscribing, you agree to our Terms of Service and Privacy Policy.
-          Subscriptions will automatically renew unless canceled at least 24
-          hours before the end of the current period.
+          {t("subscription.disclaimer")}
         </Text>
       </ScrollView>
     </SafeAreaView>

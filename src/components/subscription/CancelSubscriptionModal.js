@@ -1,5 +1,6 @@
 import React from "react";
-import { Modal, View, Text, StyleSheet, Dimensions } from "react-native";
+import { Modal, View, Text, Pressable, StyleSheet, Dimensions } from "react-native";
+import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 import CustomizeAppButtonOutlined from "../common/CustomizeAppButtonOutlined";
@@ -15,6 +16,7 @@ export default function CancelSubscriptionModal({
   loading,
   endDate,
 }) {
+  const { t } = useTranslation();
   const formattedEndDate = endDate
     ? new Date(endDate).toLocaleDateString("en-US", {
         month: "short",
@@ -25,15 +27,15 @@ export default function CancelSubscriptionModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <View style={styles.container}>
+      <Pressable style={styles.overlay} onPress={onKeep}>
+        <Pressable style={styles.container} onPress={() => {}}>
           <View style={styles.contentWrap}>
-            <Text style={styles.title}>Cancel your Subscription?</Text>
+            <Text style={styles.title}>{t("subscription.cancelModalTitle")}</Text>
 
             <Text style={styles.body}>
-              You'll keep access to pro plan features until{" "}
-              <Text style={styles.bodyBold}>{formattedEndDate}</Text>.
-              After that, your account will return to the Essential plan.
+              {t("subscription.cancelModalBodyStart")}
+              <Text style={styles.bodyBold}>{formattedEndDate}</Text>
+              {t("subscription.cancelModalBodyEnd")}
             </Text>
           </View>
 
@@ -59,8 +61,8 @@ export default function CancelSubscriptionModal({
               />
             </View>
           </View>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 }

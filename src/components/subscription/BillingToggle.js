@@ -1,9 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 
 const OPTIONS = ["Monthly", "Yearly"];
 
 export default function BillingToggle({ selected, onSelect }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       {OPTIONS.map((option) => {
@@ -16,7 +18,7 @@ export default function BillingToggle({ selected, onSelect }) {
             activeOpacity={0.7}
           >
             <Text style={[styles.optionText, active && styles.optionTextActive]}>
-              {option}
+              {option === "Monthly" ? t("subscription.monthly") : t("subscription.yearly")}
             </Text>
           </TouchableOpacity>
         );

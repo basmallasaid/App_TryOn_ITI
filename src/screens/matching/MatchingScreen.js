@@ -24,6 +24,7 @@ import { useWardrobe } from "../../context/WardrobeContext";
 import { getWardrobeMatches, analyzeImage, getMatchesByAnalysis } from "../../api/matching_services/matchingService";
 import { getAllProducts } from "../../api/user_services/userService";
 import { ROUTES } from "../../navigation/routes";
+import { translateMatch } from "../../utils/dynamicTranslator";
 
 
 
@@ -42,6 +43,10 @@ export default function MatchingScreen({ navigation }) {
   const [wardrobeMatches, setWardrobeMatches] = useState([]);
   const [storeMatches, setStoreMatches] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
+
+  // Dynamic translation state for match results
+  const [translatedWardrobeMatches, setTranslatedWardrobeMatches] = useState([]);
+  const [translatedStoreMatches, setTranslatedStoreMatches] = useState([]);
 
   useEffect(() => {
     getAllProducts().then((data) => setAllProducts(Array.isArray(data) ? data : [])).catch(() => {});
@@ -95,17 +100,33 @@ export default function MatchingScreen({ navigation }) {
   const hasWardrobeItem = !!selectedWardrobeId;
   const hasItem = hasCameraItem || hasGalleryItem || hasWardrobeItem;
 
-  const selectedTitle = hasItem ? "1 items selected" : "No items selected yet";
+  const selectedTitle = hasItem ? t('matching.selectedOneItem') : t('matching.noItemsSelected');
   const selectedSubtitle = hasItem
     ? hasWardrobeItem
-      ? "Item selected from your wardrobe"
-      : "Item captured from camera or gallery"
-    : "Select an item to see matching suggestions";
+      ? t('matching.itemFromWardrobe')
+      : t('matching.itemFromCameraOrGallery')
+    : t('matching.selectItemHint');
 
-  const processMatches = (raw) => {
+  const processMatches = async (raw) => {
     const list = raw?.matches || raw?.data?.matches || (Array.isArray(raw) ? raw : []);
-    setWardrobeMatches(list.filter((m) => m.item?.source === "wardrobe"));
-    setStoreMatches(list.filter((m) => m.item?.source === "store"));
+    const wMatches = list.filter((m) => m.item?.source === "wardrobe");
+    const sMatches = list.filter((m) => m.item?.source === "store");
+    setWardrobeMatches(wMatches);
+    setStoreMatches(sMatches);
+    
+    // Dynamically translate match content sequentially to avoid rate limiting
+    const translatedW = [];
+    for (const m of wMatches) {
+        translatedW.push(await translateMatch(m));
+    }
+    
+    const translatedS = [];
+    for (const m of sMatches) {
+        translatedS.push(await translateMatch(m));
+    }
+    
+    setTranslatedWardrobeMatches(translatedW);
+    setTranslatedStoreMatches(translatedS);
   };
 
   const handleSeeMatching = async () => {
@@ -137,9 +158,11 @@ export default function MatchingScreen({ navigation }) {
       }
     } catch (e) {
       const msg = e.response?.data || e.message;
-      Alert.alert("Match Error", typeof msg === "string" ? msg : JSON.stringify(msg));
+      Alert.alert(t('matching.matchError'), typeof msg === "string" ? msg : JSON.stringify(msg));
       setWardrobeMatches([]);
       setStoreMatches([]);
+      setTranslatedWardrobeMatches([]);
+      setTranslatedStoreMatches([]);
     } finally {
       setGenerating(false);
     }
@@ -189,7 +212,7 @@ export default function MatchingScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={Colors.iconGray} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Matching</Text>
+        <Text style={styles.headerTitle}>{t('matching.title')}</Text>
         <TouchableOpacity>
           <Feather name="help-circle" size={24} color={Colors.iconGray} />
         </TouchableOpacity>
@@ -233,7 +256,7 @@ export default function MatchingScreen({ navigation }) {
               </View>
               <View style={styles.selectorPadding}>
                 <ItemSelector
-                  label="What is this item?"
+                  label={t('matching.questionItem')}
                   selectedType={cameraItemType}
                   onSelectType={(type) => setCameraItemType(type === cameraItemType ? null : type)}
                   disabled={false}
@@ -241,7 +264,7 @@ export default function MatchingScreen({ navigation }) {
               </View>
             </>
           ) : (
-            <UploadBox label="Open Camera" onPress={handleCameraCapture} />
+            <UploadBox label={t('matching.openCamera')} onPress={handleCameraCapture} />
           )
         )}
 
@@ -256,7 +279,7 @@ export default function MatchingScreen({ navigation }) {
               </View>
               <View style={styles.selectorPadding}>
                 <ItemSelector
-                  label="What is this item?"
+                  label={t('matching.questionItem')}
                   selectedType={galleryItemType}
                   onSelectType={(type) => setGalleryItemType(type === galleryItemType ? null : type)}
                   disabled={false}
@@ -264,16 +287,16 @@ export default function MatchingScreen({ navigation }) {
               </View>
             </>
           ) : (
-            <UploadBox label="Upload image here" onPress={handleGalleryPick} />
+            <UploadBox label={t('matching.uploadImage')} onPress={handleGalleryPick} />
           )
         )}
 
         {activeTab === "My Wardrobe" && (
           <>
             <View style={styles.rowBetween}>
-              <Text style={styles.sectionTitleSmall}>select from wardrobe</Text>
+              <Text style={styles.sectionTitleSmall}>{t('matching.selectFromWardrobe')}</Text>
               <TouchableOpacity onPress={() => navigation.navigate(ROUTES.MAIN, { screen: ROUTES.WARDROBE, params: { screen: ROUTES.WARDROBE_MAIN } })}>
-                <Text style={styles.seeAllText}>See All</Text>
+                <Text style={styles.seeAllText}>{t('matching.seeAll')}</Text>
               </TouchableOpacity>
             </View>
 
@@ -333,25 +356,26 @@ export default function MatchingScreen({ navigation }) {
         {showResults && (
           <>
             <View style={styles.sectionPadding}>
-              <Text style={styles.sectionTitleSmall}>items match in your wardrobe</Text>
+              <Text style={styles.sectionTitleSmall}>{t('matching.itemsMatch')}</Text>
             </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.matchList}
             >
-              {wardrobeMatches.length === 0 ? (
+              {(translatedWardrobeMatches.length > 0 ? translatedWardrobeMatches : wardrobeMatches).length === 0 ? (
                 <View style={styles.emptyMatches}>
-                  <Text style={styles.emptyMatchesText}>No matches found</Text>
+                  <Text style={styles.emptyMatchesText}>{t('matching.noMatches')}</Text>
                 </View>
               ) : (
-                  wardrobeMatches.map((match, index) => {
-                  const imgSrc = getMatchImage(match);
+                  (translatedWardrobeMatches.length > 0 ? translatedWardrobeMatches : wardrobeMatches).map((match, index) => {
+                  const originalMatch = wardrobeMatches[index] || match;
+                  const imgSrc = getMatchImage(originalMatch);
                   const imageUri = imgSrc?.uri;
                   return (
                     <TouchableOpacity
                       key={match.item?.id || index}
-                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match, imageUri })}
+                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match: originalMatch, imageUri })}
                     >
                       <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>
@@ -371,25 +395,26 @@ export default function MatchingScreen({ navigation }) {
             </ScrollView>
 
             <View style={styles.sectionPadding}>
-              <Text style={styles.sectionTitleSmall}>see what matching in store</Text>
+              <Text style={styles.sectionTitleSmall}>{t('matching.seeStoreMatch')}</Text>
             </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.matchList}
             >
-              {storeMatches.length === 0 ? (
+              {(translatedStoreMatches.length > 0 ? translatedStoreMatches : storeMatches).length === 0 ? (
                 <View style={styles.emptyMatches}>
-                  <Text style={styles.emptyMatchesText}>No store matches found</Text>
+                  <Text style={styles.emptyMatchesText}>{t('matching.noStoreMatches')}</Text>
                 </View>
               ) : (
-                storeMatches.map((match, index) => {
-                  const imgSrc = getMatchImage(match);
+                (translatedStoreMatches.length > 0 ? translatedStoreMatches : storeMatches).map((match, index) => {
+                  const originalMatch = storeMatches[index] || match;
+                  const imgSrc = getMatchImage(originalMatch);
                   const imageUri = imgSrc?.uri;
                   return (
                     <TouchableOpacity
                       key={match.item?.id || index}
-                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match, imageUri })}
+                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match: originalMatch, imageUri })}
                     >
                       <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>
@@ -426,7 +451,7 @@ export default function MatchingScreen({ navigation }) {
           ) : (
             <MaterialCommunityIcons name="auto-fix" size={20} color="#FFF" />
           )}
-          <Text style={styles.buttonText}>See matching</Text>
+          <Text style={styles.buttonText}>{t('matching.seeMatchingButton')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

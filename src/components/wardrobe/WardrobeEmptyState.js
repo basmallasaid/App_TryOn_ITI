@@ -76,12 +76,14 @@
 // export default WardrobeEmptyState;
 import React from "react";
 import { View, Text, StyleSheet, Dimensions, ScrollView } from "react-native";
+import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 import { ANIMATIONS } from "../../constants/images/animations";
 import LottieView from "lottie-react-native";
 
 const WardrobeEmptyState = ({ onAdd }) => {
+  const { t } = useTranslation();
   return (
     <ScrollView 
       style={styles.container}
@@ -90,10 +92,10 @@ const WardrobeEmptyState = ({ onAdd }) => {
       showsVerticalScrollIndicator={false}
     >
       {/* Title */}
-      <Text style={styles.title}>Your wardrobe is Empty</Text>
+      <Text style={styles.title}>{t('wardrobe.emptyTitle')}</Text>
 
       {/* Subtitle */}
-      <Text style={styles.subtitle}>Add your clothes to get started</Text>
+      <Text style={styles.subtitle}>{t('wardrobe.emptySubtitle')}</Text>
 
       {/* Illustration */}
       <LottieView
@@ -106,7 +108,7 @@ const WardrobeEmptyState = ({ onAdd }) => {
       {/* Action Button */}
       <View style={styles.buttonWrapper}>
         <CustomizeAppButtonFilled
-          label="Add to wardrobe"
+          label={t('wardrobe.addButton')}
           onPress={onAdd}
           backgroundColor={Colors.primary}
         />

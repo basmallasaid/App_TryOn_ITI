@@ -2,14 +2,19 @@
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const AddItemCard = ({ onPress }) => (
-  <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-    <View style={styles.iconCircle}>
-      <Ionicons name="add" size={20} color="#6B7280" />
-    </View>
-    <Text style={styles.label}>Add New Item</Text>
-  </TouchableOpacity>
-);
+import { useTranslation } from 'react-i18next';
+
+const AddItemCard = ({ onPress }) => {
+  const { t } = useTranslation();
+  return (
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
+      <View style={styles.iconCircle}>
+        <Ionicons name="add" size={20} color="#6B7280" />
+      </View>
+      <Text style={styles.label}>{t('wardrobe.addNewItem')}</Text>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {

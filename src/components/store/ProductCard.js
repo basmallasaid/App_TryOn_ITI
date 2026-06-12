@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export const ProductCard = ({
   name,
@@ -14,57 +15,60 @@ export const ProductCard = ({
   isFavorite,
   onToggleFavorite,
   onTryOnPress,
-}) => (
-  <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onPress}>
-    <View style={styles.imageWrapper}>
-      <Image source={{ uri: image }} style={styles.img} resizeMode="cover" />
-      <View style={styles.overlayHeader}>
-        {badge ? (
-          <View
-            style={[styles.badge, { backgroundColor: badgeColor || '#5CC1FF' }]}
-          >
-            <Text style={styles.badgeText}>{badge}</Text>
-          </View>
-        ) : (
-          <View />
-        )}
+}) => {
+  const { t } = useTranslation();
+  return (
+    <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onPress}>
+      <View style={styles.imageWrapper}>
+        <Image source={{ uri: image }} style={styles.img} resizeMode="cover" />
+        <View style={styles.overlayHeader}>
+          {badge ? (
+            <View
+              style={[styles.badge, { backgroundColor: badgeColor || '#5CC1FF' }]}
+            >
+              <Text style={styles.badgeText}>{badge}</Text>
+            </View>
+          ) : (
+            <View />
+          )}
 
-        <TouchableOpacity style={styles.heartBtn} onPress={onToggleFavorite}>
-          <Ionicons
-            name={isFavorite ? 'heart' : 'heart-outline'}
-            size={20}
-            color={isFavorite ? '#FF8A3D' : '#1A1C24'}
-          />
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.heartBtn} onPress={onToggleFavorite}>
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={20}
+              color={isFavorite ? '#FF8A3D' : '#1A1C24'}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
 
-    <View style={styles.info}>
-      <Text style={styles.name} numberOfLines={1}>
-        {name}
-      </Text>
-      <Text style={styles.brand} numberOfLines={1}>
-        {brand}
-      </Text>
-
-      <View style={styles.footer}>
-        <Text style={styles.price} numberOfLines={1}>
-          {price}
+      <View style={styles.info}>
+        <Text style={styles.name} numberOfLines={1}>
+          {name}
+        </Text>
+        <Text style={styles.brand} numberOfLines={1}>
+          {brand}
         </Text>
 
-        {isOutlined ? (
-          <TouchableOpacity style={styles.tryOnBtn} onPress={onTryOnPress}>
-            <Text style={styles.tryOnText}>Try On</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity>
-            <Text style={styles.tryOnLink}>Try-on</Text>
-          </TouchableOpacity>
-        )}
+        <View style={styles.footer}>
+          <Text style={styles.price} numberOfLines={1}>
+            {price}
+          </Text>
+
+          {isOutlined ? (
+            <TouchableOpacity style={styles.tryOnBtn} onPress={onTryOnPress}>
+              <Text style={styles.tryOnText}>{t('store.tryOn')}</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={onTryOnPress}>
+              <Text style={styles.tryOnLink}>{t('store.tryOn')}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {

@@ -35,6 +35,7 @@ export default function NotificationsScreen({ navigation }) {
     loading,
     fetchNotifications,
     markAsRead,
+    deleteNotification,
     markAllAsRead,
   } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
@@ -52,6 +53,13 @@ export default function NotificationsScreen({ navigation }) {
       }
     },
     [markAsRead],
+  );
+
+  const handleDeleteNotification = useCallback(
+    (notificationId) => {
+      deleteNotification(notificationId);
+    },
+    [deleteNotification],
   );
 
   const handleMarkAllRead = useCallback(() => {
@@ -87,6 +95,13 @@ export default function NotificationsScreen({ navigation }) {
             {formatRelativeTime(item.createdAt)}
           </Text>
         </View>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeleteNotification(item._id)}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="trash-outline" size={18} color={Colors.error} />
+        </TouchableOpacity>
         <Ionicons
           name="chevron-forward"
           size={16}
@@ -95,7 +110,7 @@ export default function NotificationsScreen({ navigation }) {
         />
       </TouchableOpacity>
     ),
-    [handleNotificationPress],
+    [handleDeleteNotification, handleNotificationPress],
   );
 
   const keyExtractor = useCallback((item) => item._id, []);
@@ -307,5 +322,10 @@ const styles = StyleSheet.create({
   },
   chevron: {
     marginLeft: 8,
+  },
+  deleteButton: {
+    marginLeft: 8,
+    padding: 8,
+    borderRadius: 16,
   },
 });

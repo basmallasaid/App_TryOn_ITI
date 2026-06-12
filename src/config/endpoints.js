@@ -28,5 +28,6 @@ export const ENDPOINTS = {
   REGISTER_PUSH_TOKEN:"/notifications/register",
   GET_NOTIFICATIONS:"/notifications",
   MARK_NOTIFICATION_READ:"/notifications/${id}/read",
+  DELETE_NOTIFICATION:"/notifications/${id}",
   MARK_ALL_NOTIFICATIONS_READ:"/notifications/read-all"
 };

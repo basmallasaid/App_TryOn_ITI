@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useProfileContext } from "../../context/ProfileContext";
+import { useFavorites } from "../../context/FavoritesContext";
 import ProfileAvatar from "../../components/profile/ProfileAvatar";
 import StatCard from "../../components/profile/StatCard";
 import PrefRow from "../../components/profile/PrefRow";
@@ -19,12 +20,14 @@ import StyleChip from "../../components/profile/StyleChip";
 import LanguageBottomSheet from "../../components/profile/LanguageBottomSheet";
 import CustomizeAppButtonOutlined from "../../components/common/CustomizeAppButtonOutlined";
 import Colors from "../../constants/theme/colors";
+import { ROUTES } from "../../navigation/routes";
 
 const ProfileScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { logout } = useAuth();
   const { language, selectLanguage, syncLanguage } = useLanguage();
-  const { profile } = useProfileContext() ;
+  const { profile } = useProfileContext();
+  const { items: favorites } = useFavorites();
 
   const STYLE_OPTIONS = [
     t('profile.styleOptions.streetwear'),
@@ -90,7 +93,7 @@ const ProfileScreen = ({ navigation }) => {
             </View>
             <TouchableOpacity
               style={styles.editBtn}
-              onPress={() => navigation.navigate("EditProfile")}
+              onPress={() => navigation.navigate(ROUTES.EDIT_PROFILE)}
             >
               <Text style={styles.editText}>{t('profile.edit')}</Text>
             </TouchableOpacity>
@@ -121,7 +124,8 @@ const ProfileScreen = ({ navigation }) => {
             <StatCard
               icon="heart-outline"
               title={t('profile.wishlist')}
-              subtitle={t('profile.wishlistEmpty')}
+              subtitle={t('profile.wishlistCount', { count: favorites.length })}
+              onPress={() => navigation.navigate(ROUTES.FAVORITES)}
             />
           </View>
         </View>

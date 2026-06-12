@@ -22,6 +22,7 @@ import AvatarTabs from "../../components/avatar/AvatarTabs";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import { IMAGES } from "../../constants/images/images";
 import { generateAvatar } from "../../api/avatar_services/avatarService";
+import { ROUTES, SOURCE } from "../../navigation/routes";
 
 const skinTones = [
   { id: "very-light", color: "#F6DFC8", label: "Very Light" },
@@ -161,7 +162,7 @@ const CreateAvatarScreen = ({ navigation }) => {
       };
       const response = await generateAvatar(payload);
       console.log("Avatar API Response:", JSON.stringify(response, null, 2));
-      navigation.navigate("TryOn", { avatarImage: response });
+      navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarImage: response, source: SOURCE.HOME });
     } catch (error) {
       console.error("Avatar generation failed:", error.response?.data || error.message);
       Alert.alert("Error", error.response?.data?.message || "Failed to generate avatar");

@@ -1,0 +1,188 @@
+import React from "react";
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  StatusBar,
+} from "react-native";
+import { useTranslation } from 'react-i18next';
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import Colors from "../../constants/theme/colors";
+import CustomBackButton from "../../components/common/CustomBackButton";
+import OutfitOverviewCard from "../../components/recommendations/OutfitOverviewCard";
+import OutfitItemCard from "../../components/recommendations/OutfitItemCard";
+import { getItemsList } from "../../utils/getItemImage";
+import { useRecommendation } from "../../context/RecommendationContext";
+
+export default function RecommendationDetailsScreen({ navigation, route }) {
+  const { t } = useTranslation();
+  const { todaysOutfit } = useRecommendation();
+  const outfit = route.params?.outfit || todaysOutfit;
+  const items = getItemsList(outfit);
+  const hasData = outfit && items.length > 0;
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.backRow}>
+          <CustomBackButton
+            onPress={() => navigation.goBack()}
+            iconColor={Colors.iconGray}
+          />
+        </View>
+
+        <Text style={styles.todayTitle}>{t('recommendation.todaysRecommendation')}</Text>
+
+        {hasData ? (
+          <>
+            <OutfitOverviewCard
+              outfit={outfit}
+              width="100%"
+              height={400}
+              borderRadius={8}
+              borderColor={Colors.borderStrong}
+              labelFontSize={14}
+            />
+
+            {outfit?.score != null && (
+              <View style={styles.scoreRow}>
+                <Ionicons name="star" size={16} color="#F59E0B" />
+                <Text style={styles.scoreText}>{outfit.score.toFixed(1)}</Text>
+              </View>
+            )}
+
+            {outfit?.breakdown && (
+              <View style={styles.breakdownRow}>
+                {Object.entries(outfit.breakdown).map(([key, val]) => (
+                  <View key={key} style={styles.breakdownChip}>
+                    <Text style={styles.breakdownLabel}>{key}</Text>
+                    <Text style={styles.breakdownValue}>{val}/10</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <Text style={styles.sectionTitle}>{t('recommendation.outfitDetails')}</Text>
+
+            <View style={styles.itemsGrid}>
+              {items.map((item) => (
+                <OutfitItemCard key={item._id || item.id || item.name || Math.random().toString()} item={item} />
+              ))}
+            </View>
+          </>
+        ) : (
+          <View style={styles.emptyState}>
+            <MaterialCommunityIcons name="hanger" size={64} color={Colors.disabled} />
+            <Text style={styles.emptyTitle}>{t('recommendation.noOutfitTitle')}</Text>
+            <Text style={styles.emptySubtitle}>{t('recommendation.noOutfitSubtitle')}</Text>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
+  backRow: {
+    marginTop: 15,
+    marginBottom: 20,
+  },
+  todayTitle: {
+    fontFamily: 'Roboto_600SemiBold',
+    fontWeight: '600',
+    fontSize: 20,
+    lineHeight: 20,
+    color: Colors.textPrimary,
+    marginBottom: 16,
+    textAlign: 'left',
+    paddingVertical:10,
+  },
+  scoreRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 16,
+  },
+  scoreText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: Colors.textPrimary,
+    marginLeft: 6,
+  },
+  breakdownRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 10,
+    gap: 8,
+  },
+  breakdownChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.white,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
+  },
+  breakdownLabel: {
+    fontSize: 12,
+    color: Colors.textMuted,
+    marginRight: 4,
+    textTransform: "capitalize",
+  },
+  breakdownValue: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.textPrimary,
+  },
+  sectionTitle: {
+    fontFamily:"Roboto_600SemiBold",
+    fontSize: 18,
+    fontWeight: "700",
+    color: Colors.textPrimary,
+    marginTop: 30,
+    marginBottom: 16,
+  },
+  itemsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 80,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: Colors.textMuted,
+    marginTop: 16,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: Colors.disabled,
+    marginTop: 8,
+    textAlign: "center",
+    paddingHorizontal: 40,
+  },
+});

@@ -17,6 +17,7 @@ import Typography from "../../../constants/theme/typography";
 import OtpInput from "../../../components/common/OtpInput";
 import SuccessModal from "../../../components/common/SuccessModal";
 import VerificationSucessComponent from "../../../components/authentication/VerificationSucessComponent";
+import { ROUTES } from "../../../navigation/routes";
 
 const VerifyOtpScreen = ({ route, navigation }) => {
   const { t } = useTranslation();
@@ -86,7 +87,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
 
   const handleModalComplete = () => {
     //setShowModal(false);
-    navigation.navigate("ResetPassword", { email });
+    navigation.navigate(ROUTES.RESET_PASSWORD, { email });
     setTimeout(() => setShowModal(false), 300);
   };
 

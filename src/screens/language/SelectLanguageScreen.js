@@ -15,6 +15,7 @@ import Colors from "../../constants/theme/colors";
 import { useLanguage } from "../../context/LanguageContext";
 import { setLanguageSeen } from "../../storage/TokenStorage";
 import EnrichTextComponent from "../../components/common/EnrichTextComponent";
+import { ROUTES } from "../../navigation/routes";
 const { height: H } = Dimensions.get("window");
 
 const LANGUAGES = ["en", "ar"];
@@ -28,7 +29,7 @@ const SelectLanguageScreen = ({ navigation }) => {
     if (!selected) return;
     await selectLanguage(selected);
     await setLanguageSeen();
-    navigation.replace("Onboarding");
+    navigation.replace(ROUTES.ONBOARDING);
   };
 
   return (

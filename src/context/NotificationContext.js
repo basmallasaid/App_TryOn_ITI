@@ -119,6 +119,27 @@ export const NotificationProvider = ({ children }) => {
     [],
   );
 
+  const deleteNotification = useCallback(async (notificationId) => {
+    let removedUnread = false;
+    setNotifications((prev) =>
+      prev.filter((n) => {
+        if (n._id === notificationId) {
+          if (!n.read) removedUnread = true;
+          return false;
+        }
+        return true;
+      }),
+    );
+    if (removedUnread) {
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    }
+    try {
+      await notificationApi.deleteNotification(notificationId);
+    } catch {
+      fetchRef.current?.();
+    }
+  }, []);
+
   const markAllAsRead = useCallback(async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     setUnreadCount(0);
@@ -138,6 +159,7 @@ export const NotificationProvider = ({ children }) => {
         expoPushToken,
         fetchNotifications,
         markAsRead,
+        deleteNotification,
         markAllAsRead,
       }}
     >

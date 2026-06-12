@@ -17,6 +17,12 @@ export const markAsRead = async (notificationId) => {
   return data;
 };
 
+export const deleteNotification = async (notificationId) => {
+  const endpoint = ENDPOINTS.DELETE_NOTIFICATION.replace("${id}", notificationId);
+  const { data } = await apiClient.delete(endpoint);
+  return data;
+};
+
 export const markAllAsRead = async () => {
   const { data } = await apiClient.patch(ENDPOINTS.MARK_ALL_NOTIFICATIONS_READ);
   return data;

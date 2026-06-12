@@ -4,6 +4,7 @@ import i18n from "./src/localization/i18n";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { navigationRef } from "./src/utils/navigationRef";
 import { AuthProvider } from "./src/context/AuthContext";
 import { LanguageProvider } from "./src/context/LanguageContext";
 import RootNavigator from "./src/navigation/RootNavigator";
@@ -20,6 +21,7 @@ import { Inter_700Bold } from "@expo-google-fonts/inter";
 import { resetOnboardingAndLanguage } from "./src/utils/devReset";
 import { ProfileProvider } from "./src/context/ProfileContext";
 import { WardrobeProvider } from './src/context/WardrobeContext';
+import { NotificationProvider } from "./src/context/NotificationContext";
 import { FavoritesProvider } from './src/context/FavoritesContext';
 import { RecommendationProvider } from './src/context/RecommendationContext';
 I18nManager.allowRTL(true);
@@ -57,6 +59,11 @@ export default function App() {
       <AuthProvider>
         <ProfileProvider>
           <WardrobeProvider>
+          <NotificationProvider>
+          <NavigationContainer ref={navigationRef}>
+            <RootNavigator />
+          </NavigationContainer>
+          </NotificationProvider>
           <FavoritesProvider>
           <RecommendationProvider>
           <NavigationContainer>

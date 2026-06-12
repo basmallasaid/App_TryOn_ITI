@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../context/AuthContext";
 import { useProfileContext } from "../../context/ProfileContext";
 import Colors from "../../constants/theme/colors";
@@ -10,6 +11,7 @@ import Colors from "../../constants/theme/colors";
 export default function Header() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigation = useNavigation();
   const [isNotification, setIsNotification] = useState(false);
   const { profile } = useProfileContext();
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
@@ -44,7 +46,10 @@ export default function Header() {
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => setIsNotification((v) => !v)}>
+      <TouchableOpacity onPress={() => {
+          setIsNotification((v) => !v);
+          navigation.navigate("Profile", { screen: "Notifications" });
+        }}>
         <Ionicons
           name="notifications"
           size={26}

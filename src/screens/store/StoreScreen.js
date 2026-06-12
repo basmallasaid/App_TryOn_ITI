@@ -8,6 +8,7 @@ import { CategoryTabs } from '../../components/store/CategoryTabs';
 import Colors from '../../constants/theme/colors';
 import { getAllProducts } from '../../api/user_services/userService';
 import { FilterModal } from './FilterModal';
+import { useFavorites } from '../../context/FavoritesContext';
 
 const mapProductToCard = (product) => ({
     id: product._id,
@@ -57,9 +58,11 @@ const buildCategoriesFromProducts = (products) => {
 };
 
 import { useNavigation } from '@react-navigation/native';
+import { ROUTES, SOURCE } from '../../navigation/routes';
 
 export default function StoreScreen() {
     const navigation = useNavigation();
+    const { isFavorite, addItem, removeItem, refetch: refetchFavorites } = useFavorites();
     const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -79,9 +82,15 @@ export default function StoreScreen() {
     };
 
     const handleTryOn = (item) => {
-        navigation.navigate('TryOn', {
-            screen: 'SelectModel',
-            params: { productImage: item.image, productName: item.name }
+        navigation.navigate(ROUTES.TRY_ON, {
+            screen: ROUTES.SELECT_MODEL,
+            params: { 
+                source: SOURCE.STORE,
+                itemId: item.id,
+                itemType: item.name,
+                productImage: item.image, 
+                productName: item.name 
+            }
         });
     };
 
@@ -201,7 +210,19 @@ export default function StoreScreen() {
                 renderItem={({ item }) => (
                     <ProductCard
                         {...item}
-                        onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+                        isFavorite={isFavorite(item.id)}
+                        onToggleFavorite={async () => {
+                            try {
+                                if (isFavorite(item.id)) {
+                                    await removeItem(item.id);
+                                } else {
+                                    await addItem(item.id, "PRODUCT");
+                                }
+                            } catch (e) {
+                                refetchFavorites();
+                            }
+                        }}
+                        onPress={() => navigation.navigate(ROUTES.PRODUCT_DETAIL, { productId: item.id })}
                         onTryOnPress={() => handleTryOn(item)}
                     />
                 )}

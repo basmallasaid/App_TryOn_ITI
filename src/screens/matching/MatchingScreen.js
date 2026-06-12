@@ -23,6 +23,7 @@ import { openCamera, openGallery } from "../../utils/cameraAccess";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { getWardrobeMatches, analyzeImage, getMatchesByAnalysis } from "../../api/matching_services/matchingService";
 import { getAllProducts } from "../../api/user_services/userService";
+import { ROUTES } from "../../navigation/routes";
 
 
 
@@ -271,7 +272,7 @@ export default function MatchingScreen({ navigation }) {
           <>
             <View style={styles.rowBetween}>
               <Text style={styles.sectionTitleSmall}>select from wardrobe</Text>
-              <TouchableOpacity onPress={() => navigation.navigate("Wardrobe", { screen: "WardrobeMain" })}>
+              <TouchableOpacity onPress={() => navigation.navigate(ROUTES.MAIN, { screen: ROUTES.WARDROBE, params: { screen: ROUTES.WARDROBE_MAIN } })}>
                 <Text style={styles.seeAllText}>See All</Text>
               </TouchableOpacity>
             </View>
@@ -350,7 +351,7 @@ export default function MatchingScreen({ navigation }) {
                   return (
                     <TouchableOpacity
                       key={match.item?.id || index}
-                      onPress={() => navigation.navigate("MatchingResultDetails", { match, imageUri })}
+                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match, imageUri })}
                     >
                       <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>
@@ -388,7 +389,7 @@ export default function MatchingScreen({ navigation }) {
                   return (
                     <TouchableOpacity
                       key={match.item?.id || index}
-                      onPress={() => navigation.navigate("MatchingResultDetails", { match, imageUri })}
+                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match, imageUri })}
                     >
                       <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>

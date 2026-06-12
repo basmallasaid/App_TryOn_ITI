@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { IMAGES } from "../../constants/images/images";
 import { Ionicons } from '@expo/vector-icons';
 import Colors from "../../constants/theme/colors";
-export default function HeroBanner() {
+export default function HeroBanner({ onPress }) {
     const { t } = useTranslation();
     const { width } = useWindowDimensions();
 
@@ -26,7 +26,7 @@ export default function HeroBanner() {
                     {t('home.hero.subtitle')}
                 </Text>
 
-                <TouchableOpacity style={styles.generateButton}>
+                <TouchableOpacity style={styles.generateButton} onPress={onPress}>
                     <Ionicons name="sparkles" size={24} color="white" />
                     <Text style={styles.generateButtonText}>
                         {t('home.actions.generateOutfit')}

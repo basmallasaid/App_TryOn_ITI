@@ -104,9 +104,18 @@
   },
   "onboarding": {
     "slides": [
-      { "title": "اكتشف أسلوبك", "subtitle": "احصل على أفكار ملابس مخصصة تناسب ذوقك الفريد." },
-      { "title": "جرّب قبل الشراء", "subtitle": "شاهد كيف تبدو الملابس عليك بتقنية الذكاء الاصطناعي." },
-      { "title": "خزانة ملابس ذكية", "subtitle": "نظّم ملابسك وامزجها وتطابقها في مكان واحد." }
+      {
+        "title": "اكتشف أسلوبك",
+        "subtitle": "احصل على أفكار ملابس مخصصة تناسب ذوقك الفريد."
+      },
+      {
+        "title": "جرّب قبل الشراء",
+        "subtitle": "شاهد كيف تبدو الملابس عليك بتقنية الذكاء الاصطناعي."
+      },
+      {
+        "title": "خزانة ملابس ذكية",
+        "subtitle": "نظّم ملابسك وامزجها وتطابقها في مكان واحد."
+      }
     ],
     "next": "التالي",
     "skip": "تخطي",
@@ -136,6 +145,7 @@
     "whatToDo": "ماذا تريد أن تفعل؟",
     "todaysPicks": "اختيارات اليوم لك",
     "recentTryOns": "آخر التجارب",
+    "recentRecycles": "آخر عمليات إعادة التدوير",
     "viewAll": "عرض الكل",
     "hero": {
       "title": "أناقتك، بذكاء.",
@@ -145,7 +155,10 @@
       "title": "كاجوال أنيق",
       "subtitle": "نظيف ومريح ومثالي ليومك",
       "location": "القاهرة",
-      "viewOutfit": "عرض الإطلالة"
+      "viewOutfit": "عرض الإطلالة",
+      "generate": "توليد إطلالة",
+      "noOutfit": "لا توجد إطلالة بعد",
+      "score": "التقييم:"
     },
     "actions": {
       "tryOn": "تجربة الملابس",
@@ -165,6 +178,7 @@
     "credits": "رصيدك",
     "creditsAmount": "0.00 جنيه",
     "wishlist": "المفضلة",
+    "wishlistCount": "{{count}} عناصر محفوظة",
     "wishlistEmpty": "0 عناصر محفوظة",
     "styleIdentity": "هوية الأسلوب",
     "customize": "تخصيص",
@@ -263,6 +277,8 @@
     "uploadedPhotos": "الصور المرفوعة ({{count}}/{{max}})",
     "tapToCapture": "اضغط لالتقاط صورة",
     "tapToSelect": "اضغط للاختيار من المعرض",
+    "openCamera": "فتح الكاميرا",
+    "uploadFromGallery": "رفع من المعرض",
     "addMore": "إضافة المزيد",
     "wardrobeEmpty": "خزانة ملابسك فارغة.\nأضف عناصر أولاً لإعادة تدويرها.",
     "maxReached": "تم الوصول للحد الأقصى",
@@ -278,7 +294,15 @@
     "cancel": "إلغاء",
     "photo": "صورة",
     "seeMore": "عرض المزيد",
-    "seeLess": "عرض أقل"
+    "seeLess": "عرض أقل",
+    "noUploadsTitle": "لا توجد عناصر مرفوعة بعد",
+    "noUploadsSub": "أضف عناصر من الأعلى لإعادة تدويرها.",
+    "noItemsCount": "لا عناصر  (0)",
+    "itemsCount": "عناصر  ({{count}})",
+    "oneItemTitle": "تم التقاط عنصر واحد",
+    "oneItemSub": "يمكنك إضافة عنصر آخر من الأعلى لإعادة تدويرهما.",
+    "twoItemsTitle": "تم رفع عنصران",
+    "twoItemsSub": "يمكنك إعادة تدويرهما."
   },
   "recycleResult": {
     "title": "تصميمك",
@@ -292,6 +316,27 @@
     "saveFailedMessage": "لم يتم حفظ التصميم. حاول مرة أخرى.",
     "alreadySaved": "تم الحفظ مسبقاً",
     "alreadySavedMessage": "هذا التصميم موجود بالفعل في مجموعتك."
+  },
+  "favorites": {
+    "title": "المفضلة",
+    "emptyTitle": "مفضلتك وحيدة.",
+    "emptySubtitle": "ابدأ باستكشاف مجموعاتنا المنسقة لبناء شاشة مفضلتك الرقمية.",
+    "categories": {
+      "all": "الكل",
+      "wardrobe": "خزانة الملابس",
+      "store": "المتجر",
+      "try on": "تجربة",
+      "recycle": "إعادة التدوير"
+    },
+    "noItemsInCategory": "لا توجد عناصر في هذه الفئة"
+  },
+  "recommendation": {
+    "todaysRecommendation": "توصية اليوم",
+    "lastRecommendations": "آخر توصياتنا",
+    "outfitDetails": "تفاصيل الإطلالة",
+    "emptyHistory": "لا توجد توصيات بعد",
+    "noOutfitTitle": "لا توجد إطلالة متاحة",
+    "noOutfitSubtitle": "قم بتوليد إطلالة مخصصة لرؤيتها هنا"
   },
   "editProfile": {
     "title": "تعديل الملف الشخصي",

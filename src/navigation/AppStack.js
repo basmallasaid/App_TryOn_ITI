@@ -5,14 +5,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../constants/theme/colors";
 import ProfileStack from "../navigation/ProfileStack";
-import TryOnStack from "../navigation/TryOnStack";
-import RecycleStack from "../navigation/RecycleStack";
-import StoreScreen from "../screens/store/StoreScreen";
 import StoreStack from "./StoreStack";
-
 import HomeScreen from '../screens/home/HomeScreen';
 import WardrobeStack from "./WardrobeStack";
-import MatchingStack from "./MatchingStack";
+import { ROUTES } from "./routes";
 
 const Tab = createBottomTabNavigator();
 
@@ -20,10 +16,10 @@ const ACTIVE_COLOR = Colors.primarybrand;
 const INACTIVE_COLOR = Colors.disabled;
 
 const TAB_LABELS = {
-  Home: "navigation.tab.home",
-  Wardrobe: "navigation.tab.wardrobe",
-  Store: "navigation.tab.store",
-  Profile: "navigation.tab.profile",
+  [ROUTES.HOME]: "navigation.tab.home",
+  [ROUTES.WARDROBE]: "navigation.tab.wardrobe",
+  [ROUTES.STORE]: "navigation.tab.store",
+  [ROUTES.PROFILE]: "navigation.tab.profile",
 };
 
 export default function AppStack() {
@@ -46,7 +42,6 @@ export default function AppStack() {
           fontSize: 12,
           fontWeight: "600",
         },
-
         tabBarLabel: ({ focused, color }) => (
           <View style={{ alignItems: "center" }}>
             <Text
@@ -64,7 +59,7 @@ export default function AppStack() {
       })}
     >
       <Tab.Screen
-        name="Home"
+        name={ROUTES.HOME}
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
@@ -78,8 +73,8 @@ export default function AppStack() {
       />
       
       <Tab.Screen 
-        name="Wardrobe" 
-        component={WardrobeStack} 
+        name={ROUTES.WARDROBE}
+        component={WardrobeStack}
         options={{
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons
@@ -92,34 +87,7 @@ export default function AppStack() {
       />
 
       <Tab.Screen
-        name="TryOn"
-        component={TryOnStack}
-        options={{
-          tabBarButton: () => null,
-          tabBarItemStyle: { display: "none" },
-        }}
-      />
-
-      <Tab.Screen
-        name="Recycle"
-        component={RecycleStack}
-        options={{
-          tabBarButton: () => null,
-          tabBarItemStyle: { display: "none" },
-        }}
-      />
-
-      <Tab.Screen
-        name="Matching"
-        component={MatchingStack}
-        options={{
-          tabBarButton: () => null,
-          tabBarItemStyle: { display: "none" },
-        }}
-      />
-
-      <Tab.Screen
-        name="Store"
+        name={ROUTES.STORE}
         component={StoreStack}
         options={{
           tabBarIcon: ({ color, focused }) => (
@@ -133,7 +101,7 @@ export default function AppStack() {
       />
 
       <Tab.Screen
-        name="Profile"
+        name={ROUTES.PROFILE}
         component={ProfileStack}
         options={{
           tabBarIcon: ({ color, focused }) => (

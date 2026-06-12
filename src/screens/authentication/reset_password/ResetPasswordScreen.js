@@ -7,6 +7,7 @@ import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppBut
 import Colors from "../../../constants/theme/colors";
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheetLayout from "../../../components/authentication/BottomSheetLayout";
+import { ROUTES } from "../../../navigation/routes";
 
 const ResetPasswordScreen = ({ route, navigation }) => {
   const { t } = useTranslation();
@@ -50,7 +51,7 @@ const ResetPasswordScreen = ({ route, navigation }) => {
 
       await resetPassword(email, form.password, form.confirmPassword);
 
-      navigation.navigate("Login", {
+      navigation.navigate(ROUTES.LOGIN, {
         message: t('auth.resetPassword.success'),
       });
     } catch (e) {

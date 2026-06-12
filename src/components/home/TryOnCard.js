@@ -1,35 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
-export default function TryOnCard({ imageUri }) {
+
+export default function TryOnCard({ imageUri, isFavorite, onToggleFavorite }) {
   const { t } = useTranslation();
-  const [isFavorite, setIsFavorite] = useState(false);
 
   return (
     <View style={styles.card}>
-    
-      <TouchableOpacity 
-        style={styles.heartContainer} 
-        onPress={() => setIsFavorite(!isFavorite)}
+      <TouchableOpacity
+        style={styles.heartContainer}
+        onPress={onToggleFavorite}
       >
-        <Ionicons 
-          name={isFavorite ? "heart" : "heart-outline"} 
-          size={24} 
-          color={isFavorite ? Colors.error : Colors.textPrimary} 
+        <Ionicons
+          name={isFavorite ? "heart" : "heart-outline"}
+          size={24}
+          color={isFavorite ? Colors.error : Colors.textPrimary}
         />
       </TouchableOpacity>
 
-     
-      <Image 
-        source={IMAGES.TRY_ON} 
-        style={styles.image} 
+      <Image
+        source={imageUri ? { uri: imageUri } : IMAGES.TRY_ON}
+        style={styles.image}
         resizeMode="contain"
       />
 
-    
       <TouchableOpacity style={styles.button} activeOpacity={0.8}>
         <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
         <Ionicons name="arrow-forward" size={16} color="white" style={styles.arrow} />

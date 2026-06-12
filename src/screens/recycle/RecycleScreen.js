@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { Svg, Path } from "react-native-svg";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as FileSystem from "expo-file-system";
@@ -25,6 +26,7 @@ import SourceTab from "../../components/recycle/SourceTab";
 import DesignIdeaCard from "../../components/recycle/DesignIdeaCard";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import SparkleIcon from "../../components/recycle/SparkleIcon";
+import { ROUTES } from "../../navigation/routes";
 import GradientBorder from "../../components/recycle/GradientBorder";
 import DashedGradientBorder from "../../components/recycle/DashedGradientBorder";
 
@@ -251,7 +253,7 @@ export default function RecycleScreen({ navigation }) {
 
       if (result.success) {
         const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId);
-        navigation.navigate("RecycleResult", {
+        navigation.navigate(ROUTES.RECYCLE_RESULT, {
           resultImageUri: result.image_url,
           designTitle: selectedIdea?.title || "Generated Design",
           designTitleAr: selectedIdea?.title_ar || null,
@@ -344,7 +346,7 @@ export default function RecycleScreen({ navigation }) {
             <View style={styles.cameraIconCircle}>
               <Ionicons name="camera" size={32} color={Colors.primary} />
             </View>
-            <Text style={styles.cameraPlaceholderText}>{t("recycle.tapToCapture")}</Text>
+            <Text style={styles.cameraPlaceholderText}>{t("recycle.openCamera")}</Text>
           </DashedGradientBorder>
         </TouchableOpacity>
       ) : (
@@ -364,8 +366,10 @@ export default function RecycleScreen({ navigation }) {
             <View style={styles.galleryItem}>
               <DashedGradientBorder width="100%" height={160} borderRadius={12}>
                 <TouchableOpacity onPress={handleCamera} style={styles.compactUploadInner}>
-                  <Ionicons name="add" size={24} color={Colors.primary} />
-                  <Text style={styles.compactUploadText}>{t("recycle.addMore")}</Text>
+                  <View style={styles.cameraIconCircle}>
+                    <Ionicons name="camera" size={24} color={Colors.primary} />
+                  </View>
+                  <Text style={styles.compactUploadText}>{t("recycle.openCamera")}</Text>
                 </TouchableOpacity>
               </DashedGradientBorder>
             </View>
@@ -381,9 +385,11 @@ export default function RecycleScreen({ navigation }) {
         <TouchableOpacity onPress={handleGallery}>
           <DashedGradientBorder width="100%" height={200}>
             <View style={styles.cameraIconCircle}>
-              <Ionicons name="images" size={32} color={Colors.primary} />
+              <Svg width={33} height={24} viewBox="0 0 33 24" fill="none">
+                <Path d="M8.25 24C5.975 24 4.03125 23.2125 2.41875 21.6375C0.80625 20.0625 0 18.1375 0 15.8625C0 13.9125 0.5875 12.175 1.7625 10.65C2.9375 9.125 4.475 8.15 6.375 7.725C7 5.425 8.25 3.5625 10.125 2.1375C12 0.7125 14.125 0 16.5 0C19.425 0 21.9062 1.01875 23.9438 3.05625C25.9813 5.09375 27 7.575 27 10.5C28.725 10.7 30.1562 11.4437 31.2938 12.7312C32.4313 14.0188 33 15.525 33 17.25C33 19.125 32.3438 20.7188 31.0312 22.0312C29.7188 23.3438 28.125 24 26.25 24H18C17.175 24 16.4688 23.7062 15.8813 23.1187C15.2938 22.5312 15 21.825 15 21V13.275L12.6 15.6L10.5 13.5L16.5 7.5L22.5 13.5L20.4 15.6L18 13.275V21H26.25C27.3 21 28.1875 20.6375 28.9125 19.9125C29.6375 19.1875 30 18.3 30 17.25C30 16.2 29.6375 15.3125 28.9125 14.5875C28.1875 13.8625 27.3 13.5 26.25 13.5H24V10.5C24 8.425 23.2687 6.65625 21.8062 5.19375C20.3438 3.73125 18.575 3 16.5 3C14.425 3 12.6562 3.73125 11.1938 5.19375C9.73125 6.65625 9 8.425 9 10.5H8.25C6.8 10.5 5.5625 11.0125 4.5375 12.0375C3.5125 13.0625 3 14.3 3 15.75C3 17.2 3.5125 18.4375 4.5375 19.4625C5.5625 20.4875 6.8 21 8.25 21H12V24H8.25Z" fill="#BEC8D2" />
+              </Svg>
             </View>
-            <Text style={styles.cameraPlaceholderText}>{t("recycle.tapToSelect")}</Text>
+            <Text style={styles.cameraPlaceholderText}>{t("recycle.uploadFromGallery")}</Text>
           </DashedGradientBorder>
         </TouchableOpacity>
       ) : (
@@ -403,8 +409,12 @@ export default function RecycleScreen({ navigation }) {
             <View style={styles.galleryItem}>
               <DashedGradientBorder width="100%" height={160} borderRadius={12}>
                 <TouchableOpacity onPress={handleGallery} style={styles.compactUploadInner}>
-                  <Ionicons name="add" size={24} color={Colors.primary} />
-                  <Text style={styles.compactUploadText}>{t("recycle.addMore")}</Text>
+                  <View style={styles.cameraIconCircle}>
+                    <Svg width={24} height={18} viewBox="0 0 33 24" fill="none">
+                      <Path d="M8.25 24C5.975 24 4.03125 23.2125 2.41875 21.6375C0.80625 20.0625 0 18.1375 0 15.8625C0 13.9125 0.5875 12.175 1.7625 10.65C2.9375 9.125 4.475 8.15 6.375 7.725C7 5.425 8.25 3.5625 10.125 2.1375C12 0.7125 14.125 0 16.5 0C19.425 0 21.9062 1.01875 23.9438 3.05625C25.9813 5.09375 27 7.575 27 10.5C28.725 10.7 30.1562 11.4437 31.2938 12.7312C32.4313 14.0188 33 15.525 33 17.25C33 19.125 32.3438 20.7188 31.0312 22.0312C29.7188 23.3438 28.125 24 26.25 24H18C17.175 24 16.4688 23.7062 15.8813 23.1187C15.2938 22.5312 15 21.825 15 21V13.275L12.6 15.6L10.5 13.5L16.5 7.5L22.5 13.5L20.4 15.6L18 13.275V21H26.25C27.3 21 28.1875 20.6375 28.9125 19.9125C29.6375 19.1875 30 18.3 30 17.25C30 16.2 29.6375 15.3125 28.9125 14.5875C28.1875 13.8625 27.3 13.5 26.25 13.5H24V10.5C24 8.425 23.2687 6.65625 21.8062 5.19375C20.3438 3.73125 18.575 3 16.5 3C14.425 3 12.6562 3.73125 11.1938 5.19375C9.73125 6.65625 9 8.425 9 10.5H8.25C6.8 10.5 5.5625 11.0125 4.5375 12.0375C3.5125 13.0625 3 14.3 3 15.75C3 17.2 3.5125 18.4375 4.5375 19.4625C5.5625 20.4875 6.8 21 8.25 21H12V24H8.25Z" fill="#BEC8D2" />
+                    </Svg>
+                  </View>
+                  <Text style={styles.compactUploadText}>{t("recycle.uploadFromGallery")}</Text>
                 </TouchableOpacity>
               </DashedGradientBorder>
             </View>
@@ -456,6 +466,58 @@ export default function RecycleScreen({ navigation }) {
             onPress={() => handleTabChange("Gallery")}
           />
         </View>
+
+        {activeTab !== "Wardrobe" && (
+          <View style={styles.itemsHeader}>
+            <Text style={styles.itemsHeaderText}>
+              {activeImages.length === 0
+                ? t("recycle.noItemsCount")
+                : t("recycle.itemsCount", { count: activeImages.length })}
+            </Text>
+          </View>
+        )}
+
+        {activeImages.length === 0 && (
+          <View style={styles.emptyStateBox}>
+            <View style={styles.emptyStateIconCircle}>
+              <Svg width={24} height={20} viewBox="0 0 20 16" fill="none">
+                <Path d="M1 16C0.716667 16 0.479167 15.9042 0.2875 15.7125C0.0958333 15.5208 0 15.2833 0 15C0 14.8333 0.0333333 14.6792 0.1 14.5375C0.166667 14.3958 0.266667 14.2833 0.4 14.2L9 7.75V6C9 5.71667 9.1 5.47917 9.3 5.2875C9.5 5.09583 9.74167 5 10.025 5C10.4417 5 10.7917 4.85 11.075 4.55C11.3583 4.25 11.5 3.89167 11.5 3.475C11.5 3.05833 11.3542 2.70833 11.0625 2.425C10.7708 2.14167 10.4167 2 10 2C9.58333 2 9.22917 2.14583 8.9375 2.4375C8.64583 2.72917 8.5 3.08333 8.5 3.5H6.5C6.5 2.53333 6.84167 1.70833 7.525 1.025C8.20833 0.341667 9.03333 0 10 0C10.9667 0 11.7917 0.3375 12.475 1.0125C13.1583 1.6875 13.5 2.50833 13.5 3.475C13.5 4.25833 13.2708 4.95833 12.8125 5.575C12.3542 6.19167 11.75 6.61667 11 6.85V7.75L19.6 14.2C19.7333 14.2833 19.8333 14.3958 19.9 14.5375C19.9667 14.6792 20 14.8333 20 15C20 15.2833 19.9042 15.5208 19.7125 15.7125C19.5208 15.9042 19.2833 16 19 16H1ZM4 14H16L10 9.5L4 14Z" fill="#001E2F" />
+              </Svg>
+            </View>
+            <View style={styles.emptyStateTextWrap}>
+              <Text style={styles.emptyStateTitle}>{t("recycle.noUploadsTitle")}</Text>
+              <Text style={styles.emptyStateSub}>{t("recycle.noUploadsSub")}</Text>
+            </View>
+          </View>
+        )}
+
+        {activeImages.length === 1 && (
+          <View style={styles.emptyStateBox}>
+            <View style={styles.emptyStateIconCircle}>
+              <Svg width={24} height={20} viewBox="0 0 20 16" fill="none">
+                <Path d="M1 16C0.716667 16 0.479167 15.9042 0.2875 15.7125C0.0958333 15.5208 0 15.2833 0 15C0 14.8333 0.0333333 14.6792 0.1 14.5375C0.166667 14.3958 0.266667 14.2833 0.4 14.2L9 7.75V6C9 5.71667 9.1 5.47917 9.3 5.2875C9.5 5.09583 9.74167 5 10.025 5C10.4417 5 10.7917 4.85 11.075 4.55C11.3583 4.25 11.5 3.89167 11.5 3.475C11.5 3.05833 11.3542 2.70833 11.0625 2.425C10.7708 2.14167 10.4167 2 10 2C9.58333 2 9.22917 2.14583 8.9375 2.4375C8.64583 2.72917 8.5 3.08333 8.5 3.5H6.5C6.5 2.53333 6.84167 1.70833 7.525 1.025C8.20833 0.341667 9.03333 0 10 0C10.9667 0 11.7917 0.3375 12.475 1.0125C13.1583 1.6875 13.5 2.50833 13.5 3.475C13.5 4.25833 13.2708 4.95833 12.8125 5.575C12.3542 6.19167 11.75 6.61667 11 6.85V7.75L19.6 14.2C19.7333 14.2833 19.8333 14.3958 19.9 14.5375C19.9667 14.6792 20 14.8333 20 15C20 15.2833 19.9042 15.5208 19.7125 15.7125C19.5208 15.9042 19.2833 16 19 16H1ZM4 14H16L10 9.5L4 14Z" fill="#001E2F" />
+              </Svg>
+            </View>
+            <View style={styles.emptyStateTextWrap}>
+              <Text style={styles.emptyStateTitle}>{t("recycle.oneItemTitle")}</Text>
+              <Text style={styles.emptyStateSub}>{t("recycle.oneItemSub")}</Text>
+            </View>
+          </View>
+        )}
+
+        {activeImages.length === 2 && (
+          <View style={styles.emptyStateBox}>
+            <View style={styles.emptyStateIconCircle}>
+              <Svg width={24} height={20} viewBox="0 0 20 16" fill="none">
+                <Path d="M1 16C0.716667 16 0.479167 15.9042 0.2875 15.7125C0.0958333 15.5208 0 15.2833 0 15C0 14.8333 0.0333333 14.6792 0.1 14.5375C0.166667 14.3958 0.266667 14.2833 0.4 14.2L9 7.75V6C9 5.71667 9.1 5.47917 9.3 5.2875C9.5 5.09583 9.74167 5 10.025 5C10.4417 5 10.7917 4.85 11.075 4.55C11.3583 4.25 11.5 3.89167 11.5 3.475C11.5 3.05833 11.3542 2.70833 11.0625 2.425C10.7708 2.14167 10.4167 2 10 2C9.58333 2 9.22917 2.14583 8.9375 2.4375C8.64583 2.72917 8.5 3.08333 8.5 3.5H6.5C6.5 2.53333 6.84167 1.70833 7.525 1.025C8.20833 0.341667 9.03333 0 10 0C10.9667 0 11.7917 0.3375 12.475 1.0125C13.1583 1.6875 13.5 2.50833 13.5 3.475C13.5 4.25833 13.2708 4.95833 12.8125 5.575C12.3542 6.19167 11.75 6.61667 11 6.85V7.75L19.6 14.2C19.7333 14.2833 19.8333 14.3958 19.9 14.5375C19.9667 14.6792 20 14.8333 20 15C20 15.2833 19.9042 15.5208 19.7125 15.7125C19.5208 15.9042 19.2833 16 19 16H1ZM4 14H16L10 9.5L4 14Z" fill="#001E2F" />
+              </Svg>
+            </View>
+            <View style={styles.emptyStateTextWrap}>
+              <Text style={styles.emptyStateTitle}>{t("recycle.twoItemsTitle")}</Text>
+              <Text style={styles.emptyStateSub}>{t("recycle.twoItemsSub")}</Text>
+            </View>
+          </View>
+        )}
 
         {selectedItems.length > 0 && activeTab === "Wardrobe" && (
           <Text style={styles.selectedCount}>{t("recycle.selectedCount", { count: selectedItems.length, max: MAX_ITEMS })}</Text>
@@ -619,7 +681,7 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: Colors.primary,
+    backgroundColor: "#8ED321",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -723,6 +785,48 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto_500Medium",
     fontSize: 13,
     color: Colors.primary,
+  },
+  emptyStateBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F5F6F7",
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 12,
+    gap: 14,
+  },
+  itemsHeader: {
+    marginTop: 16,
+  },
+  itemsHeaderText: {
+    fontFamily: "Roboto_600SemiBold",
+    fontWeight: "600",
+    fontSize: 15,
+    color: Colors.textPrimary,
+  },
+  emptyStateIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#E6F2FF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyStateTextWrap: {
+    flex: 1,
+  },
+  emptyStateTitle: {
+    fontFamily: "Roboto_700Bold",
+    fontWeight: "700",
+    fontSize: 14,
+    color: Colors.textPrimary,
+    marginBottom: 2,
+  },
+  emptyStateSub: {
+    fontFamily: "Roboto_400Regular",
+    fontSize: 12,
+    color: Colors.textSecondary,
+    lineHeight: 18,
   },
   selectedCount: {
     fontFamily: "Roboto_500Medium",

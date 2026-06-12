@@ -26,6 +26,7 @@ import { openCamera, openGallery } from "../../utils/cameraAccess";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
 import { virtualTryOn, virtualTryOnOutfit } from "../../api/virtual_tryon_services/virtualTryonService";
+import { ROUTES } from "../../navigation/routes";
 
 export default function TryOnScreen({ navigation, route }) {
   const { t } = useTranslation();
@@ -230,7 +231,7 @@ export default function TryOnScreen({ navigation, route }) {
         result = await virtualTryOnOutfit(formData);
       }
 
-      navigation.navigate("TryOnResult", { result });
+      navigation.navigate(ROUTES.TRY_ON_RESULT, { result });
     } catch (e) {
       const serverMsg = e.response?.data?.message || e.response?.data?.error || JSON.stringify(e.response?.data);
       const msg = serverMsg || e.message || "Virtual try-on failed";
@@ -345,7 +346,7 @@ export default function TryOnScreen({ navigation, route }) {
               <Text style={styles.sectionTitle}>
                 {t("tryOn.virtualTryOn.activeWardrobe")}
               </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Wardrobe", { screen: "WardrobeMain" })}>
+          <TouchableOpacity onPress={() => navigation.navigate(ROUTES.MAIN, { screen: ROUTES.WARDROBE, params: { screen: ROUTES.WARDROBE_MAIN } })}>
             <Text style={styles.seeAll}>
               {t("tryOn.virtualTryOn.seeAll")}
             </Text>

@@ -30,3 +30,14 @@ export function getItemsList(outfit) {
     _name: item.name || item.title || item.label || "",
   }));
 }
+
+export function getCompositeImage(outfit) {
+  if (!outfit) {
+    console.log(`[getCompositeImage] outfit is null/undefined`);
+    return null;
+  }
+  const realOutfit = outfit.outfits?.[0] || outfit;
+  const raw = realOutfit.compositeImage || null;
+  console.log(`[getCompositeImage] raw=${raw ? `"${raw.slice(0, 80)}..."` : "null"}, outfit keys=${Object.keys(outfit).join(",")}, realOutfit keys=${Object.keys(realOutfit).join(",")}`);
+  return raw ? ensureImageUri(raw) : null;
+}

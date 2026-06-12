@@ -268,7 +268,8 @@
       "selectedItems": "Selected Items ({{count}})",
       "noItemsTitle": "No items selected yet",
       "noItemsSub": "Add items from above to try them on.",
-      "generate": "Generate Try-on"
+      "generate": "Generate Try-on",
+      "generating": "Generating..."
     }
   },
   "recycle": {

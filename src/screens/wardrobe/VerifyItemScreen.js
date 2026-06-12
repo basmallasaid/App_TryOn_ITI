@@ -29,7 +29,6 @@ const SHEET_EXPANDED_H = SCREEN_H * 0.65;
 const SHEET_PEEK_H = 80; 
 
 const CATEGORIES = [
-  "Basic",
   "Bottom",
   "Top",
   "Dress",
@@ -59,7 +58,7 @@ const matchToOptions = (values, options) =>
 const VerifyItemScreen = ({ route, navigation }) => {
   const { imageUri, analysisResult } = route.params;
   const garment = analysisResult?.garments?.[0] ?? {};
-  const { refetch } = useWardrobe();
+  const { refetch, updateItem } = useWardrobe();
 
   const [form, setForm] = useState({
     name: garment.specificType || "",
@@ -146,28 +145,43 @@ const VerifyItemScreen = ({ route, navigation }) => {
     try {
       setLoading(true);
 
-      // 1. First, save the analyzed item to the wardrobe to get a permanent ID
-      // This endpoint usually returns the created item/analysis record
-      const saveResponse = await saveToWardrobe(analysisResult.analysis_id, 0);
-      const newItemId = saveResponse.analysis?._id || analysisResult.analysis_id;
-
-      // 2. Prepare the user's manual selections
+      // 1. Prepare the user's manual selections (safe defaults)
+      const rawCategory = form.categories[0] || garment.category || "top";
+      // Server wardrobe enum rejects "basic" — remap to a valid fallback
+      const category = rawCategory.toLowerCase() === "basic" ? "top" : rawCategory;
       const updateData = {
-        name: form.name,
-        category: form.categories[0] || garment.category, // single select
-        style: form.styles[0] || garment.style,           // single select
-        season: form.seasons,                             // multi-select array
+        name: form.name || garment.specificType || "",
+        category,
+        style: form.styles[0] || garment.style || "casual",
+        season: form.seasons.length ? form.seasons : (garment.season || ["summer"]),
       };
 
-      // 3. Call the edit endpoint to update the wardrobe item with user's choices
-      await editWardrobeItem(newItemId, garment, updateData);
+      // 2. First UPDATE the analysis with user corrections, so the AI's bad
+      //    category (e.g. "basic") is replaced before saving to wardrobe
+      await editWardrobeItem(analysisResult.analysis_id, garment, updateData);
+
+      // 3. Now save the (corrected) analysis to wardrobe
+      const saveResponse = await saveToWardrobe(analysisResult.analysis_id, 0);
+      const wardrobeItemId = saveResponse._id || saveResponse.item?._id || saveResponse.analysis?._id;
 
       // 4. Sync context and go home
+      if (wardrobeItemId) {
+        updateItem(wardrobeItemId, {
+          name: updateData.name,
+          category: updateData.category.toLowerCase(),
+        });
+      }
       await refetch();
       navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (e) {
-      console.log("Logically failed to save:", e);
-      alert("Failed to save item. Please try again.");
+      console.log("Save failed:", e.config?.url, "status:", e.response?.status, "body:", JSON.stringify(e.response?.data));
+      if (e.response) console.log("full response:", JSON.stringify(e.response));
+      console.log("request data:", JSON.stringify(e.config?.data));
+      const msg =
+        e.response?.data?.error ||
+        e.response?.data?.message ||
+        `Server error (${e.response?.status || "network connection"})`;
+      alert(msg);
     } finally {
       setLoading(false);
     }

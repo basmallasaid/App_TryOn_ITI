@@ -15,6 +15,7 @@ import {
 import { Ionicons, AntDesign, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import Colors from "../../constants/theme/colors";
+import { useFavorites } from "../../context/FavoritesContext";
 
 const { width } = Dimensions.get("window");
 
@@ -46,6 +47,8 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
   const item = match?.item || {};
   const score = match?.score || 0;
   const explanation = match?.explanation || "";
+  const { isFavorite, addItem, removeItem } = useFavorites();
+  const itemId = item?.id?.replace("store_", "");
 
   const [selectedSize, setSelectedSize] = useState("m");
   const [selectedColor, setSelectedColor] = useState(item?.color || "black");
@@ -77,10 +80,6 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
       <View style={styles.searchContainer}>
         <View style={styles.searchRow}>
           <CustomBackButton onPress={() => navigation.goBack()} iconColor={Colors.iconGray} />
-          <View style={styles.searchBar}>
-            <Ionicons name="search-outline" size={20} color="#8E8E93" style={{ marginRight: 10 }} />
-            <TextInput placeholder="Tap to search" style={styles.searchInput} />
-          </View>
         </View>
       </View>
 
@@ -105,8 +104,23 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
             )}
             {isStore && <AntDesign name="star" size={16} color="#FF9500" style={{ marginLeft: 5 }} />}
           </View>
-          <TouchableOpacity>
-            <AntDesign name="hearto" size={22} color="#1A2530" />
+          <TouchableOpacity onPress={async () => {
+            if (!itemId) return;
+            try {
+              if (isFavorite(itemId)) {
+                await removeItem(itemId);
+              } else {
+                await addItem(itemId, "PRODUCT");
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          }}>
+            <Ionicons
+              name={isFavorite(itemId) ? "heart" : "heart-outline"}
+              size={22}
+              color={isFavorite(itemId) ? "#FF8A3D" : "#3E4850"}
+            />
           </TouchableOpacity>
         </View>
 
@@ -114,7 +128,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
           <View style={styles.titlePriceRow}>
             <Text style={styles.productTitle}>{item?.name || "Item"}</Text>
             {isStore && item?.price && (
-              <Text style={styles.productPrice}>{item?.currency || "$"}{item?.price}</Text>
+              <Text style={styles.productPrice}>{item?.currency || "$"}{" "}{item?.price}</Text>
             )}
           </View>
           <Text style={styles.description}>
@@ -320,6 +334,7 @@ const styles = StyleSheet.create({
     borderColor: "#E0F4BE",
     justifyContent: "center",
     alignItems: "center",
+    position: "relative",
   },
   matchImage: { width: 70, height: 80 },
   percentBadge: {
@@ -330,6 +345,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 2,
     borderRadius: 5,
+    zIndex:2,
   },
   percentText: { color: "#FFF", fontSize: 9, fontWeight: "bold" },
 

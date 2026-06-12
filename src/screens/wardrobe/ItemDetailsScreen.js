@@ -15,36 +15,29 @@ import { Ionicons } from "@expo/vector-icons";
 import {
   getWardrobeItem,
   deleteWardrobeItem,
-  editWardrobeItem,
 } from "../../api/wardrobe_services/wardrobeService";
 import { useWardrobe } from "../../context/WardrobeContext";
 import Colors from "../../constants/theme/colors";
 
 import { ROUTES, SOURCE } from "../../navigation/routes";
 import CustomBackButton from "../../components/common/CustomBackButton";
-import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import SelectionChip from "../../components/wardrobe/SelectionChip";
 import QuestionGroup from "../../components/wardrobe/QuestionGroup";
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
 
-const CATEGORIES = ["Basic", "Bottom", "Top", "Dress", "Suit", "Bag", "Shoes", "Jacket", "Accessories"];
+const CATEGORIES = ["Bottom", "Top", "Dress", "Suit", "Bag", "Shoes", "Jacket", "Accessories"];
 const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
 const STYLES = ["Casual", "Basic", "Formal","Mart-Casual"];
 
 const ItemDetailsScreen = ({ route, navigation }) => {
   const { itemId, analysisId } = route.params;
-  const { removeItem, refetch, updateItem } = useWardrobe();
+  const { removeItem, refetch } = useWardrobe();
 
   const [itemData, setItemData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedSeasons, setSelectedSeasons] = useState([]);
-  const [selectedStyle, setSelectedStyle] = useState(null);
 
   useEffect(() => {
     fetchDetails();
@@ -56,54 +49,10 @@ const ItemDetailsScreen = ({ route, navigation }) => {
       const id = analysisId || itemId;
       const data = await getWardrobeItem(id);
       setItemData(data);
-      const garment = data?.garments?.[0] || {};
-      setSelectedCategory(garment.category || null);
-      setSelectedSeasons(garment.season || []);
-      setSelectedStyle(garment.style || null);
     } catch (error) {
       console.error("Fetch Details Error:", error.response?.status, error.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const toggleCategory = (value) => {
-    setSelectedCategory((prev) => (prev === value ? null : value));
-  };
-
-  const toggleSeason = (value) => {
-    setSelectedSeasons((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value],
-    );
-  };
-
-  const toggleStyle = (value) => {
-    setSelectedStyle((prev) => (prev === value ? null : value));
-  };
-
-  const handleSave = async () => {
-    if (!itemData) return;
-    const garment = itemData?.garments?.[0] || {};
-    const id = analysisId || itemId;
-    try {
-      setSaving(true);
-      const category = selectedCategory || garment.category || "";
-      const style = selectedStyle || garment.style || "";
-      const season = selectedSeasons.length ? selectedSeasons : garment.season || [];
-      await editWardrobeItem(id, garment, {
-        name: garment.specificType || "",
-        category,
-        style,
-        season,
-      });
-      updateItem(itemId, { category: category.toLowerCase() });
-      navigation.goBack();
-    } catch (error) {
-      console.error("Save Error:", error);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -138,6 +87,9 @@ const ItemDetailsScreen = ({ route, navigation }) => {
           .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
           .join("-")
       : "";
+  const category = garment.category ? normalize(garment.category) : "";
+  const seasons = (garment.season || []).map(normalize);
+  const style = garment.style ? normalize(garment.style) : "";
 
   return (
     <SafeAreaView style={styles.root}>
@@ -214,8 +166,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
               <SelectionChip
                 key={cat}
                 label={cat}
-                isSelected={normalize(selectedCategory) === cat}
-                onPress={() => toggleCategory(cat)}
+                isSelected={category === cat}
               />
             ))}
           </QuestionGroup>
@@ -225,8 +176,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
               <SelectionChip
                 key={s}
                 label={s}
-                isSelected={selectedSeasons.some((item) => normalize(item) === s)}
-                onPress={() => toggleSeason(s)}
+                isSelected={seasons.includes(s)}
               />
             ))}
           </QuestionGroup>
@@ -236,19 +186,10 @@ const ItemDetailsScreen = ({ route, navigation }) => {
               <SelectionChip
                 key={st}
                 label={st}
-                isSelected={selectedStyle?.toLowerCase() === st.toLowerCase()}
-                onPress={() => toggleStyle(st)}
+                isSelected={style?.toLowerCase() === st.toLowerCase()}
               />
             ))}
           </QuestionGroup>
-        </View>
-
-        <View style={styles.saveWrap}>
-          <CustomizeAppButtonFilled
-            label="Save Changes"
-            onPress={handleSave}
-            loading={saving}
-          />
         </View>
       </ScrollView>
 
@@ -399,9 +340,6 @@ const styles = StyleSheet.create({
       },
       android: { elevation: 4 },
     }),
-  },
-  saveWrap: {
-    marginTop: 24,
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -28,6 +28,7 @@ import { useWardrobe } from "../../context/WardrobeContext";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
 import { virtualTryOn, virtualTryOnOutfit } from "../../api/virtual_tryon_services/virtualTryonService";
 import { ROUTES } from "../../navigation/routes";
+import GradientBorder from "../../components/recycle/GradientBorder";
 
 export default function TryOnScreen({ navigation, route }) {
   const { t } = useTranslation();
@@ -72,6 +73,7 @@ export default function TryOnScreen({ navigation, route }) {
   const [galleryItemTypes, setGalleryItemTypes] = useState([]);
   const [generating, setGenerating] = useState(false);
   const [generateError, setGenerateError] = useState(null);
+  const itemWidths = useRef({});
 
   const handleCameraCapture = async () => {
     const result = await openCamera();
@@ -258,14 +260,39 @@ export default function TryOnScreen({ navigation, route }) {
           <>
             {cameraImages.length > 0 ? (
               <View style={styles.galleryRow}>
-                {cameraImages.map((uri, index) => (
-                  <View key={index} style={styles.galleryItem}>
-                    <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
-                    <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeCameraImage(index)}>
-                      <Ionicons name="close" size={16} color="white" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                {cameraImages.map((uri, index) => {
+                  const isSelected = !!cameraItemTypes[index];
+                  const isDisabled = selectedItems.length >= 2 && !isSelected;
+                  return (
+                    <View
+                      key={index}
+                      style={[styles.galleryItem, isDisabled && { opacity: 0.5 }]}
+                      onLayout={(e) => { itemWidths.current[`cam_${index}`] = e.nativeEvent.layout.width; }}
+                    >
+                      {isSelected && itemWidths.current[`cam_${index}`] ? (
+                        <GradientBorder width={itemWidths.current[`cam_${index}`]} height={220} borderRadius={16}>
+                          <View style={styles.gallerySelectedInner}>
+                            <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
+                            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.galleryCheckIcon} />
+                            <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeCameraImage(index)}>
+                              <Ionicons name="close" size={14} color="#FFFFFF" />
+                            </TouchableOpacity>
+                          </View>
+                        </GradientBorder>
+                      ) : (
+                        <View style={{ flex: 1 }}>
+                          <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
+                          {isSelected && (
+                            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.galleryCheckIcon} />
+                          )}
+                          <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeCameraImage(index)}>
+                            <Ionicons name="close" size={14} color="#FFFFFF" />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
                 {cameraImages.length < 2 && (
                   <View style={styles.galleryItem}>
                     <UploadBox label="Open Camera" onPress={handleCameraCapture} style={styles.compactUploadBox} />
@@ -280,14 +307,39 @@ export default function TryOnScreen({ navigation, route }) {
           <>
             {galleryImages.length > 0 ? (
               <View style={styles.galleryRow}>
-                {galleryImages.map((uri, index) => (
-                  <View key={index} style={styles.galleryItem}>
-                    <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
-                    <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeGalleryImage(index)}>
-                      <Ionicons name="close" size={16} color="white" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                {galleryImages.map((uri, index) => {
+                  const isSelected = !!galleryItemTypes[index];
+                  const isDisabled = selectedItems.length >= 2 && !isSelected;
+                  return (
+                    <View
+                      key={index}
+                      style={[styles.galleryItem, isDisabled && { opacity: 0.5 }]}
+                      onLayout={(e) => { itemWidths.current[`gal_${index}`] = e.nativeEvent.layout.width; }}
+                    >
+                      {isSelected && itemWidths.current[`gal_${index}`] ? (
+                        <GradientBorder width={itemWidths.current[`gal_${index}`]} height={220} borderRadius={16}>
+                          <View style={styles.gallerySelectedInner}>
+                            <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
+                            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.galleryCheckIcon} />
+                            <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeGalleryImage(index)}>
+                              <Ionicons name="close" size={14} color="#FFFFFF" />
+                            </TouchableOpacity>
+                          </View>
+                        </GradientBorder>
+                      ) : (
+                        <View style={{ flex: 1 }}>
+                          <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
+                          {isSelected && (
+                            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.galleryCheckIcon} />
+                          )}
+                          <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeGalleryImage(index)}>
+                            <Ionicons name="close" size={14} color="#FFFFFF" />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
                 {galleryImages.length < 2 && (
                   <View style={styles.galleryItem}>
                     <UploadBox label="Upload image here" onPress={handleGalleryPick} style={styles.compactUploadBox} />
@@ -386,10 +438,16 @@ export default function TryOnScreen({ navigation, route }) {
             </View>
             <View>
               <Text style={styles.noItemsTitle}>
-                {t("tryOn.virtualTryOn.noItemsTitle")}
+                {selectedItems.length > 0
+                  ? `${selectedItems.length} item${selectedItems.length > 1 ? "s" : ""} selected`
+                  : t("tryOn.virtualTryOn.noItemsTitle")}
               </Text>
               <Text style={styles.noItemsSub}>
-                {t("tryOn.virtualTryOn.noItemsSub")}
+                {selectedItems.length > 0
+                  ? selectedWardrobeIds.length > 0
+                    ? "Item selected from your wardrobe"
+                    : "Item captured from camera or gallery"
+                  : t("tryOn.virtualTryOn.noItemsSub")}
               </Text>
             </View>
           </View>
@@ -462,7 +520,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: "white",
+   
   },
   headerTitle: { fontSize: 20, fontWeight: "700", color: "#1A202C" },
 
@@ -518,14 +576,24 @@ const styles = StyleSheet.create({
   },
   galleryRemoveBtn: {
     position: "absolute",
-    top: 8,
-    right: 8,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    top: 6,
+    right: 6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: Colors.error,
     justifyContent: "center",
     alignItems: "center",
+  },
+  galleryCheckIcon: {
+    position: "absolute",
+    top: 6,
+    left: 6,
+  },
+  gallerySelectedInner: {
+    flex: 1,
+    borderRadius: 15,
+    overflow: "hidden",
   },
 
   compactUploadBox: {

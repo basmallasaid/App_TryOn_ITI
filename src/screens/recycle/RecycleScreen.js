@@ -103,10 +103,7 @@ export default function RecycleScreen({ navigation }) {
   const toggleWardrobeItem = (id) => {
     setSelectedItems((prev) => {
       if (prev.includes(id)) return prev.filter((i) => i !== id);
-      if (prev.length >= MAX_ITEMS) {
-        Alert.alert(t("recycle.maxReached"), t("recycle.maxReachedMessage", { max: MAX_ITEMS }));
-        return prev;
-      }
+      if (prev.length >= MAX_ITEMS) return prev;
       return [...prev, id];
     });
   };
@@ -292,9 +289,6 @@ export default function RecycleScreen({ navigation }) {
         <>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{t("recycle.activeWardrobe")}</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAll}>{t("tryOn.virtualTryOn.seeAll")}</Text>
-            </TouchableOpacity>
           </View>
           <FlatList
             horizontal
@@ -302,37 +296,44 @@ export default function RecycleScreen({ navigation }) {
             keyExtractor={(item) => item._id}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.wardrobeList}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.wardrobeItemWrap}
-                onPress={() => toggleWardrobeItem(item._id)}
-                activeOpacity={0.8}
-              >
-                {selectedItems.includes(item._id) ? (
-                  <GradientBorder width={100} height={120} borderRadius={12}>
-                    <Image
-                      source={{ uri: item.image }}
-                      style={styles.wardrobeItemImage}
-                      resizeMode="cover"
-                    />
-                    <View style={styles.wardrobeCheck}>
-                      <Ionicons name="checkmark" size={14} color="#FFFFFF" />
+            renderItem={({ item }) => {
+              const isSelected = selectedItems.includes(item._id);
+              const isDisabled = selectedItems.length >= MAX_ITEMS && !isSelected;
+              return (
+                <TouchableOpacity
+                  style={[styles.wardrobeItemWrap, isDisabled && { opacity: 0.5 }]}
+                  onPress={() => {
+                    if (isDisabled) return;
+                    toggleWardrobeItem(item._id);
+                  }}
+                  activeOpacity={isDisabled ? 1 : 0.8}
+                >
+                  {isSelected ? (
+                    <GradientBorder width={100} height={120} borderRadius={12}>
+                      <Image
+                        source={{ uri: item.image }}
+                        style={styles.wardrobeItemImage}
+                        resizeMode="cover"
+                      />
+                      <View style={styles.wardrobeCheck}>
+                        <Ionicons name="checkmark" size={14} color="#FFFFFF" />
+                      </View>
+                    </GradientBorder>
+                  ) : (
+                    <View style={styles.wardrobeItemCard}>
+                      <Image
+                        source={{ uri: item.image }}
+                        style={styles.wardrobeItemImage}
+                        resizeMode="cover"
+                      />
                     </View>
-                  </GradientBorder>
-                ) : (
-                  <View style={styles.wardrobeItemCard}>
-                    <Image
-                      source={{ uri: item.image }}
-                      style={styles.wardrobeItemImage}
-                      resizeMode="cover"
-                    />
-                  </View>
-                )}
-                <Text style={styles.wardrobeItemName} numberOfLines={1}>
-                  {item.name || "Untitled"}
-                </Text>
-              </TouchableOpacity>
-            )}
+                  )}
+                  <Text style={styles.wardrobeItemName} numberOfLines={1}>
+                    {item.name || "Untitled"}
+                  </Text>
+                </TouchableOpacity>
+              );
+            }}
           />
         </>
       )}
@@ -535,7 +536,7 @@ export default function RecycleScreen({ navigation }) {
 
         {apiError && (
           <View style={styles.errorBanner}>
-            <Ionicons name="alert-circle" size={16} color="#FF4444" />
+            <Ionicons name="alert-circle" size={16} color={Colors.error} />
             <Text style={styles.errorText}>{apiError}</Text>
           </View>
         )}
@@ -598,9 +599,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: Colors.white,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
   },
   headerTitle: {
     fontFamily: "Roboto_700Bold",
@@ -610,7 +608,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#F5F6F7",
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -736,7 +733,7 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#FF4444",
+    backgroundColor: Colors.error,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -758,7 +755,7 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#FF4444",
+    backgroundColor: Colors.error,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -843,7 +840,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontFamily: "Roboto_400Regular",
     fontSize: 13,
-    color: "#FF4444",
+    color: Colors.error,
     flex: 1,
   },
   ideasSection: {

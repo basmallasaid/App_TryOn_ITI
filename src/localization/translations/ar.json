@@ -263,7 +263,8 @@
       "selectedItems": "العناصر المحددة ({{count}})",
       "noItemsTitle": "لم يتم اختيار أي عنصر بعد",
       "noItemsSub": "أضف عناصر من الأعلى لتجربتها.",
-      "generate": "توليد التجربة"
+      "generate": "توليد التجربة",
+      "generating": "جارٍ التوليد..."
     }
   },
   "recycle": {

@@ -26,6 +26,7 @@ import { useWardrobe } from "../../context/WardrobeContext";
 import GradientBorder from "../../components/recycle/GradientBorder";
 import { getWardrobeMatches, analyzeImage, getMatchesByAnalysis } from "../../api/matching_services/matchingService";
 import { getAllProducts } from "../../api/user_services/userService";
+import { useFavorites } from "../../context/FavoritesContext";
 import { ROUTES } from "../../navigation/routes";
 
 
@@ -33,6 +34,7 @@ import { ROUTES } from "../../navigation/routes";
 export default function MatchingScreen({ navigation }) {
   const { t } = useTranslation();
   const { items: wardrobeItems } = useWardrobe();
+  const { isFavorite, addItem, removeItem } = useFavorites();
 
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedWardrobeId, setSelectedWardrobeId] = useState(null);
@@ -392,11 +394,30 @@ export default function MatchingScreen({ navigation }) {
                       key={match.item?.id || index}
                       onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match, imageUri })}
                     >
-                      <View style={styles.matchCard}>
+                        <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>
                           <Text style={styles.scoreText}>{match.score}%</Text>
                         </View>
-                        <MaterialCommunityIcons name="heart-outline" size={18} color="#1A2530" style={styles.heartIcon} />
+                        <TouchableOpacity style={styles.heartIcon} onPress={async () => {
+                          const rawId = match.item?.id;
+                          if (!rawId) return;
+                          const id = rawId.replace("store_", "");
+                          try {
+                            if (isFavorite(id)) {
+                              await removeItem(id);
+                            } else {
+                              await addItem(id, "PRODUCT");
+                            }
+                          } catch (e) {
+                            console.error(e);
+                          }
+                        }}>
+                          <Ionicons
+                            name={isFavorite(match.item?.id?.replace("store_", "")) ? "heart" : "heart-outline"}
+                            size={18}
+                            color={isFavorite(match.item?.id?.replace("store_", "")) ? "#FF8A3D" : "#3E4850"}
+                          />
+                        </TouchableOpacity>
                         {imgSrc ? (
                           <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
                         ) : (
@@ -404,7 +425,7 @@ export default function MatchingScreen({ navigation }) {
                         )}
                         <Text style={styles.matchItemName} numberOfLines={1}>{match.item?.name}</Text>
                         {match.item?.price && (
-                          <Text style={styles.matchPrice}>{match.item?.currency || "$"}{match.item?.price}</Text>
+                          <Text style={styles.matchPrice}>{match.item?.currency || "$"}{" "}{match.item?.price}</Text>
                         )}
                       </View>
                     </TouchableOpacity>
@@ -553,13 +574,13 @@ const styles = StyleSheet.create({
   matchPrice: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#44BEFF",
+    color: "#1A2530",
     marginTop: 2,
   },
   scoreBadge: {
     position: "absolute",
     top: 10,
-    right: 10,
+    left: 10,
     backgroundColor: "#A5E142",
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -574,7 +595,7 @@ const styles = StyleSheet.create({
   heartIcon: {
     position: "absolute",
     top: 12,
-    right: 45,
+    right: 10,
     zIndex: 1,
   },
   selectedSection: {

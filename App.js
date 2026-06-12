@@ -59,18 +59,15 @@ export default function App() {
       <AuthProvider>
         <ProfileProvider>
           <WardrobeProvider>
-          <NotificationProvider>
-          <NavigationContainer ref={navigationRef}>
-            <RootNavigator />
-          </NavigationContainer>
-          </NotificationProvider>
-          <FavoritesProvider>
-          <RecommendationProvider>
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
-          </RecommendationProvider>
-          </FavoritesProvider>
+            <NotificationProvider>
+              <FavoritesProvider>
+                <RecommendationProvider>
+                  <NavigationContainer ref={navigationRef}>
+                    <RootNavigator />
+                  </NavigationContainer>
+                </RecommendationProvider>
+              </FavoritesProvider>
+            </NotificationProvider>
           </WardrobeProvider>
         </ProfileProvider>
       </AuthProvider>

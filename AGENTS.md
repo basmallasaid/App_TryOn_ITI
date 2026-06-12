@@ -24,10 +24,15 @@ Implement the Recommendation feature with two screens (History + Detail) using a
 The codebase uses `image_url || image || imageUrl || url` as the fallback chain — see `TryOnScreen.js:55`, `TryOnResultsScreen.js:30`, `SelectModelScreen.js:105`. Always use `getItemImage()` for image fields.
 
 ### API Response Structure
-- **GET /recommendations** — returns `{ history: [ { _id, user_id, outfits: [ { items: [...], score, breakdown } ], weather: {...} } ], currentWeather: {...} }`
-- **POST /recommendations** — returns `{ outfits: [ { items: [...], score, breakdown } ], currentWeather: {...} }`
+- **GET /recommendations** — returns `{ history: [ { _id, user_id, outfits: [ { items: [...], score, breakdown, compositeImage? } ], weather: {...} } ], currentWeather: {...} }`
+- **POST /recommendations** — returns `{ outfits: [ { items: [...], score, breakdown, compositeImage? } ], currentWeather: {...} }`
 - Each `item` inside `items` has fields: `image` (base64 string or URL), `name`, etc.
+- `compositeImage` at outfit level is a URL to a pre-merged image of all items in the outfit. Use `getCompositeImage(outfit)` from `getItemImage.js` — it auto-unwraps `outfits[0]` nesting.
 - Images can be raw base64 (no `data:` prefix), full data URIs, or HTTP URLs.
+
+### OutfitOverviewCard Image Priority
+- `OutfitOverviewCard` renders `compositeImage` if available; falls back to the first item's image (`validImages[0]._image`).
+- Always uses `resizeMode="contain"`.
 
 ### Architecture
 - **Context:** `RecommendationContext` — auto-calls POST daily at/after 6AM; before 6AM shows cached. Re-checks on app foreground. Stores `todaysWeather` separately from `todaysOutfit` since weather comes at API response level.

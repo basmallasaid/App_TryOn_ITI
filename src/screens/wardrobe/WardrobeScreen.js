@@ -27,7 +27,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { openCamera, openGallery } from '../../utils/cameraAccess';
 import { ROUTES } from '../../navigation/routes';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = 150; // Based on your WardrobeItemCard width
+const CARD_WIDTH = 175; // Based on your WardrobeItemCard width
 const GAP = 15;
 const TOTAL_GRID_WIDTH = CARD_WIDTH * 2 + GAP;
 const HORIZONTAL_PADDING = (SCREEN_WIDTH - TOTAL_GRID_WIDTH) / 2;

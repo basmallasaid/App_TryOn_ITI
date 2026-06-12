@@ -21,6 +21,7 @@ import { resetOnboardingAndLanguage } from "./src/utils/devReset";
 import { ProfileProvider } from "./src/context/ProfileContext";
 import { WardrobeProvider } from './src/context/WardrobeContext';
 import { FavoritesProvider } from './src/context/FavoritesContext';
+import { RecommendationProvider } from './src/context/RecommendationContext';
 I18nManager.allowRTL(true);
 
 // DEV ONLY — comment out when done testing
@@ -57,9 +58,11 @@ export default function App() {
         <ProfileProvider>
           <WardrobeProvider>
           <FavoritesProvider>
+          <RecommendationProvider>
           <NavigationContainer>
             <RootNavigator />
           </NavigationContainer>
+          </RecommendationProvider>
           </FavoritesProvider>
           </WardrobeProvider>
         </ProfileProvider>

@@ -155,7 +155,10 @@
       "title": "كاجوال أنيق",
       "subtitle": "نظيف ومريح ومثالي ليومك",
       "location": "القاهرة",
-      "viewOutfit": "عرض الإطلالة"
+      "viewOutfit": "عرض الإطلالة",
+      "generate": "توليد إطلالة",
+      "noOutfit": "لا توجد إطلالة بعد",
+      "score": "التقييم:"
     },
     "actions": {
       "tryOn": "تجربة الملابس",
@@ -326,6 +329,14 @@
       "recycle": "إعادة التدوير"
     },
     "noItemsInCategory": "لا توجد عناصر في هذه الفئة"
+  },
+  "recommendation": {
+    "todaysRecommendation": "توصية اليوم",
+    "lastRecommendations": "آخر توصياتنا",
+    "outfitDetails": "تفاصيل الإطلالة",
+    "emptyHistory": "لا توجد توصيات بعد",
+    "noOutfitTitle": "لا توجد إطلالة متاحة",
+    "noOutfitSubtitle": "قم بتوليد إطلالة مخصصة لرؤيتها هنا"
   },
   "editProfile": {
     "title": "تعديل الملف الشخصي",

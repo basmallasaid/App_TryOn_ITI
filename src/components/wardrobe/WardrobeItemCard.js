@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '../../constants/theme/colors';
 
 const WardrobeItemCard = ({ item, onPress, onLongPress, isFavorite, onToggleFavorite }) => {
@@ -42,7 +43,10 @@ const WardrobeItemCard = ({ item, onPress, onLongPress, isFavorite, onToggleFavo
         </TouchableOpacity>
 
         {/* Modern Bottom Scrim Overlay */}
-        <View style={styles.overlay}>
+        <LinearGradient
+          colors={["rgba(0,0,0,0.73)", "rgba(0,0,0,0.01)"]}
+          style={styles.overlay}
+        >
           <Text style={styles.name} numberOfLines={1}>
             {item.name}
           </Text>
@@ -51,7 +55,7 @@ const WardrobeItemCard = ({ item, onPress, onLongPress, isFavorite, onToggleFavo
               {item.category}
             </Text>
           </View>
-        </View>
+        </LinearGradient>
       </ImageBackground>
     </TouchableOpacity>
   );
@@ -101,9 +105,10 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   overlay: {
-    paddingHorizontal: 12,
-    paddingVertical: 14,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Darker, more focused scrim
+    height: 59,
+    padding: 12,
+    gap: 4,
+    justifyContent: "center",
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
@@ -112,7 +117,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#FFFFFF',
     letterSpacing: 0.3,
-    marginBottom: 4,
   },
   categoryBadge: {
     alignSelf: 'flex-start',

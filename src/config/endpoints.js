@@ -28,4 +28,5 @@ export const ENDPOINTS = {
   GET_FAVORITES: '/users/favorites',
   ADD_FAVORITE: '/users/favorites',
   REMOVE_FAVORITE: '/users/favorites',
+  RECOMMENDATIONS:"/recommendations",
 };

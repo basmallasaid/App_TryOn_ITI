@@ -155,14 +155,17 @@
       "title": "Smart casual",
       "subtitle": "Clean, comfortable and perfect for your day",
       "location": "Cairo",
-      "viewOutfit": "View outfit"
+      "viewOutfit": "View outfit",
+      "generate": "Generate outfit",
+      "noOutfit": "No outfit yet",
+      "score": "Score:"
     },
     "actions": {
       "tryOn": "Try-on",
       "tryOnSub": "see how clothes look on you",
       "recycle": "Recycle",
       "recycleSub": "Give clothes another life",
-      "generateOutfit": "Generate outfit",
+      "generateOutfit": "Explore outfit",
       "generateOutfitSub": "personalized style suggestions",
       "matching": "Matching",
       "matchingSub": "Find the perfect match for your clothes"
@@ -326,6 +329,14 @@
       "recycle": "Recycle"
     },
     "noItemsInCategory": "No items in this category"
+  },
+  "recommendation": {
+    "todaysRecommendation": "Today's recommendation",
+    "lastRecommendations": "Our last recommendations",
+    "outfitDetails": "Outfit Details",
+    "emptyHistory": "No recommendations yet",
+    "noOutfitTitle": "No outfit available",
+    "noOutfitSubtitle": "Generate a personalized outfit to see it here"
   },
   "editProfile": {
     "title": "Edit Profile",

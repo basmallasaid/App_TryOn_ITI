@@ -1,26 +1,30 @@
 import React from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export const SearchBar = ({
   value,
   onChangeText,
   onSearch,
-}) => (
-  <View style={styles.searchContainer}>
-    <Ionicons name="search-outline" size={20} color="#9BA5B0" />
+}) => {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.searchContainer}>
+      <Ionicons name="search-outline" size={20} color="#9BA5B0" />
 
-    <TextInput
-      placeholder="Tap to search"
-      style={styles.input}
-      placeholderTextColor="#9BA5B0"
-      value={value}
-      onChangeText={onChangeText}
-      returnKeyType="search"
-      onSubmitEditing={() => onSearch?.()}
-    />
-  </View>
-);
+      <TextInput
+        placeholder={t('store.searchPlaceholder')}
+        style={styles.input}
+        placeholderTextColor="#9BA5B0"
+        value={value}
+        onChangeText={onChangeText}
+        returnKeyType="search"
+        onSubmitEditing={() => onSearch?.()}
+      />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   searchContainer: {

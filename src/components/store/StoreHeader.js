@@ -1,18 +1,22 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
-export const StoreHeader = ({ onFilterPress }) => (
-  <View style={styles.headerContainer}>
-    <View style={styles.textContainer}>
-      <Text style={styles.title}>Store</Text>
-      <Text style={styles.subtitle}>Discover & shop AI-curated essentials.</Text>
+export const StoreHeader = ({ onFilterPress }) => {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.headerContainer}>
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{t('store.title')}</Text>
+        <Text style={styles.subtitle}>{t('store.subtitle')}</Text>
+      </View>
+      <TouchableOpacity style={styles.filterBtn} onPress={onFilterPress}>
+        <Ionicons name="options-outline" size={22} color="#1A1C24" />
+      </TouchableOpacity>
     </View>
-    <TouchableOpacity style={styles.filterBtn} onPress={onFilterPress}>
-      <Ionicons name="options-outline" size={22} color="#1A1C24" />
-    </TouchableOpacity>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   headerContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },

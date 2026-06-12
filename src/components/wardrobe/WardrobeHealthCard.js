@@ -1,7 +1,9 @@
-// src/components/wardrobe/WardrobeHealthCard.js
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
+import { translateToArabic } from '../../utils/dynamicTranslator';
 
 /**
  * WardrobeHealthCard
@@ -10,7 +12,30 @@ import Colors from '../../constants/theme/colors';
  *  subtitle    string — dynamic AI-generated health text
  */
 const WardrobeHealthCard = ({ itemCount = 0, subtitle }) => {
-  const defaultSubtitle = `You have ${itemCount} item${itemCount !== 1 ? 's' : ''} synced. Keep building your wardrobe!`;
+  const { t, i18n } = useTranslation();
+  const [translatedSubtitle, setTranslatedSubtitle] = useState('');
+
+  const defaultSubtitle = i18n.language === 'ar'
+    ? `لديك ${itemCount} عنصر مزامن. استمر في بناء خزانة ملابسك!`
+    : `You have ${itemCount} item${itemCount !== 1 ? 's' : ''} synced. Keep building your wardrobe!`;
+
+  useEffect(() => {
+    let active = true;
+    const updateTranslation = async () => {
+      if (!subtitle) {
+        setTranslatedSubtitle('');
+        return;
+      }
+      if (i18n.language === 'ar') {
+        const tr = await translateToArabic(subtitle);
+        if (active) setTranslatedSubtitle(tr);
+      } else {
+        if (active) setTranslatedSubtitle(subtitle);
+      }
+    };
+    updateTranslation();
+    return () => { active = false; };
+  }, [subtitle, i18n.language]);
 
   return (
     <View style={styles.card}>
@@ -18,9 +43,9 @@ const WardrobeHealthCard = ({ itemCount = 0, subtitle }) => {
         <Ionicons name="sparkles" size={22} color="#FFFFFF" />
       </View>
       <View style={styles.textWrap}>
-        <Text style={styles.title}>Wardrobe Health</Text>
+        <Text style={styles.title}>{t('wardrobe.health')}</Text>
         <Text style={styles.subtitle} numberOfLines={3}>
-          {subtitle || defaultSubtitle}
+          {translatedSubtitle || subtitle || defaultSubtitle}
         </Text>
       </View>
     </View>

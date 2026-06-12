@@ -17,10 +17,12 @@ import { File, Directory, Paths } from 'expo-file-system';
 import { saveLatestTryon } from '../../api/user_services/userService';
 import { virtualTryOn } from '../../api/virtual_tryon_services/virtualTryonService';
 import { ROUTES, SOURCE } from '../../navigation/routes';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
 const TryOnResult = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const result = route?.params?.result || {};
   const productImage = route?.params?.productImage;
   const avatarImage = route?.params?.avatarImage;
@@ -96,10 +98,10 @@ const TryOnResult = ({ navigation, route }) => {
         taskId: (storeResult || result)?.taskId,
         model: (storeResult || result)?.model,
       });
-      Alert.alert("Saved", "Try-on result saved successfully.");
+      Alert.alert(t('tryOnResult.saved'), t('tryOnResult.savedMessage'));
     } catch (e) {
-      const msg = e.response?.data?.message || e.response?.data?.error || e.message || "Failed to save";
-      Alert.alert("Error", msg);
+      const msg = e.response?.data?.message || e.response?.data?.error || e.message || t('tryOnResult.error');
+      Alert.alert(t('tryOnResult.error'), msg);
     } finally {
       setSaving(false);
     }
@@ -111,7 +113,7 @@ const TryOnResult = ({ navigation, route }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-left" size={28} color="#546e7a" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Try-On Result</Text>
+        <Text style={styles.headerTitle}>{t('tryOnResult.title')}</Text>
         <TouchableOpacity>
           <Icon name="help-circle-outline" size={28} color="#546e7a" />
         </TouchableOpacity>
@@ -121,13 +123,13 @@ const TryOnResult = ({ navigation, route }) => {
         {generating ? (
           <View style={styles.generatingOverlay}>
             <ActivityIndicator size="large" color="#4AB8FF" />
-            <Text style={styles.generatingText}>Generating try-on result...</Text>
+            <Text style={styles.generatingText}>{t('tryOnResult.generating')}</Text>
           </View>
         ) : generateError ? (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{generateError}</Text>
             <TouchableOpacity style={styles.retryBtn} onPress={handleStoreGenerate}>
-              <Text style={styles.retryBtnText}>Retry</Text>
+              <Text style={styles.retryBtnText}>{t('tryOnResult.retry')}</Text>
             </TouchableOpacity>
           </View>
         ) : displayImage ? (
@@ -137,7 +139,7 @@ const TryOnResult = ({ navigation, route }) => {
             resizeMode="contain"
           />
         ) : (
-          <Text style={styles.placeholderText}>No result image available</Text>
+          <Text style={styles.placeholderText}>{t('tryOnResult.noImage')}</Text>
         )}
       </View>
 
@@ -150,7 +152,7 @@ const TryOnResult = ({ navigation, route }) => {
           {saving ? (
             <ActivityIndicator size="small" color="#fff" />
           ) : (
-            <Text style={styles.saveButtonText}>Save</Text>
+            <Text style={styles.saveButtonText}>{t('tryOnResult.save')}</Text>
           )}
         </TouchableOpacity>
         <TouchableOpacity
@@ -163,7 +165,7 @@ const TryOnResult = ({ navigation, route }) => {
             }
           }}
         >
-          <Text style={styles.tryAgainText}>Try again</Text>
+          <Text style={styles.tryAgainText}>{t('tryOnResult.tryAgain')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

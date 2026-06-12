@@ -9,6 +9,7 @@ import Colors from '../../constants/theme/colors';
 import { getAllProducts } from '../../api/user_services/userService';
 import { FilterModal } from './FilterModal';
 import { useFavorites } from '../../context/FavoritesContext';
+import { useTranslation } from 'react-i18next';
 
 const mapProductToCard = (product) => ({
     id: product._id,
@@ -59,9 +60,12 @@ const buildCategoriesFromProducts = (products) => {
 
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES, SOURCE } from '../../navigation/routes';
+import { translateProduct } from '../../utils/dynamicTranslator';
+import i18n from '../../localization/i18n';
 
 export default function StoreScreen() {
     const navigation = useNavigation();
+    const { t } = useTranslation();
     const { isFavorite, addItem, removeItem, refetch: refetchFavorites } = useFavorites();
     const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -106,16 +110,23 @@ export default function StoreScreen() {
 
             try {
                 const data = await getAllProducts();
-                setAllProducts(Array.isArray(data) ? data : []);
+                let products = Array.isArray(data) ? data : [];
+                
+                // Translate products if in Arabic
+                if (i18n.language === 'ar') {
+                    products = await Promise.all(products.map(p => translateProduct(p, 'ar')));
+                }
+                
+                setAllProducts(products);
             } catch (err) {
-                setError('Unable to load products. Please try again.');
+                setError(t('store.error'));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProducts();
-    }, []);
+    }, [i18n.language]);
 
     const categories = useMemo(() => buildCategoriesFromProducts(allProducts), [allProducts]);
 
@@ -230,7 +241,7 @@ export default function StoreScreen() {
                 contentContainerStyle={{ paddingBottom: 20 }}
                 ListEmptyComponent={() => (
                     <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>No products found for this filter.</Text>
+                        <Text style={styles.emptyText}>{t('store.noProducts')}</Text>
                     </View>
                 )}
             />

@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { Ionicons, AntDesign, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTranslation } from "react-i18next";
 
 const { width } = Dimensions.get("window");
 
@@ -41,6 +42,7 @@ const colorMap = {
 };
 
 export default function MatchingResultDetailsScreen({ navigation, route }) {
+  const { t } = useTranslation();
   const { match, imageUri } = route.params || {};
   const item = match?.item || {};
   const score = match?.score || 0;
@@ -80,7 +82,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
           </TouchableOpacity>
           <View style={styles.searchBar}>
             <Ionicons name="search-outline" size={20} color="#8E8E93" style={{ marginRight: 10 }} />
-            <TextInput placeholder="Tap to search" style={styles.searchInput} />
+            <TextInput placeholder={t('matchingDetail.searchPlaceholder')} style={styles.searchInput} />
           </View>
         </View>
       </View>
@@ -97,7 +99,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
         <View style={styles.ratingRow}>
           <View style={styles.ratingBox}>
             <View style={styles.scoreBadge}>
-              <Text style={styles.scoreText}>{score}% match</Text>
+              <Text style={styles.scoreText}>{score}% {t('matchingDetail.percentMatch', { score: '' }).replace('% ', '')}</Text>
             </View>
             {isStore && (
               <Text style={styles.ratingText}>
@@ -119,14 +121,14 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
             )}
           </View>
           <Text style={styles.description}>
-            {explanation || item?.description || "No description available."}
+            {explanation || item?.description || t('matchingDetail.noDescription')}
           </Text>
         </View>
 
         {colors.length > 0 && (
           <View style={styles.selectionSection}>
             <Text style={styles.selectionTitle}>
-              Color <Text style={styles.selectionSub}>-{selectedColor}</Text>
+              {t('matchingDetail.color')} <Text style={styles.selectionSub}>-{selectedColor}</Text>
             </Text>
             <View style={styles.colorRow}>
               {colors.map((color) => (
@@ -147,7 +149,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
 
         <View style={styles.selectionSection}>
           <Text style={styles.selectionTitle}>
-            Size <Text style={styles.selectionSub}>-{selectedSize}</Text>
+            {t('matchingDetail.size')} <Text style={styles.selectionSub}>-{selectedSize}</Text>
           </Text>
           <View style={styles.sizeRow}>
             {uniqueSizes.map((size) => (
@@ -165,7 +167,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
         </View>
 
         <View style={styles.matchSection}>
-          <Text style={styles.matchTitle}>This item match your wardrobe</Text>
+          <Text style={styles.matchTitle}>{t('matchingDetail.thisItemMatch')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.matchList}>
             <View style={styles.matchCard}>
               <View style={styles.percentBadge}>
@@ -184,7 +186,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
       <View style={styles.bottomFixedContainer}>
         <TouchableOpacity style={styles.generateButton} onPress={() => navigation.goBack()}>
           <MaterialCommunityIcons name="auto-fix" size={20} color="#FFF" />
-          <Text style={styles.generateButtonText}>Try On This Item</Text>
+          <Text style={styles.generateButtonText}>{t('matchingDetail.tryOnItem')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

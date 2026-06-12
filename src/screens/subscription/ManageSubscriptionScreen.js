@@ -7,7 +7,6 @@ import {
   Platform,
   StatusBar,
   SafeAreaView,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,6 +15,7 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import BenefitsList from "../../components/subscription/BenefitsList";
 import CancelSubscriptionModal from "../../components/subscription/CancelSubscriptionModal";
+import CancellationSuccessModal from "../../components/subscription/CancellationSuccessModal";
 import * as paymentService from "../../api/payment_services/paymentService";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
@@ -33,6 +33,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
 
   useEffect(() => {
     fetchSubscription();
@@ -122,9 +123,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
     try {
       await paymentService.cancelSubscription(user._id);
       setModalVisible(false);
-      Alert.alert("Cancelled", "Your subscription has been cancelled.", [
-        { text: "OK", onPress: () => navigation.navigate(ROUTES.SUBSCRIPTION) },
-      ]);
+      setSuccessVisible(true);
     } catch (err) {
       const message =
         err.response?.data?.message || "Failed to cancel subscription.";
@@ -198,7 +197,11 @@ export default function ManageSubscriptionScreen({ navigation }) {
         </View>
 
         <View style={styles.benefitsSection}>
-          <BenefitsList title="Your benefits" items={BENEFITS} iconColor={Colors.disabled} />
+          <BenefitsList
+            title="Your benefits"
+            items={BENEFITS}
+            iconColor={Colors.disabled}
+          />
         </View>
 
         <View style={styles.cancelWrap}>
@@ -212,12 +215,20 @@ export default function ManageSubscriptionScreen({ navigation }) {
 
       <CancelSubscriptionModal
         visible={modalVisible}
-        keepLabel="keep subscription"
-        confirmLabel="confirm cancellation"
+        keepLabel="Keep Subscription"
+        confirmLabel="Confirm Cancellation"
         onKeep={() => setModalVisible(false)}
         onConfirm={handleCancelConfirm}
         loading={cancelling}
         endDate={subscription.subscriptionEndDate}
+      />
+
+      <CancellationSuccessModal
+        visible={successVisible}
+        onClose={() => {
+          setSuccessVisible(false);
+          navigation.navigate(ROUTES.SUBSCRIPTION);
+        }}
       />
     </SafeAreaView>
   );

@@ -10,6 +10,8 @@ const CustomizeAppButtonOutlined = ({
   loading = false,
   disabled = false,
   icon,
+  buttonHeight,
+  labelStyle,
 }) => {
   const isDisabled = disabled || loading;
   const resolvedBorder = borderColor ?? Colors.success;
@@ -21,6 +23,7 @@ const CustomizeAppButtonOutlined = ({
         styles.button,
         { borderColor: resolvedBorder },
         isDisabled && styles.disabledOpacity,
+        buttonHeight && { height: buttonHeight },
       ]}
       onPress={onPress}
       disabled={isDisabled}
@@ -30,7 +33,7 @@ const CustomizeAppButtonOutlined = ({
         <ActivityIndicator color={resolvedText} />
       ) : (
         <View style={styles.inner}>
-          <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
+          <Text style={[styles.label, { color: resolvedText }, labelStyle]}>{label}</Text>
           {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
         </View>
       )}

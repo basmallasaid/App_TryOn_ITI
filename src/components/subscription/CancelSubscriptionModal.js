@@ -1,8 +1,10 @@
 import React from "react";
-import { Modal, View, Text, StyleSheet } from "react-native";
+import { Modal, View, Text, StyleSheet, Dimensions } from "react-native";
 import Colors from "../../constants/theme/colors";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 import CustomizeAppButtonOutlined from "../common/CustomizeAppButtonOutlined";
+
+const { width: screenWidth } = Dimensions.get("window");
 
 export default function CancelSubscriptionModal({
   visible,
@@ -25,20 +27,25 @@ export default function CancelSubscriptionModal({
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.container}>
-          <Text style={styles.title}>Cancel your Subscription?</Text>
+          <View style={styles.contentWrap}>
+            <Text style={styles.title}>Cancel your Subscription?</Text>
 
-          <Text style={styles.body}>
-            You'll keep access to pro plan features until {formattedEndDate}.
-            After that, your account will return to the Essential plan.
-          </Text>
+            <Text style={styles.body}>
+              You'll keep access to pro plan features until{" "}
+              <Text style={styles.bodyBold}>{formattedEndDate}</Text>.
+              After that, your account will return to the Essential plan.
+            </Text>
+          </View>
 
-          <View style={styles.footer}>
+          <View style={styles.buttonRow}>
             <View style={{ flex: 1 }}>
               <CustomizeAppButtonOutlined
                 label={keepLabel || "keep subscription"}
                 onPress={onKeep}
                 borderColor={Colors.success}
                 textColor={Colors.success}
+                buttonHeight={56}
+                labelStyle={{ lineHeight: 20 }}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -47,6 +54,8 @@ export default function CancelSubscriptionModal({
                 onPress={onConfirm}
                 backgroundColor={Colors.error}
                 loading={loading}
+                buttonHeight={56}
+                labelStyle={{ lineHeight: 20 }}
               />
             </View>
           </View>
@@ -64,32 +73,44 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    width: 343,
-    padding: 20,
+    width: Math.min(343, screenWidth - 32),
     backgroundColor: Colors.white,
-    borderRadius: 16,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.borderStrong,
-    gap: 16,
-    alignItems: "center",
+    paddingTop: 24,
+    paddingHorizontal: 16,
+    gap: 0,
+  },
+  contentWrap: {
+    gap: 12,
+    paddingBottom: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderStrong,
   },
   title: {
-    fontFamily: "Roboto_600SemiBold",
-    fontSize: 18,
+    fontFamily: "Roboto_700Bold",
+    fontSize: 20,
+    lineHeight: 26,
     textAlign: "center",
     color: Colors.textPrimary,
   },
   body: {
     fontFamily: "Roboto_400Regular",
-    fontSize: 13,
+    fontSize: 14,
+    lineHeight: 22,
     textAlign: "center",
     color: Colors.textSecondary,
-    lineHeight: 18,
   },
-  footer: {
+  bodyBold: {
+    fontFamily: "Roboto_600SemiBold",
+    color: Colors.textPrimary,
+  },
+  buttonRow: {
     flexDirection: "row",
+    justifyContent: "space-between",
     gap: 12,
-    width: "100%",
-    marginTop: 4,
+    paddingTop: 24,
+    paddingBottom: 24,
   },
 });

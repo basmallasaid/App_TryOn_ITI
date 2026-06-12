@@ -10,6 +10,8 @@ const CustomizeAppButtonFilled = ({
   loading = false,
   disabled = false,
   icon,
+  buttonHeight,
+  labelStyle,
 }) => {
   const isDisabled = disabled || loading;
 
@@ -30,6 +32,7 @@ const CustomizeAppButtonFilled = ({
         { backgroundColor: resolvedBg },
         outlined && styles.outlined,
         isDisabled && styles.disabledOpacity,
+        buttonHeight && { height: buttonHeight },
       ]}
       onPress={onPress}
       disabled={isDisabled}
@@ -40,7 +43,7 @@ const CustomizeAppButtonFilled = ({
       ) : (
         <View style={styles.inner}>
           {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
-          <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
+          <Text style={[styles.label, { color: resolvedText }, labelStyle]}>{label}</Text>
         </View>
       )}
     </TouchableOpacity>

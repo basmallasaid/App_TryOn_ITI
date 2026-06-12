@@ -16,6 +16,7 @@ import CustomizeAppButtonOutlined from "../../../components/common/CustomizeAppB
 import Colors from '../../../constants/theme/colors';
 import Typography  from '../../../constants/theme/typography';
 import { ANIMATIONS } from "../../../constants/images/animations";
+import { ROUTES } from "../../../navigation/routes";
 
 const CheckEmailScreen = ({ route, navigation }) => {
   const { t } = useTranslation();
@@ -95,7 +96,7 @@ const CheckEmailScreen = ({ route, navigation }) => {
         {/* Back to login link */}
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate('Login', {
+            navigation.navigate(ROUTES.LOGIN, {
               message: t('auth.checkEmail.navMessage', { email }),
             })
           }

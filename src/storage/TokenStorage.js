@@ -31,3 +31,24 @@ export const setLanguageSeen = () =>
 export const saveUserId = (id) => SecureStore.setItemAsync(USER_ID_KEY, id);
 export const getUserId  = ()   => SecureStore.getItemAsync(USER_ID_KEY);
 export const clearUserId = ()  => SecureStore.deleteItemAsync(USER_ID_KEY);
+
+const DAILY_OUTFIT_DATE_KEY = 'daily_outfit_date';
+const DAILY_OUTFIT_DATA_KEY = 'daily_outfit_data';
+
+export const setDailyOutfitDate = (date) =>
+  SecureStore.setItemAsync(DAILY_OUTFIT_DATE_KEY, date);
+
+export const getDailyOutfitDate = () =>
+  SecureStore.getItemAsync(DAILY_OUTFIT_DATE_KEY);
+
+export const setDailyOutfitData = (data) =>
+  SecureStore.setItemAsync(DAILY_OUTFIT_DATA_KEY, JSON.stringify(data));
+
+export const getDailyOutfitData = async () => {
+  const raw = await SecureStore.getItemAsync(DAILY_OUTFIT_DATA_KEY);
+  return raw ? JSON.parse(raw) : null;
+};
+
+export const clearDailyOutfit = () =>
+  SecureStore.deleteItemAsync(DAILY_OUTFIT_DATE_KEY)
+    .then(() => SecureStore.deleteItemAsync(DAILY_OUTFIT_DATA_KEY));

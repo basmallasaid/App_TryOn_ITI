@@ -18,6 +18,7 @@ import { IMAGES } from "../../../constants/images/images";
 import { ICONS } from "../../../constants/images/icons";
 import EnrichTextComponent from "../../../components/common/EnrichTextComponent";
 import BottomSheetLayout from "../../../components/authentication/BottomSheetLayout";
+import { ROUTES } from "../../../navigation/routes";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -116,7 +117,7 @@ const LoginScreen = ({ route, navigation }) => {
           state={passwordState}
         />
         <TouchableOpacity
-          onPress={() => navigation.navigate("ForgotPassword")}
+          onPress={() => navigation.navigate(ROUTES.FORGOT_PASSWORD)}
           style={styles.forgotWrap}
         >
           <Text style={styles.forgotText}>{t('auth.login.forgotPassword')}</Text>
@@ -157,7 +158,7 @@ const LoginScreen = ({ route, navigation }) => {
       <EnrichTextComponent
         baseText={t('auth.login.noAccount')}
         linkText={t('auth.login.signupNow')}
-        onPress={() => navigation.navigate("Register")}
+        onPress={() => navigation.navigate(ROUTES.REGISTER)}
       />
     </BottomSheetLayout>
   );

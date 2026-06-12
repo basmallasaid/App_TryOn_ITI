@@ -16,6 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { File, Directory, Paths } from 'expo-file-system';
 import { saveLatestTryon } from '../../api/user_services/userService';
 import { virtualTryOn } from '../../api/virtual_tryon_services/virtualTryonService';
+import { ROUTES, SOURCE } from '../../navigation/routes';
 
 const { width } = Dimensions.get('window');
 
@@ -156,9 +157,9 @@ const TryOnResult = ({ navigation, route }) => {
           style={styles.tryAgainButton}
           onPress={() => {
             if (isStoreFlow) {
-              navigation.navigate("SelectModel", { productImage });
+              navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { productImage, source: SOURCE.STORE } });
             } else {
-              navigation.navigate("SelectModel");
+              navigation.navigate(ROUTES.SELECT_MODEL);
             }
           }}
         >

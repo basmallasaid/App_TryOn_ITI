@@ -104,9 +104,18 @@
   },
   "onboarding": {
     "slides": [
-      { "title": "Discover Your Style", "subtitle": "Get personalized outfit ideas that match your unique vibe." },
-      { "title": "Try Before You Buy", "subtitle": "See how clothes look on you with realistic AI try-on." },
-      { "title": "Your Smart Wardrobe", "subtitle": "Organize, mix & match your looks all in one place." }
+      {
+        "title": "Discover Your Style",
+        "subtitle": "Get personalized outfit ideas that match your unique vibe."
+      },
+      {
+        "title": "Try Before You Buy",
+        "subtitle": "See how clothes look on you with realistic AI try-on."
+      },
+      {
+        "title": "Your Smart Wardrobe",
+        "subtitle": "Organize, mix & match your looks all in one place."
+      }
     ],
     "next": "Next",
     "skip": "Skip",
@@ -136,6 +145,7 @@
     "whatToDo": "What would you Like to do ?",
     "todaysPicks": "Today's picks for you",
     "recentTryOns": "recent try-ons",
+    "recentRecycles": "recent recycles",
     "viewAll": "view all",
     "hero": {
       "title": "Your style, intelligently yours.",
@@ -145,14 +155,17 @@
       "title": "Smart casual",
       "subtitle": "Clean, comfortable and perfect for your day",
       "location": "Cairo",
-      "viewOutfit": "View outfit"
+      "viewOutfit": "View outfit",
+      "generate": "Generate outfit",
+      "noOutfit": "No outfit yet",
+      "score": "Score:"
     },
     "actions": {
       "tryOn": "Try-on",
       "tryOnSub": "see how clothes look on you",
       "recycle": "Recycle",
       "recycleSub": "Give clothes another life",
-      "generateOutfit": "Generate outfit",
+      "generateOutfit": "Explore outfit",
       "generateOutfitSub": "personalized style suggestions",
       "matching": "Matching",
       "matchingSub": "Find the perfect match for your clothes"
@@ -165,6 +178,7 @@
     "credits": "Your Credits",
     "creditsAmount": "EGP 0.00",
     "wishlist": "Wishlist",
+    "wishlistCount": "{{count}} saved items",
     "wishlistEmpty": "0 saved items",
     "styleIdentity": "Style Identity",
     "customize": "Customize",
@@ -303,6 +317,27 @@
     "alreadySaved": "Already Saved",
     "alreadySavedMessage": "This design is already in your collection."
   },
+  "favorites": {
+    "title": "Favorites",
+    "emptyTitle": "Your favorites are lonely.",
+    "emptySubtitle": "Start exploring our curated collections to build your digital favorite screen.",
+    "categories": {
+      "all": "All",
+      "wardrobe": "Wardrobe",
+      "store": "Store",
+      "try on": "Try On",
+      "recycle": "Recycle"
+    },
+    "noItemsInCategory": "No items in this category"
+  },
+  "recommendation": {
+    "todaysRecommendation": "Today's recommendation",
+    "lastRecommendations": "Our last recommendations",
+    "outfitDetails": "Outfit Details",
+    "emptyHistory": "No recommendations yet",
+    "noOutfitTitle": "No outfit available",
+    "noOutfitSubtitle": "Generate a personalized outfit to see it here"
+  },
   "editProfile": {
     "title": "Edit Profile",
     "email": "Email",
@@ -316,5 +351,11 @@
     "save": "Save",
     "success": "Profile updated successfully.",
     "failed": "Update failed. Try again."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "emptyTitle": "No notifications yet",
+    "emptySubtitle": "You're all caught up! We'll notify you when something arrives."
   }
 }

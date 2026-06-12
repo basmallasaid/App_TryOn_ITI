@@ -7,19 +7,21 @@ import ResetPasswordScreen from "../screens/authentication/reset_password/ResetP
 import CheckEmailScreen from "../screens/authentication/check_email/CheckEmailScreen";
 import OnboardingScreen from "../screens/onboarding/OnboardingScreen";
 import SelectLanguageScreen from "../screens/language/SelectLanguageScreen";
+import { ROUTES } from './routes';
+
 const Stack = createNativeStackNavigator();
 
 export default function AuthStack({ initialRoute }) {
   return (
     <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="SelectLanguage" component={SelectLanguageScreen} />
-      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={SignUpScreen} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-      <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} />
-      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
-      <Stack.Screen name="CheckEmail" component={CheckEmailScreen} />
+      <Stack.Screen name={ROUTES.SELECT_LANGUAGE} component={SelectLanguageScreen} />
+      <Stack.Screen name={ROUTES.ONBOARDING} component={OnboardingScreen} />
+      <Stack.Screen name={ROUTES.LOGIN} component={LoginScreen} />
+      <Stack.Screen name={ROUTES.REGISTER} component={SignUpScreen} />
+      <Stack.Screen name={ROUTES.FORGOT_PASSWORD} component={ForgotPasswordScreen} />
+      <Stack.Screen name={ROUTES.VERIFY_OTP} component={VerifyOtpScreen} />
+      <Stack.Screen name={ROUTES.RESET_PASSWORD} component={ResetPasswordScreen} />
+      <Stack.Screen name={ROUTES.CHECK_EMAIL} component={CheckEmailScreen} />
     </Stack.Navigator>
   );
 }

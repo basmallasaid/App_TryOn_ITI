@@ -20,6 +20,7 @@ import {
 import { useWardrobe } from "../../context/WardrobeContext";
 import Colors from "../../constants/theme/colors";
 
+import { ROUTES, SOURCE } from "../../navigation/routes";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import SelectionChip from "../../components/wardrobe/SelectionChip";
@@ -28,7 +29,7 @@ import DeleteConfirmationModal from "../../components/common/DeleteConfirmationM
 
 const CATEGORIES = ["Basic", "Bottom", "Top", "Dress", "Suit", "Bag", "Shoes", "Jacket", "Accessories"];
 const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
-const STYLES = ["Casual", "Basic", "Formal"];
+const STYLES = ["Casual", "Basic", "Formal","Mart-Casual"];
 
 const ItemDetailsScreen = ({ route, navigation }) => {
   const { itemId, analysisId } = route.params;
@@ -131,7 +132,12 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   const garment = itemData?.garments?.[0] || {};
   const primaryColorName = garment.colors?.[0]?.color || "white";
   const normalize = (v) =>
-    v ? v.charAt(0).toUpperCase() + v.slice(1).toLowerCase() : "";
+    v
+      ? v
+          .split("-")
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+          .join("-")
+      : "";
 
   return (
     <SafeAreaView style={styles.root}>
@@ -162,7 +168,18 @@ const ItemDetailsScreen = ({ route, navigation }) => {
                 />
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() =>
+              navigation.navigate(ROUTES.TRY_ON, {
+                screen: ROUTES.SELECT_MODEL,
+                params: {
+                  source: SOURCE.WARDROBE,
+                  itemId,
+                  itemType: garment.category || garment.specificType,
+                  productImage: itemData?.image,
+                  productName: garment.specificType || garment.category || "Garment",
+                },
+              })
+            }>
               <View style={styles.iconCircle}>
                 <Ionicons name="sparkles" size={18} color={Colors.white} />
               </View>
@@ -219,7 +236,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
               <SelectionChip
                 key={st}
                 label={st}
-                isSelected={normalize(selectedStyle) === st}
+                isSelected={selectedStyle?.toLowerCase() === st.toLowerCase()}
                 onPress={() => toggleStyle(st)}
               />
             ))}

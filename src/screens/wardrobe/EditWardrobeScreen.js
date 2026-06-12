@@ -6,8 +6,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  SafeAreaView,
   Platform,
   StatusBar,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useWardrobe } from "../../context/WardrobeContext";
@@ -18,7 +20,14 @@ import CategoryChip from "../../components/wardrobe/CategoryChip";
 import WardrobeItemCard from "../../components/wardrobe/WardrobeItemCard";
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
 import { getCategoriesByGender } from "../../constants/wardrobe/wardrobeCategories";
+import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const CARD_WIDTH = 175;
+const GAP = 15;
+const TOTAL_GRID_WIDTH = CARD_WIDTH * 2 + GAP;
+const HORIZONTAL_PADDING = (SCREEN_WIDTH - TOTAL_GRID_WIDTH) / 2;
 
 const EditWardrobeScreen = ({ navigation, route }) => {
   const { initialSelectedId } = route.params || {};
@@ -56,7 +65,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
       // Update local context
       selectedIds.forEach((id) => removeItem(id));
       setModalVisible(false);
-      navigation.navigate("WardrobeMain");
+      navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (error) {
       console.error("Delete failed", error);
     } finally {
@@ -65,7 +74,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.root}>
+    <SafeAreaView style={styles.root}>
       {/* Header */}
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
@@ -135,7 +144,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
         onClose={() => setModalVisible(false)}
         onConfirm={handleDelete}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -160,7 +169,7 @@ const styles = StyleSheet.create({
   },
   categoryBar: { paddingVertical: 25 },
   categoryScroll: { paddingHorizontal: 16, gap: 8 },
-  row: { paddingHorizontal: 16, justifyContent: "space-between" },
+  row: { paddingHorizontal: Math.max(16, HORIZONTAL_PADDING), gap: GAP },
   listContent: { paddingBottom: 30 },
   cardContainer: { position: "relative" },
   overlay: {

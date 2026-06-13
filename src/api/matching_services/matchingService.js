@@ -27,12 +27,17 @@ export const analyzeImage = async (imageUri) => {
   return data;
 };
 
-export const getMatchesByAnalysis = async (analysisId, lat, lon) => {
-  const body = {};
-  if (lat !== undefined && lon !== undefined) {
-    body.lat = lat;
-    body.lon = lon;
-  }
-  const { data } = await apiClient.post(`${ENDPOINTS.MATCHES_ANALYSIS}/${analysisId}`, body);
+export const getMatchesByAnalysis = async (productId) => {
+  const { data } = await apiClient.post(`${ENDPOINTS.MATCHES_ANALYSIS}/${productId}`);
   return data;
+};
+
+export const checkProductMatches = async (productId) => {
+  try {
+    const data = await getMatchesByAnalysis(productId);
+    const matches = data?.matches || data?.data?.matches || (Array.isArray(data) ? data : []);
+    return matches.length > 0;
+  } catch {
+    return false;
+  }
 };

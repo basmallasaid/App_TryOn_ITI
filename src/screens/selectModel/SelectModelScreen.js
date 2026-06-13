@@ -21,9 +21,10 @@ import { IMAGES } from "../../constants/images/images";
 import { useAuth } from "../../context/AuthContext";
 import { getUserProfile } from "../../api/user_services/userService";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
+import * as paymentService from "../../api/payment_services/paymentService";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 
-const PhotoPlaceholder = () => {
+const PhotoPlaceholder = ({ photoStyles }) => {
   const { t } = useTranslation();
   return (
     <View style={photoStyles.container}>
@@ -34,34 +35,6 @@ const PhotoPlaceholder = () => {
     </View>
   );
 };
-
-const photoStyles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.backgroundColor,
-    borderRadius: 16,
-    padding: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 100,
-    height: 130,
-  },
-  circle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: Colors.white,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  label: {
-    fontSize: 10,
-    color: Colors.textMuted,
-    fontWeight: "500",
-    fontFamily: "Roboto_500Medium",
-    textAlign: "center",
-  },
-});
 
 const SelectModelScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
@@ -94,6 +67,12 @@ const SelectModelScreen = ({ navigation, route }) => {
     if (selected === "avatar") {
       setLoading(true);
       try {
+        const subData = await paymentService.syncSubscription(user._id);
+        const isSubscribed = subData?.subscriptionStatus === "active";
+        if (!isSubscribed) {
+          navigation.navigate(ROUTES.SUBSCRIPTION);
+          return;
+        }
         const profile = await getUserProfile(user._id);
         const avatars = profile?.avatars;
         if (avatars && avatars.length > 0) {

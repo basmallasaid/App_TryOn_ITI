@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import { translateProduct } from '../../utils/dynamicTranslator';
+import { checkProductMatches } from '../../api/matching_services/matchingService';
 import i18n from '../../localization/i18n';
 
 export default function StoreScreen() {
@@ -22,16 +23,19 @@ export default function StoreScreen() {
     const { themeVersion } = useTheme();
     const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
-    const mapProductToCard = (product) => ({
-        id: product._id,
-        name: product.name,
-        brand: product.store_id?.name || 'Store',
-        price: `${product.price} ${product.currency || t("store.currency")}`,
-        image: product.images?.[0],
-        badge: product.try_on_enabled ? 'Match' : product.is_active ? '' : 'Inactive',
-        badgeColor: product.try_on_enabled ? '#8ED321' : Colors.iconGray,
-        isOutlined: product.try_on_enabled,
-    });
+    const mapProductToCard = (product) => {
+        const hasMatches = productMatches[product._id] ?? product.try_on_enabled;
+        return {
+            id: product._id,
+            name: product.name,
+            brand: product.store_id?.name || 'Store',
+            price: `${product.price} ${product.currency || t("store.currency")}`,
+            image: product.images?.[0],
+            badge: hasMatches ? 'Match' : '',
+            badgeColor: '#8ED321',
+            isOutlined: hasMatches,
+        };
+    };
 
     const getCategoryIcon = (category) => {
         switch (category) {
@@ -75,6 +79,7 @@ export default function StoreScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [filterVisible, setFilterVisible] = useState(false);
+    const [productMatches, setProductMatches] = useState({});
     const [filterValues, setFilterValues] = useState({
         brands: [],
         seasons: [],
@@ -120,8 +125,18 @@ export default function StoreScreen() {
                 }
                 
                 setAllProducts(products);
+
+                // Check matches for all products in parallel
+                const results = await Promise.allSettled(
+                    products.map(p => checkProductMatches(p._id))
+                );
+                const matchMap = {};
+                products.forEach((p, i) => {
+                    matchMap[p._id] = results[i].status === 'fulfilled' && results[i].value;
+                });
+                setProductMatches(matchMap);
             } catch (err) {
-                setError(t('store.error'));
+                setError(t('store.loadError'));
             } finally {
                 setLoading(false);
             }
@@ -169,7 +184,7 @@ export default function StoreScreen() {
                 return priceValue <= filterValues.price;
             })
             .map(mapProductToCard);
-    }, [allProducts, searchQuery, selectedCategory, filterValues]);
+    }, [allProducts, searchQuery, selectedCategory, filterValues, productMatches]);
 
     if (loading) {
         return (

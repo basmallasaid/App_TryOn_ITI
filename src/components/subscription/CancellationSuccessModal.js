@@ -3,12 +3,14 @@ import { Modal, View, Text, Animated, Pressable, StyleSheet, Dimensions } from "
 import { useTranslation } from "react-i18next";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 
 const { width } = Dimensions.get("window");
 
 export default function CancellationSuccessModal({ visible, onClose }) {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const scaleAnim = useRef(new Animated.Value(0.6)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -32,6 +34,57 @@ export default function CancellationSuccessModal({ visible, onClose }) {
       fadeAnim.setValue(0);
     }
   }, [visible]);
+
+  const styles = React.useMemo(
+  () =>
+    StyleSheet.create({
+      overlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.55)",
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      container: {
+        width: Math.min(343, width - 48),
+        paddingVertical: 32,
+        paddingHorizontal: 24,
+        backgroundColor: Colors.white,
+        borderRadius: 20,
+        gap: 16,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 24,
+        elevation: 12,
+      },
+      iconWrap: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: "#E8F5D0",
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      title: {
+        fontFamily: "Roboto_700Bold",
+        fontSize: 20,
+        lineHeight: 26,
+        color: Colors.textPrimary,
+        textAlign: "center",
+      },
+      body: {
+        fontFamily: "Roboto_400Regular",
+        fontSize: 14,
+        lineHeight: 20,
+        color: Colors.textSecondary,
+        textAlign: "center",
+        paddingHorizontal: 4,
+      },
+    }),
+  [themeVersion],
+);
+
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -65,49 +118,3 @@ export default function CancellationSuccessModal({ visible, onClose }) {
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.55)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    width: Math.min(343, width - 48),
-    paddingVertical: 32,
-    paddingHorizontal: 24,
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    gap: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
-    elevation: 12,
-  },
-  iconWrap: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#E8F5D0",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontFamily: "Roboto_700Bold",
-    fontSize: 20,
-    lineHeight: 26,
-    color: Colors.textPrimary,
-    textAlign: "center",
-  },
-  body: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 14,
-    lineHeight: 20,
-    color: Colors.textSecondary,
-    textAlign: "center",
-    paddingHorizontal: 4,
-  },
-});

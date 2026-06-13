@@ -126,7 +126,7 @@ const styles = React.useMemo(() => StyleSheet.create({
           <View style={[styles.infoItem, { flexDirection: 'row' }]}>
             <MaterialCommunityIcons name={weatherIcon} size={22} color="#FF8A3D" />
             <Text style={[styles.infoText, { marginLeft: 5, marginRight: 0 }]}>
-              {temp != null ? `${temp}°C` : "24° c"}
+              {temp != null ? t('home.outfitCard.temperature', { temp }) : t('home.outfitCard.temperatureFallback')}
             </Text>
           </View>
 

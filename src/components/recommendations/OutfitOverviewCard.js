@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
 
 export default function OutfitOverviewCard({ outfit, onPress, width, height, borderRadius, borderColor, labelFontSize }) {
+  const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const [imageError, setImageError] = useState(false);
   const items = getItemsList(outfit);
@@ -73,7 +75,7 @@ const styles = React.useMemo(() => StyleSheet.create({
           style={[styles.overlay, { borderRadius }]}
         >
           <Text style={[styles.label, labelFontSize ? { fontSize: labelFontSize } : undefined]} numberOfLines={2}>
-            {label || "No items available"}
+            {label || t('recommendation.noItemsAvailable')}
           </Text>
         </LinearGradient>
       </View>

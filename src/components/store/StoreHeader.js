@@ -2,16 +2,29 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-
-// Minimal local Colors fallback to avoid undefined references.
-const Colors = {
-  textPrimary: '#1A1C24',
-  textMuted: '#6B6B6B',
-  borderDefault: '#E0E0E0',
-};
+import { useTheme } from '../../context/ThemeContext';
+import Colors from '../../constants/theme/colors';
 
 export const StoreHeader = ({ onFilterPress }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => StyleSheet.create({
+    headerContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: 20,
+    },
+    textContainer: { flex: 1 },
+    title: { fontSize: 28, fontWeight: 'bold', color: Colors.textPrimary },
+    subtitle: { color: Colors.textMuted, fontSize: 13, marginTop: 12 },
+    filterBtn: {
+      borderWidth: 1,
+      borderColor: Colors.borderDefault,
+      padding: 10,
+      borderRadius: 12,
+    },
+  }), [themeVersion]);
   return (
     <View style={styles.headerContainer}>
       <View style={styles.textContainer}>
@@ -24,22 +37,4 @@ export const StoreHeader = ({ onFilterPress }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 20,
-  },
-  textContainer: { flex: 1 },
-  title: { fontSize: 28, fontWeight: 'bold', color: Colors.textPrimary },
-  subtitle: { color: Colors.textMuted, fontSize: 13, marginTop: 12 },
-  filterBtn: {
-    borderWidth: 1,
-    borderColor: Colors.borderDefault,
-    padding: 10,
-    borderRadius: 12,
-  },
-});
 

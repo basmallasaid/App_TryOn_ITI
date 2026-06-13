@@ -7,6 +7,7 @@ import {
   FlatList,
   Dimensions,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 import { IMAGES } from '../../constants/images/images';
@@ -15,24 +16,24 @@ const { width } = Dimensions.get('window');
 const CONTAINER_PADDING = 20;
 const SLIDE_WIDTH = width - (CONTAINER_PADDING * 2);
 
-const BANNERS = [
-  {
-    id: '1',
-    title: 'Summer\nEssentials ✨',
-    subtitle: 'Up to 30% off on curated\npicks just for you.',
-    image: IMAGES.Store,
-  },
-  {
-    id: '2',
-    title: 'New\nCollection ✨',
-    subtitle: 'Discover the latest trends\nfor this season.',
-    image: IMAGES.PICK,
-  },
-];
-
 export const PromoBanner = () => {
+  const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
+  const BANNERS = [
+    {
+      id: '1',
+      title: t('store.promoBanner.summerEssentials'),
+      subtitle: t('store.promoBanner.summerSubtitle'),
+      image: IMAGES.Store,
+    },
+    {
+      id: '2',
+      title: t('store.promoBanner.newCollection'),
+      subtitle: t('store.promoBanner.newCollectionSubtitle'),
+      image: IMAGES.PICK,
+    },
+  ];
   const onViewRef = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
       setActiveIndex(viewableItems[0].index || 0);

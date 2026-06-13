@@ -23,7 +23,7 @@ export const ENDPOINTS = {
   WARDROBE: '/wardrobe',
   GET_PRODUCT: '/products/${id}',
   MATCHES: '/matches',
-  MATCHES_ANALYSIS: '/matches/analysis',
+  MATCHES_ANALYSIS: '/matches/product',
   REGISTER_PUSH_TOKEN: '/notifications/register',
   GET_NOTIFICATIONS: '/notifications',
   MARK_NOTIFICATION_READ: '/notifications/${id}/read',

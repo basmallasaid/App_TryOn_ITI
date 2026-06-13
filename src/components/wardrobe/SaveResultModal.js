@@ -2,10 +2,12 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 
 const SaveResultModal = ({ visible, success, message, onClose }) => {
+  const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => StyleSheet.create({
   overlay: {
@@ -88,12 +90,12 @@ const SaveResultModal = ({ visible, success, message, onClose }) => {
             />
           </View>
           <Text style={styles.title}>
-            {success ? 'Item Added!' : 'Something went wrong'}
+            {success ? t('wardrobe.saveResult.successTitle') : t('wardrobe.saveResult.errorTitle')}
           </Text>
           <Text style={styles.message}>
             {message || (success
-              ? 'Your item has been saved to your wardrobe successfully.'
-              : 'We couldn\'t save this item. Please try again.'
+              ? t('wardrobe.saveResult.successMessage')
+              : t('wardrobe.saveResult.errorMessage')
             )}
           </Text>
           <TouchableOpacity
@@ -101,7 +103,7 @@ const SaveResultModal = ({ visible, success, message, onClose }) => {
             onPress={onClose}
           >
             <Text style={styles.btnText}>
-              {success ? 'View Wardrobe' : 'Try Again'}
+              {success ? t('wardrobe.saveResult.viewWardrobe') : t('wardrobe.saveResult.tryAgain')}
             </Text>
           </TouchableOpacity>
         </View>

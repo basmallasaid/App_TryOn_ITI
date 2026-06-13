@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function StatusBox({ mode, garmentAnalysis }) {
+  const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const [expanded, setExpanded] = useState(false);
 
@@ -46,13 +48,13 @@ export default function StatusBox({ mode, garmentAnalysis }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
-        <Text style={styles.modeText}>{mode === "single_item" ? "Single item detected" : "Multiple items detected"}</Text>
+        <Text style={styles.modeText}>{mode === "single_item" ? t("recycle.singleItem") : t("recycle.multipleItems")}</Text>
       </View>
       <Text style={styles.analysisText} numberOfLines={expanded ? undefined : 4}>
         {garmentAnalysis}
       </Text>
       <TouchableOpacity onPress={() => setExpanded(!expanded)} hitSlop={{ top: 8, bottom: 8 }}>
-        <Text style={styles.seeMore}>{expanded ? "See Less" : "See More"}</Text>
+        <Text style={styles.seeMore}>{expanded ? t("recycle.seeLess") : t("recycle.seeMore")}</Text>
       </TouchableOpacity>
     </View>
   );

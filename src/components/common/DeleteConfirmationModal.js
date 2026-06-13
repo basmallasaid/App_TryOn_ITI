@@ -1,12 +1,14 @@
 import React from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 import CustomizeAppButtonFilled from '../common/CustomizeAppButtonFilled';
 import CustomizeAppButtonOutlined from '../common/CustomizeAppButtonOutlined';
 
 const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading, title, subtitle }) => {
+  const { t } = useTranslation();
   const { themeVersion } = useTheme();
 const styles = React.useMemo(() => StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
@@ -49,17 +51,17 @@ const styles = React.useMemo(() => StyleSheet.create({
           </View>
           
           <View style={styles.textContainer}>
-            <Text style={styles.title}>{title || 'Are you sure you want to delete the selected products?'}</Text>
-            <Text style={styles.subtitle}>{subtitle || 'This action cannot be undone.'}</Text>
+            <Text style={styles.title}>{title || t('common.deleteTitle')}</Text>
+            <Text style={styles.subtitle}>{subtitle || t('common.deleteDesc')}</Text>
           </View>
 
           <View style={[styles.footer, { flexDirection: 'row' }]}>
             <View style={{ flex: 1 }}>
-              <CustomizeAppButtonOutlined label="Cancel" onPress={onClose} />
+              <CustomizeAppButtonOutlined label={t('common.cancel')} onPress={onClose} />
             </View>
             <View style={{ flex: 1 }}>
               <CustomizeAppButtonFilled 
-                label="Delete" 
+                label={t('common.deleteBtn')} 
                 backgroundColor={Colors.error} 
                 onPress={onConfirm} 
                 loading={loading}

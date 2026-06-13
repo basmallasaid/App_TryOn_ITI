@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -26,8 +27,12 @@ const getCategoryIcon = (category) => {
   return null;
 };
 
-export const CategoryTabs = ({ categories = [{ id: 'all', name: 'All', icon: null, value: 'all' }], activeCategory = 'all', onCategoryChange }) => {
+export const CategoryTabs = ({ categories: categoriesProp, activeCategory = 'all', onCategoryChange }) => {
+  const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const allLabel = t('store.all');
+  const defaultCategories = [{ id: 'all', name: allLabel, icon: null, value: 'all' }];
+  const categories = categoriesProp || defaultCategories;
   const [active, setActive] = useState(activeCategory);
 
   useEffect(() => {

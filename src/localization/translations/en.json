@@ -396,7 +396,8 @@
     "noOutfitSubtitle": "Generate a personalized outfit to see it here",
     "subtitle": "Let's dress smart today.",
     "generatedDesign": "Generated Design",
-    "untitled": "Untitled"
+    "untitled": "Untitled",
+    "noItemsAvailable": "No items available"
   },
   "matching": {
     "title": "Matching",
@@ -445,6 +446,14 @@
     "editTitle": "Edit your wardrobe",
     "addNewItem": "Add New Item",
     "favoriteError": "Failed to update favorite",
+    "saveResult": {
+      "successTitle": "Item Added!",
+      "errorTitle": "Something went wrong",
+      "successMessage": "Your item has been saved to your wardrobe successfully.",
+      "errorMessage": "We couldn't save this item. Please try again.",
+      "viewWardrobe": "View Wardrobe",
+      "tryAgain": "Try Again"
+    },
     "all": "All",
     "shirt": "Shirt",
     "tShirt": "T-Shirt",
@@ -597,7 +606,9 @@
       "viewOutfit": "View outfit",
       "generate": "Generate outfit",
       "noOutfit": "No outfit yet",
-      "score": "Score:"
+      "score": "Score:",
+      "temperature": "{{temp}}°C",
+      "temperatureFallback": "24°C"
     },
     "actions": {
       "tryOn": "Try-on",

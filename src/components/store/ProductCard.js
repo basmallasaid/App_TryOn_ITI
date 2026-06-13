@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from "../../constants/theme/colors";
 import { useTranslation } from 'react-i18next';
+import { useTheme } from "../../context/ThemeContext";
 
 export const ProductCard = ({
   name,
@@ -58,11 +59,11 @@ export const ProductCard = ({
 
           {isOutlined ? (
             <TouchableOpacity style={styles.tryOnBtn} onPress={onTryOnPress}>
-              <Text style={styles.tryOnText}>{t('store.tryOn')}</Text>
+              <Text style={styles.tryOnText}>{t('store.productCard.tryOn')}</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity onPress={onTryOnPress}>
-              <Text style={styles.tryOnLink}>{t('store.tryOn')}</Text>
+              <Text style={styles.tryOnLink}>{t('store.productCard.tryOn')}</Text>
             </TouchableOpacity>
           )}
         </View>

@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, View, Text, Pressable, StyleSheet, Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 import CustomizeAppButtonOutlined from "../common/CustomizeAppButtonOutlined";
 
@@ -17,6 +18,56 @@ export default function CancelSubscriptionModal({
   endDate,
 }) {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    container: {
+      width: Math.min(343, screenWidth - 32),
+      backgroundColor: Colors.white,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: Colors.borderStrong,
+      paddingTop: 24,
+      paddingHorizontal: 16,
+      gap: 0,
+    },
+    contentWrap: {
+      gap: 12,
+      paddingBottom: 24,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.borderStrong,
+    },
+    title: {
+      fontFamily: "Roboto_700Bold",
+      fontSize: 20,
+      lineHeight: 26,
+      textAlign: "center",
+      color: Colors.textPrimary,
+    },
+    body: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 14,
+      lineHeight: 22,
+      textAlign: "center",
+      color: Colors.textSecondary,
+    },
+    bodyBold: {
+      fontFamily: "Roboto_600SemiBold",
+      color: Colors.textPrimary,
+    },
+    buttonRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      gap: 12,
+      paddingTop: 24,
+      paddingBottom: 24,
+    },
+  }), [themeVersion]);
   const formattedEndDate = endDate
     ? new Date(endDate).toLocaleDateString("en-US", {
         month: "short",
@@ -42,7 +93,7 @@ export default function CancelSubscriptionModal({
           <View style={styles.buttonRow}>
             <View style={{ flex: 1 }}>
               <CustomizeAppButtonOutlined
-                label={keepLabel || "keep subscription"}
+                label={keepLabel || t("subscription.keepSubscription")}
                 onPress={onKeep}
                 borderColor={Colors.success}
                 textColor={Colors.success}
@@ -52,7 +103,7 @@ export default function CancelSubscriptionModal({
             </View>
             <View style={{ flex: 1 }}>
               <CustomizeAppButtonFilled
-                label={confirmLabel || "confirm cancellation"}
+                label={confirmLabel || t("subscription.confirmCancellation")}
                 onPress={onConfirm}
                 backgroundColor={Colors.error}
                 loading={loading}
@@ -67,52 +118,4 @@ export default function CancelSubscriptionModal({
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    width: Math.min(343, screenWidth - 32),
-    backgroundColor: Colors.white,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.borderStrong,
-    paddingTop: 24,
-    paddingHorizontal: 16,
-    gap: 0,
-  },
-  contentWrap: {
-    gap: 12,
-    paddingBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderStrong,
-  },
-  title: {
-    fontFamily: "Roboto_700Bold",
-    fontSize: 20,
-    lineHeight: 26,
-    textAlign: "center",
-    color: Colors.textPrimary,
-  },
-  body: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 14,
-    lineHeight: 22,
-    textAlign: "center",
-    color: Colors.textSecondary,
-  },
-  bodyBold: {
-    fontFamily: "Roboto_600SemiBold",
-    color: Colors.textPrimary,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-    paddingTop: 24,
-    paddingBottom: 24,
-  },
-});
+

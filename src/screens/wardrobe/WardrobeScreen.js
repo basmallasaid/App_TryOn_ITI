@@ -21,6 +21,7 @@ import WardrobeItemCard from '../../components/wardrobe/WardrobeItemCard';
 import WardrobeEmptyState from '../../components/wardrobe/WardrobeEmptyState';
 import SelectionModal from '../../components/wardrobe/SelectionModal';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { useWardrobe } from '../../context/WardrobeContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -33,6 +34,8 @@ const GAP = 15;
 const TOTAL_GRID_WIDTH = CARD_WIDTH * 2 + GAP;
 const HORIZONTAL_PADDING = (SCREEN_WIDTH - TOTAL_GRID_WIDTH) / 2;
 const WardrobeScreen = ({ navigation }) => {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { items, loading, error, refetch } = useWardrobe();
   const { profile } = useProfileContext();
@@ -256,10 +259,12 @@ const WardrobeScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+export default WardrobeScreen;
+
+const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#F5F6F7',
+    backgroundColor: Colors.backgroundColor,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   centered: {
@@ -269,10 +274,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 30,
-    //alignSelf:"center"
   },
   headerContainer: {
-    backgroundColor: '#F5F6F7',
+    backgroundColor: Colors.backgroundColor,
   },
   section: {
     paddingHorizontal: 16,
@@ -295,7 +299,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     paddingVertical: 12,
-    backgroundColor: '#E5F2FF',
+    backgroundColor: Colors.backgroundColor,
     marginHorizontal: 16,
     borderRadius: 8,
     marginBottom: 10,
@@ -306,5 +310,3 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
 });
-
-export default WardrobeScreen;

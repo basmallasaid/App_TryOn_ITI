@@ -1,5 +1,7 @@
+import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 const CustomizeAppButtonFilled = ({
   label,
   onPress,
@@ -11,6 +13,7 @@ const CustomizeAppButtonFilled = ({
   icon,
   iconPosition = 'left',
 }) => {
+  const { themeVersion } = useTheme();
   const isDisabled = disabled || loading;
 
   const resolvedBg = isDisabled
@@ -23,32 +26,7 @@ const CustomizeAppButtonFilled = ({
     ? (textColor ?? Colors.textPrimary)
     : (textColor ?? Colors.white);
 
-  return (
-    <TouchableOpacity
-      style={[
-        styles.button,
-        { backgroundColor: resolvedBg },
-        outlined && styles.outlined,
-        isDisabled && styles.disabledOpacity,
-      ]}
-      onPress={onPress}
-      disabled={isDisabled}
-      activeOpacity={0.85}
-    >
-      {loading ? (
-        <ActivityIndicator color={resolvedText} />
-      ) : (
-        <View style={[styles.inner, { flexDirection: 'row' }]}>
-          {icon && iconPosition === 'left' ? <View style={styles.iconWrap}>{icon}</View> : null}
-          <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
-          {icon && iconPosition === 'right' ? <View style={styles.iconWrap}>{icon}</View> : null}
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-};
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   button: {
     width: '100%',
     height: 48,
@@ -83,6 +61,32 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical:5,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.button,
+        { backgroundColor: resolvedBg },
+        outlined && styles.outlined,
+        isDisabled && styles.disabledOpacity,
+      ]}
+      onPress={onPress}
+      disabled={isDisabled}
+      activeOpacity={0.85}
+    >
+      {loading ? (
+        <ActivityIndicator color={resolvedText} />
+      ) : (
+        <View style={[styles.inner, { flexDirection: 'row' }]}>
+          {icon && iconPosition === 'left' ? <View style={styles.iconWrap}>{icon}</View> : null}
+          <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
+          {icon && iconPosition === 'right' ? <View style={styles.iconWrap}>{icon}</View> : null}
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
 
 export default CustomizeAppButtonFilled;

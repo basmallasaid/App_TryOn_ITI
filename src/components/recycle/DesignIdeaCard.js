@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Svg, Rect, Defs, LinearGradient as SvgGradient, Stop } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const CARD_WIDTH = 260;
 const COLLAPSED_HEIGHT = 200;
@@ -11,8 +12,105 @@ const EXPANDED_HEIGHT = 340;
 const BORDER_RADIUS = 16;
 const BORDER_WIDTH = 2;
 
-function DashedGradientBorder({ children, height }) {
-  return (
+export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
+  const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const [expanded, setExpanded] = useState(false);
+  const cardNumber = String(index + 1).padStart(2, "0");
+
+  const displayTitle = idea.title;
+  const displayDescription = idea.design_description;
+
+  const cardHeight = expanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT;
+
+  const handleToggle = (e) => {
+    e.stopPropagation?.();
+    setExpanded(!expanded);
+  };
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    card: {
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: Colors.borderStrong,
+      backgroundColor: Colors.white,
+      padding: 14,
+      width: CARD_WIDTH,
+      marginRight: 12,
+      overflow: "hidden",
+    },
+    gradientBorderWrap: {
+      width: CARD_WIDTH,
+      marginRight: 12,
+    },
+    inner: {
+      position: "absolute",
+      top: BORDER_WIDTH,
+      left: BORDER_WIDTH,
+      right: BORDER_WIDTH,
+      borderRadius: BORDER_RADIUS - 1,
+      backgroundColor: Colors.white,
+      padding: 14,
+      overflow: "hidden",
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 10,
+    },
+    number: {
+      fontFamily: "Roboto_700Bold",
+      fontWeight: "700",
+      fontSize: 18,
+      color: Colors.primary,
+    },
+    checkBadge: {
+      width: 22,
+      height: 22,
+      borderRadius: 11,
+      backgroundColor: Colors.success,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    title: {
+      fontFamily: "Roboto_600SemiBold",
+      fontWeight: "600",
+      fontSize: 14,
+      color: Colors.textPrimary,
+      marginBottom: 6,
+    },
+    selectedTitle: {
+      color: Colors.primary,
+    },
+    description: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 11,
+      lineHeight: 16,
+      color: Colors.textMuted,
+    },
+    selectedDescription: {
+      color: Colors.textSecondary,
+    },
+    descScroll: {
+      flex: 1,
+    },
+    seeMoreBtn: {
+      marginTop: 4,
+      alignSelf: "flex-start",
+    },
+    seeMore: {
+      fontFamily: "Roboto_500Medium",
+      fontWeight: "500",
+      fontSize: 11,
+      color: Colors.primary,
+    },
+    selectedSeeMore: {
+      color: Colors.primary,
+    },
+  }), [themeVersion]);
+
+  const DashedGradientBorder = ({ children, height }) => (
     <View style={[styles.gradientBorderWrap, { height }]}>
       <Svg
         width={CARD_WIDTH}
@@ -44,22 +142,6 @@ function DashedGradientBorder({ children, height }) {
       </View>
     </View>
   );
-}
-
-export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
-  const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
-  const cardNumber = String(index + 1).padStart(2, "0");
-
-  const displayTitle = idea.title;
-  const displayDescription = idea.design_description;
-
-  const cardHeight = expanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT;
-
-  const handleToggle = (e) => {
-    e.stopPropagation?.();
-    setExpanded(!expanded);
-  };
 
   const cardContent = (
     <>
@@ -118,85 +200,3 @@ export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.borderStrong,
-    backgroundColor: Colors.white,
-    padding: 14,
-    width: CARD_WIDTH,
-    marginRight: 12,
-    overflow: "hidden",
-  },
-  gradientBorderWrap: {
-    width: CARD_WIDTH,
-    marginRight: 12,
-  },
-  inner: {
-    position: "absolute",
-    top: BORDER_WIDTH,
-    left: BORDER_WIDTH,
-    right: BORDER_WIDTH,
-    borderRadius: BORDER_RADIUS - 1,
-    backgroundColor: Colors.white,
-    padding: 14,
-    overflow: "hidden",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  number: {
-    fontFamily: "Roboto_700Bold",
-    fontWeight: "700",
-    fontSize: 18,
-    color: Colors.primary,
-  },
-  checkBadge: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: Colors.success,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontFamily: "Roboto_600SemiBold",
-    fontWeight: "600",
-    fontSize: 14,
-    color: Colors.textPrimary,
-    marginBottom: 6,
-  },
-  selectedTitle: {
-    color: Colors.primary,
-  },
-  description: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 11,
-    lineHeight: 16,
-    color: Colors.textMuted,
-  },
-  selectedDescription: {
-    color: Colors.textSecondary,
-  },
-  descScroll: {
-    flex: 1,
-  },
-  seeMoreBtn: {
-    marginTop: 4,
-    alignSelf: "flex-start",
-  },
-  seeMore: {
-    fontFamily: "Roboto_500Medium",
-    fontWeight: "500",
-    fontSize: 11,
-    color: Colors.primary,
-  },
-  selectedSeeMore: {
-    color: Colors.primary,
-  },
-});

@@ -4,44 +4,20 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 export default function TryOnCard({ imageUri, isFavorite, onToggleFavorite }) {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
 
-  return (
-    <View style={styles.card}>
-      <TouchableOpacity
-        style={styles.heartContainer}
-        onPress={onToggleFavorite}
-      >
-        <Ionicons
-          name={isFavorite ? "heart" : "heart-outline"}
-          size={24}
-          color={isFavorite ? Colors.error : Colors.textPrimary}
-        />
-      </TouchableOpacity>
-
-      <Image
-        source={imageUri ? { uri: imageUri } : IMAGES.TRY_ON}
-        style={styles.image}
-        resizeMode="contain"
-      />
-
-      <TouchableOpacity style={[styles.button, { flexDirection: 'row' }]} activeOpacity={0.8}>
-        <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   card: {
     width: 180, 
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 20,
     padding: 14,
     marginRight: 15,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: Colors.borderDefault,
     alignItems: 'center',
     // Shadow
     shadowColor: "#000",
@@ -70,10 +46,36 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: 'Roboto_600SemiBold',
-    color: 'white',
+    color: Colors.textInverse,
     fontSize: 14,
   },
   arrow: {
     marginTop:4,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <View style={styles.card}>
+      <TouchableOpacity
+        style={styles.heartContainer}
+        onPress={onToggleFavorite}
+      >
+        <Ionicons
+          name={isFavorite ? "heart" : "heart-outline"}
+          size={24}
+          color={isFavorite ? Colors.error : Colors.textPrimary}
+        />
+      </TouchableOpacity>
+
+      <Image
+        source={imageUri ? { uri: imageUri } : IMAGES.TRY_ON}
+        style={styles.image}
+        resizeMode="contain"
+      />
+
+      <TouchableOpacity style={[styles.button, { flexDirection: 'row' }]} activeOpacity={0.8}>
+        <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}

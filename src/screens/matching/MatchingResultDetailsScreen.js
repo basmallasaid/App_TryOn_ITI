@@ -16,6 +16,7 @@ import { Ionicons, AntDesign, MaterialCommunityIcons, Feather } from "@expo/vect
 import { useTranslation } from "react-i18next";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import { useFavorites } from "../../context/FavoritesContext";
 
 const { width } = Dimensions.get("window");
@@ -49,6 +50,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
   const score = match?.score || 0;
   const explanation = match?.explanation || "";
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const { isFavorite, addItem, removeItem } = useFavorites();
   const itemId = item?.id?.replace("store_", "");
 
@@ -76,6 +78,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
   }, [item]);
 
   const isStore = item?.source === "store";
+  const styles = useMemo(() => createStyles(), [themeVersion]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -90,7 +93,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
           {imageUri ? (
             <Image source={{ uri: imageUri }} style={styles.mainImage} resizeMode="contain" />
           ) : (
-            <MaterialCommunityIcons name="tshirt-crew-outline" size={80} color="#CBD5E0" />
+            <MaterialCommunityIcons name="tshirt-crew-outline" size={80} color={Colors.disabled} />
           )}
         </View>
 
@@ -121,7 +124,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
             <Ionicons
               name={isFavorite(itemId) ? "heart" : "heart-outline"}
               size={22}
-              color={isFavorite(itemId) ? "#FF8A3D" : "#3E4850"}
+              color={isFavorite(itemId) ? '#FF8A3D' : Colors.textPrimary}
             />
           </TouchableOpacity>
         </View>
@@ -189,7 +192,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
               {imageUri ? (
                 <Image source={{ uri: imageUri }} style={styles.matchImage} resizeMode="contain" />
               ) : (
-                <MaterialCommunityIcons name="tshirt-crew-outline" size={30} color="#CBD5E0" />
+                <MaterialCommunityIcons name="tshirt-crew-outline" size={30} color={Colors.disabled} />
               )}
             </View>
           </ScrollView>
@@ -198,7 +201,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
 
       <View style={styles.bottomFixedContainer}>
         <TouchableOpacity style={styles.generateButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="auto-fix" size={20} color="#FFF" />
+          <MaterialCommunityIcons name="auto-fix" size={20} color={Colors.white} />
           <Text style={styles.generateButtonText}>{t("matching.details.tryOnThisItem")}</Text>
         </TouchableOpacity>
       </View>
@@ -206,15 +209,15 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FB",
+    backgroundColor: Colors.backgroundColor,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   searchContainer: {
     padding: 15,
-    backgroundColor: "#F8F9FB",
+    backgroundColor: Colors.backgroundColor,
   },
   searchRow: {
     flexDirection: "row",
@@ -224,18 +227,18 @@ const styles = StyleSheet.create({
   searchBar: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: "#FFF",
+    backgroundColor: Colors.white,
     paddingHorizontal: 15,
     height: 45,
     borderRadius: 10,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#EFEFEF",
+    borderColor: Colors.borderDefault,
   },
   searchInput: { flex: 1, fontSize: 14 },
 
   imageCard: {
-    backgroundColor: "#FFF",
+    backgroundColor: Colors.white,
     marginHorizontal: 20,
     borderRadius: 15,
     height: 300,
@@ -257,14 +260,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   ratingBox: { flexDirection: "row", alignItems: "center", gap: 8 },
-  ratingText: { color: "#1A2530", fontWeight: "600" },
+  ratingText: { color: Colors.textPrimary, fontWeight: "600" },
   scoreBadge: {
     backgroundColor: "#A5E142",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
   },
-  scoreText: { color: "#FFF", fontSize: 12, fontWeight: "bold" },
+  scoreText: { color: Colors.textInverse, fontSize: 12, fontWeight: "bold" },
 
   infoSection: { paddingHorizontal: 25, marginTop: 15 },
   titlePriceRow: {
@@ -275,21 +278,21 @@ const styles = StyleSheet.create({
   productTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#1A2530",
+    color: Colors.textPrimary,
     flex: 1,
     textTransform: "capitalize",
   },
-  productPrice: { fontSize: 18, fontWeight: "bold", color: "#1A2530", marginLeft: 12 },
+  productPrice: { fontSize: 18, fontWeight: "bold", color: Colors.textPrimary, marginLeft: 12 },
   description: {
-    color: "#7D848D",
+    color: Colors.textMuted,
     fontSize: 13,
     marginTop: 8,
     lineHeight: 18,
   },
 
   selectionSection: { paddingHorizontal: 25, marginTop: 20 },
-  selectionTitle: { fontSize: 16, fontWeight: "bold", color: "#1A2530" },
-  selectionSub: { color: "#B0B5C1", fontWeight: "normal", fontSize: 12 },
+  selectionTitle: { fontSize: 16, fontWeight: "bold", color: Colors.textPrimary },
+  selectionSub: { color: Colors.textMuted, fontWeight: "normal", fontSize: 12 },
   colorRow: { flexDirection: "row", marginTop: 12 },
   colorCircle: {
     width: 32,
@@ -297,9 +300,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginRight: 15,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: Colors.borderDefault,
   },
-  whiteColorCircle: { borderWidth: 1.5, borderColor: "#D0D0D0" },
+  whiteColorCircle: { borderWidth: 1.5, borderColor: Colors.borderDefault },
   selectedColorCircle: {
     borderWidth: 2,
     borderColor: "#44BEFF",
@@ -310,26 +313,26 @@ const styles = StyleSheet.create({
   sizeBox: {
     width: 45,
     height: 35,
-    backgroundColor: "#F2F2F2",
+    backgroundColor: Colors.borderDefault,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
   },
   selectedSizeBox: {
-    backgroundColor: "#FFF",
+    backgroundColor: Colors.white,
     borderWidth: 1,
     borderColor: "#44BEFF",
   },
-  sizeText: { color: "#7D848D", textTransform: "uppercase", fontWeight: "600" },
-  selectedSizeText: { color: "#1A2530" },
+  sizeText: { color: Colors.textMuted, textTransform: "uppercase", fontWeight: "600" },
+  selectedSizeText: { color: Colors.textPrimary },
 
   matchSection: { marginTop: 30, paddingLeft: 25 },
-  matchTitle: { fontSize: 16, fontWeight: "bold", color: "#1A2530" },
+  matchTitle: { fontSize: 16, fontWeight: "bold", color: Colors.textPrimary },
   matchList: { marginTop: 15 },
   matchCard: {
     width: 100,
     height: 120,
-    backgroundColor: "#FFF",
+    backgroundColor: Colors.white,
     borderRadius: 12,
     marginRight: 15,
     borderWidth: 1,
@@ -349,7 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     zIndex:2,
   },
-  percentText: { color: "#FFF", fontSize: 9, fontWeight: "bold" },
+  percentText: { color: Colors.textInverse, fontSize: 9, fontWeight: "bold" },
 
   bottomFixedContainer: {
     position: "absolute",
@@ -368,7 +371,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   generateButtonText: {
-    color: "#FFF",
+    color: Colors.textInverse,
     fontSize: 16,
     fontWeight: "bold",
   },

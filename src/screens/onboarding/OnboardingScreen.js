@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View, Text, Animated,
   StyleSheet, Dimensions, StatusBar, PanResponder, Platform,
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
 import CustomizeAppButtonOutlined from '../../components/common/CustomizeAppButtonOutlined';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { IMAGES } from '../../constants/images/images';
 import { setOnboardingSeen } from '../../storage/TokenStorage';
 import { ROUTES } from '../../navigation/routes';
@@ -15,6 +16,7 @@ const { width: W, height: H } = Dimensions.get('window');
 
 const OnboardingScreen = ({ navigation }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
 
   const SLIDES = [
     {
@@ -101,9 +103,90 @@ const OnboardingScreen = ({ navigation }) => {
     })
   ).current;
 
+  const styles = React.useMemo(() => StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+    alignItems: 'center',
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    paddingBottom: 40,
+    marginTop: 40,
+  },
+  slidesArea: {
+  height: H * 0.72, 
+  width: W,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+  slideStack: {
+    position: 'absolute',
+    width: W,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  image: {
+    width: W * 0.82,
+    height: H * 0.42,
+    marginBottom: 36,
+  },
+  title: {
+    fontFamily: 'Roboto_700Bold',
+    fontSize: 32,
+    lineHeight: 38,
+    color: Colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  subtitle: {
+    fontFamily: 'Roboto_400Regular',
+    fontSize: 14,
+    lineHeight: 20,
+    color: Colors.textPrimary,
+    textAlign: 'center',
+  },
+  dotsRow: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 28,
+    marginTop:16,
+    gap:2
+  },
+  dotContainer: {
+    width: 24,
+    height: 12,
+    position: 'relative',
+  },
+  dotInactive: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.borderDefault,
+    left: 0,
+    top: 2,
+  },
+  dotActive: {
+    position: 'absolute',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.primary,
+    left: -2,
+    top: 0,
+  },
+  buttonsRow: {
+    paddingHorizontal: 24,
+    gap: 12,
+    width: '100%',
+  },
+  halfBtn:   { flex: 1 },
+  fullWidth: { flex: 1 },
+}), [themeVersion]);
+
   return (
     <View style={styles.root} {...panResponder.panHandlers}>
-      <StatusBar backgroundColor="#F2F2F3" barStyle="dark-content" />
+      <StatusBar backgroundColor={Colors.backgroundColor} barStyle="dark-content" />
 
       {/* Stacked slides — image + text per slide, all in same position */}
       <View style={styles.slidesArea}>
@@ -170,86 +253,5 @@ const OnboardingScreen = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#F2F2F3',
-    alignItems: 'center',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    paddingBottom: 40,
-    marginTop: 40,
-  },
-  slidesArea: {
-  height: H * 0.72, 
-  width: W,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-  slideStack: {
-    position: 'absolute',
-    width: W,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-  },
-  image: {
-    width: W * 0.82,
-    height: H * 0.42,
-    marginBottom: 36,
-  },
-  title: {
-    fontFamily: 'Roboto_700Bold',
-    fontSize: 32,
-    lineHeight: 38,
-    color: '#121826',
-    textAlign: 'center',
-    marginBottom: 14,
-  },
-  subtitle: {
-    fontFamily: 'Roboto_400Regular',
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#1E1E24',
-    textAlign: 'center',
-  },
-  dotsRow: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 28,
-    marginTop:16,
-    gap:2
-  },
-  dotContainer: {
-    width: 24,
-    height: 12,
-    position: 'relative',
-  },
-  dotInactive: {
-    position: 'absolute',
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#C4C4C4',
-    left: 0,
-    top: 2,
-  },
-  dotActive: {
-    position: 'absolute',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: Colors.primary,
-    left: -2,
-    top: 0,
-  },
-  buttonsRow: {
-    paddingHorizontal: 24,
-    gap: 12,
-    width: '100%',
-  },
-  halfBtn:   { flex: 1 },
-  fullWidth: { flex: 1 },
-});
 
 export default OnboardingScreen;

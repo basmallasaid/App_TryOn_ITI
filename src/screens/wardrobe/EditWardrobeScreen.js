@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { deleteWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import CategoryChip from "../../components/wardrobe/CategoryChip";
 import WardrobeItemCard from "../../components/wardrobe/WardrobeItemCard";
@@ -31,6 +32,8 @@ const TOTAL_GRID_WIDTH = CARD_WIDTH * 2 + GAP;
 const HORIZONTAL_PADDING = (SCREEN_WIDTH - TOTAL_GRID_WIDTH) / 2;
 
 const EditWardrobeScreen = ({ navigation, route }) => {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { initialSelectedId } = route.params || {};
   const { items, removeItem, refetch } = useWardrobe();
@@ -87,7 +90,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
           <Ionicons
             name="trash-outline"
             size={24}
-            color={selectedIds.length > 0 ? Colors.error : "#D5D9DE"}
+            color={selectedIds.length > 0 ? Colors.error : Colors.borderDefault}
           />
         </TouchableOpacity>
       </View>
@@ -150,10 +153,12 @@ const EditWardrobeScreen = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
+export default EditWardrobeScreen;
+
+const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#F5F6F7",
+    backgroundColor: Colors.backgroundColor,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
@@ -167,7 +172,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto",
     fontWeight: "700",
     fontSize: 18,
-    color: "#121826",
+    color: Colors.textPrimary,
   },
   categoryBar: { paddingVertical: 25 },
   categoryScroll: { paddingHorizontal: 16, gap: 8 },
@@ -176,14 +181,14 @@ const styles = StyleSheet.create({
   cardContainer: { position: "relative" },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#ADADAD",
+    backgroundColor: Colors.disabled,
     opacity: 0.3,
     borderRadius: 16,
-    marginTop: 20, // To match WardrobeItemCard margin
+    marginTop: 20,
   },
   selectedOverlay: {
     opacity: 0.6,
-    backgroundColor: "#ADADAD",
+    backgroundColor: Colors.disabled,
   },
   checkCircle: {
     position: "absolute",
@@ -191,12 +196,10 @@ const styles = StyleSheet.create({
     height: 15,
     top: 5,
     right: 5, // Adjusted to fit card
-    backgroundColor: "#8ED321",
+    backgroundColor: '#8ED321',
     borderRadius: 999,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 10,
   },
 });
-
-export default EditWardrobeScreen;

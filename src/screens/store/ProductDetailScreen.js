@@ -12,11 +12,15 @@ import { analyzeImage, getMatchesByAnalysis } from '../../api/matching_services/
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import { useTranslation } from 'react-i18next';
+import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { productId } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
   
   const [product, setProduct] = useState(null);
@@ -110,10 +114,10 @@ export default function ProductDetailScreen({ route }) {
       <View style={styles.headerFixed}>
         <SafeAreaView>
           <View style={[styles.headerContent, { flexDirection: "row" }]}>
-            <CustomBackButton onPress={() => navigation.goBack()} borderColor="#D5D9DE" />
+            <CustomBackButton onPress={() => navigation.goBack()} borderColor={Colors.borderDefault} />
             <View style={[styles.headerRight, { flexDirection: "row" }]}>
               <TouchableOpacity style={[styles.iconCircle, { marginLeft: 12, marginRight: 0 }]}>
-                <Ionicons name="heart-outline" size={24} color="#1A1C24" />
+                <Ionicons name="heart-outline" size={24} color={Colors.textPrimary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -214,7 +218,7 @@ export default function ProductDetailScreen({ route }) {
                         {imgSrc ? (
                           <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
                         ) : (
-                          <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color="#CBD5E0" />
+                          <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color={Colors.disabled} />
                         )}
                         <Text style={styles.matchItemName} numberOfLines={1}>{match.item?.name}</Text>
                       </View>
@@ -227,7 +231,7 @@ export default function ProductDetailScreen({ route }) {
 
           <View style={[styles.actionRow, { flexDirection: "row" }]}>
             <TouchableOpacity style={[styles.mainBtn, { flexDirection: "row" }]} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.STORE, itemId: productId, itemType: product?.category, productImage: product?.images?.[0], productName: product?.name } })}>
-              <Ionicons name="sparkles" size={20} color="white" />
+              <Ionicons name="sparkles" size={20} color={Colors.white} />
               <Text style={[styles.mainBtnText, { marginLeft: 10, marginRight: 0 }]}>{t("store.productDetail.generateTryOn")}</Text>
             </TouchableOpacity>
           </View>
@@ -238,8 +242,8 @@ export default function ProductDetailScreen({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
+const createStyles = () => StyleSheet.create({
+  container: { flex: 1, backgroundColor: Colors.white },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   headerFixed: { 
     position: 'absolute', 
@@ -256,24 +260,24 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === 'ios' ? 40 : 20 
   },
 
-  imageWrapper: { width: width, height: 420, backgroundColor: '#F9FAFB', justifyContent: 'center', alignItems: 'center' },
+  imageWrapper: { width: width, height: 420, backgroundColor: Colors.backgroundColor, justifyContent: 'center', alignItems: 'center' },
   mainImage: { width: '80%', height: '80%' },
 
-  contentBody: { flex: 1, backgroundColor: '#FFFFFF', borderTopLeftRadius: 35, borderTopRightRadius: 35, marginTop: -35, padding: 25 },
-  indicator: { width: 40, height: 4, backgroundColor: '#F0F0F0', borderRadius: 2, alignSelf: 'center', marginBottom: 25 },
+  contentBody: { flex: 1, backgroundColor: Colors.white, borderTopLeftRadius: 35, borderTopRightRadius: 35, marginTop: -35, padding: 25 },
+  indicator: { width: 40, height: 4, backgroundColor: Colors.borderDefault, borderRadius: 2, alignSelf: 'center', marginBottom: 25 },
   
   rowBetween: { justifyContent: 'space-between', alignItems: 'flex-start' },
-  productTitle: { fontSize: 24, fontWeight: '800', color: '#1A1C24', letterSpacing: -0.5 },
+  productTitle: { fontSize: 24, fontWeight: '800', color: Colors.textPrimary, letterSpacing: -0.5 },
   brandName: { color: '#5CC1FF', fontSize: 13, fontWeight: '700', marginTop: 4 },
   
   priceContainer: { },
-  priceText: { fontSize: 26, fontWeight: '900', color: '#1A1C24' },
-  currency: { fontSize: 12, fontWeight: '700', color: '#ABB5BE' },
+  priceText: { fontSize: 26, fontWeight: '900', color: Colors.textPrimary },
+  currency: { fontSize: 12, fontWeight: '700', color: Colors.textMuted },
 
   sectionContainer: { marginTop: 25 },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: '#1A1C24', marginBottom: 12 },
-  selectedSub: { fontSize: 14, fontWeight: '400', color: '#ABB5BE' },
-  description: { fontSize: 14, color: '#6B7280', lineHeight: 22 },
+  sectionTitle: { fontSize: 16, fontWeight: '800', color: Colors.textPrimary, marginBottom: 12 },
+  selectedSub: { fontSize: 14, fontWeight: '400', color: Colors.textMuted },
+  description: { fontSize: 14, color: Colors.textMuted, lineHeight: 22 },
   moreBtn: { alignItems: 'center', marginTop: 4 },
   moreText: { color: '#5CC1FF', fontWeight: 'bold', fontSize: 13 },
 
@@ -281,22 +285,22 @@ const styles = StyleSheet.create({
   colorRing: { width: 38, height: 38, borderRadius: 19, borderWidth: 2, borderColor: 'transparent', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   colorInside: { width: 28, height: 28, borderRadius: 14, elevation: 1 },
   
-  sizeBox: { width: 50, height: 48, borderRadius: 12, backgroundColor: '#F9FAFB', justifyContent: 'center', alignItems: 'center', marginRight: 10, borderWidth: 1, borderColor: '#F0F0F0' },
+  sizeBox: { width: 50, height: 48, borderRadius: 12, backgroundColor: Colors.backgroundColor, justifyContent: 'center', alignItems: 'center', marginRight: 10, borderWidth: 1, borderColor: Colors.borderDefault },
   activeSizeBox: { backgroundColor: '#40B9FF' },
-  sizeLabel: { fontSize: 15, fontWeight: 'bold', color: '#1A1C24' },
-  activeSizeLabel: { color: '#FFFFFF' },
+  sizeLabel: { fontSize: 15, fontWeight: 'bold', color: Colors.textPrimary },
+  activeSizeLabel: { color: Colors.textInverse },
 
   // Matching
   matchScroll: { marginTop: 5 },
-  matchCard: { width: 150, height: 180, backgroundColor: '#FFF', borderRadius: 15, marginRight: 15, justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: '#E0F4BE', position: 'relative' },
+  matchCard: { width: 150, height: 180, backgroundColor: Colors.white, borderRadius: 15, marginRight: 15, justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: '#E0F4BE', position: 'relative' },
   matchImg: { width: 100, height: 110 },
-  matchItemName: { fontSize: 11, fontWeight: '600', color: '#1A2530', textAlign: 'center', marginTop: 6, paddingHorizontal: 8, textTransform: 'capitalize' },
+  matchItemName: { fontSize: 11, fontWeight: '600', color: Colors.textPrimary, textAlign: 'center', marginTop: 6, paddingHorizontal: 8, textTransform: 'capitalize' },
   scoreBadge: { position: 'absolute', top: 10, right: 10, backgroundColor: '#A5E142', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, zIndex: 1 },
-  scoreText: { color: '#FFF', fontSize: 11, fontWeight: 'bold' },
-  noMatchText: { color: '#718096', fontSize: 14, marginVertical: 10 },
+  scoreText: { color: Colors.textInverse, fontSize: 11, fontWeight: 'bold' },
+  noMatchText: { color: Colors.textMuted, fontSize: 14, marginVertical: 10 },
 
   // Footer Actions
   actionRow: { alignItems: 'center', marginTop: 35, paddingBottom: 20 },
   mainBtn: { flex: 1, backgroundColor: '#5CC1FF', height: 60, borderRadius: 18, justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#5CC1FF', shadowOpacity: 0.25, shadowRadius: 8 },
-  mainBtnText: { color: 'white', fontSize: 16, fontWeight: '800' }
+  mainBtnText: { color: Colors.textInverse, fontSize: 16, fontWeight: '800' }
 });

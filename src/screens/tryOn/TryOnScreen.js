@@ -17,6 +17,7 @@ import { File, Directory, Paths } from "expo-file-system";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import { IMAGES } from "../../constants/images/images";
 import ActionTab from "../../components/tryOn/ActionTab";
 import WardrobeCard from "../../components/tryOn/WardrobeCard";
@@ -35,6 +36,7 @@ import GradientBorder from "../../components/recycle/GradientBorder";
 
 export default function TryOnScreen({ navigation, route }) {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const { items: wardrobeItems } = useWardrobe();
   const photoUri = route?.params?.photoUri;
   const avatarImage = route?.params?.avatarImage;
@@ -297,6 +299,8 @@ export default function TryOnScreen({ navigation, route }) {
     }
   };
 
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
+
   return (
     <SafeAreaView style={styles.container}>
       
@@ -356,32 +360,32 @@ export default function TryOnScreen({ navigation, route }) {
                             >
                               <Ionicons
                                 name="close"
-                                size={14}
-                                color="#FFFFFF"
-                              />
-                            </TouchableOpacity>
-                          </View>
-                        </GradientBorder>
-                      ) : (
-                        <View style={{ flex: 1 }}>
-                          <Image
-                            source={{ uri }}
-                            style={styles.galleryItemImage}
-                            resizeMode="cover"
-                          />
-                          {isSelected && (
-                            <Ionicons
-                              name="checkmark-circle"
-                              size={20}
-                              color="#A5E142"
-                              style={styles.galleryCheckIcon}
-                            />
-                          )}
-                          <TouchableOpacity
-                            style={styles.galleryRemoveBtn}
-                            onPress={() => removeCameraImage(index)}
-                          >
-                            <Ionicons name="close" size={14} color="#FFFFFF" />
+                  size={14}
+                  color={Colors.white}
+                />
+              </TouchableOpacity>
+            </View>
+          </GradientBorder>
+        ) : (
+          <View style={{ flex: 1 }}>
+            <Image
+              source={{ uri }}
+              style={styles.galleryItemImage}
+              resizeMode="cover"
+            />
+            {isSelected && (
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color="#A5E142"
+                style={styles.galleryCheckIcon}
+              />
+            )}
+            <TouchableOpacity
+              style={styles.galleryRemoveBtn}
+              onPress={() => removeCameraImage(index)}
+            >
+              <Ionicons name="close" size={14} color={Colors.white} />
                           </TouchableOpacity>
                         </View>
                       )}
@@ -446,7 +450,7 @@ export default function TryOnScreen({ navigation, route }) {
                               <Ionicons
                                 name="close"
                                 size={14}
-                                color="#FFFFFF"
+                                color={Colors.white}
                               />
                             </TouchableOpacity>
                           </View>
@@ -470,8 +474,8 @@ export default function TryOnScreen({ navigation, route }) {
                             style={styles.galleryRemoveBtn}
                             onPress={() => removeGalleryImage(index)}
                           >
-                            <Ionicons name="close" size={14} color="#FFFFFF" />
-                          </TouchableOpacity>
+              <Ionicons name="close" size={14} color={Colors.white} />
+            </TouchableOpacity>
                         </View>
                       )}
                     </View>
@@ -589,7 +593,7 @@ export default function TryOnScreen({ navigation, route }) {
 
           <View style={styles.noItemsBox}>
             <View style={styles.iconCircle}>
-              <MaterialCommunityIcons name="hanger" size={24} color="#1A202C" />
+              <MaterialCommunityIcons name="hanger" size={24} color={Colors.textPrimary} />
             </View>
             <View>
               <Text style={styles.noItemsTitle}>
@@ -671,10 +675,10 @@ export default function TryOnScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FB",
+    backgroundColor: Colors.backgroundColor,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
@@ -684,7 +688,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
   },
-  headerTitle: { fontSize: 20, fontWeight: "700", color: "#1A202C" },
+  headerTitle: { fontSize: 20, fontWeight: "700", color: Colors.textPrimary },
 
   modelContainer: {
     width: "100%",
@@ -712,7 +716,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   galleryCameraCard: {
-    backgroundColor: "#E8EFFF",
+    backgroundColor: Colors.backgroundColor,
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 10,
@@ -721,7 +725,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.white,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
@@ -733,7 +737,7 @@ const styles = StyleSheet.create({
   },
   galleryCameraText: {
     fontSize: 14,
-    color: "#333",
+    color: Colors.textPrimary,
     fontWeight: "500",
   },
   galleryRemoveBtn: {
@@ -854,14 +858,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 15,
   },
-  sectionTitle: { fontSize: 16, fontWeight: "700", color: "#1A202C" },
-  seeAll: { color: "#718096", fontSize: 14 },
+  sectionTitle: { fontSize: 16, fontWeight: "700", color: Colors.textPrimary },
+  seeAll: { color: Colors.textMuted, fontSize: 14 },
 
   selectedSection: { paddingHorizontal: 20, marginTop: 25 },
   noItemsBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F0F4FF",
+    backgroundColor: Colors.backgroundColor,
     padding: 15,
     borderRadius: 15,
     marginTop: 15,
@@ -870,13 +874,13 @@ const styles = StyleSheet.create({
     width: 45,
     height: 45,
     borderRadius: 22.5,
-    backgroundColor: "#DBE9FF",
+    backgroundColor: Colors.backgroundColor,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 15,
   },
-  noItemsTitle: { fontWeight: "700", color: "#1A202C", fontSize: 14 },
-  noItemsSub: { color: "#718096", fontSize: 12 },
+  noItemsTitle: { fontWeight: "700", color: Colors.textPrimary, fontSize: 14 },
+  noItemsSub: { color: Colors.textMuted, fontSize: 12 },
 
   emptyWardrobe: {
     width: 200,
@@ -886,7 +890,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   emptyWardrobeText: {
-    color: "#A0AEC0",
+    color: Colors.disabled,
     fontSize: 14,
   },
 
@@ -897,8 +901,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  disabledBtn: { backgroundColor: "#A0AEC0" },
+  disabledBtn: { backgroundColor: Colors.disabled },
   activeBtn: { backgroundColor: "#40B9FF" },
-  generateBtnText: { color: "white", fontWeight: "700", fontSize: 16 },
+  generateBtnText: { color: Colors.textInverse, fontWeight: "700", fontSize: 16 },
   scrollContent: { paddingBottom: 40, flexGrow: 1 },
 });

@@ -5,6 +5,8 @@ import CustomBackButton from '../../components/common/CustomBackButton';
 import Slider from '@react-native-community/slider';
 import { getAllProducts } from '../../api/user_services/userService';
 import { useTranslation } from 'react-i18next';
+import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 export const FilterModal = ({
   visible,
@@ -17,6 +19,8 @@ export const FilterModal = ({
   initialPrice = 1000,
 }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const [price, setPrice] = useState(initialPrice);
   const [loading, setLoading] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState(initialBrands);
@@ -65,6 +69,16 @@ export const FilterModal = ({
       <View style={[styles.checkboxBox, selected && styles.checkboxBoxSelected]} />
       <Text style={[styles.checkboxLabel, selected && styles.checkboxLabelSelected]}>{label}</Text>
     </TouchableOpacity>
+  );
+
+  const FilterSection = ({ title, children }) => (
+    <View style={styles.section}>
+      <View style={[styles.sectionHeader, { flexDirection: "row" }]}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+          <Ionicons name="chevron-down" size={20} color={Colors.disabled} />
+      </View>
+      <View style={styles.sectionBody}>{children}</View>
+    </View>
   );
 
   const handleApplyFilters = () => {
@@ -193,7 +207,7 @@ export const FilterModal = ({
         {/* زرار Apply (اختياري بس مهم) */}
         <TouchableOpacity style={styles.applyBtn} onPress={handleApplyFilters} disabled={loading}>
           {loading ? (
-            <ActivityIndicator color="#FFF" />
+            <ActivityIndicator color={Colors.white} />
           ) : (
             <Text style={styles.applyBtnText}>{t("store.filters.apply")}</Text>
           )}
@@ -203,38 +217,26 @@ export const FilterModal = ({
   );
 };
 
-const FilterSection = ({ title, children }) => {
-  return (
-    <View style={styles.section}>
-      <View style={[styles.sectionHeader, { flexDirection: "row" }]}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        <Ionicons name="chevron-down" size={20} color="#9BA5B0" />
-      </View>
-      <View style={styles.sectionBody}>{children}</View>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
+const createStyles = () => StyleSheet.create({
+  container: { flex: 1, backgroundColor: Colors.white },
   header: { justifyContent: 'space-between', padding: 20, alignItems: 'center' },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#1A1C24' },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: Colors.textPrimary },
   content: { paddingHorizontal: 20 },
   section: { marginBottom: 30 },
   sectionHeader: { justifyContent: 'space-between', marginBottom: 15 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#1A1C24' },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: Colors.textPrimary },
   checkboxRow: { alignItems: 'center', marginBottom: 12 },
-  checkboxBox: { width: 20, height: 20, borderWidth: 1, borderColor: '#D5D9DE', borderRadius: 4, marginHorizontal: 12 },
+  checkboxBox: { width: 20, height: 20, borderWidth: 1, borderColor: Colors.borderDefault, borderRadius: 4, marginHorizontal: 12 },
   checkboxBoxSelected: { backgroundColor: '#5CC1FF', borderColor: '#5CC1FF' },
-  checkboxLabel: { fontSize: 16, color: '#6B7280' },
-  checkboxLabelSelected: { color: '#1A1C24', fontWeight: '700' },
+  checkboxLabel: { fontSize: 16, color: Colors.textMuted },
+  checkboxLabelSelected: { color: Colors.textPrimary, fontWeight: '700' },
   pillsContainer: { flexDirection: 'row', flexWrap: 'wrap' },
-  pill: { borderWidth: 1, borderColor: '#D5D9DE', borderRadius: 20, paddingHorizontal: 20, paddingVertical: 8, marginRight: 10, marginBottom: 10 },
+  pill: { borderWidth: 1, borderColor: Colors.borderDefault, borderRadius: 20, paddingHorizontal: 20, paddingVertical: 8, marginRight: 10, marginBottom: 10 },
   pillSelected: { backgroundColor: '#5CC1FF', borderColor: '#5CC1FF' },
-  pillText: { color: '#6B7280' },
-  pillTextSelected: { color: '#FFF' },
+  pillText: { color: Colors.textMuted },
+  pillTextSelected: { color: Colors.textInverse },
   priceLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
-  priceText: { color: '#6B7280', fontWeight: 'bold' },
+  priceText: { color: Colors.textMuted, fontWeight: 'bold' },
   applyBtn: { backgroundColor: '#5CC1FF', margin: 20, padding: 18, borderRadius: 15, alignItems: 'center' },
-  applyBtnText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 }
+  applyBtnText: { color: Colors.textInverse, fontWeight: 'bold', fontSize: 16 }
 });

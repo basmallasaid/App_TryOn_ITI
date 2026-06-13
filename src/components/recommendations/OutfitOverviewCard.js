@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
 
 export default function OutfitOverviewCard({ outfit, onPress, width, height, borderRadius, borderColor, labelFontSize }) {
+  const { themeVersion } = useTheme();
   const [imageError, setImageError] = useState(false);
   const items = getItemsList(outfit);
   const compositeImage = getCompositeImage(outfit);
@@ -34,24 +36,7 @@ export default function OutfitOverviewCard({ outfit, onPress, width, height, bor
     );
   };
 
-  return (
-    <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
-      <View style={[styles.card, { width, height, borderRadius, borderColor: borderColor || Colors.borderStrong }]}>
-        {renderImages()}
-        <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.7)"]}
-          style={[styles.overlay, { borderRadius }]}
-        >
-          <Text style={[styles.label, labelFontSize ? { fontSize: labelFontSize } : undefined]} numberOfLines={2}>
-            {label || "No items available"}
-          </Text>
-        </LinearGradient>
-      </View>
-    </TouchableOpacity>
-  );
-}
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   card: {
     overflow: "hidden",
     borderWidth: 1,
@@ -75,6 +60,24 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: 'Roboto_600SemiBold',
-    color: Colors.white,
+    color: Colors.textInverse,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
+      <View style={[styles.card, { width, height, borderRadius, borderColor: borderColor || Colors.borderStrong }]}>
+        {renderImages()}
+        <LinearGradient
+          colors={["transparent", "rgba(0,0,0,0.7)"]}
+          style={[styles.overlay, { borderRadius }]}
+        >
+          <Text style={[styles.label, labelFontSize ? { fontSize: labelFontSize } : undefined]} numberOfLines={2}>
+            {label || "No items available"}
+          </Text>
+        </LinearGradient>
+      </View>
+    </TouchableOpacity>
+  );
+}
+

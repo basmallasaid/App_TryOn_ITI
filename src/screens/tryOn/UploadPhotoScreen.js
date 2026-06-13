@@ -1,3 +1,4 @@
+import React from "react";
 import {
   View,
   Text,
@@ -14,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Rect, Defs, LinearGradient as SvgGradient, Stop } from "react-native-svg";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import Typography from "../../constants/theme/typography";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import CustomBackButton from "../../components/common/CustomBackButton";
@@ -54,6 +56,7 @@ const instructions = [
 
 const UploadPhotoScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const [layout, setLayout] = useState({ width: 0, height: 0 });
   const [selectedImage, setSelectedImage] = useState(null);
   const productImage = route?.params?.productImage;
@@ -73,6 +76,7 @@ const UploadPhotoScreen = ({ navigation, route }) => {
       setSelectedImage(result.assets[0].uri);
     }
   };
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -166,7 +170,7 @@ const UploadPhotoScreen = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,

@@ -16,6 +16,7 @@ import { useRecommendation } from '../../context/RecommendationContext';
 import OutfitOverviewCard from '../../components/recommendations/OutfitOverviewCard';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { ROUTES } from '../../navigation/routes';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -24,6 +25,8 @@ const PADDING = 16;
 const CARD_WIDTH = (SCREEN_WIDTH - PADDING * 2 - GAP) / 2;
 
 export default function AllRecommendationsScreen({ navigation }) {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { history, loading } = useRecommendation();
 
@@ -64,7 +67,7 @@ export default function AllRecommendationsScreen({ navigation }) {
 
       {history.length === 0 ? (
         <View style={styles.center}>
-          <Ionicons name="shirt-outline" size={64} color="#D5D9DE" />
+          <Ionicons name="shirt-outline" size={64} color={Colors.borderDefault} />
           <Text style={styles.emptyText}>{t('recommendation.emptyHistory')}</Text>
         </View>
       ) : (
@@ -82,7 +85,7 @@ export default function AllRecommendationsScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,

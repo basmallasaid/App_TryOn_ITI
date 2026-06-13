@@ -1,6 +1,7 @@
-
+import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 const CustomizeAppButtonOutlined = ({
   label,
   onPress,
@@ -10,34 +11,12 @@ const CustomizeAppButtonOutlined = ({
   disabled = false,
   icon,
 }) => {
+  const { themeVersion } = useTheme();
   const isDisabled = disabled || loading;
   const resolvedBorder = borderColor ?? Colors.success;
   const resolvedText   = textColor   ?? Colors.success;
 
-  return (
-    <TouchableOpacity
-      style={[
-        styles.button,
-        { borderColor: resolvedBorder },
-        isDisabled && styles.disabledOpacity,
-      ]}
-      onPress={onPress}
-      disabled={isDisabled}
-      activeOpacity={0.85}
-    >
-      {loading ? (
-        <ActivityIndicator color={resolvedText} />
-      ) : (
-        <View style={[styles.inner, { flexDirection: 'row' }]}>
-          <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
-          {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-};
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   button: {
     width: '100%',
     height: 48,
@@ -66,6 +45,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
-});
+}), [themeVersion]);
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.button,
+        { borderColor: resolvedBorder },
+        isDisabled && styles.disabledOpacity,
+      ]}
+      onPress={onPress}
+      disabled={isDisabled}
+      activeOpacity={0.85}
+    >
+      {loading ? (
+        <ActivityIndicator color={resolvedText} />
+      ) : (
+        <View style={[styles.inner, { flexDirection: 'row' }]}>
+          <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
+          {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
 
 export default CustomizeAppButtonOutlined;

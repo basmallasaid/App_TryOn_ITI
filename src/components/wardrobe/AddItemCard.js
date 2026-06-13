@@ -1,21 +1,16 @@
 // src/components/wardrobe/AddItemCard.js
+import React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const AddItemCard = ({ onPress }) => {
   const { t } = useTranslation();
-  return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-      <View style={styles.iconCircle}>
-        <Ionicons name="add" size={20} color="#6B7280" />
-      </View>
-      <Text style={styles.label}>{t("wardrobe.addNewItem")}</Text>
-    </TouchableOpacity>
-  );
-};
+  const { themeVersion } = useTheme();
 
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   card: {
     width: 150,
     height: 237,
@@ -28,7 +23,7 @@ const styles = StyleSheet.create({
     gap: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     marginTop:20,
   },
   iconCircle: {
@@ -43,9 +38,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_400Regular',
     fontSize: 16,
     lineHeight: 16,
-    color: '#6B7280',
+    color: Colors.textMuted,
     textAlign: 'center',
   },
-});
+}), [themeVersion]);
+
+  return (
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
+      <View style={styles.iconCircle}>
+        <Ionicons name="add" size={20} color={Colors.iconGray} />
+      </View>
+      <Text style={styles.label}>{t("wardrobe.addNewItem")}</Text>
+    </TouchableOpacity>
+  );
+};
+
 
 export default AddItemCard;

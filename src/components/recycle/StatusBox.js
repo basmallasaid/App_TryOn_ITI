@@ -2,9 +2,45 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function StatusBox({ mode, garmentAnalysis }) {
+  const { themeVersion } = useTheme();
   const [expanded, setExpanded] = useState(false);
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    container: {
+      backgroundColor: "#F0FFF0",
+      borderRadius: 12,
+      padding: 14,
+      marginTop: 12,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 8,
+    },
+    modeText: {
+      fontFamily: "Roboto_500Medium",
+      fontWeight: "500",
+      fontSize: 13,
+      color: Colors.textPrimary,
+    },
+    analysisText: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      lineHeight: 18,
+      color: Colors.textSecondary,
+    },
+    seeMore: {
+      fontFamily: "Roboto_500Medium",
+      fontWeight: "500",
+      fontSize: 12,
+      color: Colors.primary,
+      marginTop: 6,
+    },
+  }), [themeVersion]);
 
   return (
     <View style={styles.container}>
@@ -21,37 +57,3 @@ export default function StatusBox({ mode, garmentAnalysis }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#F0FFF0",
-    borderRadius: 12,
-    padding: 14,
-    marginTop: 12,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 8,
-  },
-  modeText: {
-    fontFamily: "Roboto_500Medium",
-    fontWeight: "500",
-    fontSize: 13,
-    color: Colors.textPrimary,
-  },
-  analysisText: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    lineHeight: 18,
-    color: Colors.textSecondary,
-  },
-  seeMore: {
-    fontFamily: "Roboto_500Medium",
-    fontWeight: "500",
-    fontSize: 12,
-    color: Colors.primary,
-    marginTop: 6,
-  },
-});

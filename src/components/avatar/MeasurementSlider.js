@@ -1,10 +1,12 @@
-import { useRef, useCallback } from "react";
+import React, { useRef, useCallback } from "react";
 import { View, Text, PanResponder, StyleSheet, Dimensions } from "react-native";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const TRACK_WIDTH = Dimensions.get("window").width - 80;
 
 const MeasurementSlider = ({ label, value, min, max, step = 1, unit, onChange }) => {
+  const { themeVersion } = useTheme();
   const trackRef = useRef(null);
   const trackLayoutRef = useRef({ x: 0, width: TRACK_WIDTH });
   const propsRef = useRef({ min, max, step, onChange });
@@ -38,6 +40,72 @@ const MeasurementSlider = ({ label, value, min, max, step = 1, unit, onChange })
 
   const fraction = (value - min) / (max - min);
   const fillWidth = fraction * TRACK_WIDTH;
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    container: {
+      marginBottom: 24,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: "600",
+      fontFamily: "Roboto_600SemiBold",
+      color: Colors.textPrimary,
+    },
+    value: {
+      fontSize: 14,
+      fontWeight: "700",
+      fontFamily: "Roboto_700Bold",
+      color: Colors.primary,
+    },
+    track: {
+      width: TRACK_WIDTH,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: "#E9EBEE",
+      position: "relative",
+      justifyContent: "center",
+      alignSelf: "center",
+    },
+    fill: {
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: Colors.primary,
+      position: "absolute",
+      left: 0,
+      top: 0,
+    },
+    thumb: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: Colors.white,
+      borderWidth: 2,
+      borderColor: Colors.primary,
+      position: "absolute",
+      top: -9,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    rangeRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 6,
+    },
+    rangeText: {
+      fontSize: 11,
+      color: Colors.textMuted,
+      fontFamily: "Roboto_400Regular",
+    },
+  }), [themeVersion]);
 
   return (
     <View style={styles.container}>
@@ -82,71 +150,5 @@ const MeasurementSlider = ({ label, value, min, max, step = 1, unit, onChange })
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 24,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "Roboto_600SemiBold",
-    color: Colors.textPrimary,
-  },
-  value: {
-    fontSize: 14,
-    fontWeight: "700",
-    fontFamily: "Roboto_700Bold",
-    color: Colors.primary,
-  },
-  track: {
-    width: TRACK_WIDTH,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#E9EBEE",
-    position: "relative",
-    justifyContent: "center",
-    alignSelf: "center",
-  },
-  fill: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.primary,
-    position: "absolute",
-    left: 0,
-    top: 0,
-  },
-  thumb: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: Colors.white,
-    borderWidth: 2,
-    borderColor: Colors.primary,
-    position: "absolute",
-    top: -9,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  rangeRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 6,
-  },
-  rangeText: {
-    fontSize: 11,
-    color: Colors.textMuted,
-    fontFamily: "Roboto_400Regular",
-  },
-});
 
 export default MeasurementSlider;

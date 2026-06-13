@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const getCategoryIcon = (category) => {
   const key = String(category || '').toLowerCase();
@@ -25,11 +27,20 @@ const getCategoryIcon = (category) => {
 };
 
 export const CategoryTabs = ({ categories = [{ id: 'all', name: 'All', icon: null, value: 'all' }], activeCategory = 'all', onCategoryChange }) => {
+  const { themeVersion } = useTheme();
   const [active, setActive] = useState(activeCategory);
 
   useEffect(() => {
     setActive(activeCategory);
   }, [activeCategory]);
+
+const styles = React.useMemo(() => StyleSheet.create({
+  container: { marginBottom: 20, marginTop: 25 },
+  tab: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, marginRight: 10, backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.borderDefault, alignItems: 'center' },
+  activeTab: { backgroundColor: '#40B9FF', borderColor: '#5CC1FF' },
+  tabText: { fontWeight: '600', color: '#666' },
+  activeTabText: { color: Colors.textInverse },
+}), [themeVersion]);
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.container}>
@@ -54,10 +65,3 @@ export const CategoryTabs = ({ categories = [{ id: 'all', name: 'All', icon: nul
   );
 };
 
-const styles = StyleSheet.create({
-  container: { marginBottom: 20, marginTop: 25 },
-  tab: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, marginRight: 10, backgroundColor: '#FFF', borderWidth: 1, borderColor: '#F0F0F0', alignItems: 'center' },
-  activeTab: { backgroundColor: '#40B9FF', borderColor: '#5CC1FF' },
-  tabText: { fontWeight: '600', color: '#666' },
-  activeTabText: { color: '#FFF' },
-});

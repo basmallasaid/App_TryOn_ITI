@@ -1,6 +1,8 @@
+import React from 'react';
 import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { IMAGES } from '../../constants/images/images';
 const AvatarOptionCard = ({
   title,
@@ -11,6 +13,79 @@ const AvatarOptionCard = ({
   selected,
   onPress,
 }) => {
+  const { themeVersion } = useTheme();
+const styles = React.useMemo(() => StyleSheet.create({
+  card: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: Colors.borderDefault,
+    padding: 16,
+    alignItems: 'center',
+    position: 'relative',
+    gap: 5,
+  },
+  cardSelected: {
+    borderColor: Colors.primary,
+    backgroundColor: '#E6F6FFCC',
+  },
+  leftContent: {
+    flex: 1,
+    gap: 6,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    fontFamily: 'Roboto_700Bold',
+    color: Colors.textPrimary,
+  },
+  titleSelected: {
+    color: Colors.primary,
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderRadius: 16,
+  },
+  badgeText: {
+    color: Colors.textInverse,
+    fontSize: 10,
+    fontWeight: '700',
+    fontFamily: 'Roboto_700Bold',
+  },
+  description: {
+    fontSize: 14,
+    fontWeight: '400',
+    fontFamily: 'Roboto_400Regular',
+    color: Colors.textMuted,
+    lineHeight: 20,
+  },
+  descriptionSelected: {
+    color: Colors.textSecondary,
+  },
+  rightContainer: {
+  },
+  imageWrap: {
+    width: 100,
+    height: 130,
+    borderRadius: 16,
+    overflow: 'hidden',
+    justifyContent: 'flex-start',
+  },
+  image: {
+    width: '100%',
+    height: 180,
+    position: 'absolute',
+    top: 0,
+  },
+  checkmark: {
+    position: 'absolute',
+    top: 12,
+  },
+}), [themeVersion]);
+
   return (
     <TouchableOpacity
       style={[styles.card, { flexDirection: 'row' }, selected && styles.cardSelected]}
@@ -52,76 +127,5 @@ const AvatarOptionCard = ({
   );
 };
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#E9EBEE',
-    padding: 16,
-    alignItems: 'center',
-    position: 'relative',
-    gap: 5,
-  },
-  cardSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: '#E6F6FFCC',
-  },
-  leftContent: {
-    flex: 1,
-    gap: 6,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    fontFamily: 'Roboto_700Bold',
-    color: Colors.textPrimary,
-  },
-  titleSelected: {
-    color: Colors.primary,
-  },
-  badge: {
-    alignSelf: 'flex-start',
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 3,
-    borderRadius: 16,
-  },
-  badgeText: {
-    color: Colors.white,
-    fontSize: 10,
-    fontWeight: '700',
-    fontFamily: 'Roboto_700Bold',
-  },
-  description: {
-    fontSize: 14,
-    fontWeight: '400',
-    fontFamily: 'Roboto_400Regular',
-    color: Colors.textMuted,
-    lineHeight: 20,
-  },
-  descriptionSelected: {
-    color: Colors.textSecondary,
-  },
-  rightContainer: {
-  },
-  imageWrap: {
-    width: 100,
-    height: 130,
-    borderRadius: 16,
-    overflow: 'hidden',
-    justifyContent: 'flex-start',
-  },
-  image: {
-    width: '100%',
-    height: 180,
-    position: 'absolute',
-    top: 0,
-  },
-  checkmark: {
-    position: 'absolute',
-    top: 12,
-  },
-});
 
 export default AvatarOptionCard;

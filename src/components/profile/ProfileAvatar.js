@@ -1,5 +1,6 @@
 import { View, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Colors from '../../constants/theme/colors';
 
 const ProfileAvatar = ({ firstName, lastName, imageUri }) => {
   const first = (firstName || '')[0] || '';
@@ -17,9 +18,9 @@ const ProfileAvatar = ({ firstName, lastName, imageUri }) => {
           resizeMode="cover"
         />
       ) : (
-        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}>{initials || '?'}</Text>
+        <Text style={{ color: Colors.textInverse, fontSize: 20, fontWeight: '700' }}>{initials || '?'}</Text>
       )}
-      <View style={{ position: 'absolute', bottom: -4, right: -4, width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#40B9FF' }}>
+      <View style={{ position: 'absolute', bottom: -4, right: -4, width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.white, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#40B9FF' }}>
         <Ionicons name="camera" size={11} color="#40B9FF" />
       </View>
     </View>

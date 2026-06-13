@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-nati
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 export default function HorizontalScrollSection({
   title,
   items,
@@ -11,40 +12,14 @@ export default function HorizontalScrollSection({
   seeMoreCardStyle,
 }) {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
 
   if (!items || items.length === 0) return null;
 
   const displayed = items.slice(0, 5);
   const hasMore = items.length > 5;
 
-  return (
-    <>
-      <View style={[styles.sectionHeader, { flexDirection: 'row' }]}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-      </View>
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {displayed.map((item, index) => (
-          <View key={index} style={styles.itemWrapper}>
-            {renderItem(item, index)}
-          </View>
-        ))}
-        {hasMore && (
-          <TouchableOpacity
-            style={[styles.seeMoreCard, seeMoreCardStyle]}
-            onPress={onViewAll}
-            activeOpacity={0.8}
-          >
-            <MaterialCommunityIcons name="dots-horizontal" size={28} color={Colors.textSecondary} />
-            <Text style={styles.seeMoreText}>{t('home.viewAll')}</Text>
-          </TouchableOpacity>
-        )}
-      </ScrollView>
-    </>
-  );
-}
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   sectionHeader: {
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -88,4 +63,32 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     marginTop: 6,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <>
+      <View style={[styles.sectionHeader, { flexDirection: 'row' }]}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+      </View>
+
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        {displayed.map((item, index) => (
+          <View key={index} style={styles.itemWrapper}>
+            {renderItem(item, index)}
+          </View>
+        ))}
+        {hasMore && (
+          <TouchableOpacity
+            style={[styles.seeMoreCard, seeMoreCardStyle]}
+            onPress={onViewAll}
+            activeOpacity={0.8}
+          >
+            <MaterialCommunityIcons name="dots-horizontal" size={28} color={Colors.textSecondary} />
+            <Text style={styles.seeMoreText}>{t('home.viewAll')}</Text>
+          </TouchableOpacity>
+        )}
+      </ScrollView>
+    </>
+  );
+}
+

@@ -12,6 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import HorizontalScrollSection from "../../components/common/HorizontalScrollSection";
 import WeatherCard from "../../components/recommendations/WeatherCard";
@@ -22,6 +23,8 @@ import { ROUTES } from "../../navigation/routes";
 import { getGreeting } from "../../utils/greeting";
 
 export default function RecommendationScreen({ navigation }) {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { profile } = useProfileContext();
   const { todaysOutfit, todaysWeather, history, loading } = useRecommendation();
@@ -107,7 +110,7 @@ export default function RecommendationScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,

@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import OutfitOverviewCard from "../../components/recommendations/OutfitOverviewCard";
 import OutfitItemCard from "../../components/recommendations/OutfitItemCard";
@@ -18,6 +19,8 @@ import { getItemsList } from "../../utils/getItemImage";
 import { useRecommendation } from "../../context/RecommendationContext";
 
 export default function RecommendationDetailsScreen({ navigation, route }) {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { todaysOutfit } = useRecommendation();
   const outfit = route.params?.outfit || todaysOutfit;
@@ -89,7 +92,7 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,

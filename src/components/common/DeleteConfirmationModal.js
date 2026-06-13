@@ -2,10 +2,44 @@ import React from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import CustomizeAppButtonFilled from '../common/CustomizeAppButtonFilled';
 import CustomizeAppButtonOutlined from '../common/CustomizeAppButtonOutlined';
 
 const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading, title, subtitle }) => {
+  const { themeVersion } = useTheme();
+const styles = React.useMemo(() => StyleSheet.create({
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
+  container: {
+    width: 343,
+    height: 207,
+    padding: 16,
+    backgroundColor: Colors.white,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  iconContainer: { marginTop: 4 },
+  textContainer: { gap: 8, alignItems: 'center' },
+  title: {
+    fontFamily: 'Roboto',
+    fontWeight: '600',
+    fontSize: 16,
+    textAlign: 'center',
+    color: Colors.textPrimary
+  },
+  subtitle: {
+    fontFamily: 'Roboto',
+    fontWeight: '400',
+    fontSize: 12,
+    textAlign: 'center',
+    color: Colors.textMuted
+  },
+  footer: { gap: 12, width: '100%' }
+}), [themeVersion]);
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -38,36 +72,5 @@ const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading, title, 
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
-  container: {
-    width: 343,
-    height: 207,
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#D5D9DE',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  iconContainer: { marginTop: 4 },
-  textContainer: { gap: 8, alignItems: 'center' },
-  title: {
-    fontFamily: 'Roboto',
-    fontWeight: '600',
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#121826'
-  },
-  subtitle: {
-    fontFamily: 'Roboto',
-    fontWeight: '400',
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#6B7280'
-  },
-  footer: { gap: 12, width: '100%' }
-});
 
 export default DeleteConfirmationModal;

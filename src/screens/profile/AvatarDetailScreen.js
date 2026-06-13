@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, Platform, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -8,11 +9,14 @@ import { ROUTES } from '../../navigation/routes';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const IMAGE_SIZE = width - 80;
 
 export default function AvatarDetailScreen() {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const navigation = useNavigation();
   const route = useRoute();
@@ -44,7 +48,7 @@ export default function AvatarDetailScreen() {
             <Image source={{ uri: avatarUri }} style={styles.avatarImage} resizeMode="contain" />
           ) : (
             <View style={styles.placeholder}>
-              <Ionicons name="person-circle-outline" size={60} color="#D5D9DE" />
+              <Ionicons name="person-circle-outline" size={60} color={Colors.borderDefault} />
               <Text style={styles.placeholderText}>{t('profile.noAvatar')}</Text>
             </View>
           )}
@@ -69,8 +73,8 @@ export default function AvatarDetailScreen() {
           label={t('profile.customizeAvatar')}
           onPress={handleCustomize}
           backgroundColor={Colors.error}
-          textColor="#fff"
-          icon={<Ionicons name="color-palette-outline" size={18} color="#fff" />}
+          textColor={Colors.white}
+          icon={<Ionicons name="color-palette-outline" size={18} color={Colors.white} />}
           iconPosition="right"
         />
       </ScrollView>
@@ -78,10 +82,10 @@ export default function AvatarDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F4F5',
+    backgroundColor: Colors.backgroundColor,
   },
   header: {
     alignItems: 'center',
@@ -93,7 +97,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Roboto_600SemiBold',
     fontSize: 18,
-    color: '#121826',
+    color: Colors.textPrimary,
   },
   body: {
     paddingHorizontal: 20,
@@ -101,7 +105,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   imageCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 20,
     padding: 16,
     alignItems: 'center',
@@ -125,7 +129,7 @@ const styles = StyleSheet.create({
     width: IMAGE_SIZE,
     height: IMAGE_SIZE * 1.2,
     borderRadius: 12,
-    backgroundColor: '#F4F4F5',
+    backgroundColor: Colors.backgroundColor,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 12,
@@ -133,16 +137,16 @@ const styles = StyleSheet.create({
   placeholderText: {
     fontFamily: 'Roboto_500Medium',
     fontSize: 14,
-    color: '#9CA3AF',
+    color: Colors.disabled,
   },
   infoCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 16,
     padding: 16,
     gap: 12,
     marginBottom: 42,
     borderWidth: 1,
-    borderColor: '#E9EBEE',
+    borderColor: Colors.borderDefault,
   },
   infoRow: {
     alignItems: 'center',

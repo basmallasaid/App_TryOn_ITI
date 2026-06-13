@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import Typography from "../../constants/theme/typography";
 import AvatarPreview from "../../components/avatar/AvatarPreview";
 import MeasurementSlider from "../../components/avatar/MeasurementSlider";
@@ -22,6 +23,24 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import { IMAGES } from "../../constants/images/images";
 import { generateAvatar } from "../../api/avatar_services/avatarService";
 import { ROUTES, SOURCE } from "../../navigation/routes";
+
+const subStyles = StyleSheet.create({
+  tabContent: {
+    paddingTop: 8,
+  },
+  genderLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Roboto_600SemiBold",
+    color: Colors.textPrimary,
+    marginBottom: 12,
+  },
+  genderRow: {
+    flexDirection: "row",
+    gap: 16,
+    marginBottom: 8,
+  },
+});
 
 const skinTones = (t) => [
   { id: "very-light", color: "#F6DFC8", label: t("avatar.create.skinTones.veryLight") },
@@ -44,7 +63,7 @@ const hairColors = (t) => [
 const GeneralInfoTab = ({ age, gender, onUpdate }) => {
   const { t } = useTranslation();
   return (
-    <View style={styles.tabContent}>
+    <View style={subStyles.tabContent}>
       <MeasurementSlider
         label={t("avatar.create.age")}
         value={age}
@@ -54,8 +73,8 @@ const GeneralInfoTab = ({ age, gender, onUpdate }) => {
         unit={t("avatar.create.yrs")}
         onChange={(v) => onUpdate("age", v)}
       />
-      <Text style={styles.genderLabel}>{t("avatar.create.gender")}</Text>
-      <View style={styles.genderRow}>
+      <Text style={subStyles.genderLabel}>{t("avatar.create.gender")}</Text>
+      <View style={subStyles.genderRow}>
         <GenderOptionCard
           gender={t("avatar.create.male")}
           selected={gender === "Male"}
@@ -74,7 +93,7 @@ const GeneralInfoTab = ({ age, gender, onUpdate }) => {
 const MeasurementsTab = ({ height, weight, onUpdate }) => {
   const { t } = useTranslation();
   return (
-    <View style={styles.tabContent}>
+    <View style={subStyles.tabContent}>
       <MeasurementSlider
         label={t("avatar.create.height")}
         value={height}
@@ -100,7 +119,7 @@ const MeasurementsTab = ({ height, weight, onUpdate }) => {
 const SkinToneTab = ({ skinTone, onUpdate }) => {
   const { t } = useTranslation();
   return (
-    <View style={styles.tabContent}>
+    <View style={subStyles.tabContent}>
       <ColorSelector
         label={t("avatar.create.selectSkinTone")}
         options={skinTones(t)}
@@ -114,7 +133,7 @@ const SkinToneTab = ({ skinTone, onUpdate }) => {
 const HairColorTab = ({ hairColor, onUpdate }) => {
   const { t } = useTranslation();
   return (
-    <View style={styles.tabContent}>
+    <View style={subStyles.tabContent}>
       <ColorSelector
         label={t("avatar.create.selectHairColor")}
         options={hairColors(t)}
@@ -134,6 +153,7 @@ const tabs = (t) => [
 
 const CreateAvatarScreen = ({ navigation }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const tabList = tabs(t);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -220,6 +240,59 @@ const CreateAvatarScreen = ({ navigation }) => {
     },
   }));
 
+  const styles = React.useMemo(() => StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    fontFamily: "Roboto_700Bold",
+    color: Colors.textPrimary,
+    textAlign: "center",
+    marginBottom: 4,
+  },
+  stepLabel: {
+    fontSize: 16,
+    fontFamily: "Roboto_400Regular",
+    color: Colors.textMuted,
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  progressTrack: {
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.borderDefault,
+    overflow: "hidden",
+    marginBottom: 16,
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: Colors.primary,
+    borderRadius: 2,
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  bodySection: {
+    flex: 1,
+  },
+  buttonWrap: {
+    paddingBottom: 30,
+    paddingTop: 12,
+  },
+  scrollContainer: {
+  flexGrow: 1,
+},
+}), [themeVersion]);
+
   return (
   <SafeAreaView style={styles.safeArea}>
     <ScrollView
@@ -270,73 +343,5 @@ const CreateAvatarScreen = ({ navigation }) => {
   </SafeAreaView>
 );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    fontFamily: "Roboto_700Bold",
-    color: Colors.textPrimary,
-    textAlign: "center",
-    marginBottom: 4,
-  },
-  stepLabel: {
-    fontSize: 16,
-    fontFamily: "Roboto_400Regular",
-    color: Colors.textMuted,
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  progressTrack: {
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "#E9EBEE",
-    overflow: "hidden",
-    marginBottom: 16,
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: Colors.primary,
-    borderRadius: 2,
-  },
-  scrollContent: {
-    paddingBottom: 20,
-  },
-  bodySection: {
-    flex: 1,
-  },
-  genderLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "Roboto_600SemiBold",
-    color: Colors.textPrimary,
-    marginBottom: 12,
-  },
-  genderRow: {
-    flexDirection: "row",
-    gap: 16,
-    marginBottom: 8,
-  },
-  tabContent: {
-    paddingTop: 8,
-  },
-  buttonWrap: {
-    paddingBottom: 30,
-    paddingTop: 12,
-  },
-  scrollContainer: {
-  flexGrow: 1,
-},
-});
 
 export default CreateAvatarScreen;

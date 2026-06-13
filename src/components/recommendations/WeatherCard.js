@@ -2,42 +2,14 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import { getWeatherIcon } from "../../constants/weatherIcons";
 
 export default function WeatherCard({ weather }) {
   const conditionIcon = getWeatherIcon(weather.condition);
+  const { themeVersion } = useTheme();
 
-  return (
-    <View style={styles.card}>
-      <View style={[styles.mainRow, { flexDirection: "row" }]}>
-        <View style={[styles.leftRow, { flexDirection: "row" }]}>
-          <Ionicons name={conditionIcon.ionicons} size={33} color={conditionIcon.color} />
-          <View style={[styles.leftTextCol, { alignItems: "flex-start" }]}>
-            <Text style={[styles.tempValue, { textAlign: "left" }]}>{weather.temperature}°C</Text>
-            <Text style={[styles.conditionText, { textAlign: "left" }]}>{weather.condition}</Text>
-          </View>
-        </View>
-
-        <View style={[styles.rightRow, { flexDirection: "row" }]}>
-          <View style={styles.detailItem}>
-            <Ionicons name="thermometer-outline" size={20} color="#1550D3" />
-            <Text style={styles.detailText}>{weather.feelsLike}°C</Text>
-          </View>
-          <View style={styles.detailItem}>
-            <MaterialCommunityIcons name="water-percent" size={20} color="#1550D3" />
-            <Text style={styles.detailText}>{weather.humidity}%</Text>
-          </View>
-          <View style={styles.detailItem}>
-            <MaterialCommunityIcons name="weather-windy" size={20} color="#1550D3" />
-            <Text style={styles.detailText}>{weather.windSpeed} km/hr</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   card: {
     width: "100%",
     borderRadius: 16,
@@ -84,4 +56,35 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     marginTop: 4,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <View style={styles.card}>
+      <View style={[styles.mainRow, { flexDirection: "row" }]}>
+        <View style={[styles.leftRow, { flexDirection: "row" }]}>
+          <Ionicons name={conditionIcon.ionicons} size={33} color={conditionIcon.color} />
+          <View style={[styles.leftTextCol, { alignItems: "flex-start" }]}>
+            <Text style={[styles.tempValue, { textAlign: "left" }]}>{weather.temperature}°C</Text>
+            <Text style={[styles.conditionText, { textAlign: "left" }]}>{weather.condition}</Text>
+          </View>
+        </View>
+
+        <View style={[styles.rightRow, { flexDirection: "row" }]}>
+          <View style={styles.detailItem}>
+            <Ionicons name="thermometer-outline" size={20} color="#1550D3" />
+            <Text style={styles.detailText}>{weather.feelsLike}°C</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <MaterialCommunityIcons name="water-percent" size={20} color="#1550D3" />
+            <Text style={styles.detailText}>{weather.humidity}%</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <MaterialCommunityIcons name="weather-windy" size={20} color="#1550D3" />
+            <Text style={styles.detailText}>{weather.windSpeed} km/hr</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import Typography from "../../constants/theme/typography";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
@@ -27,7 +28,7 @@ const PhotoPlaceholder = () => {
   return (
     <View style={photoStyles.container}>
       <View style={photoStyles.circle}>
-        <Ionicons name="camera" size={24} color="#6B7280" />
+        <Ionicons name="camera" size={24} color={Colors.iconGray} />
       </View>
       <Text style={photoStyles.label}>{t('tryOn.selectModel.tapToUpload')}</Text>
     </View>
@@ -36,7 +37,7 @@ const PhotoPlaceholder = () => {
 
 const photoStyles = StyleSheet.create({
   container: {
-    backgroundColor: "#E7EBFE",
+    backgroundColor: Colors.backgroundColor,
     borderRadius: 16,
     padding: 8,
     alignItems: "center",
@@ -48,14 +49,14 @@ const photoStyles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.white,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
   },
   label: {
     fontSize: 10,
-    color: "#6B7280",
+    color: Colors.textMuted,
     fontWeight: "500",
     fontFamily: "Roboto_500Medium",
     textAlign: "center",
@@ -64,6 +65,7 @@ const photoStyles = StyleSheet.create({
 
 const SelectModelScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const { user } = useAuth();
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -120,6 +122,43 @@ const SelectModelScreen = ({ navigation, route }) => {
     }
   };
 
+  const styles = React.useMemo(() => StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  title: {
+    ...Typography.screenTitleLarge,
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontFamily: "Roboto_400Regular",
+    fontWeight: "400",
+    fontSize: 16,
+    color: Colors.textMuted,
+    textAlign: "center",
+    marginBottom: 32,
+  },
+  optionsWrap: {
+    gap: 16,
+    paddingTop: 10,
+  },
+  buttonWrap: {
+    paddingBottom: 30,
+    paddingTop: 50,
+  },
+  scrollContent: {
+  flexGrow: 1,
+},
+}), [themeVersion]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
   <ScrollView
@@ -166,42 +205,5 @@ const SelectModelScreen = ({ navigation, route }) => {
 </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  title: {
-    ...Typography.screenTitleLarge,
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontFamily: "Roboto_400Regular",
-    fontWeight: "400",
-    fontSize: 16,
-    color: Colors.textMuted,
-    textAlign: "center",
-    marginBottom: 32,
-  },
-  optionsWrap: {
-    gap: 16,
-    paddingTop: 10,
-  },
-  buttonWrap: {
-    paddingBottom: 30,
-    paddingTop: 50,
-  },
-  scrollContent: {
-  flexGrow: 1,
-},
-});
 
 export default SelectModelScreen;

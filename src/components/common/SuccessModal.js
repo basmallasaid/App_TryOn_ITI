@@ -1,10 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import { Modal, View, StyleSheet, Animated, Dimensions } from "react-native";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const SuccessModal = ({ visible, onAnimationComplete, children }) => {
+  const { themeVersion } = useTheme();
   // --- Native driver (opacity only) ---
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const cardOpacity = useRef(new Animated.Value(0)).current;
@@ -81,6 +83,33 @@ const SuccessModal = ({ visible, onAnimationComplete, children }) => {
     });
   }, [visible]);
 
+  const styles = React.useMemo(() => StyleSheet.create({
+    backdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0,0,0,0.6)",
+    },
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    card: {
+      backgroundColor: Colors.white,
+      paddingVertical: 36,
+      paddingHorizontal: 28,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.25,
+      shadowRadius: 20,
+      elevation: 12,
+      borderWidth: 1,
+      borderColor: "#D9D9D9B2",
+    },
+  }), [themeVersion]);
+
   return (
     <Modal visible={visible} transparent animationType="none">
 
@@ -114,32 +143,5 @@ const SuccessModal = ({ visible, onAnimationComplete, children }) => {
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.6)",
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  card: {
-    backgroundColor: Colors.white,
-    paddingVertical: 36,
-    paddingHorizontal: 28,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.25,
-    shadowRadius: 20,
-    elevation: 12,
-    borderWidth: 1,
-    borderColor: "#D9D9D9B2",
-  },
-});
 
 export default SuccessModal;

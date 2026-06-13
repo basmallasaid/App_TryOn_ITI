@@ -18,6 +18,7 @@ import { useFavorites } from '../../context/FavoritesContext';
 import RecentItemCard from '../../components/home/RecentItemCard';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = 150;
@@ -26,6 +27,8 @@ const TOTAL_GRID_WIDTH = CARD_WIDTH * 2 + GAP;
 const HORIZONTAL_PADDING = Math.max(16, (SCREEN_WIDTH - TOTAL_GRID_WIDTH) / 2);
 
 export default function RecentRecyclesScreen({ navigation }) {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { recycles, loading } = useRecentRecycles();
   const { isFavorite, addItem, removeItem } = useFavorites();
@@ -77,7 +80,7 @@ export default function RecentRecyclesScreen({ navigation }) {
 
       {recycles.length === 0 ? (
         <View style={styles.center}>
-          <Ionicons name="recycle" size={64} color="#D5D9DE" />
+          <Ionicons name="recycle" size={64} color={Colors.borderDefault} />
           <Text style={styles.emptyText}>{t('home.noRecentRecycles')}</Text>
         </View>
       ) : (
@@ -95,10 +98,10 @@ export default function RecentRecyclesScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F5F6F7',
+    backgroundColor: Colors.backgroundColor,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
@@ -110,7 +113,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Roboto_700Bold',
     fontSize: 18,
-    color: '#121826',
+    color: Colors.textPrimary,
   },
   center: {
     flex: 1,
@@ -121,7 +124,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontFamily: 'Roboto',
     fontSize: 16,
-    color: '#9CA3AF',
+    color: Colors.disabled,
     textAlign: 'center',
   },
   row: {

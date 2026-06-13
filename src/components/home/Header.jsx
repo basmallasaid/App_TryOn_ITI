@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 
 export default function Header() {
@@ -14,6 +15,7 @@ export default function Header() {
   const { user } = useAuth();
   const navigation = useNavigation();
   const { profile, settings } = useProfileContext();
+  const { themeVersion } = useTheme();
 
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
   const lastName = profile?.profile?.last_name || "";
@@ -25,6 +27,57 @@ export default function Header() {
   const showImage = isValid && !imgErr;
 
   console.log('[Header] profile:', !!profile, 'showImage:', showImage, 'rawImage:', rawImage, 'initials:', initials, 'firstName:', firstName);
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginVertical: 25,
+    },
+    headerLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    profileImage: {
+      width: 55,
+      height: 55,
+      borderRadius: 27.5,
+    },
+    profilePlaceholder: {
+      width: 55,
+      height: 55,
+      borderRadius: 27.5,
+      backgroundColor: Colors.disabled,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    profilePlaceholderText: {
+      color: Colors.textInverse,
+      fontSize: 20,
+      fontWeight: "700",
+    },
+    headerText: {
+      marginLeft: 12,
+    },
+    helloRow: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    helloText: {
+      fontSize: 16,
+      color: Colors.textSecondary,
+    },
+    wave: {
+      fontSize: 16,
+      marginLeft: 5,
+    },
+    userName: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: Colors.textPrimary,
+    },
+  }), [themeVersion]);
 
   return (
     <View style={styles.header}>
@@ -60,54 +113,3 @@ export default function Header() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginVertical: 25,
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  profileImage: {
-    width: 55,
-    height: 55,
-    borderRadius: 27.5,
-  },
-  profilePlaceholder: {
-    width: 55,
-    height: 55,
-    borderRadius: 27.5,
-    backgroundColor: Colors.disabled,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  profilePlaceholderText: {
-    color: Colors.white,
-    fontSize: 20,
-    fontWeight: "700",
-  },
-  headerText: {
-    marginLeft: 12,
-  },
-  helloRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  helloText: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-  },
-  wave: {
-    fontSize: 16,
-    marginLeft: 5,
-  },
-  userName: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: Colors.textPrimary,
-  },
-});

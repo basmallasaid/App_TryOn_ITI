@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNotifications } from "../../context/NotificationContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const NOTIF_ICONS = {
   tryon: { name: "tshirt-outline", color: "#40B9FF", bg: "#E9F7FE" },
@@ -29,7 +30,7 @@ function getNotifMeta(title = "") {
   if (lower.includes("recycle")) return NOTIF_ICONS.recycle;
   if (lower.includes("outfit") || lower.includes("recommend")) return NOTIF_ICONS.outfit;
   if (lower.includes("match")) return NOTIF_ICONS.matching;
-  return { name: "notifications-outline", color: "#6B7280", bg: "#F3F4F6" };
+  return { name: "notifications-outline", color: Colors.iconGray, bg: Colors.backgroundColor };
 }
 
 function formatRelativeTime(dateString, t) {
@@ -49,6 +50,7 @@ function formatRelativeTime(dateString, t) {
 
 export default function NotificationsScreen({ navigation }) {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const insets = useSafeAreaInsets();
   const {
     notifications,
@@ -120,7 +122,7 @@ export default function NotificationsScreen({ navigation }) {
             onPress={() => handleDelete(item._id)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="trash-outline" size={16} color="#D5D9DE" />
+            <Ionicons name="trash-outline" size={16} color={Colors.borderDefault} />
           </TouchableOpacity>
         </TouchableOpacity>
       );
@@ -169,49 +171,10 @@ export default function NotificationsScreen({ navigation }) {
     );
   }, [loading, t]);
 
-  return (
-    <View style={[styles.safe, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <CustomBackButton onPress={() => navigation.goBack()} />
-        <Text style={styles.headerTitle}>
-          {t("notifications.title") || t("notifications.title")}
-        </Text>
-        <View style={{ width: 56 }} />
-      </View>
-
-      {loading && notifications.length === 0 ? (
-        <View style={styles.loadingWrap}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-        </View>
-      ) : (
-        <FlatList
-          data={notifications}
-          renderItem={renderItem}
-          keyExtractor={(item) => item._id}
-          ListHeaderComponent={renderHeader}
-          ListEmptyComponent={renderEmpty}
-          contentContainerStyle={
-            notifications.length === 0 ? styles.emptyContainer : styles.listPad
-          }
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[Colors.primary]}
-              tintColor={Colors.primary}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-        />
-      )}
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
+  const styles = React.useMemo(() => StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#F5F6F7",
+    backgroundColor: Colors.backgroundColor,
   },
   header: {
     flexDirection: "row",
@@ -248,7 +211,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: Colors.borderDefault,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
@@ -288,7 +251,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: Colors.white,
     borderWidth: 1,
-    borderColor: "#E9EBEE",
+    borderColor: Colors.borderDefault,
   },
   markAllText: {
     fontFamily: "Roboto_500Medium",
@@ -303,11 +266,11 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: Colors.borderDefault,
   },
   cardUnread: {
-    backgroundColor: "#F8FBFF",
-    borderColor: "#E0F0FF",
+    backgroundColor: Colors.backgroundColor,
+    borderColor: Colors.borderDefault,
   },
   iconCircle: {
     width: 42,
@@ -350,7 +313,7 @@ const styles = StyleSheet.create({
   cardTime: {
     fontFamily: "Roboto_400Regular",
     fontSize: 11,
-    color: "#B0B5C0",
+    color: Colors.disabled,
     marginTop: 6,
   },
   deleteBtn: {
@@ -358,4 +321,45 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: 12,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <View style={[styles.safe, { paddingTop: insets.top }]}>
+      <View style={styles.header}>
+        <CustomBackButton onPress={() => navigation.goBack()} />
+        <Text style={styles.headerTitle}>
+          {t("notifications.title") || t("notifications.title")}
+        </Text>
+        <View style={{ width: 56 }} />
+      </View>
+
+      {loading && notifications.length === 0 ? (
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={notifications}
+          renderItem={renderItem}
+          keyExtractor={(item) => item._id}
+          ListHeaderComponent={renderHeader}
+          ListEmptyComponent={renderEmpty}
+          contentContainerStyle={
+            notifications.length === 0 ? styles.emptyContainer : styles.listPad
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[Colors.primary]}
+              tintColor={Colors.primary}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+    </View>
+  );
+}
+
+

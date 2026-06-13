@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -26,6 +26,7 @@ import CustomizeAppButtonOutlined from "../../components/common/CustomizeAppButt
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
 import Colors from "../../constants/theme/colors";
 import { ROUTES } from "../../navigation/routes";
+import { useTheme } from "../../context/ThemeContext";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { deleteAccount } from "../../api/user_services/userService";
@@ -34,6 +35,8 @@ import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 
 const ProfileScreen = ({ navigation }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { logout } = useAuth();
   const { language, selectLanguage } = useLanguage();
   const {
@@ -44,8 +47,10 @@ const ProfileScreen = ({ navigation }) => {
     updateLanguage,
     updateUserImage,
   } = useProfileContext();
+  const { toggleTheme, setDarkMode, isDarkMode } = useTheme();
   const { items: favorites } = useFavorites();
   const [langModalVisible, setLangModalVisible] = useState(false);
+  const themeSynced = useRef(false);
   const [tempLang, setTempLang] = useState(language);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -62,6 +67,14 @@ const ProfileScreen = ({ navigation }) => {
         .catch(() => {});
     }
   }, [profile?.avatars]);
+
+  useEffect(() => {
+    if (themeSynced.current) return;
+    if (settings.darkMode !== isDarkMode) {
+      setDarkMode(settings.darkMode);
+    }
+    themeSynced.current = true;
+  }, [settings.darkMode]);
 
   const completionScore = () => {
     if (!profile) return 0;
@@ -222,7 +235,7 @@ const ProfileScreen = ({ navigation }) => {
                 value={settings.notifications}
                 onValueChange={updateNotifications}
                 trackColor={{ false: Colors.disabled, true: Colors.primary }}
-                thumbColor="#FFFFFF"
+                thumbColor={Colors.white}
                 style={styles.switch}
               />
             }
@@ -233,9 +246,12 @@ const ProfileScreen = ({ navigation }) => {
             right={
               <Switch
                 value={settings.darkMode}
-                onValueChange={updateDarkMode}
+                onValueChange={(val) => {
+                  updateDarkMode(val);
+                  toggleTheme();
+                }}
                 trackColor={{ false: Colors.disabled, true: Colors.primary }}
-                thumbColor="#FFFFFF"
+                thumbColor={Colors.white}
                 style={styles.switch}
               />
             }
@@ -249,7 +265,7 @@ const ProfileScreen = ({ navigation }) => {
               setLangModalVisible(true);
             }}
             right={
-              <Ionicons name="chevron-forward" size={16} color="#6B7280" />
+              <Ionicons name="chevron-forward" size={16} color={Colors.iconGray} />
             }
           />
 
@@ -259,7 +275,7 @@ const ProfileScreen = ({ navigation }) => {
             borderBottom={false}
             onPress={() => {}}
             right={
-              <Ionicons name="chevron-forward" size={16} color="#6B7280" />
+              <Ionicons name="chevron-forward" size={16} color={Colors.iconGray} />
             }
           />
         </View>
@@ -270,10 +286,10 @@ const ProfileScreen = ({ navigation }) => {
             label={t("profile.logout")}
             onPress={logout}
             backgroundColor={Colors.error}
-            textColor="#fff"
+            textColor={Colors.white}
             iconPosition="right"
             icon={
-              <Ionicons name="log-out-outline" size={18} color="#fff" />
+              <Ionicons name="log-out-outline" size={18} color={Colors.white} />
             }
           />
           <CustomizeAppButtonOutlined
@@ -310,10 +326,12 @@ const ProfileScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+export default ProfileScreen;
+
+const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#F4F4F5",
+    backgroundColor: Colors.backgroundColor,
   },
   scroll: {
     paddingHorizontal: 16,
@@ -322,10 +340,10 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.white,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E9EBEE",
+    borderColor: Colors.borderDefault,
     paddingHorizontal: 16,
     paddingVertical: 24,
     gap: 20,
@@ -360,7 +378,7 @@ const styles = StyleSheet.create({
     height: 20,
     paddingHorizontal: 16,
     borderRadius: 16,
-    backgroundColor: "#D5D9DE",
+    backgroundColor: Colors.borderDefault,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -377,7 +395,7 @@ const styles = StyleSheet.create({
     width: 279,
     height: 4,
     borderRadius: 8,
-    backgroundColor: "#D5D9DE",
+    backgroundColor: Colors.borderDefault,
     overflow: "hidden",
   },
   progressFill: {
@@ -404,7 +422,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto_600SemiBold",
     fontSize: 16,
     lineHeight: 16,
-    color: "#121826",
+    color: Colors.textPrimary,
   },
   customizeText: {
     fontFamily: "Roboto_500Medium",
@@ -424,5 +442,3 @@ const styles = StyleSheet.create({
     gap: 12,
   },
 });
-
-export default ProfileScreen;

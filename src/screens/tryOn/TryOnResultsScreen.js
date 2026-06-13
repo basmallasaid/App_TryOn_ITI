@@ -20,11 +20,14 @@ import { virtualTryOn } from '../../api/virtual_tryon_services/virtualTryonServi
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import { useTranslation } from "react-i18next";
 import CustomBackButton from '../../components/common/CustomBackButton';
+import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const { width } = Dimensions.get('window');
 
 const TryOnResult = ({ navigation, route }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const result = route?.params?.result || {};
   const productImage = route?.params?.productImage;
   const avatarImage = route?.params?.avatarImage;
@@ -108,6 +111,7 @@ const TryOnResult = ({ navigation, route }) => {
       setSaving(false);
     }
   };
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -177,10 +181,10 @@ const TryOnResult = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: Colors.backgroundColor,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   scrollContent: {
@@ -196,7 +200,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#101828',
+    color: Colors.textPrimary,
   },
   imageContainer: {
     flex: 1,
@@ -209,7 +213,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   placeholderText: {
-    color: '#718096',
+    color: Colors.textMuted,
     fontSize: 16,
   },
   footer: {
@@ -225,7 +229,7 @@ const styles = StyleSheet.create({
   generatingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#718096',
+    color: Colors.textMuted,
   },
   errorContainer: {
     alignItems: 'center',
@@ -245,7 +249,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   retryBtnText: {
-    color: '#FFFFFF',
+    color: Colors.textInverse,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -264,7 +268,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   saveButtonText: {
-    color: '#FFFFFF',
+    color: Colors.textInverse,
     fontSize: 18,
     fontWeight: '600',
   },

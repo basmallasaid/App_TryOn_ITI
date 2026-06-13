@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../constants/theme/colors";
+import { useTheme } from "../context/ThemeContext";
 import ProfileStack from "../navigation/ProfileStack";
 import StoreStack from "./StoreStack";
 import HomeScreen from '../screens/home/HomeScreen';
@@ -23,7 +24,18 @@ const TAB_LABELS = {
 };
 
 export default function AppStack() {
+  const { themeVersion } = useTheme();
   const { t } = useTranslation();
+  const styles = React.useMemo(() => StyleSheet.create({
+    activeIndicator: {
+      height: 2,
+      width: 40,
+      backgroundColor: ACTIVE_COLOR,
+      marginTop: 4,
+      borderRadius: 2,
+    },
+  }), [themeVersion]);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -34,9 +46,9 @@ export default function AppStack() {
           height: 70,
           paddingBottom: 10,
           paddingTop: 10,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: Colors.white,
           borderTopWidth: 1,
-          borderTopColor: "#F0F0F0",
+          borderTopColor: Colors.borderDefault,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -116,13 +128,3 @@ export default function AppStack() {
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  activeIndicator: {
-    height: 2,
-    width: 40,
-    backgroundColor: ACTIVE_COLOR,
-    marginTop: 4,
-    borderRadius: 2,
-  },
-});

@@ -1,8 +1,62 @@
+import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const ColorSelector = ({ label, options, selectedId, onSelect }) => {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => StyleSheet.create({
+    container: {
+      marginBottom: 16,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: "600",
+      fontFamily: "Roboto_600SemiBold",
+      color: Colors.textPrimary,
+      marginBottom: 16,
+    },
+    row: {
+      flexDirection: "row",
+      gap: 16,
+      paddingHorizontal: 4,
+    },
+    optionWrap: {
+      alignItems: "center",
+      width: 64,
+    },
+    colorCircle: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      justifyContent: "center",
+      alignItems: "center",
+      borderWidth: 2,
+      borderColor: "transparent",
+      marginBottom: 6,
+    },
+    colorCircleSelected: {
+      borderColor: Colors.primary,
+      shadowColor: Colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+      elevation: 4,
+    },
+    optionLabel: {
+      fontSize: 10,
+      color: Colors.textMuted,
+      fontFamily: "Roboto_400Regular",
+      textAlign: "center",
+    },
+    optionLabelSelected: {
+      color: Colors.textPrimary,
+      fontWeight: "600",
+      fontFamily: "Roboto_600SemiBold",
+    },
+  }), [themeVersion]);
+
   return (
     <View style={styles.container}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
@@ -55,56 +109,5 @@ const ColorSelector = ({ label, options, selectedId, onSelect }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "Roboto_600SemiBold",
-    color: Colors.textPrimary,
-    marginBottom: 16,
-  },
-  row: {
-    flexDirection: "row",
-    gap: 16,
-    paddingHorizontal: 4,
-  },
-  optionWrap: {
-    alignItems: "center",
-    width: 64,
-  },
-  colorCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "transparent",
-    marginBottom: 6,
-  },
-  colorCircleSelected: {
-    borderColor: Colors.primary,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  optionLabel: {
-    fontSize: 10,
-    color: Colors.textMuted,
-    fontFamily: "Roboto_400Regular",
-    textAlign: "center",
-  },
-  optionLabelSelected: {
-    color: Colors.textPrimary,
-    fontWeight: "600",
-    fontFamily: "Roboto_600SemiBold",
-  },
-});
 
 export default ColorSelector;

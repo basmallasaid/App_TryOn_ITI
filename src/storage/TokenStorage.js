@@ -54,3 +54,11 @@ export const getDailyOutfitData = async (userId) => {
 export const clearDailyOutfit = (userId) =>
   SecureStore.deleteItemAsync(dailyKey(DAILY_OUTFIT_DATE_KEY, userId))
     .then(() => SecureStore.deleteItemAsync(dailyKey(DAILY_OUTFIT_DATA_KEY, userId)));
+
+const THEME_KEY = 'app_theme';
+
+export const saveTheme = (mode) =>
+  SecureStore.setItemAsync(THEME_KEY, mode);
+
+export const getTheme = () =>
+  SecureStore.getItemAsync(THEME_KEY);

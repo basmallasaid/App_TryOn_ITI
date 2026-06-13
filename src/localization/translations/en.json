@@ -595,7 +595,9 @@
     "noRecentRecycles": "No recent recycles yet",
     "favoriteError": "Failed to update favorite",
     "hero": {
-      "title": "Your style, intelligently yours.",
+      "title1": "Your style, ",
+      "titleHighlight": "intelligently",
+      "title2": " yours.",
       "subtitle": "AI that understands your wardrobe and creates looks that fit you."
     },
     "outfitCard": {

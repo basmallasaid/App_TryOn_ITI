@@ -1,7 +1,9 @@
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Platform, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 
 const PLANS = [
   { id: 'monthly', price: '$9.99', period: 'month' },
@@ -9,6 +11,8 @@ const PLANS = [
 ];
 
 export default function SubscriptionScreen() {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
 
   const handleSubscribe = (plan) => {
@@ -42,7 +46,7 @@ export default function SubscriptionScreen() {
             <Text style={styles.planPrice}>{plan.price}<Text style={styles.planPeriod}>{plan.period === 'month' ? t("subscription.perMonth") : t("subscription.perYear")}</Text></Text>
             <View style={[styles.subscribeBtn, { flexDirection: "row" }]}>
               <Text style={styles.subscribeText}>{t('subscription.subscribe')}</Text>
-              <Ionicons name="arrow-forward" size={18} color="#fff" />
+              <Ionicons name="arrow-forward" size={18} color={Colors.white} />
             </View>
           </TouchableOpacity>
         ))}
@@ -51,10 +55,10 @@ export default function SubscriptionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F4F5',
+    backgroundColor: Colors.backgroundColor,
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -64,22 +68,22 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Roboto_700Bold',
     fontSize: 28,
-    color: '#121826',
+    color: Colors.textPrimary,
     marginBottom: 8,
   },
   subtitle: {
     fontFamily: 'Roboto_400Regular',
     fontSize: 14,
-    color: '#6B7280',
+    color: Colors.textMuted,
     marginBottom: 32,
   },
   planCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E9EBEE',
+    borderColor: Colors.borderDefault,
   },
   planHeader: {
     alignItems: 'center',
@@ -89,7 +93,7 @@ const styles = StyleSheet.create({
   planName: {
     fontFamily: 'Roboto_600SemiBold',
     fontSize: 18,
-    color: '#121826',
+    color: Colors.textPrimary,
   },
   badge: {
     backgroundColor: '#40B9FF',
@@ -100,18 +104,18 @@ const styles = StyleSheet.create({
   badgeText: {
     fontFamily: 'Roboto_500Medium',
     fontSize: 11,
-    color: '#fff',
+    color: Colors.textInverse,
   },
   planPrice: {
     fontFamily: 'Roboto_700Bold',
     fontSize: 32,
-    color: '#121826',
+    color: Colors.textPrimary,
     marginBottom: 16,
   },
   planPeriod: {
     fontFamily: 'Roboto_400Regular',
     fontSize: 16,
-    color: '#6B7280',
+    color: Colors.textMuted,
   },
   subscribeBtn: {
     alignItems: 'center',
@@ -124,6 +128,6 @@ const styles = StyleSheet.create({
   subscribeText: {
     fontFamily: 'Roboto_600SemiBold',
     fontSize: 16,
-    color: '#fff',
+    color: Colors.textInverse,
   },
 });

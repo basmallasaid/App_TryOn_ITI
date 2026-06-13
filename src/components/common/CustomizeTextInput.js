@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import Typography from "../../constants/theme/typography";
 import { Ionicons } from "@expo/vector-icons";
 const CustomizeTextInput = ({
@@ -26,6 +27,7 @@ const CustomizeTextInput = ({
   onRightIconPress,
   editable = true,
 }) => {
+  const { themeVersion } = useTheme();
   const [hidden, setHidden] = useState(secureTextEntry);
 
   const borderColor =
@@ -43,6 +45,56 @@ const CustomizeTextInput = ({
         : Colors.textPrimary;
 
   const iconColor = state === "default" ? Colors.iconGray : stateColor;
+
+const styles = React.useMemo(() => StyleSheet.create({
+  wrapper: {
+    marginBottom: 14,
+  },
+
+  label: {
+    ...Typography.inputLabel,
+    marginBottom: 6,
+  },
+
+  container: {
+    width: "100%",
+    height: 40,
+    borderWidth: 2,
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.white,
+  },
+
+  input: {
+    flex: 1,
+    fontFamily: "Roboto_400Regular",
+    fontWeight: "400",
+    fontSize: 12,
+    padding: 0,
+  },
+
+  eyeWrap: {
+    paddingLeft: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  errorText: {
+    fontFamily: "Roboto_400Regular",
+    fontWeight: "400",
+    fontSize: 11,
+    color: Colors.error,
+    marginTop: 4,
+    marginLeft: 2,
+  },
+  rightSection: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+}), [themeVersion]);
 
   return (
     <View style={[styles.wrapper, wrapperStyle]}>
@@ -112,54 +164,5 @@ const CustomizeTextInput = ({
   );
 };
 
-const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: 14,
-  },
-
-  label: {
-    ...Typography.inputLabel,
-    marginBottom: 6,
-  },
-
-  container: {
-    width: "100%",
-    height: 40,
-    borderWidth: 2,
-    borderRadius: 8,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.white,
-  },
-
-  input: {
-    flex: 1,
-    fontFamily: "Roboto_400Regular",
-    fontWeight: "400",
-    fontSize: 12,
-    padding: 0,
-  },
-
-  eyeWrap: {
-    paddingLeft: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  errorText: {
-    fontFamily: "Roboto_400Regular",
-    fontWeight: "400",
-    fontSize: 11,
-    color: Colors.error,
-    marginTop: 4,
-    marginLeft: 2,
-  },
-  rightSection: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-});
 
 export default CustomizeTextInput;

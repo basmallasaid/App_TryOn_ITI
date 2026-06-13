@@ -1,6 +1,8 @@
+import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 const FLAG = {
   en: '🇬🇧',
   ar: '🇪🇬',
@@ -8,27 +10,14 @@ const FLAG = {
 
 const LanguageContainer = ({ language, selected = false, onPress }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
 
   const LABEL = {
     en: t('language.english'),
     ar: t('language.arabic'),
   };
 
-  return (
-    <TouchableOpacity
-      style={[styles.container, { flexDirection: 'row' }, selected && styles.containerSelected]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <Text style={[styles.flag, { marginRight: 14, marginLeft: 0 }]}>{FLAG[language]}</Text>
-      <Text style={[styles.label, selected && styles.labelSelected]}>
-        {LABEL[language]}
-      </Text>
-    </TouchableOpacity>
-  );
-};
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   container: {
     alignItems: 'center',
     borderWidth: 1.5,
@@ -37,7 +26,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     height: 56,
     marginBottom: 12,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
   },
   containerSelected: {
     borderColor: Colors.success,
@@ -57,6 +46,21 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_600SemiBold',
   },
  
-});
+}), [themeVersion]);
+
+  return (
+    <TouchableOpacity
+      style={[styles.container, { flexDirection: 'row' }, selected && styles.containerSelected]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <Text style={[styles.flag, { marginRight: 14, marginLeft: 0 }]}>{FLAG[language]}</Text>
+      <Text style={[styles.label, selected && styles.labelSelected]}>
+        {LABEL[language]}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
 
 export default LanguageContainer;

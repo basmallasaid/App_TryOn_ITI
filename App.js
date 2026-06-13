@@ -1,12 +1,14 @@
 import { I18nManager } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { navigationRef } from "./src/utils/navigationRef";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { LanguageProvider } from "./src/context/LanguageContext";
+import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
+import Colors from "./src/constants/theme/colors";
 import RootNavigator from "./src/navigation/RootNavigator";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import {
@@ -38,6 +40,35 @@ function RecommendationProviderWithAuthKey({ children }) {
   );
 }
 
+function ThemedApp() {
+  const { themeVersion, isDarkMode } = useTheme();
+
+  const navTheme = React.useMemo(
+    () => ({
+      ...(isDarkMode ? DarkTheme : DefaultTheme),
+      colors: {
+        ...(isDarkMode ? DarkTheme.colors : DefaultTheme.colors),
+        primary: Colors.primary,
+        background: Colors.backgroundColor,
+        card: Colors.white,
+        text: Colors.textPrimary,
+        border: Colors.borderDefault,
+        notification: Colors.error,
+      },
+    }),
+    [themeVersion]
+  );
+
+  return (
+    <>
+      <StatusBar style={isDarkMode ? "light" : "dark"} />
+      <NavigationContainer ref={navigationRef} key={themeVersion} theme={navTheme}>
+        <RootNavigator />
+      </NavigationContainer>
+    </>
+  );
+}
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     Roboto_400Regular,
@@ -57,27 +88,27 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <ProfileProvider>
-          <WardrobeProvider>
-            <NotificationProvider>
-              <FavoritesProvider>
-                <RecentTryOnsProvider>
-                  <RecentRecyclesProvider>
-                    <RecommendationProviderWithAuthKey>
-                  <NavigationContainer ref={navigationRef}>
-                    <RootNavigator />
-                  </NavigationContainer>
-                    </RecommendationProviderWithAuthKey>
-                  </RecentRecyclesProvider>
-                </RecentTryOnsProvider>
-              </FavoritesProvider>
-            </NotificationProvider>
-          </WardrobeProvider>
-        </ProfileProvider>
-      </AuthProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <ProfileProvider>
+            <WardrobeProvider>
+              <NotificationProvider>
+                <FavoritesProvider>
+                  <RecentTryOnsProvider>
+                    <RecentRecyclesProvider>
+                      <RecommendationProviderWithAuthKey>
+                        <ThemedApp />
+                      </RecommendationProviderWithAuthKey>
+                    </RecentRecyclesProvider>
+                  </RecentTryOnsProvider>
+                </FavoritesProvider>
+              </NotificationProvider>
+            </WardrobeProvider>
+          </ProfileProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

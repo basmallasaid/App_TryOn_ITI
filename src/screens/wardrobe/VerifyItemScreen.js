@@ -15,6 +15,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import { useWardrobe } from "../../context/WardrobeContext";
 import SelectionChip from "../../components/wardrobe/SelectionChip";
 import QuestionGroup from "../../components/wardrobe/QuestionGroup";
@@ -57,6 +58,8 @@ const matchToOptions = (values, options) =>
   values.filter((v) => options.includes(v));
 
 const VerifyItemScreen = ({ route, navigation }) => {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { imageUri, analysisResult } = route.params;
   const garment = analysisResult?.garments?.[0] ?? {};
   const { refetch, updateItem } = useWardrobe();
@@ -344,10 +347,10 @@ const VerifyItemScreen = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#F5F6F7",
+    backgroundColor: Colors.backgroundColor,
   },
   header: {
     paddingTop:
@@ -369,7 +372,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: "Roboto_400Regular",
     fontSize: 16,
-    color: "#6B7280",
+    color: Colors.textMuted,
     textAlign: "center",
   },
   imageContainer: {
@@ -378,16 +381,16 @@ const styles = StyleSheet.create({
     marginBottom: SHEET_PEEK_H + 20,
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#E9EBEE",
+    backgroundColor: Colors.borderDefault,
     borderWidth: 1,
-    borderColor: "#E9EBEE",
+    borderColor: Colors.borderDefault,
   },
   image: {
     width: "100%",
     height: "100%",
   },
   overlay: {
-    backgroundColor: "#0C0C0C",
+    backgroundColor: Colors.textPrimary,
     zIndex: 10,
   },
   sheet: {
@@ -395,7 +398,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     zIndex: 20,
@@ -414,12 +417,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#D5D9DE",
+    backgroundColor: Colors.borderDefault,
   },
   peekHint: {
     fontFamily: "Roboto_400Regular",
     fontSize: 13,
-    color: "#6B7280",
+    color: Colors.textMuted,
   },
   sheetContent: {
     paddingHorizontal: 24,

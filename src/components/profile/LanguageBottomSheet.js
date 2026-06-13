@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   View,
   Text,
@@ -10,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import LanguageContainer from "../language/languageContainer";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const { height: H } = Dimensions.get("window");
 
@@ -23,40 +25,9 @@ const LanguageBottomSheet = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  return (
-  <Modal
-    visible={visible}
-    transparent
-    animationType="slide"
-    onRequestClose={onClose}
-  >
-    <View style={styles.container}>
-      <Pressable style={styles.overlay} onPress={onClose} />
+  const { themeVersion } = useTheme();
 
-      <View style={styles.sheet}>
-        <View style={styles.handle} />
-
-        <Text style={styles.title}>{t('language.selectLanguage')}</Text>
-
-        {LANGUAGES.map((lang) => (
-          <LanguageContainer
-            key={lang}
-            language={lang}
-            selected={tempLang === lang}
-            onPress={() => onSelect(lang)}
-          />
-        ))}
-
-        <TouchableOpacity style={styles.saveBtn} onPress={onSave}>
-          <Text style={styles.saveText}>{t('language.save')}</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </Modal>
-  );
-};
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-end",
@@ -68,7 +39,7 @@ const styles = StyleSheet.create({
   },
 
   sheet: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
@@ -105,8 +76,42 @@ const styles = StyleSheet.create({
   saveText: {
     fontFamily: "Roboto_600SemiBold",
     fontSize: 16,
-    color: "#fff",
+    color: Colors.textInverse,
   },
-});
+}), [themeVersion]);
+
+  return (
+  <Modal
+    visible={visible}
+    transparent
+    animationType="slide"
+    onRequestClose={onClose}
+  >
+    <View style={styles.container}>
+      <Pressable style={styles.overlay} onPress={onClose} />
+
+      <View style={styles.sheet}>
+        <View style={styles.handle} />
+
+        <Text style={styles.title}>{t('language.selectLanguage')}</Text>
+
+        {LANGUAGES.map((lang) => (
+          <LanguageContainer
+            key={lang}
+            language={lang}
+            selected={tempLang === lang}
+            onPress={() => onSelect(lang)}
+          />
+        ))}
+
+        <TouchableOpacity style={styles.saveBtn} onPress={onSave}>
+          <Text style={styles.saveText}>{t('language.save')}</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </Modal>
+  );
+};
+
 
 export default LanguageBottomSheet;

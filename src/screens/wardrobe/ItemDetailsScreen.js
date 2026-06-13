@@ -18,6 +18,7 @@ import {
 } from "../../api/wardrobe_services/wardrobeService";
 import { useWardrobe } from "../../context/WardrobeContext";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 import { useTranslation } from 'react-i18next';
 import { ROUTES, SOURCE } from "../../navigation/routes";
@@ -31,6 +32,8 @@ const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
 const STYLES = ["Casual", "Basic", "Formal","Mart-Casual"];
 
 const ItemDetailsScreen = ({ route, navigation }) => {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { itemId, analysisId } = route.params;
   const { removeItem, refetch } = useWardrobe();
@@ -233,7 +236,9 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+export default ItemDetailsScreen;
+
+const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
@@ -372,5 +377,3 @@ const styles = StyleSheet.create({
     }),
   },
 });
-
-export default ItemDetailsScreen;

@@ -7,11 +7,13 @@ import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
 import { getWeatherIcon } from "../../constants/weatherIcons";
 import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
+import { useTheme } from "../../context/ThemeContext";
 
 const FALLBACK_IMAGE = IMAGES.PICK;
 
 export default function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
 
   const compositeImage = getCompositeImage(todaysOutfit);
   const items = getItemsList(todaysOutfit);
@@ -30,6 +32,79 @@ export default function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
     }
     return <Image source={{ uri: validImages[0]._image }} style={styles.fitImage} resizeMode="contain" />;
   };
+
+const styles = React.useMemo(() => StyleSheet.create({
+  card: {
+    backgroundColor: Colors.white,
+    borderRadius: 25,
+    padding: 20,
+    alignItems: 'center',
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  imageSection: {
+    flex: 1.2, 
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  fitImage: {
+    width: '100%',
+    height: '100%',
+  },
+
+  contentSection: {
+    flex: 1.4,
+  },
+  title: {
+    fontFamily: 'Roboto_700Bold',
+    fontSize: 22,
+    color: Colors.textPrimary,
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontFamily: 'Roboto',
+    fontSize: 13,
+    color: Colors.textSecondary,
+    lineHeight: 18,
+    marginBottom: 15,
+  },
+  infoRow: {
+    alignItems: 'center',
+    marginBottom: 20,
+    justifyContent: 'space-between',
+  },
+  infoItem: {
+    alignItems: 'center',
+  },
+  infoText: {
+    fontFamily: 'Roboto_600SemiBold',
+    fontSize: 14,
+    color: Colors.textPrimary,
+  },
+  button: {
+    backgroundColor: Colors.primarybrand,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 15,
+  },
+  buttonText: {
+    fontFamily: 'Roboto_700Bold',
+    color: Colors.textInverse,
+    fontSize: 16,
+  },
+  arrowIcon: {
+    marginTop:3,
+  },
+}), [themeVersion]);
 
   return (
     <View style={[styles.card, { flexDirection: 'row' }]}>
@@ -69,75 +144,3 @@ export default function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 25,
-    padding: 20,
-    alignItems: 'center',
-    marginVertical: 4,
-    borderWidth: 1,
-    borderColor: '#f0f0f0',
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  imageSection: {
-    flex: 1.2, 
-    height: 150,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  fitImage: {
-    width: '100%',
-    height: '100%',
-  },
-
-  contentSection: {
-    flex: 1.4,
-  },
-  title: {
-    fontFamily: 'Roboto_700Bold',
-    fontSize: 22,
-    color: '#1A1C24',
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontFamily: 'Roboto',
-    fontSize: 13,
-    color: Colors.textSecondary,
-    lineHeight: 18,
-    marginBottom: 15,
-  },
-  infoRow: {
-    alignItems: 'center',
-    marginBottom: 20,
-    justifyContent: 'space-between',
-  },
-  infoItem: {
-    alignItems: 'center',
-  },
-  infoText: {
-    fontFamily: 'Roboto_600SemiBold',
-    fontSize: 14,
-    color: Colors.textPrimary,
-  },
-  button: {
-    backgroundColor: Colors.primarybrand,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 15,
-  },
-  buttonText: {
-    fontFamily: 'Roboto_700Bold',
-    color: Colors.white,
-    fontSize: 16,
-  },
-  arrowIcon: {
-    marginTop:3,
-  },
-});

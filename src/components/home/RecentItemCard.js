@@ -3,52 +3,19 @@ import { TouchableOpacity, View, Text, ImageBackground, StyleSheet, Platform } f
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 
 const RecentItemCard = ({ item, isFavorite, onToggleFavorite, onPress }) => {
   const imageUri = item.imageUrl || item.image || null;
   const label = item.name || item.designTitle || '';
+  const { themeVersion } = useTheme();
 
-  return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-      <ImageBackground
-        source={imageUri ? { uri: imageUri } : null}
-        style={styles.image}
-        imageStyle={styles.imageStyle}
-        resizeMode="cover"
-      >
-        <TouchableOpacity
-          style={styles.favoriteBtnContainer}
-          onPress={onToggleFavorite}
-          activeOpacity={0.7}
-        >
-          <View style={styles.blurCircle}>
-            <Ionicons
-              name={isFavorite ? 'heart' : 'heart-outline'}
-              size={16}
-              color={isFavorite ? Colors.error : '#FFFFFF'}
-            />
-          </View>
-        </TouchableOpacity>
-
-        {label ? (
-          <LinearGradient
-            colors={['rgba(0,0,0,0.73)', 'rgba(0,0,0,0.01)']}
-            style={styles.overlay}
-          >
-            <Text style={styles.name} numberOfLines={1}>{label}</Text>
-          </LinearGradient>
-        ) : null}
-      </ImageBackground>
-    </TouchableOpacity>
-  );
-};
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   card: {
     width: 150,
     height: 237,
     borderRadius: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     marginTop: 20,
     ...Platform.select({
       ios: {
@@ -96,9 +63,45 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: 'Roboto_700Bold',
     fontSize: 14,
-    color: '#FFFFFF',
+    color: Colors.textInverse,
     letterSpacing: 0.3,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
+      <ImageBackground
+        source={imageUri ? { uri: imageUri } : null}
+        style={styles.image}
+        imageStyle={styles.imageStyle}
+        resizeMode="cover"
+      >
+        <TouchableOpacity
+          style={styles.favoriteBtnContainer}
+          onPress={onToggleFavorite}
+          activeOpacity={0.7}
+        >
+          <View style={styles.blurCircle}>
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={16}
+              color={isFavorite ? Colors.error : '#FFFFFF'}
+            />
+          </View>
+        </TouchableOpacity>
+
+        {label ? (
+          <LinearGradient
+            colors={['rgba(0,0,0,0.73)', 'rgba(0,0,0,0.01)']}
+            style={styles.overlay}
+          >
+            <Text style={styles.name} numberOfLines={1}>{label}</Text>
+          </LinearGradient>
+        ) : null}
+      </ImageBackground>
+    </TouchableOpacity>
+  );
+};
+
 
 export default RecentItemCard;

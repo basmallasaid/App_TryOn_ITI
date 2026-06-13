@@ -16,6 +16,7 @@ import {
 import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import { getItemImage } from "../../utils/getItemImage";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import ActionTab from "../../components/tryOn/ActionTab";
@@ -33,6 +34,7 @@ import { ROUTES } from "../../navigation/routes";
 
 export default function MatchingScreen({ navigation }) {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const { items: wardrobeItems } = useWardrobe();
   const { isFavorite, addItem, removeItem } = useFavorites();
 
@@ -185,6 +187,7 @@ export default function MatchingScreen({ navigation }) {
     }
     return null;
   };
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -310,7 +313,7 @@ export default function MatchingScreen({ navigation }) {
                         {imageSrc && (
                           <Image source={imageSrc} style={styles.wardrobeImg} resizeMode="contain" />
                         )}
-                        <Ionicons name="checkmark-circle" size={20} color="#9BA5B7" style={styles.checkIcon} />
+                        <Ionicons name="checkmark-circle" size={20} color={Colors.disabled} style={styles.checkIcon} />
                       </View>
                     )}
                   </TouchableOpacity>
@@ -324,7 +327,7 @@ export default function MatchingScreen({ navigation }) {
         <View style={styles.selectedSection}>
           <View style={styles.noItemsBox}>
             <View style={styles.iconCircle}>
-              <MaterialCommunityIcons name="hanger" size={24} color="#1A202C" />
+              <MaterialCommunityIcons name="hanger" size={24} color={Colors.textPrimary} />
             </View>
             <View>
               <Text style={styles.noItemsTitle}>{selectedTitle}</Text>
@@ -363,7 +366,7 @@ export default function MatchingScreen({ navigation }) {
                         {imgSrc ? (
                           <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
                         ) : (
-                          <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color="#CBD5E0" />
+                          <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color={Colors.disabled} />
                         )}
                         <Text style={styles.matchItemName} numberOfLines={1}>{match.item?.name}</Text>
                       </View>
@@ -415,13 +418,13 @@ export default function MatchingScreen({ navigation }) {
                           <Ionicons
                             name={isFavorite(match.item?.id?.replace("store_", "")) ? "heart" : "heart-outline"}
                             size={18}
-                            color={isFavorite(match.item?.id?.replace("store_", "")) ? "#FF8A3D" : "#3E4850"}
+                            color={isFavorite(match.item?.id?.replace("store_", "")) ? '#FF8A3D' : Colors.textPrimary}
                           />
                         </TouchableOpacity>
                         {imgSrc ? (
                           <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
                         ) : (
-                          <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color="#CBD5E0" />
+                          <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color={Colors.disabled} />
                         )}
                         <Text style={styles.matchItemName} numberOfLines={1}>{match.item?.name}</Text>
                         {match.item?.price && (
@@ -455,10 +458,10 @@ export default function MatchingScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#F8F9FB",
+    backgroundColor: Colors.backgroundColor,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
@@ -471,7 +474,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#1A2530",
+    color: Colors.textPrimary,
   },
   scrollContent: {
     paddingBottom: 100,
@@ -483,11 +486,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#1A2530",
+    color: Colors.textPrimary,
   },
   sectionSubtitle: {
     fontSize: 13,
-    color: "#7D848D",
+    color: Colors.textMuted,
     marginTop: 4,
   },
   uploadOptions: {
@@ -506,12 +509,12 @@ const styles = StyleSheet.create({
   sectionTitleSmall: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#1A2530",
+    color: Colors.textPrimary,
     marginBottom: 10,
   },
   seeAllText: {
     fontSize: 12,
-    color: "#1A2530",
+    color: Colors.textPrimary,
   },
   wardrobeList: {
     paddingLeft: 20,
@@ -520,13 +523,13 @@ const styles = StyleSheet.create({
   wardrobeItemCard: {
     width: 90,
     height: 110,
-    backgroundColor: "#FFF",
+    backgroundColor: Colors.white,
     borderRadius: 12,
     marginRight: 12,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: Colors.borderDefault,
   },
   wardrobeImg: {
     width: 70,
@@ -549,7 +552,7 @@ const styles = StyleSheet.create({
   matchCard: {
     width: 150,
     height: 180,
-    backgroundColor: "#FFF",
+    backgroundColor: Colors.white,
     borderRadius: 15,
     marginRight: 15,
     justifyContent: "center",
@@ -565,7 +568,7 @@ const styles = StyleSheet.create({
   matchItemName: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#1A2530",
+    color: Colors.textPrimary,
     textAlign: "center",
     marginTop: 6,
     paddingHorizontal: 8,
@@ -574,7 +577,7 @@ const styles = StyleSheet.create({
   matchPrice: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#1A2530",
+    color: Colors.textPrimary,
     marginTop: 2,
   },
   scoreBadge: {
@@ -588,7 +591,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   scoreText: {
-    color: "#FFF",
+    color: Colors.textInverse,
     fontSize: 11,
     fontWeight: "bold",
   },
@@ -605,7 +608,7 @@ const styles = StyleSheet.create({
   noItemsBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F0F4FF",
+    backgroundColor: Colors.backgroundColor,
     padding: 15,
     borderRadius: 15,
     marginTop: 15,
@@ -614,18 +617,18 @@ const styles = StyleSheet.create({
     width: 45,
     height: 45,
     borderRadius: 22.5,
-    backgroundColor: "#DBE9FF",
+    backgroundColor: Colors.backgroundColor,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 15,
   },
   noItemsTitle: {
     fontWeight: "700",
-    color: "#1A202C",
+    color: Colors.textPrimary,
     fontSize: 14,
   },
   noItemsSub: {
-    color: "#718096",
+    color: Colors.textMuted,
     fontSize: 12,
     marginTop: 2,
   },
@@ -636,7 +639,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emptyMatchesText: {
-    color: "#A0AEC0",
+    color: Colors.disabled,
     fontSize: 14,
   },
   emptyState: {
@@ -646,7 +649,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emptyStateText: {
-    color: "#A0AEC0",
+    color: Colors.disabled,
     fontSize: 14,
   },
   singleImageContainer: {
@@ -690,7 +693,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   mainButton: {
-    backgroundColor: "#9BA5B7",
+    backgroundColor: Colors.disabled,
     flexDirection: "row",
     height: 55,
     borderRadius: 15,
@@ -703,7 +706,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#44BEFF",
   },
   buttonText: {
-    color: "#FFF",
+    color: Colors.textInverse,
     fontSize: 16,
     fontWeight: "bold",
   },

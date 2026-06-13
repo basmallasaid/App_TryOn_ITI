@@ -12,6 +12,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import Header from "../../components/home/Header";
 import HeroBanner from "../../components/home/HeroBanner";
 import ActionCard from "../../components/home/ActionCard";
@@ -25,6 +26,8 @@ import { useRecommendation } from "../../context/RecommendationContext";
 import HorizontalScrollSection from "../../components/common/HorizontalScrollSection";
 
 export default function HomeScreen({ navigation }) {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { profile, refreshProfile } = useProfileContext();
   const { isFavorite, addItem, removeItem } = useFavorites();
@@ -162,10 +165,10 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.BACKGROUND,
+    backgroundColor: Colors.backgroundColor,
     // Android status bar padding
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },

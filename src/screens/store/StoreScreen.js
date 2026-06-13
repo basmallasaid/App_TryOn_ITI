@@ -6,6 +6,7 @@ import { SearchBar } from '../../components/store/SearchBar';
 import { PromoBanner } from '../../components/store/PromoBanner';
 import { CategoryTabs } from '../../components/store/CategoryTabs';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { getAllProducts } from '../../api/user_services/userService';
 import { FilterModal } from './FilterModal';
 import { useFavorites } from '../../context/FavoritesContext';
@@ -17,6 +18,8 @@ import { ROUTES, SOURCE } from '../../navigation/routes';
 export default function StoreScreen() {
     const navigation = useNavigation();
     const { t } = useTranslation();
+    const { themeVersion } = useTheme();
+    const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
     const mapProductToCard = (product) => ({
         id: product._id,
@@ -25,7 +28,7 @@ export default function StoreScreen() {
         price: `${product.price} ${product.currency || t("store.currency")}`,
         image: product.images?.[0],
         badge: product.try_on_enabled ? 'Match' : product.is_active ? '' : 'Inactive',
-        badgeColor: product.try_on_enabled ? '#8ED321' : '#8A9BAD',
+        badgeColor: product.try_on_enabled ? '#8ED321' : Colors.iconGray,
         isOutlined: product.try_on_enabled,
     });
 
@@ -240,7 +243,7 @@ export default function StoreScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
      screenWrapper: {
         flex: 1,
         backgroundColor: Colors.backgroundColor,
@@ -269,7 +272,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     emptyText: {
-        color: '#6B7280',
+        color: Colors.textMuted,
         fontSize: 14,
     },
 });

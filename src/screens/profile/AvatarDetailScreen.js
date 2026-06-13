@@ -32,9 +32,9 @@ export default function AvatarDetailScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection: "row" }]}>
         <CustomBackButton onPress={() => navigation.goBack()} />
-        <Text style={styles.headerTitle}>{t('profile.avatarTitle')}</Text>
+        <Text style={[styles.headerTitle, { textAlign: "left" }]}>{t('profile.avatarTitle')}</Text>
         <View style={{ width: 56 }} />
       </View>
 
@@ -51,16 +51,16 @@ export default function AvatarDetailScreen() {
         </View>
 
         <View style={styles.infoCard}>
-          <View style={styles.infoRow}>
+          <View style={[styles.infoRow, { flexDirection: "row" }]}>
             <Ionicons name="person-outline" size={18} color={Colors.textSecondary} />
             <Text style={styles.infoText}>
               {profile?.profile?.first_name || ''} {profile?.profile?.last_name || ''}
             </Text>
           </View>
-          <View style={styles.infoRow}>
+          <View style={[styles.infoRow, { flexDirection: "row" }]}>
             <Ionicons name="shield-checkmark-outline" size={18} color={isSubscribed ? Colors.success : Colors.textSecondary} />
             <Text style={[styles.infoText, isSubscribed && { color: Colors.success }]}>
-              {isSubscribed ? 'Premium' : t('subscription.subtitle')}
+              {isSubscribed ? t("profile.premium") : t('subscription.subtitle')}
             </Text>
           </View>
         </View>
@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F4F4F5',
   },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -141,12 +140,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 42,
     borderWidth: 1,
     borderColor: '#E9EBEE',
   },
   infoRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
   },

@@ -1,8 +1,10 @@
 import React from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 
 const SelectionModal = ({ visible, onClose, onCamera, onGallery, title, subtitle }) => {
+  const { t } = useTranslation();
   return (
     <Modal
       transparent
@@ -21,16 +23,16 @@ const SelectionModal = ({ visible, onClose, onCamera, onGallery, title, subtitle
                 {/* Left Side: Camera and Gallery */}
                 <View style={styles.leftActions}>
                   <TouchableOpacity onPress={onCamera} style={styles.actionButton}>
-                    <Text style={styles.primaryBtnText}>Camera</Text>
+                    <Text style={styles.primaryBtnText}>{t("wardrobe.camera")}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={onGallery} style={styles.actionButton}>
-                    <Text style={styles.primaryBtnText}>Gallery</Text>
+                    <Text style={styles.primaryBtnText}>{t("wardrobe.gallery")}</Text>
                   </TouchableOpacity>
                 </View>
 
                 {/* Right Side: Cancel */}
                 <TouchableOpacity onPress={onClose} style={styles.actionButton}>
-                  <Text style={styles.errorBtnText}>Cancel</Text>
+                  <Text style={styles.errorBtnText}>{t("wardrobe.cancel")}</Text>
                 </TouchableOpacity>
               </View>
             </View>

@@ -25,6 +25,7 @@ import { useWardrobe } from '../../context/WardrobeContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { openCamera, openGallery } from '../../utils/cameraAccess';
+import { useTranslation } from 'react-i18next';
 import { ROUTES } from '../../navigation/routes';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = 175; // Based on your WardrobeItemCard width
@@ -32,6 +33,7 @@ const GAP = 15;
 const TOTAL_GRID_WIDTH = CARD_WIDTH * 2 + GAP;
 const HORIZONTAL_PADDING = (SCREEN_WIDTH - TOTAL_GRID_WIDTH) / 2;
 const WardrobeScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const { items, loading, error, refetch } = useWardrobe();
   const { profile } = useProfileContext();
   const {
@@ -52,7 +54,27 @@ const WardrobeScreen = ({ navigation }) => {
   );
 
   const gender = profile?.profile?.gender ?? null;
-  const categories = getCategoriesByGender(gender);
+  const rawCategories = getCategoriesByGender(gender);
+
+  const categoryLabelMap = {
+    "All": t("wardrobe.all"),
+    "Top": t("wardrobe.categories.top"),
+    "Shirt": t("wardrobe.shirt"),
+    "T-Shirt": t("wardrobe.tShirt"),
+    "Bottom": t("wardrobe.categories.bottom"),
+    "Jeans": t("wardrobe.jeans"),
+    "Short": t("wardrobe.short"),
+    "Jacket": t("wardrobe.categories.jacket"),
+    "Suit": t("wardrobe.categories.suit"),
+    "Shoes": t("wardrobe.categories.shoes"),
+    "Accessories": t("wardrobe.categories.accessories"),
+    "Dress": t("wardrobe.categories.dress"),
+    "Skirt": t("wardrobe.skirt"),
+    "Bag": t("wardrobe.categories.bag"),
+    "Abayas": t("wardrobe.abayas"),
+  };
+
+  const categories = rawCategories;
 
   const filteredItems = useMemo(() => {
     return selectedCategory === 'All'
@@ -70,10 +92,10 @@ const WardrobeScreen = ({ navigation }) => {
 
   const handleAddItem = () => {
     if (Platform.OS === 'ios') {
-      Alert.alert('Add Item', 'Choose a source', [
-        { text: 'Camera', onPress: () => pickImage('camera') },
-        { text: 'Gallery', onPress: () => pickImage('gallery') },
-        { text: 'Cancel', style: 'cancel' },
+      Alert.alert(t("wardrobe.addItem"), t("wardrobe.chooseSource"), [
+        { text: t("wardrobe.camera"), onPress: () => pickImage('camera') },
+        { text: t("wardrobe.gallery"), onPress: () => pickImage('gallery') },
+        { text: t("wardrobe.cancel"), style: 'cancel' },
       ]);
     } else {
       setIsModalVisible(true);
@@ -88,7 +110,7 @@ const WardrobeScreen = ({ navigation }) => {
       if (!result || result.canceled || !result.assets) return;
       await handleAnalyze(result.assets[0]);
     } catch (err) {
-      Alert.alert('Error', 'An error occurred while selecting the image.');
+      Alert.alert(t("wardrobe.error"), t("wardrobe.errorOccurred"));
     }
   };
 
@@ -122,8 +144,8 @@ const WardrobeScreen = ({ navigation }) => {
       });
     } catch (e) {
       Alert.alert(
-        'Analysis Failed',
-        e.response?.data?.error || 'Could not analyze this image.',
+        t("wardrobe.analysisFailed"),
+        e.response?.data?.error || t("wardrobe.analysisFailedMessage"),
       );
     } finally {
       setAnalyzing(false);
@@ -144,7 +166,7 @@ const WardrobeScreen = ({ navigation }) => {
           contentContainerStyle={styles.categoryScroll}
           renderItem={({ item }) => (
             <CategoryChip
-              label={item}
+              label={categoryLabelMap[item] || item}
               selected={selectedCategory === item}
               onPress={() => setSelectedCategory(item)}
             />
@@ -153,9 +175,9 @@ const WardrobeScreen = ({ navigation }) => {
         />
       </View>
       {analyzing && (
-        <View style={styles.analyzingWrap}>
+        <View style={[styles.analyzingWrap, { flexDirection: "row" }]}>
           <ActivityIndicator size="small" color={Colors.primary} />
-          <Text style={styles.analyzingText}>Analyzing your item...</Text>
+          <Text style={styles.analyzingText}>{t("wardrobe.analyzing")}</Text>
         </View>
       )}
     </View>
@@ -170,8 +192,8 @@ const WardrobeScreen = ({ navigation }) => {
           onClose={() => setIsModalVisible(false)}
           onCamera={() => pickImage('camera')}
           onGallery={() => pickImage('gallery')}
-          title="Add Item"
-          subtitle="Choose a source"
+          title={t("wardrobe.addItem")}
+          subtitle={t("wardrobe.chooseSource")}
         />
       )}
 
@@ -216,8 +238,8 @@ const WardrobeScreen = ({ navigation }) => {
                     }
                   } catch (e) {
                     Alert.alert(
-                      'Error',
-                      e.response?.data?.message || 'Failed to update favorite',
+                      t("wardrobe.error"),
+                      e.response?.data?.message || t("wardrobe.favoriteError"),
                     );
                     refetchFavorites();
                   }
@@ -269,7 +291,6 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   analyzingWrap: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,

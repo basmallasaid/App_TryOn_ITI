@@ -1,6 +1,5 @@
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
 import Colors from "../../constants/theme/colors";
-
 const CustomizeAppButtonFilled = ({
   label,
   onPress,
@@ -39,7 +38,7 @@ const CustomizeAppButtonFilled = ({
       {loading ? (
         <ActivityIndicator color={resolvedText} />
       ) : (
-        <View style={styles.inner}>
+        <View style={[styles.inner, { flexDirection: 'row' }]}>
           {icon && iconPosition === 'left' ? <View style={styles.iconWrap}>{icon}</View> : null}
           <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
           {icon && iconPosition === 'right' ? <View style={styles.iconWrap}>{icon}</View> : null}
@@ -66,7 +65,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   inner: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 16,

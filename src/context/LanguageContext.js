@@ -1,5 +1,7 @@
 // src/context/LanguageContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { I18nManager } from "react-native";
+import * as Updates from "expo-updates";
 import { getLanguage, saveLanguage } from "../storage/TokenStorage";
 import { syncLanguageToProfile } from "../api/language_service/languageService";
 import i18n from "../localization/i18n";
@@ -25,6 +27,11 @@ export const LanguageProvider = ({ children }) => {
     await saveLanguage(lang);
     setLanguage(lang);
     i18n.changeLanguage(lang);
+    const isRTL = lang === "ar";
+    if (I18nManager.isRTL !== isRTL) {
+      I18nManager.forceRTL(isRTL);
+      await Updates.reloadAsync();
+    }
   };
 
   // Called after login/register — syncs to backend in background
@@ -32,9 +39,11 @@ export const LanguageProvider = ({ children }) => {
     if (language) syncLanguageToProfile(language); // fire and forget
   };
 
+  const isRTL = language === "ar";
+
   return (
     <LanguageContext.Provider
-      value={{ language, loading, selectLanguage, syncLanguage }}
+      value={{ language, loading, isRTL, selectLanguage, syncLanguage }}
     >
       {children}
     </LanguageContext.Provider>

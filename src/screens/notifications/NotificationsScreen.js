@@ -32,7 +32,7 @@ function getNotifMeta(title = "") {
   return { name: "notifications-outline", color: "#6B7280", bg: "#F3F4F6" };
 }
 
-function formatRelativeTime(dateString) {
+function formatRelativeTime(dateString, t) {
   const now = Date.now();
   const then = new Date(dateString).getTime();
   const diffMs = now - then;
@@ -40,10 +40,10 @@ function formatRelativeTime(dateString) {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return "now";
-  if (diffMins < 60) return `${diffMins}m`;
-  if (diffHours < 24) return `${diffHours}h`;
-  if (diffDays < 7) return `${diffDays}d`;
+  if (diffMins < 1) return t("notifications.now");
+  if (diffMins < 60) return t("notifications.minutesAgo", { count: diffMins });
+  if (diffHours < 24) return t("notifications.hoursAgo", { count: diffHours });
+  if (diffDays < 7) return t("notifications.daysAgo", { count: diffDays });
   return new Date(dateString).toLocaleDateString();
 }
 
@@ -111,7 +111,7 @@ export default function NotificationsScreen({ navigation }) {
               </Text>
             ) : null}
             <Text style={styles.cardTime}>
-              {formatRelativeTime(item.createdAt)}
+              {formatRelativeTime(item.createdAt, t)}
             </Text>
           </View>
 
@@ -134,13 +134,13 @@ export default function NotificationsScreen({ navigation }) {
       <View style={styles.listHeader}>
         <Text style={styles.listHeaderCount}>
           {notifications.length}{" "}
-          {t("notifications.title")?.toLowerCase() || "notifications"}
+          {t("notifications.title")?.toLowerCase() || t("notifications.title")}
         </Text>
         {hasUnread ? (
           <TouchableOpacity style={styles.markAllChip} onPress={handleMarkAll}>
             <Ionicons name="checkmark-done" size={14} color={Colors.primary} />
             <Text style={styles.markAllText}>
-              {t("notifications.markAllRead") || "Mark all read"}
+              {t("notifications.markAllRead") || t("notifications.markAllRead")}
             </Text>
           </TouchableOpacity>
         ) : null}
@@ -160,10 +160,10 @@ export default function NotificationsScreen({ navigation }) {
           />
         </View>
         <Text style={styles.emptyTitle}>
-          {t("notifications.emptyTitle") || "All caught up"}
+          {t("notifications.emptyTitle") || t("notifications.emptyTitle")}
         </Text>
         <Text style={styles.emptySub}>
-          {t("notifications.emptySubtitle") || "No notifications yet"}
+          {t("notifications.emptySubtitle") || t("notifications.emptySubtitle")}
         </Text>
       </View>
     );
@@ -174,7 +174,7 @@ export default function NotificationsScreen({ navigation }) {
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>
-          {t("notifications.title") || "Notifications"}
+          {t("notifications.title") || t("notifications.title")}
         </Text>
         <View style={{ width: 56 }} />
       </View>

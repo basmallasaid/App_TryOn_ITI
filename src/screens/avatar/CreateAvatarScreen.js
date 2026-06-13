@@ -23,108 +23,121 @@ import { IMAGES } from "../../constants/images/images";
 import { generateAvatar } from "../../api/avatar_services/avatarService";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 
-const skinTones = [
-  { id: "very-light", color: "#F6DFC8", label: "Very Light" },
-  { id: "light", color: "#E5C39B", label: "Light" },
-  { id: "medium", color: "#D2A46A", label: "Medium" },
-  { id: "tan", color: "#B88349", label: "Tan" },
-  { id: "brown", color: "#8E5A2A", label: "Brown" },
-  { id: "dark", color: "#4D2C12", label: "Dark" },
+const skinTones = (t) => [
+  { id: "very-light", color: "#F6DFC8", label: t("avatar.create.skinTones.veryLight") },
+  { id: "light", color: "#E5C39B", label: t("avatar.create.skinTones.light") },
+  { id: "medium", color: "#D2A46A", label: t("avatar.create.skinTones.medium") },
+  { id: "tan", color: "#B88349", label: t("avatar.create.skinTones.tan") },
+  { id: "brown", color: "#8E5A2A", label: t("avatar.create.skinTones.brown") },
+  { id: "dark", color: "#4D2C12", label: t("avatar.create.skinTones.dark") },
 ];
 
-const hairColors = [
-  { id: "black", color: "#000000", label: "Black" },
-  { id: "dark-brown", color: "#3A2414", label: "Dark Brown" },
-  { id: "brown", color: "#6B4423", label: "Brown" },
-  { id: "light-brown", color: "#A26B3D", label: "Light Brown" },
-  { id: "blonde", color: "#E6C27A", label: "Blonde" },
-  { id: "red", color: "#A53A2A", label: "Red" },
+const hairColors = (t) => [
+  { id: "black", color: "#000000", label: t("avatar.create.hairColors.black") },
+  { id: "dark-brown", color: "#3A2414", label: t("avatar.create.hairColors.darkBrown") },
+  { id: "brown", color: "#6B4423", label: t("avatar.create.hairColors.brown") },
+  { id: "light-brown", color: "#A26B3D", label: t("avatar.create.hairColors.lightBrown") },
+  { id: "blonde", color: "#E6C27A", label: t("avatar.create.hairColors.blonde") },
+  { id: "red", color: "#A53A2A", label: t("avatar.create.hairColors.red") },
 ];
 
-const GeneralInfoTab = ({ age, gender, onUpdate }) => (
-  <View style={styles.tabContent}>
-    <MeasurementSlider
-      label="Age"
-      value={age}
-      min={10}
-      max={100}
-      step={1}
-      unit="yrs"
-      onChange={(v) => onUpdate("age", v)}
-    />
-    <Text style={styles.genderLabel}>Gender</Text>
-    <View style={styles.genderRow}>
-      <GenderOptionCard
-        gender="Male"
-        selected={gender === "Male"}
-        onPress={() => onUpdate("gender", "Male")}
+const GeneralInfoTab = ({ age, gender, onUpdate }) => {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.tabContent}>
+      <MeasurementSlider
+        label={t("avatar.create.age")}
+        value={age}
+        min={10}
+        max={100}
+        step={1}
+        unit={t("avatar.create.yrs")}
+        onChange={(v) => onUpdate("age", v)}
       />
-      <GenderOptionCard
-        gender="Female"
-        selected={gender === "Female"}
-        onPress={() => onUpdate("gender", "Female")}
+      <Text style={styles.genderLabel}>{t("avatar.create.gender")}</Text>
+      <View style={styles.genderRow}>
+        <GenderOptionCard
+          gender={t("avatar.create.male")}
+          selected={gender === "Male"}
+          onPress={() => onUpdate("gender", "Male")}
+        />
+        <GenderOptionCard
+          gender={t("avatar.create.female")}
+          selected={gender === "Female"}
+          onPress={() => onUpdate("gender", "Female")}
+        />
+      </View>
+    </View>
+  );
+};
+
+const MeasurementsTab = ({ height, weight, onUpdate }) => {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.tabContent}>
+      <MeasurementSlider
+        label={t("avatar.create.height")}
+        value={height}
+        min={120}
+        max={220}
+        step={1}
+        unit={t("avatar.create.cm")}
+        onChange={(v) => onUpdate("height", v)}
+      />
+      <MeasurementSlider
+        label={t("avatar.create.weight")}
+        value={weight}
+        min={30}
+        max={200}
+        step={1}
+        unit={t("avatar.create.kg")}
+        onChange={(v) => onUpdate("weight", v)}
       />
     </View>
-  </View>
-);
+  );
+};
 
-const MeasurementsTab = ({ height, weight, onUpdate }) => (
-  <View style={styles.tabContent}>
-    <MeasurementSlider
-      label="Height"
-      value={height}
-      min={120}
-      max={220}
-      step={1}
-      unit="cm"
-      onChange={(v) => onUpdate("height", v)}
-    />
-    <MeasurementSlider
-      label="Weight"
-      value={weight}
-      min={30}
-      max={200}
-      step={1}
-      unit="kg"
-      onChange={(v) => onUpdate("weight", v)}
-    />
-  </View>
-);
+const SkinToneTab = ({ skinTone, onUpdate }) => {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.tabContent}>
+      <ColorSelector
+        label={t("avatar.create.selectSkinTone")}
+        options={skinTones(t)}
+        selectedId={skinTone}
+        onSelect={(v) => onUpdate("skinTone", v)}
+      />
+    </View>
+  );
+};
 
-const SkinToneTab = ({ skinTone, onUpdate }) => (
-  <View style={styles.tabContent}>
-    <ColorSelector
-      label="Select your skin tone"
-      options={skinTones}
-      selectedId={skinTone}
-      onSelect={(v) => onUpdate("skinTone", v)}
-    />
-  </View>
-);
+const HairColorTab = ({ hairColor, onUpdate }) => {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.tabContent}>
+      <ColorSelector
+        label={t("avatar.create.selectHairColor")}
+        options={hairColors(t)}
+        selectedId={hairColor}
+        onSelect={(v) => onUpdate("hairColor", v)}
+      />
+    </View>
+  );
+};
 
-const HairColorTab = ({ hairColor, onUpdate }) => (
-  <View style={styles.tabContent}>
-    <ColorSelector
-      label="Select your hair color"
-      options={hairColors}
-      selectedId={hairColor}
-      onSelect={(v) => onUpdate("hairColor", v)}
-    />
-  </View>
-);
-
-const tabs = [
-  { key: "general", label: "General", component: GeneralInfoTab },
-  { key: "measurements", label: "Measurements", component: MeasurementsTab },
-  { key: "skinTone", label: "Skin Tone", component: SkinToneTab },
-  { key: "hairColor", label: "Hair Color", component: HairColorTab },
+const tabs = (t) => [
+  { key: "general", label: t("avatar.create.general"), component: GeneralInfoTab },
+  { key: "measurements", label: t("avatar.create.measurements"), component: MeasurementsTab },
+  { key: "skinTone", label: t("avatar.create.skinToneTab"), component: SkinToneTab },
+  { key: "hairColor", label: t("avatar.create.hairColorTab"), component: HairColorTab },
 ];
 
 const CreateAvatarScreen = ({ navigation }) => {
   const { t } = useTranslation();
+  const tabList = tabs(t);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const totalSteps = tabs.length;
+  const totalSteps = tabList.length;
 
   const [avatarProfile, setAvatarProfile] = useState({
     height: 175,
@@ -141,7 +154,7 @@ const CreateAvatarScreen = ({ navigation }) => {
 
   const handleGenerate = useCallback(async () => {
     if (!avatarProfile.gender || !avatarProfile.skinTone || !avatarProfile.hairColor) {
-      Alert.alert("Missing Fields", "Please fill in all required fields before generating your avatar.");
+      Alert.alert(t("avatar.create.missingFields"), t("avatar.create.missingFieldsMessage"));
       setLoading(false);
       return;
     }
@@ -164,14 +177,14 @@ const CreateAvatarScreen = ({ navigation }) => {
       navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarImage: response, source: SOURCE.HOME });
     } catch (error) {
       console.error("Avatar generation failed:", error.response?.data || error.message);
-      Alert.alert("Error", error.response?.data?.message || "Failed to generate avatar");
+      Alert.alert(t("common.error"), error.response?.data?.message || t("avatar.create.failed"));
     } finally {
       setLoading(false);
     }
   }, [avatarProfile, navigation]);
 
-  const tabKeys = tabs.map((t) => t.key);
-  const activeTab = tabs[currentStep];
+  const tabKeys = tabList.map((t) => t.key);
+  const activeTab = tabList[currentStep];
   const ActiveComponent = activeTab.component;
   const isLastStep = currentStep === totalSteps - 1;
 
@@ -199,7 +212,7 @@ const CreateAvatarScreen = ({ navigation }) => {
     setCurrentStep((prev) => prev + 1);
   };
 
-  const tabsWithProps = tabs.map((tab) => ({
+  const tabsWithProps = tabList.map((tab) => ({
     ...tab,
     props: {
       ...avatarProfile,
@@ -218,7 +231,7 @@ const CreateAvatarScreen = ({ navigation }) => {
 
         <Text style={styles.title}>{t('tryOn.createAvatar.title')}</Text>
         <Text style={styles.stepLabel}>
-          Step {currentStep + 1} of {totalSteps}
+          {t("avatar.create.step", { current: currentStep + 1, total: totalSteps })}
         </Text>
 
         <View style={styles.progressTrack}>
@@ -245,7 +258,7 @@ const CreateAvatarScreen = ({ navigation }) => {
 
         <View style={styles.buttonWrap}>
           <CustomizeAppButtonFilled
-            label={isLastStep ? "Generate Avatar" : "Next"}
+            label={isLastStep ? t("avatar.create.generateAvatar") : t("avatar.create.next")}
             onPress={handleNext}
             disabled={!canProceed}
             loading={loading}

@@ -21,6 +21,7 @@ import QuestionGroup from "../../components/wardrobe/QuestionGroup";
 import CustomizeTextInput from "../../components/common/CustomizeTextInput";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import CustomBackButton from "../../components/common/CustomBackButton"; // Added Import
+import { useTranslation } from 'react-i18next';
 import { ROUTES } from "../../navigation/routes";
 import { saveToWardrobe, editWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 const { height: SCREEN_H } = Dimensions.get("window");
@@ -59,6 +60,30 @@ const VerifyItemScreen = ({ route, navigation }) => {
   const { imageUri, analysisResult } = route.params;
   const garment = analysisResult?.garments?.[0] ?? {};
   const { refetch, updateItem } = useWardrobe();
+  const { t } = useTranslation();
+
+  const categoryLabels = {
+    Bottom: t("wardrobe.categories.bottom"),
+    Top: t("wardrobe.categories.top"),
+    Dress: t("wardrobe.categories.dress"),
+    Suit: t("wardrobe.categories.suit"),
+    Bag: t("wardrobe.categories.bag"),
+    Shoes: t("wardrobe.categories.shoes"),
+    Jacket: t("wardrobe.categories.jacket"),
+    Accessories: t("wardrobe.categories.accessories"),
+  };
+  const seasonLabels = {
+    Summer: t("wardrobe.seasons.summer"),
+    Winter: t("wardrobe.seasons.winter"),
+    Spring: t("wardrobe.seasons.spring"),
+    Fall: t("wardrobe.seasons.fall"),
+  };
+  const styleLabels = {
+    Casual: t("wardrobe.styles.casual"),
+    Basic: t("wardrobe.styles.basic"),
+    Formal: t("wardrobe.styles.formal"),
+    "Mart-Casual": t("wardrobe.styles.martCasual"),
+  };
 
   const [form, setForm] = useState({
     name: garment.specificType || "",
@@ -199,8 +224,8 @@ const VerifyItemScreen = ({ route, navigation }) => {
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <View style={styles.headerText}>
-          <Text style={styles.title}>Add to Wardrobe</Text>
-          <Text style={styles.subtitle}>Analysis</Text>
+          <Text style={styles.title}>{t("wardrobe.verify.title")}</Text>
+          <Text style={styles.subtitle}>{t("wardrobe.verify.analysis")}</Text>
         </View>
       </View>
 
@@ -235,7 +260,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
         >
           <View style={styles.handle} />
           {!isExpanded && (
-            <Text style={styles.peekHint}>Swipe up to review details</Text>
+            <Text style={styles.peekHint}>{t("wardrobe.verify.swipeUp")}</Text>
           )}
         </TouchableOpacity>
 
@@ -251,8 +276,8 @@ const VerifyItemScreen = ({ route, navigation }) => {
             >
               <View style={styles.inputGap}>
                 <CustomizeTextInput
-                  label="Name"
-                  placeholder="Enter item name"
+                  label={t("wardrobe.verify.name")}
+                  placeholder={t("wardrobe.verify.namePlaceholder")}
                   value={form.name}
                   onChangeText={(v) =>
                     setForm((prev) => ({ ...prev, name: v }))
@@ -262,7 +287,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
 
               <View style={styles.inputGap}>
                 <CustomizeTextInput
-                  label="Primary Color"
+                  label={t("wardrobe.verify.primaryColor")}
                   placeholder="—"
                   value={form.color}
                   onChangeText={() => {}} 
@@ -271,33 +296,33 @@ const VerifyItemScreen = ({ route, navigation }) => {
                 />
               </View>
 
-              <QuestionGroup title="What is this item?">
+              <QuestionGroup title={t("wardrobe.verify.categoryQuestion")}>
                 {CATEGORIES.map((cat) => (
                   <SelectionChip
                     key={cat}
-                    label={cat}
+                    label={categoryLabels[cat] || cat}
                     isSelected={form.categories.includes(cat)}
                     onPress={() => toggleSelection("categories", cat)}
                   />
                 ))}
               </QuestionGroup>
 
-              <QuestionGroup title="For which season?">
+              <QuestionGroup title={t("wardrobe.verify.seasonQuestion")}>
                 {SEASONS.map((s) => (
                   <SelectionChip
                     key={s}
-                    label={s}
+                    label={seasonLabels[s] || s}
                     isSelected={form.seasons.includes(s)}
                     onPress={() => toggleSelection("seasons", s)}
                   />
                 ))}
               </QuestionGroup>
 
-              <QuestionGroup title="Which style?">
+              <QuestionGroup title={t("wardrobe.verify.styleQuestion")}>
                 {STYLES.map((s) => (
                   <SelectionChip
                     key={s}
-                    label={s}
+                    label={styleLabels[s] || s}
                     isSelected={form.styles.includes(s)}
                     onPress={() => toggleSelection("styles", s)}
                   />
@@ -306,7 +331,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
 
               <View style={styles.footer}>
                 <CustomizeAppButtonFilled
-                  label="Save to Wardrobe"
+                  label={t("wardrobe.verify.save")}
                   onPress={handleSave}
                   loading={loading}
                 />

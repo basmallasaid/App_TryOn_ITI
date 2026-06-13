@@ -55,7 +55,7 @@ export default function RecentRecyclesScreen({ navigation }) {
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
+        <View style={[styles.header, { flexDirection: "row" }]}>
           <CustomBackButton onPress={() => navigation.goBack()} />
           <Text style={styles.title}>{t('home.recentRecycles')}</Text>
           <View style={{ width: 24 }} />
@@ -69,7 +69,7 @@ export default function RecentRecyclesScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
+      <View style={[styles.header, { flexDirection: "row" }]}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.title}>{t('home.recentRecycles')}</Text>
         <View style={{ width: 24 }} />
@@ -102,7 +102,6 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,

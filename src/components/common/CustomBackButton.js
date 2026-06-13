@@ -2,19 +2,20 @@ import React from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
-
-const CustomBackButton = ({ onPress, iconColor, borderColor,backgroundColor }) => (
-  <TouchableOpacity
-    style={[styles.container, borderColor && { borderColor: borderColor },backgroundColor && {backgroundColor:backgroundColor}]}
-    onPress={onPress}
-  >
-    <Ionicons
-      name="chevron-back"
-      size={18}
-      color={iconColor || "#6B7280"} // Default to gray if no color passed
-    />
-  </TouchableOpacity>
-);
+const CustomBackButton = ({ onPress, iconColor, borderColor,backgroundColor }) => {
+  return (
+    <TouchableOpacity
+      style={[styles.container, borderColor && { borderColor: borderColor },backgroundColor && {backgroundColor:backgroundColor}]}
+      onPress={onPress}
+    >
+      <Ionicons
+        name="chevron-back"
+        size={18}
+        color={iconColor || "#6B7280"}
+      />
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

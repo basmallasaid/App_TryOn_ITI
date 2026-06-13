@@ -44,7 +44,7 @@ const WardrobeItemCard = ({ item, onPress, onLongPress, isFavorite, onToggleFavo
 
         {/* Modern Bottom Scrim Overlay */}
         <LinearGradient
-          colors={["rgba(0,0,0,0.73)", "rgba(0,0,0,0.01)"]}
+          colors={["rgba(0,0,0,0.43)", "rgba(0,0,0,0.01)"]}
           style={styles.overlay}
         >
           <Text style={styles.name} numberOfLines={1}>

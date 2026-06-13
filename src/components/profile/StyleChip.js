@@ -2,7 +2,6 @@
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
-
 /**
  * StyleChip
  * Props:
@@ -18,6 +17,7 @@ const StyleChip = ({ label, selected, customizeMode, onPress }) => {
     <TouchableOpacity
       style={[
         styles.chip,
+        { flexDirection: 'row' },
         selected && styles.chipSelected,
         isDisabled && styles.chipDisabled,
       ]}
@@ -45,7 +45,6 @@ const StyleChip = ({ label, selected, customizeMode, onPress }) => {
 
 const styles = StyleSheet.create({
   chip: {
-    flexDirection: 'row',
     alignItems: 'center',
     height: 36,
     borderRadius: 8,

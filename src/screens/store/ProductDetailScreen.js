@@ -11,10 +11,12 @@ import { useWardrobe } from '../../context/WardrobeContext';
 import { analyzeImage, getMatchesByAnalysis } from '../../api/matching_services/matchingService';
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import CustomBackButton from '../../components/common/CustomBackButton';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { productId } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
   
   const [product, setProduct] = useState(null);
@@ -67,7 +69,7 @@ export default function ProductDetailScreen({ route }) {
         }
       } catch (e) {
         const msg = e.response?.data || e.message;
-        Alert.alert("Match Error", typeof msg === "string" ? msg : JSON.stringify(msg));
+        Alert.alert(t("store.productDetail.matchError"), typeof msg === "string" ? msg : JSON.stringify(msg));
         setWardrobeMatches([]);
       } finally {
         setMatchingLoading(false);
@@ -107,10 +109,10 @@ export default function ProductDetailScreen({ route }) {
       <StatusBar barStyle="dark-content" transparent backgroundColor="transparent" translucent />
       <View style={styles.headerFixed}>
         <SafeAreaView>
-          <View style={styles.headerContent}>
+          <View style={[styles.headerContent, { flexDirection: "row" }]}>
             <CustomBackButton onPress={() => navigation.goBack()} borderColor="#D5D9DE" />
-            <View style={styles.headerRight}>
-              <TouchableOpacity style={[styles.iconCircle, {marginLeft: 12}]}>
+            <View style={[styles.headerRight, { flexDirection: "row" }]}>
+              <TouchableOpacity style={[styles.iconCircle, { marginLeft: 12, marginRight: 0 }]}>
                 <Ionicons name="heart-outline" size={24} color="#1A1C24" />
               </TouchableOpacity>
             </View>
@@ -129,33 +131,33 @@ export default function ProductDetailScreen({ route }) {
         <View style={styles.contentBody}>
           <View style={styles.indicator} />
           
-          <View style={styles.rowBetween}>
+          <View style={[styles.rowBetween, { flexDirection: "row" }]}>
             <View style={{flex: 1}}>
-              <Text style={styles.productTitle}>{product?.name}</Text>
+              <Text style={[styles.productTitle, { textAlign: "left" }]}>{product?.name}</Text>
               <TouchableOpacity onPress={() => openUrl(product?.purchase_url)}>
-                <Text style={styles.brandName}>{product?.store_id?.name || 'Official Store'} <Ionicons name="open-outline" size={12} /></Text>
+                <Text style={styles.brandName}>{product?.store_id?.name || t("store.productDetail.officialStore")} <Ionicons name="open-outline" size={12} /></Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.priceContainer}>
+            <View style={[styles.priceContainer, { alignItems: "flex-end" }]}>
               <Text style={styles.priceText}>{product?.price}</Text>
-              <Text style={styles.currency}>{product?.currency || 'EGP'}</Text>
+              <Text style={styles.currency}>{product?.currency || t("store.currency")}</Text>
             </View>
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Description</Text>
+            <Text style={styles.sectionTitle}>{t("store.productDetail.description")}</Text>
             <Text style={styles.description} numberOfLines={showFullDescription ? undefined : 2}>
               {product?.description}
             </Text>
-            <TouchableOpacity style={styles.moreBtn} onPress={() => setShowFullDescription(!showFullDescription)}>
-              <Text style={styles.moreText}>{showFullDescription ? 'Show Less' : 'See More'}</Text>
-              <Ionicons name={showFullDescription ? "chevron-up" : "chevron-down"} size={14} color="#5CC1FF" style={{ marginLeft: 4 }} />
+            <TouchableOpacity style={[styles.moreBtn, { flexDirection: "row" }]} onPress={() => setShowFullDescription(!showFullDescription)}>
+              <Text style={styles.moreText}>{showFullDescription ? t("store.productDetail.showLess") : t("store.productDetail.seeMore")}</Text>
+              <Ionicons name={showFullDescription ? "chevron-up" : "chevron-down"} size={14} color="#5CC1FF" style={{ marginLeft: 4, marginRight: 0 }} />
             </TouchableOpacity>
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Color <Text style={styles.selectedSub}>{selectedColor}</Text></Text>
-            <View style={styles.optionsRow}>
+            <Text style={styles.sectionTitle}>{t("store.productDetail.color")} <Text style={styles.selectedSub}>{selectedColor}</Text></Text>
+            <View style={[styles.optionsRow, { flexDirection: "row" }]}>
               {product?.color_tags?.map((color, index) => (
                 <TouchableOpacity 
                   key={index} 
@@ -176,8 +178,8 @@ export default function ProductDetailScreen({ route }) {
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Size <Text style={styles.selectedSub}>{selectedSize}</Text></Text>
-            <View style={styles.optionsRow}>
+            <Text style={styles.sectionTitle}>{t("store.productDetail.size")} <Text style={styles.selectedSub}>{selectedSize}</Text></Text>
+            <View style={[styles.optionsRow, { flexDirection: "row" }]}>
               {sizes.map((size) => (
                 <TouchableOpacity 
                   key={size} 
@@ -191,11 +193,11 @@ export default function ProductDetailScreen({ route }) {
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Wardrobe Matches ✨</Text>
+            <Text style={styles.sectionTitle}>{t("store.productDetail.wardrobeMatches")}</Text>
             {matchingLoading ? (
               <ActivityIndicator size="small" color="#5CC1FF" style={{ marginVertical: 20 }} />
             ) : wardrobeMatches.length === 0 ? (
-              <Text style={styles.noMatchText}>No matching wardrobe items found</Text>
+              <Text style={styles.noMatchText}>{t("store.productDetail.noMatches")}</Text>
             ) : (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.matchScroll}>
                 {wardrobeMatches.map((match, index) => {
@@ -223,10 +225,10 @@ export default function ProductDetailScreen({ route }) {
             )}
           </View>
 
-          <View style={styles.actionRow}>
-            <TouchableOpacity style={styles.mainBtn} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.STORE, itemId: productId, itemType: product?.category, productImage: product?.images?.[0], productName: product?.name } })}>
+          <View style={[styles.actionRow, { flexDirection: "row" }]}>
+            <TouchableOpacity style={[styles.mainBtn, { flexDirection: "row" }]} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.STORE, itemId: productId, itemType: product?.category, productImage: product?.images?.[0], productName: product?.name } })}>
               <Ionicons name="sparkles" size={20} color="white" />
-              <Text style={styles.mainBtnText}>Generate Try-on</Text>
+              <Text style={[styles.mainBtnText, { marginLeft: 10, marginRight: 0 }]}>{t("store.productDetail.generateTryOn")}</Text>
             </TouchableOpacity>
           </View>
 
@@ -247,8 +249,8 @@ const styles = StyleSheet.create({
     zIndex: 100,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 
   },
-  headerContent: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10 },
-  headerRight: { flexDirection: 'row' },
+  headerContent: { justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10 },
+  headerRight: { },
   iconCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.9)', justifyContent: 'center', alignItems: 'center', elevation: 3, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 5 },
   scrollContent: { 
     paddingBottom: Platform.OS === 'ios' ? 40 : 20 
@@ -260,11 +262,11 @@ const styles = StyleSheet.create({
   contentBody: { flex: 1, backgroundColor: '#FFFFFF', borderTopLeftRadius: 35, borderTopRightRadius: 35, marginTop: -35, padding: 25 },
   indicator: { width: 40, height: 4, backgroundColor: '#F0F0F0', borderRadius: 2, alignSelf: 'center', marginBottom: 25 },
   
-  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  rowBetween: { justifyContent: 'space-between', alignItems: 'flex-start' },
   productTitle: { fontSize: 24, fontWeight: '800', color: '#1A1C24', letterSpacing: -0.5 },
   brandName: { color: '#5CC1FF', fontSize: 13, fontWeight: '700', marginTop: 4 },
   
-  priceContainer: { alignItems: 'flex-end' },
+  priceContainer: { },
   priceText: { fontSize: 26, fontWeight: '900', color: '#1A1C24' },
   currency: { fontSize: 12, fontWeight: '700', color: '#ABB5BE' },
 
@@ -272,10 +274,10 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: '800', color: '#1A1C24', marginBottom: 12 },
   selectedSub: { fontSize: 14, fontWeight: '400', color: '#ABB5BE' },
   description: { fontSize: 14, color: '#6B7280', lineHeight: 22 },
-  moreBtn: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
+  moreBtn: { alignItems: 'center', marginTop: 4 },
   moreText: { color: '#5CC1FF', fontWeight: 'bold', fontSize: 13 },
 
-  optionsRow: { flexDirection: 'row', alignItems: 'center' },
+  optionsRow: { alignItems: 'center' },
   colorRing: { width: 38, height: 38, borderRadius: 19, borderWidth: 2, borderColor: 'transparent', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   colorInside: { width: 28, height: 28, borderRadius: 14, elevation: 1 },
   
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
   noMatchText: { color: '#718096', fontSize: 14, marginVertical: 10 },
 
   // Footer Actions
-  actionRow: { flexDirection: 'row', alignItems: 'center', marginTop: 35, paddingBottom: 20 },
-  mainBtn: { flex: 1, backgroundColor: '#5CC1FF', height: 60, borderRadius: 18, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#5CC1FF', shadowOpacity: 0.25, shadowRadius: 8 },
-  mainBtnText: { color: 'white', fontSize: 16, fontWeight: '800', marginLeft: 10 }
+  actionRow: { alignItems: 'center', marginTop: 35, paddingBottom: 20 },
+  mainBtn: { flex: 1, backgroundColor: '#5CC1FF', height: 60, borderRadius: 18, justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#5CC1FF', shadowOpacity: 0.25, shadowRadius: 8 },
+  mainBtnText: { color: 'white', fontSize: 16, fontWeight: '800' }
 });

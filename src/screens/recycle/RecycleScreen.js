@@ -253,7 +253,7 @@ export default function RecycleScreen({ navigation }) {
         const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId);
         navigation.navigate(ROUTES.RECYCLE_RESULT, {
           resultImageUri: result.image_url,
-          designTitle: selectedIdea?.title || "Generated Design",
+          designTitle: selectedIdea?.title || t("recommendation.generatedDesign"),
           designTitleAr: selectedIdea?.title_ar || null,
           designDescription: selectedIdea?.design_description || "",
           designDescriptionAr: selectedIdea?.design_description_ar || null,
@@ -329,7 +329,7 @@ export default function RecycleScreen({ navigation }) {
                     </View>
                   )}
                   <Text style={styles.wardrobeItemName} numberOfLines={1}>
-                    {item.name || "Untitled"}
+                    {item.name || t("recommendation.untitled")}
                   </Text>
                 </TouchableOpacity>
               );

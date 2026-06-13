@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../../constants/theme/colors';
-
 const GenderOptionCard = ({
   gender,
   selected,
@@ -41,6 +40,7 @@ const GenderOptionCard = ({
         styles.container,
         {
           backgroundColor,
+          flexDirection: 'row',
         },
       ]}
     >
@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
 
     paddingHorizontal: 8,
 
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
 

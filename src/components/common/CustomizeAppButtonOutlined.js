@@ -1,7 +1,6 @@
 
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
 import Colors from '../../constants/theme/colors';
-
 const CustomizeAppButtonOutlined = ({
   label,
   onPress,
@@ -29,7 +28,7 @@ const CustomizeAppButtonOutlined = ({
       {loading ? (
         <ActivityIndicator color={resolvedText} />
       ) : (
-        <View style={styles.inner}>
+        <View style={[styles.inner, { flexDirection: 'row' }]}>
           <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
           {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
         </View>
@@ -53,7 +52,6 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   inner: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,

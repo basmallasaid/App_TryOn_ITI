@@ -2,7 +2,6 @@
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
-
 /**
  * StatCard
  * Props:
@@ -11,20 +10,21 @@ import Colors from '../../constants/theme/colors';
  *  subtitle  string
  *  onPress   func
  */
-const StatCard = ({ icon, title, subtitle, onPress }) => (
-  <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-    <Ionicons name={icon} size={22} color={Colors.textPrimary} />
-    <View style={styles.texts}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>{subtitle}</Text>
-    </View>
-  </TouchableOpacity>
-);
+const StatCard = ({ icon, title, subtitle, onPress }) => {
+  return (
+    <TouchableOpacity style={[styles.card, { flexDirection: 'row' }]} onPress={onPress} activeOpacity={0.8}>
+      <Ionicons name={icon} size={22} color={Colors.textPrimary} />
+      <View style={styles.texts}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.subtitle}>{subtitle}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     borderRadius: 16,

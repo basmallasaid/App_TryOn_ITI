@@ -8,7 +8,6 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
-  I18nManager,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -23,12 +22,11 @@ import { ROUTES } from "../../navigation/routes";
 import { getGreeting } from "../../utils/greeting";
 
 export default function RecommendationScreen({ navigation }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { profile } = useProfileContext();
   const { todaysOutfit, todaysWeather, history, loading } = useRecommendation();
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
   const weather = todaysWeather || todaysOutfit?.weather || history[0]?.weather || null;
-  const isRTL = i18n.language === "ar" || I18nManager.isRTL;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -44,11 +42,11 @@ export default function RecommendationScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.greetingRow}>
-          <Text style={styles.greetingText}>{getGreeting()}, {firstName}</Text>
+        <View style={[styles.greetingRow, { flexDirection: "row" }]}>
+          <Text style={styles.greetingText}>{getGreeting(t)}, {firstName}</Text>
           <Text style={styles.wave}>👋</Text>
         </View>
-        <Text style={styles.subtitle}>Let's dress smart today.</Text>
+        <Text style={styles.subtitle}>{t("recommendation.subtitle")}</Text>
 
         {loading ? (
           <ActivityIndicator size="large" color={Colors.primary} style={styles.loader} />
@@ -58,7 +56,7 @@ export default function RecommendationScreen({ navigation }) {
 
             {(todaysOutfit || history[0]) && (
               <>
-                <Text style={styles.sectionTitle}>{t('recommendation.todaysRecommendation')}</Text>
+                <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('recommendation.todaysRecommendation')}</Text>
                 <OutfitOverviewCard
                   outfit={todaysOutfit || history[0]}
                   width="100%"
@@ -79,7 +77,6 @@ export default function RecommendationScreen({ navigation }) {
               <HorizontalScrollSection
                 title={t('recommendation.lastRecommendations')}
                 items={history}
-                isRTL={isRTL}
                 onViewAll={() => navigation.navigate(ROUTES.RECOMMENDATIONS_GRID)}
                 renderItem={(item) => (
                   <OutfitOverviewCard
@@ -140,7 +137,6 @@ const styles = StyleSheet.create({
   },
   wave: {
     fontSize: 20,
-    marginLeft: 6,
   },
   subtitle: {
     fontFamily: 'Roboto',

@@ -9,59 +9,61 @@ import Colors from '../../constants/theme/colors';
 import { getAllProducts } from '../../api/user_services/userService';
 import { FilterModal } from './FilterModal';
 import { useFavorites } from '../../context/FavoritesContext';
-
-const mapProductToCard = (product) => ({
-    id: product._id,
-    name: product.name,
-    brand: product.store_id?.name || 'Store',
-    price: `${product.price} ${product.currency || 'USD'}`,
-    image: product.images?.[0],
-    badge: product.try_on_enabled ? 'Match' : product.is_active ? '' : 'Inactive',
-    badgeColor: product.try_on_enabled ? '#8ED321' : '#8A9BAD',
-    isOutlined: product.try_on_enabled,
-});
-
-const getCategoryIcon = (category) => {
-    switch (category) {
-        case 'dresses':
-            return 'dresses';
-        case 'top':
-            return 'tshirt-crew-outline';
-        case 'pants':
-            return 'human-male-height';
-        default:
-            return null;
-    }
-};
-
-const buildCategoriesFromProducts = (products) => {
-    const categorySet = new Set();
-    products.forEach((product) => {
-        const category = product.category?.toLowerCase();
-        if (category) categorySet.add(category);
-    });
-
-    const categories = [{ id: 'all', name: 'All', icon: null, value: 'all' }];
-
-    Array.from(categorySet)
-        .sort()
-        .forEach((category) => {
-            categories.push({
-                id: category,
-                name: category.charAt(0).toUpperCase() + category.slice(1),
-                value: category,
-                icon: getCategoryIcon(category),
-            });
-        });
-
-    return categories;
-};
+import { useTranslation } from 'react-i18next';
 
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES, SOURCE } from '../../navigation/routes';
 
 export default function StoreScreen() {
     const navigation = useNavigation();
+    const { t } = useTranslation();
+
+    const mapProductToCard = (product) => ({
+        id: product._id,
+        name: product.name,
+        brand: product.store_id?.name || 'Store',
+        price: `${product.price} ${product.currency || t("store.currency")}`,
+        image: product.images?.[0],
+        badge: product.try_on_enabled ? 'Match' : product.is_active ? '' : 'Inactive',
+        badgeColor: product.try_on_enabled ? '#8ED321' : '#8A9BAD',
+        isOutlined: product.try_on_enabled,
+    });
+
+    const getCategoryIcon = (category) => {
+        switch (category) {
+            case 'dresses':
+                return 'dresses';
+            case 'top':
+                return 'tshirt-crew-outline';
+            case 'pants':
+                return 'human-male-height';
+            default:
+                return null;
+        }
+    };
+
+    const buildCategoriesFromProducts = (products) => {
+        const categorySet = new Set();
+        products.forEach((product) => {
+            const category = product.category?.toLowerCase();
+            if (category) categorySet.add(category);
+        });
+
+        const categories = [{ id: 'all', name: t("store.all"), icon: null, value: 'all' }];
+
+        Array.from(categorySet)
+            .sort()
+            .forEach((category) => {
+                categories.push({
+                    id: category,
+                    name: category.charAt(0).toUpperCase() + category.slice(1),
+                    value: category,
+                    icon: getCategoryIcon(category),
+                });
+            });
+
+        return categories;
+    };
     const { isFavorite, addItem, removeItem, refetch: refetchFavorites } = useFavorites();
     const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -108,7 +110,7 @@ export default function StoreScreen() {
                 const data = await getAllProducts();
                 setAllProducts(Array.isArray(data) ? data : []);
             } catch (err) {
-                setError('Unable to load products. Please try again.');
+                setError(t("store.loadError"));
             } finally {
                 setLoading(false);
             }
@@ -230,7 +232,7 @@ export default function StoreScreen() {
                 contentContainerStyle={{ paddingBottom: 20 }}
                 ListEmptyComponent={() => (
                     <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>No products found for this filter.</Text>
+                        <Text style={styles.emptyText}>{t("store.noProducts")}</Text>
                     </View>
                 )}
             />

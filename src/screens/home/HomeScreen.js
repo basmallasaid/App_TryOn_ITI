@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Platform,
   StatusBar,
-  I18nManager,
+  Alert,
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -25,12 +25,11 @@ import { useRecommendation } from "../../context/RecommendationContext";
 import HorizontalScrollSection from "../../components/common/HorizontalScrollSection";
 
 export default function HomeScreen({ navigation }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { profile, refreshProfile } = useProfileContext();
   const { isFavorite, addItem, removeItem } = useFavorites();
   const { todaysOutfit, todaysWeather, history } = useRecommendation();
   const activeOutfit = todaysOutfit || history?.[0] || null;
-  const isRTL = i18n.language === "ar" || I18nManager.isRTL;
   useFocusEffect(
     useCallback(() => {
       refreshProfile();
@@ -61,7 +60,7 @@ export default function HomeScreen({ navigation }) {
         <Header />
         <HeroBanner onPress={goToHistory} />
 
-        <Text style={styles.sectionTitle}>{t('home.whatToDo')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('home.whatToDo')}</Text>
         <View style={styles.grid}>
           <ActionCard
             title={t('home.actions.tryOn')}
@@ -104,7 +103,7 @@ export default function HomeScreen({ navigation }) {
           />
         </View>
 
-        <Text style={styles.sectionTitle}>{t('home.todaysPicks')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('home.todaysPicks')}</Text>
         <OutfitCard
           onPress={goToDetail}
           todaysOutfit={activeOutfit}
@@ -114,7 +113,6 @@ export default function HomeScreen({ navigation }) {
         <HorizontalScrollSection
           title={t('home.recentTryOns')}
           items={latestTryOn}
-          isRTL={isRTL}
           onViewAll={() => navigation.navigate(ROUTES.RECENT_TRYONS)}
           renderItem={(item) => (
             <TryOnCard
@@ -128,7 +126,7 @@ export default function HomeScreen({ navigation }) {
                     await addItem(item._id, 'TRYON');
                   }
                 } catch (e) {
-                  Alert.alert('Error', e.response?.data?.message || 'Failed to update favorite');
+                  Alert.alert(t("common.error"), e.response?.data?.message || t("home.favoriteError"));
                 }
               }}
             />
@@ -139,7 +137,6 @@ export default function HomeScreen({ navigation }) {
         <HorizontalScrollSection
           title={t('home.recentRecycles')}
           items={latestRecycle}
-          isRTL={isRTL}
           onViewAll={() => navigation.navigate(ROUTES.RECENT_RECYCLES)}
           renderItem={(item) => (
             <TryOnCard
@@ -153,7 +150,7 @@ export default function HomeScreen({ navigation }) {
                     await addItem(item._id, 'TRYON');
                   }
                 } catch (e) {
-                  Alert.alert('Error', e.response?.data?.message || 'Failed to update favorite');
+                  Alert.alert(t("common.error"), e.response?.data?.message || t("home.favoriteError"));
                 }
               }}
             />

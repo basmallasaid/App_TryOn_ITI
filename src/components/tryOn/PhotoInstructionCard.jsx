@@ -13,8 +13,8 @@ export default function PhotoInstructionCard({
 }) {
   return (
     <View style={styles.card}>
-      <View style={[styles.iconContainer, { backgroundColor: iconBgColor || "#DBE8FF" }]}>
-        <MaterialCommunityIcons name={mainIconName} size={22} color={iconColor || Colors.iconGray} />
+      <View style={[styles.iconContainer, { backgroundColor: iconBgColor || "transparent" }]}>
+        <MaterialCommunityIcons name={mainIconName} size={22} color={iconColor || Colors.primary} />
       </View>
       <Text style={[styles.cardTitle, { color: titleColor || Colors.textPrimary }]}>{title}</Text>
       <Text style={styles.cardSub} numberOfLines={3}>{sub}</Text>
@@ -25,7 +25,7 @@ export default function PhotoInstructionCard({
 const styles = StyleSheet.create({
   card: {
     width: "48%",
-    backgroundColor: "#F0F5FF",
+    backgroundColor: "#F2F3FF",
     borderRadius: 16,
     padding: 14,
     marginBottom: 12,
@@ -37,15 +37,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
+   backgroundColor:"transparent",
   },
   cardTitle: {
+    fontFamily:"Roboto_600SemiBold",
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 2,
+    color:Colors.textPrimary,
   },
   cardSub: {
+    fontFamily:"Roboto_regular",
     fontSize: 11,
-    color: Colors.disabled,
+    color: Colors.textSecondary,
     lineHeight: 16,
   },
 });

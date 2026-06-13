@@ -3,14 +3,12 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-nati
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
-
 export default function HorizontalScrollSection({
   title,
   items,
   onViewAll,
   renderItem,
   seeMoreCardStyle,
-  isRTL,
 }) {
   const { t } = useTranslation();
 
@@ -21,7 +19,7 @@ export default function HorizontalScrollSection({
 
   return (
     <>
-      <View style={styles.sectionHeader}>
+      <View style={[styles.sectionHeader, { flexDirection: 'row' }]}>
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
 
@@ -48,7 +46,6 @@ export default function HorizontalScrollSection({
 
 const styles = StyleSheet.create({
   sectionHeader: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom:20,
@@ -60,14 +57,12 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
   viewAllBtn: {
-    flexDirection: 'row',
     alignItems: 'center',
   },
   viewAllText: {
     fontFamily: 'Roboto',
     fontSize: 14,
     color: Colors.textPrimary,
-    marginRight: 5,
   },
   arrowIcon: {
     marginTop: 3,

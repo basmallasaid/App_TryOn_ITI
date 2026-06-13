@@ -47,13 +47,12 @@ function DashedGradientBorder({ children, height }) {
 }
 
 export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const cardNumber = String(index + 1).padStart(2, "0");
 
-  const isAr = i18n.language === "ar";
-  const displayTitle = isAr && idea.title_ar ? idea.title_ar : idea.title;
-  const displayDescription = isAr && idea.design_description_ar ? idea.design_description_ar : idea.design_description;
+  const displayTitle = idea.title;
+  const displayDescription = idea.design_description;
 
   const cardHeight = expanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT;
 

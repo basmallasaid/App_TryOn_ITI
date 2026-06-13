@@ -130,7 +130,7 @@ const OnboardingScreen = ({ navigation }) => {
       </View>
 
       {/* Dots */}
-      <View style={styles.dotsRow}>
+      <View style={[styles.dotsRow, { flexDirection: "row" }]}>
         {SLIDES.map(({ id }, i) => (
           <View key={id} style={styles.dotContainer}>
             <View style={styles.dotInactive} />
@@ -140,7 +140,7 @@ const OnboardingScreen = ({ navigation }) => {
       </View>
 
       {/* Buttons */}
-      <View style={styles.buttonsRow}>
+      <View style={[styles.buttonsRow, { flexDirection: "row" }]}>
         {isLast ? (
           <View style={styles.fullWidth}>
             <CustomizeAppButtonFilled
@@ -214,7 +214,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   dotsRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 28,
@@ -245,7 +244,6 @@ const styles = StyleSheet.create({
     top: 0,
   },
   buttonsRow: {
-    flexDirection: 'row',
     paddingHorizontal: 24,
     gap: 12,
     width: '100%',

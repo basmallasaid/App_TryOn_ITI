@@ -12,7 +12,7 @@ export default function SubscriptionScreen() {
   const { t } = useTranslation();
 
   const handleSubscribe = (plan) => {
-    Alert.alert('Demo', `You selected the ${plan.id} plan. Payment integration coming soon.`);
+    Alert.alert("Demo", t("subscription.selectedPlan", { plan: plan.id }));
   };
 
   return (
@@ -31,16 +31,16 @@ export default function SubscriptionScreen() {
             onPress={() => handleSubscribe(plan)}
             activeOpacity={0.85}
           >
-            <View style={styles.planHeader}>
-              <Text style={styles.planName}>{plan.id === 'monthly' ? 'Monthly' : 'Yearly'}</Text>
+            <View style={[styles.planHeader, { flexDirection: "row" }]}>
+              <Text style={styles.planName}>{plan.id === 'monthly' ? t("subscription.monthly") : t("subscription.yearly")}</Text>
               {plan.badge && (
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{plan.badge}</Text>
+                  <Text style={styles.badgeText}>{t("subscription.bestValue")}</Text>
                 </View>
               )}
             </View>
-            <Text style={styles.planPrice}>{plan.price}<Text style={styles.planPeriod}>/{plan.period}</Text></Text>
-            <View style={styles.subscribeBtn}>
+            <Text style={styles.planPrice}>{plan.price}<Text style={styles.planPeriod}>{plan.period === 'month' ? t("subscription.perMonth") : t("subscription.perYear")}</Text></Text>
+            <View style={[styles.subscribeBtn, { flexDirection: "row" }]}>
               <Text style={styles.subscribeText}>{t('subscription.subscribe')}</Text>
               <Ionicons name="arrow-forward" size={18} color="#fff" />
             </View>
@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
     borderColor: '#E9EBEE',
   },
   planHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     marginBottom: 8,
@@ -115,7 +114,6 @@ const styles = StyleSheet.create({
     color: '#6B7280',
   },
   subscribeBtn: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,

@@ -9,16 +9,16 @@ export default function WeatherCard({ weather }) {
 
   return (
     <View style={styles.card}>
-      <View style={styles.mainRow}>
-        <View style={styles.leftRow}>
+      <View style={[styles.mainRow, { flexDirection: "row" }]}>
+        <View style={[styles.leftRow, { flexDirection: "row" }]}>
           <Ionicons name={conditionIcon.ionicons} size={33} color={conditionIcon.color} />
-          <View style={styles.leftTextCol}>
-            <Text style={styles.tempValue}>{weather.temperature}°C</Text>
-            <Text style={styles.conditionText}>{weather.condition}</Text>
+          <View style={[styles.leftTextCol, { alignItems: "flex-start" }]}>
+            <Text style={[styles.tempValue, { textAlign: "left" }]}>{weather.temperature}°C</Text>
+            <Text style={[styles.conditionText, { textAlign: "left" }]}>{weather.condition}</Text>
           </View>
         </View>
 
-        <View style={styles.rightRow}>
+        <View style={[styles.rightRow, { flexDirection: "row" }]}>
           <View style={styles.detailItem}>
             <Ionicons name="thermometer-outline" size={20} color="#1550D3" />
             <Text style={styles.detailText}>{weather.feelsLike}°C</Text>
@@ -47,17 +47,14 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   mainRow: {
-    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   leftRow: {
-    flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
   leftTextCol: {
-    alignItems: "flex-start",
   },
   tempValue: {
     fontFamily: "Geist",
@@ -76,7 +73,6 @@ const styles = StyleSheet.create({
     color: "#434654",
   },
   rightRow: {
-    flexDirection: "row",
     gap: 16,
   },
   detailItem: {

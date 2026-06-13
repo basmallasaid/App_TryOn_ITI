@@ -140,41 +140,7 @@
       "profile": "الملف الشخصي"
     }
   },
-  "home": {
-    "hello": "مرحباً",
-    "guest": "زائر",
-    "guestInitial": "ز",
-    "whatToDo": "ماذا تريد أن تفعل؟",
-    "todaysPicks": "اختيارات اليوم لك",
-    "recentTryOns": "آخر التجارب",
-    "recentRecycles": "آخر عمليات إعادة التدوير",
-    "viewAll": "عرض الكل",
-    "noRecentTryOns": "لا توجد تجارب حديثة بعد",
-    "noRecentRecycles": "لا توجد عمليات إعادة تدوير حديثة بعد",
-    "hero": {
-      "title": "أناقتك، بذكاء.",
-      "subtitle": "ذكاء اصطناعي يفهم خزانة ملابسك ويصنع إطلالات تناسبك."
-    },
-    "outfitCard": {
-      "title": "كاجوال أنيق",
-      "subtitle": "نظيف ومريح ومثالي ليومك",
-      "location": "القاهرة",
-      "viewOutfit": "عرض الإطلالة",
-      "generate": "توليد إطلالة",
-      "noOutfit": "لا توجد إطلالة بعد",
-      "score": "التقييم:"
-    },
-    "actions": {
-      "tryOn": "تجربة الملابس",
-      "tryOnSub": "شاهد كيف تبدو الملابس عليك",
-      "recycle": "إعادة التدوير",
-      "recycleSub": "امنح ملابسك حياة جديدة",
-      "generateOutfit": "توليد إطلالة",
-      "generateOutfitSub": "اقتراحات أزياء مخصصة",
-      "matching": "المطابقة",
-      "matchingSub": "اعثر على التطابق المثالي لملابسك"
-    }
-  },
+
   "profile": {
     "hi": "مرحباً، {{name}} 👋",
     "edit": "تعديل",
@@ -204,12 +170,67 @@
       "cyberpunk": "سايبربانك",
       "quietLuxury": "الفخامة الهادئة",
       "bohemian": "بوهيمي"
+    },
+    "premium": "مميز",
+    "guestFallback": "هناك"
+  },
+  "greeting": {
+    "morning": "صباح الخير",
+    "afternoon": "مساء الخير",
+    "evening": "مساء الخير"
+  },
+  "avatar": {
+    "create": {
+      "title": "إنشاء الصورة الرمزية",
+      "step": "الخطوة {{current}} من {{total}}",
+      "general": "عام",
+      "measurements": "القياسات",
+      "skinToneTab": "لون البشرة",
+      "hairColorTab": "لون الشعر",
+      "age": "العمر",
+      "yrs": "سنة",
+      "gender": "الجنس",
+      "male": "ذكر",
+      "female": "أنثى",
+      "height": "الطول",
+      "cm": "سم",
+      "weight": "الوزن",
+      "kg": "كجم",
+      "selectSkinTone": "اختر لون بشرتك",
+      "selectHairColor": "اختر لون شعرك",
+      "generateAvatar": "إنشاء الصورة الرمزية",
+      "next": "التالي",
+      "missingFields": "حقول ناقصة",
+      "missingFieldsMessage": "يرجى ملء جميع الحقول المطلوبة قبل إنشاء الصورة الرمزية.",
+      "failed": "فشل إنشاء الصورة الرمزية",
+      "skinTones": {
+        "veryLight": "فاتح جداً",
+        "light": "فاتح",
+        "medium": "متوسط",
+        "tan": "سمراء",
+        "brown": "بني",
+        "dark": "غامق"
+      },
+      "hairColors": {
+        "black": "أسود",
+        "darkBrown": "بني غامق",
+        "brown": "بني",
+        "lightBrown": "بني فاتح",
+        "blonde": "أشقر",
+        "red": "أحمر"
+      }
     }
   },
   "subscription": {
     "title": "افتح المميزات",
     "subtitle": "اشترك لتفعيل تخصيص الصورة الرمزية والمزيد",
-    "subscribe": "اشترك الآن"
+    "subscribe": "اشترك الآن",
+    "monthly": "شهري",
+    "yearly": "سنوي",
+    "perMonth": "/الشهر",
+    "perYear": "/السنة",
+    "bestValue": "أفضل قيمة",
+    "selectedPlan": "لقد اخترت خطة {{plan}}. تكامل الدفع قريباً."
   },
   "tryOn": {
     "selectModel": {
@@ -264,7 +285,28 @@
       "noItemsTitle": "لم يتم اختيار أي عنصر بعد",
       "noItemsSub": "أضف عناصر من الأعلى لتجربتها.",
       "generate": "توليد التجربة",
-      "generating": "جارٍ التوليد..."
+      "generating": "جارٍ التوليد...",
+      "firstImage": "الصورة الأولى",
+      "secondImage": "الصورة الثانية",
+      "openCamera": "فتح الكاميرا",
+      "uploadImageHere": "ارفع الصورة هنا",
+      "itemSelected": "{{count}} عنصر محدد",
+      "itemsSelected": "{{count}} عناصر محددة",
+      "itemFromWardrobe": "عنصر محدد من خزانة ملابسك",
+      "itemFromCamera": "عنصر ملتقط من الكاميرا أو المعرض",
+      "virtualTryOnFailed": "فشلت التجربة الافتراضية"
+    },
+    "results": {
+      "title": "نتيجة التجربة",
+      "generating": "جارٍ إنشاء نتيجة التجربة...",
+      "retry": "إعادة المحاولة",
+      "noResultImage": "لا توجد صورة نتيجة متاحة",
+      "save": "حفظ",
+      "tryAgain": "حاول مرة أخرى",
+      "generationFailed": "فشل التوليد",
+      "saved": "تم الحفظ",
+      "savedMessage": "تم حفظ نتيجة التجربة بنجاح.",
+      "saveFailed": "فشل الحفظ"
     }
   },
   "recycle": {
@@ -351,7 +393,158 @@
     "outfitDetails": "تفاصيل الإطلالة",
     "emptyHistory": "لا توجد توصيات بعد",
     "noOutfitTitle": "لا توجد إطلالة متاحة",
-    "noOutfitSubtitle": "قم بتوليد إطلالة مخصصة لرؤيتها هنا"
+    "noOutfitSubtitle": "قم بتوليد إطلالة مخصصة لرؤيتها هنا",
+    "subtitle": "دعنا نرتقي بأناقتك اليوم.",
+    "generatedDesign": "تصميم مولّد",
+    "untitled": "بدون عنوان"
+  },
+  "matching": {
+    "title": "المطابقة",
+    "whatIsThisItem": "ما هذا العنصر؟",
+    "openCamera": "فتح الكاميرا",
+    "uploadImageHere": "ارفع الصورة هنا",
+    "selectFromWardrobe": "اختر من خزانة الملابس",
+    "seeAll": "عرض الكل",
+    "itemsMatch": "عناصر متطابقة في خزانة ملابسك",
+    "noMatches": "لا توجد نتائج مطابقة",
+    "storeMatches": "انظر المتطابق في المتجر",
+    "noStoreMatches": "لا توجد نتائج مطابقة في المتجر",
+    "seeMatching": "عرض المطابقة",
+    "matchError": "خطأ في المطابقة",
+    "selectedItemsOne": "تم تحديد عنصر واحد",
+    "noItemsSelected": "لم يتم تحديد أي عنصر بعد",
+    "itemFromWardrobe": "عنصر محدد من خزانة ملابسك",
+    "itemFromCamera": "عنصر ملتقط من الكاميرا أو المعرض",
+    "selectItemHint": "اختر عنصراً لرؤية اقتراحات المطابقة",
+    "details": {
+      "scoreMatch": "% تطابق",
+      "noDescription": "لا يوجد وصف متاح.",
+      "color": "اللون",
+      "size": "المقاس",
+      "matchesWardrobe": "هذا العنصر يتطابق مع خزانة ملابسك",
+      "tryOnThisItem": "جرب هذا العنصر"
+    }
+  },
+  "itemSelector": {
+    "subtitle": "اختر من الأسفل لبدء التجربة",
+    "tops": "قمصان علوية",
+    "pants": "بنطلونات",
+    "dresses": "فساتين"
+  },
+  "wardrobe": {
+    "addItem": "إضافة عنصر",
+    "chooseSource": "اختر المصدر",
+    "camera": "الكاميرا",
+    "gallery": "المعرض",
+    "cancel": "إلغاء",
+    "error": "خطأ",
+    "errorOccurred": "حدث خطأ أثناء اختيار الصورة.",
+    "analysisFailed": "فشل التحليل",
+    "analysisFailedMessage": "تعذر تحليل هذه الصورة.",
+    "analyzing": "جارٍ تحليل العنصر...",
+    "editTitle": "تعديل خزانة ملابسك",
+    "addNewItem": "إضافة عنصر جديد",
+    "favoriteError": "فشل تحديث المفضلة",
+    "all": "الكل",
+    "shirt": "قميص",
+    "tShirt": "تي شيرت",
+    "jeans": "جينز",
+    "short": "شورت",
+    "skirt": "تنورة",
+    "abayas": "عباءات",
+    "health": {
+      "title": "صحة خزانة الملابس",
+      "subtitle": "لديك {{count}} عنصر(عناصر) متزامن. استمر في بناء خزانة ملابسك!"
+    },
+    "empty": {
+      "title": "خزانة ملابسك فارغة",
+      "subtitle": "أضف ملابسك للبدء",
+      "addButton": "إضافة إلى خزانة الملابس"
+    },
+    "details": {
+      "title": "تفاصيل العنصر",
+      "garment": "قطعة الملابس",
+      "color": "اللون",
+      "category": "الفئة",
+      "season": "الموسم",
+      "style": "النمط"
+    },
+    "verify": {
+      "title": "إضافة إلى خزانة الملابس",
+      "analysis": "التحليل",
+      "swipeUp": "اسحب للأعلى لمراجعة التفاصيل",
+      "name": "الاسم",
+      "namePlaceholder": "أدخل اسم العنصر",
+      "primaryColor": "اللون الرئيسي",
+      "categoryQuestion": "ما هذا العنصر؟",
+      "seasonQuestion": "لأي موسم؟",
+      "styleQuestion": "أي نمط؟",
+      "save": "حفظ في خزانة الملابس"
+    },
+    "categories": {
+      "bottom": "سفلي",
+      "top": "علوي",
+      "dress": "فستان",
+      "suit": "بدلة",
+      "bag": "حقيبة",
+      "shoes": "أحذية",
+      "jacket": "جاكيت",
+      "accessories": "إكسسوارات"
+    },
+    "seasons": {
+      "summer": "صيف",
+      "winter": "شتاء",
+      "spring": "ربيع",
+      "fall": "خريف"
+    },
+    "styles": {
+      "casual": "كاجوال",
+      "basic": "أساسي",
+      "formal": "رسمي",
+      "martCasual": "كاجوال أنيق"
+    }
+  },
+  "store": {
+    "title": "المتجر",
+    "subtitle": "اكتشف وتسوق الأساسيات المنسقة بالذكاء الاصطناعي.",
+    "searchPlaceholder": "اضغط للبحث",
+    "all": "الكل",
+    "loadError": "تعذر تحميل المنتجات. حاول مرة أخرى.",
+    "noProducts": "لا توجد منتجات لهذا الفلتر.",
+    "currency": "جنيه",
+    "productCard": {
+      "tryOn": "تجربة",
+      "tryOnLink": "تجربة"
+    },
+    "filters": {
+      "title": "الفلاتر",
+      "brands": "العلامات التجارية",
+      "season": "الموسم",
+      "categories": "الفئات",
+      "color": "اللون",
+      "priceRange": "نطاق السعر",
+      "apply": "تطبيق الفلاتر",
+      "loadingColors": "جارٍ تحميل الألوان...",
+      "seasons": {
+        "summer": "صيف",
+        "spring": "ربيع",
+        "fall": "خريف",
+        "winter": "شتاء"
+      }
+    },
+    "productDetail": {
+      "description": "الوصف",
+      "showLess": "عرض أقل",
+      "seeMore": "عرض المزيد",
+      "color": "اللون",
+      "size": "المقاس",
+      "wardrobeMatches": "تطابقات خزانة الملابس ✨",
+      "noMatches": "لا توجد عناصر متطابقة في خزانة الملابس",
+      "generateTryOn": "توليد تجربة افتراضية",
+      "noDescription": "لا يوجد وصف متاح.",
+      "officialStore": "المتجر الرسمي",
+      "matchError": "خطأ في المطابقة"
+    }
   },
   "editProfile": {
     "title": "تعديل الملف الشخصي",
@@ -364,6 +557,8 @@
     "male": "ذكر",
     "female": "أنثى",
     "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
     "success": "تم تحديث الملف الشخصي بنجاح.",
     "failed": "فشل التحديث. حاول مرة أخرى."
   },
@@ -371,6 +566,46 @@
     "title": "الإشعارات",
     "markAllRead": "تحديد الكل كمقروء",
     "emptyTitle": "لا توجد إشعارات",
-    "emptySubtitle": "كل شيء محدث! سنخطرك عند وصول شيء جديد."
+    "emptySubtitle": "كل شيء محدث! سنخبرك عند وصول شيء جديد.",
+    "now": "الآن",
+    "minutesAgo": "{{count}}د",
+    "hoursAgo": "{{count}}س",
+    "daysAgo": "{{count}}ي"
+  },
+  "home": {
+    "hello": "مرحباً",
+    "guest": "زائر",
+    "guestInitial": "ز",
+    "whatToDo": "ماذا تريد أن تفعل؟",
+    "todaysPicks": "اختيارات اليوم لك",
+    "recentTryOns": "آخر التجارب",
+    "recentRecycles": "آخر عمليات إعادة التدوير",
+    "viewAll": "عرض الكل",
+    "noRecentTryOns": "لا توجد تجارب حديثة بعد",
+    "noRecentRecycles": "لا توجد عمليات إعادة تدوير حديثة بعد",
+    "favoriteError": "فشل تحديث المفضلة",
+    "hero": {
+      "title": "أناقتك، بذكاء.",
+      "subtitle": "ذكاء اصطناعي يفهم خزانة ملابسك ويصنع إطلالات تناسبك."
+    },
+    "outfitCard": {
+      "title": "كاجوال أنيق",
+      "subtitle": "نظيف ومريح ومثالي ليومك",
+      "location": "القاهرة",
+      "viewOutfit": "عرض الإطلالة",
+      "generate": "توليد إطلالة",
+      "noOutfit": "لا توجد إطلالة بعد",
+      "score": "التقييم:"
+    },
+    "actions": {
+      "tryOn": "تجربة الملابس",
+      "tryOnSub": "شاهد كيف تبدو الملابس عليك",
+      "recycle": "إعادة التدوير",
+      "recycleSub": "امنح ملابسك حياة جديدة",
+      "generateOutfit": "توليد إطلالة",
+      "generateOutfitSub": "اقتراحات أزياء مخصصة",
+      "matching": "المطابقة",
+      "matchingSub": "اعثر على التطابق المثالي لملابسك"
+    }
   }
 }

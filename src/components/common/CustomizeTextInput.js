@@ -9,7 +9,6 @@ import {
 import Colors from "../../constants/theme/colors";
 import Typography from "../../constants/theme/typography";
 import { Ionicons } from "@expo/vector-icons";
-
 const CustomizeTextInput = ({
   label,
   placeholder,
@@ -65,6 +64,7 @@ const CustomizeTextInput = ({
           styles.container,
           {
             borderColor,
+            flexDirection: "row",
           },
         ]}
       >
@@ -73,6 +73,7 @@ const CustomizeTextInput = ({
             styles.input,
             {
               color: stateColor,
+              textAlign: "left",
             },
           ]}
           placeholder={placeholder}
@@ -88,7 +89,7 @@ const CustomizeTextInput = ({
           editable={editable}
         />
 
-        <View style={styles.rightSection}>
+        <View style={[styles.rightSection, { alignSelf: "flex-end" }]}>
           {secureTextEntry && (
             <TouchableOpacity onPress={() => setHidden((h) => !h)}>
               <Ionicons

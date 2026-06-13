@@ -135,7 +135,7 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
-  const firstName = profile?.profile?.first_name || "there";
+  const firstName = profile?.profile?.first_name || t("profile.guestFallback");
 
   return (
     <View style={styles.root}>

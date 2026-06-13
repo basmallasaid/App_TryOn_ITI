@@ -20,6 +20,7 @@ import CategoryChip from "../../components/wardrobe/CategoryChip";
 import WardrobeItemCard from "../../components/wardrobe/WardrobeItemCard";
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
 import { getCategoriesByGender } from "../../constants/wardrobe/wardrobeCategories";
+import { useTranslation } from 'react-i18next';
 import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
 
@@ -30,6 +31,7 @@ const TOTAL_GRID_WIDTH = CARD_WIDTH * 2 + GAP;
 const HORIZONTAL_PADDING = (SCREEN_WIDTH - TOTAL_GRID_WIDTH) / 2;
 
 const EditWardrobeScreen = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const { initialSelectedId } = route.params || {};
   const { items, removeItem, refetch } = useWardrobe();
   const { profile } = useProfileContext();
@@ -78,7 +80,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
       {/* Header */}
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
-        <Text style={styles.title}>Edit your wardrobe</Text>
+        <Text style={styles.title}>{t("wardrobe.editTitle")}</Text>
         <TouchableOpacity
           onPress={() => selectedIds.length > 0 && setModalVisible(true)}
         >

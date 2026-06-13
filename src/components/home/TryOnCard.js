@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
-
 export default function TryOnCard({ imageUri, isFavorite, onToggleFavorite }) {
   const { t } = useTranslation();
 
@@ -27,7 +26,7 @@ export default function TryOnCard({ imageUri, isFavorite, onToggleFavorite }) {
         resizeMode="contain"
       />
 
-      <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+      <TouchableOpacity style={[styles.button, { flexDirection: 'row' }]} activeOpacity={0.8}>
         <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
       </TouchableOpacity>
     </View>
@@ -62,7 +61,6 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Colors.primarybrand,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
@@ -77,6 +75,5 @@ const styles = StyleSheet.create({
   },
   arrow: {
     marginTop:4,
-    marginLeft: 5,
   },
 });

@@ -42,16 +42,15 @@ export const PromoBanner = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.slide}>
-      <View style={styles.banner}>
+      <View style={[styles.banner, { flexDirection: 'row' }]}>
         <View style={styles.textContent}>
-          <Text style={styles.bannerTitle}>{item.title}</Text>
-          <Text style={styles.bannerSub}>{item.subtitle}</Text>
+          <Text style={[styles.bannerTitle, { textAlign: 'left' }]}>{item.title}</Text>
+          <Text style={[styles.bannerSub, { textAlign: 'left' }]}>{item.subtitle}</Text>
         </View>
 
-   
         <Image
           source={item.image}
-          style={styles.bannerImg}
+          style={[styles.bannerImg, { right: -5, left: undefined }]}
           resizeMode="contain"
         />
       </View>
@@ -105,7 +104,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#E9EBEE',
     padding: 25,
-    flexDirection: 'row',
     alignItems: 'center',
     overflow: 'hidden',
   },

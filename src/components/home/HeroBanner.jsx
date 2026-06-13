@@ -16,19 +16,19 @@ export default function HeroBanner({ onPress }) {
     const { width } = useWindowDimensions();
 
     return (
-        <View style={styles.banner}>
-            <View style={styles.bannerContent}>
-                <Text style={styles.bannerTitle}>
+        <View style={[styles.banner, { flexDirection: "row" }]}>
+            <View style={[styles.bannerContent, { paddingRight: 10, paddingLeft: 0 }]}>
+                <Text style={[styles.bannerTitle, { textAlign: "left" }]}>
                     {t('home.hero.title')}
                 </Text>
 
-                <Text style={styles.bannerSubTitle}>
+                <Text style={[styles.bannerSubTitle, { textAlign: "left" }]}>
                     {t('home.hero.subtitle')}
                 </Text>
 
-                <TouchableOpacity style={styles.generateButton} onPress={onPress}>
+                <TouchableOpacity style={[styles.generateButton, { flexDirection: "row", alignSelf: "flex-start" }]} onPress={onPress}>
                     <Ionicons name="sparkles" size={24} color="white" />
-                    <Text style={styles.generateButtonText}>
+                    <Text style={[styles.generateButtonText, { marginLeft: 6, marginRight: 0 }]}>
                         {t('home.actions.generateOutfit')}
                     </Text>
 
@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         padding: 20,
         marginVertical: 10,
-        flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
 
@@ -76,7 +75,6 @@ const styles = StyleSheet.create({
     bannerContent: {
         flex: 1,
         flexShrink: 1,
-        paddingRight: 10,
     },
     bannerTitle: {
         fontSize: 20,
@@ -98,21 +96,18 @@ const styles = StyleSheet.create({
 
     generateButton: {
         backgroundColor: Colors.primarybrand,
-        flexDirection: "row",
         alignItems: "center",
         paddingVertical: 10,
         paddingHorizontal: 9,
         borderRadius: 12,
-        alignSelf: "flex-start",
     },
 
     generateButtonText: {
         color: Colors.white,
         fontWeight: "600",
-        marginLeft: 6,
     },
 
     bannerImage: {
-        marginLeft: 5,
+        marginHorizontal: 5,
     },
 });

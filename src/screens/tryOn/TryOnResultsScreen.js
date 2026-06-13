@@ -18,11 +18,13 @@ import { File, Directory, Paths } from 'expo-file-system';
 import { saveLatestTryon } from '../../api/user_services/userService';
 import { virtualTryOn } from '../../api/virtual_tryon_services/virtualTryonService';
 import { ROUTES, SOURCE } from '../../navigation/routes';
+import { useTranslation } from "react-i18next";
 import CustomBackButton from '../../components/common/CustomBackButton';
 
 const { width } = Dimensions.get('window');
 
 const TryOnResult = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const result = route?.params?.result || {};
   const productImage = route?.params?.productImage;
   const avatarImage = route?.params?.avatarImage;
@@ -82,7 +84,7 @@ const TryOnResult = ({ navigation, route }) => {
       const res = await virtualTryOn(formData);
       setStoreResult(res);
     } catch (e) {
-      const msg = e.response?.data?.message || e.response?.data?.error || e.message || "Generation failed";
+      const msg = e.response?.data?.message || e.response?.data?.error || e.message || t("tryOn.results.generationFailed");
       setGenerateError(msg);
     } finally {
       setGenerating(false);
@@ -98,10 +100,10 @@ const TryOnResult = ({ navigation, route }) => {
         taskId: (storeResult || result)?.taskId,
         model: (storeResult || result)?.model,
       });
-      Alert.alert("Saved", "Try-on result saved successfully.");
+      Alert.alert(t("tryOn.results.saved"), t("tryOn.results.savedMessage"));
     } catch (e) {
-      const msg = e.response?.data?.message || e.response?.data?.error || e.message || "Failed to save";
-      Alert.alert("Error", msg);
+      const msg = e.response?.data?.message || e.response?.data?.error || e.message || t("tryOn.results.saveFailed");
+      Alert.alert(t("common.error"), msg);
     } finally {
       setSaving(false);
     }
@@ -113,9 +115,9 @@ const TryOnResult = ({ navigation, route }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.header}>
+        <View style={[styles.header, { flexDirection: "row" }]}>
           <CustomBackButton onPress={() => navigation.goBack()} />
-          <Text style={styles.headerTitle}>Try-On Result</Text>
+          <Text style={styles.headerTitle}>{t("tryOn.results.title")}</Text>
           <TouchableOpacity>
             <Icon name="help-circle-outline" size={28} color="#546e7a" />
           </TouchableOpacity>
@@ -125,13 +127,13 @@ const TryOnResult = ({ navigation, route }) => {
           {generating ? (
             <View style={styles.generatingOverlay}>
               <ActivityIndicator size="large" color="#4AB8FF" />
-              <Text style={styles.generatingText}>Generating try-on result...</Text>
+              <Text style={styles.generatingText}>{t("tryOn.results.generating")}</Text>
             </View>
           ) : generateError ? (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{generateError}</Text>
               <TouchableOpacity style={styles.retryBtn} onPress={handleStoreGenerate}>
-                <Text style={styles.retryBtnText}>Retry</Text>
+                <Text style={styles.retryBtnText}>{t("tryOn.results.retry")}</Text>
               </TouchableOpacity>
             </View>
           ) : displayImage ? (
@@ -141,11 +143,11 @@ const TryOnResult = ({ navigation, route }) => {
               resizeMode="contain"
             />
           ) : (
-            <Text style={styles.placeholderText}>No result image available</Text>
+            <Text style={styles.placeholderText}>{t("tryOn.results.noResultImage")}</Text>
           )}
         </View>
 
-        <View style={styles.footer}>
+        <View style={[styles.footer, { flexDirection: "row" }]}>
           <TouchableOpacity
             style={[styles.saveButton, saving && { opacity: 0.6 }]}
             onPress={handleSave}
@@ -154,7 +156,7 @@ const TryOnResult = ({ navigation, route }) => {
             {saving ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.saveButtonText}>Save</Text>
+              <Text style={styles.saveButtonText}>{t("tryOn.results.save")}</Text>
             )}
           </TouchableOpacity>
           <TouchableOpacity
@@ -167,7 +169,7 @@ const TryOnResult = ({ navigation, route }) => {
               }
             }}
           >
-            <Text style={styles.tryAgainText}>Try again</Text>
+            <Text style={styles.tryAgainText}>{t("tryOn.results.tryAgain")}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -186,7 +188,6 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   header: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
@@ -212,7 +213,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   footer: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
     paddingBottom: 30,

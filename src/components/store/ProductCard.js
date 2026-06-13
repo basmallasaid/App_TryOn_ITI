@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
 export const ProductCard = ({
   name,
   brand,
@@ -14,57 +13,59 @@ export const ProductCard = ({
   isFavorite,
   onToggleFavorite,
   onTryOnPress,
-}) => (
-  <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onPress}>
-    <View style={styles.imageWrapper}>
-      <Image source={{ uri: image }} style={styles.img} resizeMode="cover" />
-      <View style={styles.overlayHeader}>
-        {badge ? (
-          <View
-            style={[styles.badge, { backgroundColor: badgeColor || '#5CC1FF' }]}
-          >
-            <Text style={styles.badgeText}>{badge}</Text>
-          </View>
-        ) : (
-          <View />
-        )}
+}) => {
+  return (
+    <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onPress}>
+      <View style={styles.imageWrapper}>
+        <Image source={{ uri: image }} style={styles.img} resizeMode="cover" />
+        <View style={[styles.overlayHeader, { flexDirection: 'row' }]}>
+          {badge ? (
+            <View
+              style={[styles.badge, { backgroundColor: badgeColor || '#5CC1FF' }]}
+            >
+              <Text style={styles.badgeText}>{badge}</Text>
+            </View>
+          ) : (
+            <View />
+          )}
 
-        <TouchableOpacity style={styles.heartBtn} onPress={onToggleFavorite}>
-          <Ionicons
-            name={isFavorite ? 'heart' : 'heart-outline'}
-            size={20}
-            color={isFavorite ? '#FF8A3D' : '#1A1C24'}
-          />
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.heartBtn} onPress={onToggleFavorite}>
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={20}
+              color={isFavorite ? '#FF8A3D' : '#1A1C24'}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
 
-    <View style={styles.info}>
-      <Text style={styles.name} numberOfLines={1}>
-        {name}
-      </Text>
-      <Text style={styles.brand} numberOfLines={1}>
-        {brand}
-      </Text>
-
-      <View style={styles.footer}>
-        <Text style={styles.price} numberOfLines={1}>
-          {price}
+      <View style={styles.info}>
+        <Text style={[styles.name, { textAlign: 'left' }]} numberOfLines={1}>
+          {name}
+        </Text>
+        <Text style={[styles.brand, { textAlign: 'left' }]} numberOfLines={1}>
+          {brand}
         </Text>
 
-        {isOutlined ? (
-          <TouchableOpacity style={styles.tryOnBtn} onPress={onTryOnPress}>
-            <Text style={styles.tryOnText}>Try On</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity>
-            <Text style={styles.tryOnLink}>Try-on</Text>
-          </TouchableOpacity>
-        )}
+        <View style={[styles.footer, { flexDirection: 'row' }]}>
+          <Text style={styles.price} numberOfLines={1}>
+            {price}
+          </Text>
+
+          {isOutlined ? (
+            <TouchableOpacity style={styles.tryOnBtn} onPress={onTryOnPress}>
+              <Text style={styles.tryOnText}>Try On</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity>
+              <Text style={styles.tryOnLink}>Try-on</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {
@@ -98,7 +99,6 @@ const styles = StyleSheet.create({
     top: 8,
     left: 8,
     right: 8,
-    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
@@ -137,7 +137,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   footer: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 12,

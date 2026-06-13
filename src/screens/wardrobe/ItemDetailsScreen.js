@@ -19,6 +19,7 @@ import {
 import { useWardrobe } from "../../context/WardrobeContext";
 import Colors from "../../constants/theme/colors";
 
+import { useTranslation } from 'react-i18next';
 import { ROUTES, SOURCE } from "../../navigation/routes";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import SelectionChip from "../../components/wardrobe/SelectionChip";
@@ -30,6 +31,7 @@ const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
 const STYLES = ["Casual", "Basic", "Formal","Mart-Casual"];
 
 const ItemDetailsScreen = ({ route, navigation }) => {
+  const { t } = useTranslation();
   const { itemId, analysisId } = route.params;
   const { removeItem, refetch } = useWardrobe();
 
@@ -98,8 +100,8 @@ const ItemDetailsScreen = ({ route, navigation }) => {
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <View style={styles.headerText}>
-          <Text style={styles.title}>Item Details</Text>
-          <Text style={styles.subtitle}>{garment.specificType || "Garment"}</Text>
+          <Text style={styles.title}>{t("wardrobe.details.title")}</Text>
+          <Text style={styles.subtitle}>{garment.specificType || t("wardrobe.details.garment")}</Text>
         </View>
       </View>
 
@@ -146,7 +148,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
 
         <View style={styles.colorSection}>
           <Text style={styles.colorLabel}>
-            Color <Text style={styles.colorValue}>{primaryColorName}</Text>
+            {t("wardrobe.details.color")} <Text style={styles.colorValue}>{primaryColorName}</Text>
           </Text>
           <View style={[styles.colorRing, { borderColor: Colors.primary }]}>
             <View
@@ -161,34 +163,62 @@ const ItemDetailsScreen = ({ route, navigation }) => {
         <Text style={styles.detailsLabel}>Item Details</Text>
 
         <View style={styles.dataCard}>
-          <QuestionGroup title="Category">
-            {CATEGORIES.map((cat) => (
-              <SelectionChip
-                key={cat}
-                label={cat}
-                isSelected={category === cat}
-              />
-            ))}
+          <QuestionGroup title={t("wardrobe.details.category")}>
+            {CATEGORIES.map((cat) => {
+              const catLabel = {
+                Bottom: t("wardrobe.categories.bottom"),
+                Top: t("wardrobe.categories.top"),
+                Dress: t("wardrobe.categories.dress"),
+                Suit: t("wardrobe.categories.suit"),
+                Bag: t("wardrobe.categories.bag"),
+                Shoes: t("wardrobe.categories.shoes"),
+                Jacket: t("wardrobe.categories.jacket"),
+                Accessories: t("wardrobe.categories.accessories"),
+              }[cat];
+              return (
+                <SelectionChip
+                  key={cat}
+                  label={catLabel || cat}
+                  isSelected={category === cat}
+                />
+              );
+            })}
           </QuestionGroup>
 
-          <QuestionGroup title="Season">
-            {SEASONS.map((s) => (
-              <SelectionChip
-                key={s}
-                label={s}
-                isSelected={seasons.includes(s)}
-              />
-            ))}
+          <QuestionGroup title={t("wardrobe.details.season")}>
+            {SEASONS.map((s) => {
+              const seasonLabel = {
+                Summer: t("wardrobe.seasons.summer"),
+                Winter: t("wardrobe.seasons.winter"),
+                Spring: t("wardrobe.seasons.spring"),
+                Fall: t("wardrobe.seasons.fall"),
+              }[s];
+              return (
+                <SelectionChip
+                  key={s}
+                  label={seasonLabel || s}
+                  isSelected={seasons.includes(s)}
+                />
+              );
+            })}
           </QuestionGroup>
 
-          <QuestionGroup title="Style">
-            {STYLES.map((st) => (
-              <SelectionChip
-                key={st}
-                label={st}
-                isSelected={style?.toLowerCase() === st.toLowerCase()}
-              />
-            ))}
+          <QuestionGroup title={t("wardrobe.details.style")}>
+            {STYLES.map((st) => {
+              const styleLabel = {
+                Casual: t("wardrobe.styles.casual"),
+                Basic: t("wardrobe.styles.basic"),
+                Formal: t("wardrobe.styles.formal"),
+                "Mart-Casual": t("wardrobe.styles.martCasual"),
+              }[st];
+              return (
+                <SelectionChip
+                  key={st}
+                  label={styleLabel || st}
+                  isSelected={style?.toLowerCase() === st.toLowerCase()}
+                />
+              );
+            })}
           </QuestionGroup>
         </View>
       </ScrollView>

@@ -32,36 +32,36 @@ export default function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
   };
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { flexDirection: 'row' }]}>
       <View style={styles.imageSection}>
         {renderImages()}
       </View>
 
-      <View style={styles.contentSection}>
-        <Text style={styles.title} numberOfLines={1}>
+      <View style={[styles.contentSection, { paddingLeft: 10, paddingRight: 0 }]}>
+        <Text style={[styles.title, { textAlign: 'left' }]} numberOfLines={1}>
           {label || t('home.outfitCard.title')}
         </Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.subtitle, { textAlign: 'left' }]}>
           {todaysOutfit?.score != null
             ? `${t('home.outfitCard.score')} ${todaysOutfit.score.toFixed(1)}`
             : t('home.outfitCard.subtitle')}
         </Text>
 
-        <View style={styles.infoRow}>
-          <View style={styles.infoItem}>
+        <View style={[styles.infoRow, { flexDirection: 'row' }]}>
+          <View style={[styles.infoItem, { flexDirection: 'row' }]}>
             <MaterialCommunityIcons name={weatherIcon} size={22} color="#FF8A3D" />
-            <Text style={styles.infoText}>
+            <Text style={[styles.infoText, { marginLeft: 5, marginRight: 0 }]}>
               {temp != null ? `${temp}°C` : "24° c"}
             </Text>
           </View>
 
-          <View style={styles.infoItem}>
+          <View style={[styles.infoItem, { flexDirection: 'row' }]}>
             <Ionicons name="location-sharp" size={18} color="#A3C639" />
-            <Text style={styles.infoText}>{t('home.outfitCard.location')}</Text>
+            <Text style={[styles.infoText, { marginLeft: 5, marginRight: 0 }]}>{t('home.outfitCard.location')}</Text>
           </View>
         </View>
 
-        <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={onPress}>
+        <TouchableOpacity style={[styles.button, { flexDirection: 'row' }]} activeOpacity={0.8} onPress={onPress}>
           <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
         </TouchableOpacity>
       </View>
@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 25,
     padding: 20,
-    flexDirection: 'row', 
     alignItems: 'center',
     marginVertical: 4,
     borderWidth: 1,
@@ -99,7 +98,6 @@ const styles = StyleSheet.create({
 
   contentSection: {
     flex: 1.4,
-    paddingLeft: 10,
   },
   title: {
     fontFamily: 'Roboto_700Bold',
@@ -115,25 +113,20 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   infoRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
     justifyContent: 'space-between',
-    paddingRight: 10,
   },
   infoItem: {
-    flexDirection: 'row',
     alignItems: 'center',
   },
   infoText: {
     fontFamily: 'Roboto_600SemiBold',
     fontSize: 14,
     color: Colors.textPrimary,
-    marginLeft: 5,
   },
   button: {
     backgroundColor: Colors.primarybrand,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
@@ -146,6 +139,5 @@ const styles = StyleSheet.create({
   },
   arrowIcon: {
     marginTop:3,
-    marginLeft: 8,
   },
 });

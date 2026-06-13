@@ -20,7 +20,7 @@ import GenderOptionCard from "../../components/profile/GenderOptionCard";
 import { getToken } from "../../storage/TokenStorage";
 import { useProfileContext } from "../../context/ProfileContext";
 import { useAuth } from "../../context/AuthContext";
-import CustomBackButton from "../../components/common/CustomBackButton"; // Using your custom back button
+import CustomBackButton from "../../components/common/CustomBackButton";
 
 const formatDate = (date) => {
   if (!date) return "";
@@ -117,7 +117,7 @@ const EditProfileScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
+        <View style={[styles.header, { flexDirection: "row" }]}>
           <CustomBackButton onPress={() => navigation.goBack()} />
           <Text style={styles.title}>{t('editProfile.title')}</Text>
           <View style={{ width: 56 }} /> 
@@ -166,18 +166,18 @@ const EditProfileScreen = ({ navigation }) => {
 
           {/* iOS needs a confirm button for the spinner display mode */}
           {showPicker && Platform.OS === "ios" && (
-            <View style={styles.iosDateButtons}>
+            <View style={[styles.iosDateButtons, { flexDirection: "row" }]}>
               <TouchableOpacity onPress={toggleDatepicker} style={styles.dateBtn}>
-                <Text style={{ color: Colors.error }}>Cancel</Text>
+                <Text style={{ color: Colors.error }}>{t("editProfile.cancel")}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={confirmIosDate} style={styles.dateBtn}>
-                <Text style={{ color: Colors.primary }}>Confirm</Text>
+                <Text style={{ color: Colors.primary }}>{t("editProfile.confirm")}</Text>
               </TouchableOpacity>
             </View>
           )}
 
           <Text style={styles.genderLabel}>{t('editProfile.gender')}</Text>
-          <View style={styles.genderRow}>
+          <View style={[styles.genderRow, { flexDirection: "row" }]}>
             <GenderOptionCard
               gender="Male"
               selected={gender === "Male"}
@@ -217,7 +217,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 24,
@@ -244,13 +243,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   genderRow: {
-    flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10,
     marginTop: 5,
   },
   iosDateButtons: {
-    flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 20
   },

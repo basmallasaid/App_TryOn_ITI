@@ -1,8 +1,8 @@
 // src/components/wardrobe/WardrobeHealthCard.js
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
-
 /**
  * WardrobeHealthCard
  * Props:
@@ -10,16 +10,17 @@ import Colors from '../../constants/theme/colors';
  *  subtitle    string — dynamic AI-generated health text
  */
 const WardrobeHealthCard = ({ itemCount = 0, subtitle }) => {
-  const defaultSubtitle = `You have ${itemCount} item${itemCount !== 1 ? 's' : ''} synced. Keep building your wardrobe!`;
+  const { t } = useTranslation();
+  const defaultSubtitle = t("wardrobe.health.subtitle", { count: itemCount });
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { flexDirection: 'row' }]}>
       <View style={styles.iconWrap}>
         <Ionicons name="sparkles" size={22} color="#FFFFFF" />
       </View>
       <View style={styles.textWrap}>
-        <Text style={styles.title}>Wardrobe Health</Text>
-        <Text style={styles.subtitle} numberOfLines={3}>
+        <Text style={[styles.title, { textAlign: 'left' }]}>{t("wardrobe.health.title")}</Text>
+        <Text style={[styles.subtitle, { textAlign: 'left' }]} numberOfLines={3}>
           {subtitle || defaultSubtitle}
         </Text>
       </View>
@@ -29,7 +30,6 @@ const WardrobeHealthCard = ({ itemCount = 0, subtitle }) => {
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 16,

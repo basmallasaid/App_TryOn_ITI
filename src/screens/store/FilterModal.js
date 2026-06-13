@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import Slider from '@react-native-community/slider';
 import { getAllProducts } from '../../api/user_services/userService';
+import { useTranslation } from 'react-i18next';
 
 export const FilterModal = ({
   visible,
@@ -15,6 +16,7 @@ export const FilterModal = ({
   initialColors = [],
   initialPrice = 1000,
 }) => {
+  const { t } = useTranslation();
   const [price, setPrice] = useState(initialPrice);
   const [loading, setLoading] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState(initialBrands);
@@ -59,7 +61,7 @@ export const FilterModal = ({
   }, [visible, initialBrands, initialSeasons, initialCategories, initialColors, initialPrice]);
 
   const CheckboxItem = ({ label, selected, onPress }) => (
-    <TouchableOpacity style={styles.checkboxRow} onPress={onPress}>
+    <TouchableOpacity style={[styles.checkboxRow, { flexDirection: "row" }]} onPress={onPress}>
       <View style={[styles.checkboxBox, selected && styles.checkboxBoxSelected]} />
       <Text style={[styles.checkboxLabel, selected && styles.checkboxLabelSelected]}>{label}</Text>
     </TouchableOpacity>
@@ -86,15 +88,15 @@ export const FilterModal = ({
   return (
     <Modal visible={visible} animationType="slide" transparent={false}>
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, { flexDirection: "row" }]}>
           <CustomBackButton onPress={onClose} />
-          <Text style={styles.headerTitle}>Filters</Text>
+          <Text style={styles.headerTitle}>{t("store.filters.title")}</Text>
           <View style={{ width: 28 }} /> 
         </View>
 
         <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 40 }}>
           {/* Brands */}
-          <FilterSection title="Brands">
+          <FilterSection title={t("store.filters.brands")}>
             <CheckboxItem
               label="HM"
               selected={selectedBrands.includes('hm')}
@@ -108,10 +110,11 @@ export const FilterModal = ({
           </FilterSection>
 
           {/* Season */}
-          <FilterSection title="Season">
-            <View style={styles.pillsContainer}>
-              {['Summer', 'Spring', 'Fall', 'Winter'].map((s) => {
-                const value = s.toLowerCase();
+          <FilterSection title={t("store.filters.season")}>
+            <View style={[styles.pillsContainer, { justifyContent: 'flex-start' }]}>
+              {['summer', 'spring', 'fall', 'winter'].map((s) => {
+                const label = t("store.filters.seasons." + s);
+                const value = s;
                 const selected = selectedSeasons.includes(value);
                 return (
                   <TouchableOpacity
@@ -119,7 +122,7 @@ export const FilterModal = ({
                     style={[styles.pill, selected && styles.pillSelected]}
                     onPress={() => toggleValue(value, selectedSeasons, setSelectedSeasons)}
                   >
-                    <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{s}</Text>
+                    <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{label}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -127,27 +130,27 @@ export const FilterModal = ({
           </FilterSection>
 
           {/* Categories */}
-          <FilterSection title="Categories">
+          <FilterSection title={t("store.filters.categories")}>
             <CheckboxItem
-              label="Dress"
+              label={t("wardrobe.categories.dress")}
               selected={selectedCategories.includes('dress')}
               onPress={() => toggleValue('dress', selectedCategories, setSelectedCategories)}
             />
             <CheckboxItem
-              label="Top"
+              label={t("wardrobe.categories.top")}
               selected={selectedCategories.includes('top')}
               onPress={() => toggleValue('top', selectedCategories, setSelectedCategories)}
             />
             <CheckboxItem
-              label="Bottom"
+              label={t("wardrobe.categories.bottom")}
               selected={selectedCategories.includes('bottom')}
               onPress={() => toggleValue('bottom', selectedCategories, setSelectedCategories)}
             />
           </FilterSection>
 
           {/* Color */}
-          <FilterSection title="Color">
-            <View style={styles.pillsContainer}>
+          <FilterSection title={t("store.filters.color")}>
+            <View style={[styles.pillsContainer, { justifyContent: 'flex-start' }]}>
               {availableColors.length > 0 ? (
                 availableColors.map((color) => {
                   const display = color.charAt(0).toUpperCase() + color.slice(1);
@@ -163,13 +166,13 @@ export const FilterModal = ({
                   );
                 })
               ) : (
-                <Text style={styles.emptyText}>Loading colors...</Text>
+                <Text style={styles.emptyText}>{t("store.filters.loadingColors")}</Text>
               )}
             </View>
           </FilterSection>
 
           {/* Price Range */}
-          <FilterSection title="Price Range">
+          <FilterSection title={t("store.filters.priceRange")}>
             <Slider
               style={{ width: '100%', height: 40 }}
               minimumValue={0}
@@ -182,7 +185,7 @@ export const FilterModal = ({
             />
             <View style={styles.priceLabels}>
               <Text style={styles.priceText}>0</Text>
-              <Text style={styles.priceText}>{Math.round(price)} USD</Text>
+              <Text style={styles.priceText}>{Math.round(price)} {t("store.currency")}</Text>
             </View>
           </FilterSection>
         </ScrollView>
@@ -192,7 +195,7 @@ export const FilterModal = ({
           {loading ? (
             <ActivityIndicator color="#FFF" />
           ) : (
-            <Text style={styles.applyBtnText}>Apply Filters</Text>
+            <Text style={styles.applyBtnText}>{t("store.filters.apply")}</Text>
           )}
         </TouchableOpacity>
       </SafeAreaView>
@@ -200,27 +203,28 @@ export const FilterModal = ({
   );
 };
 
-// مكون فرعي لكل قسم
-const FilterSection = ({ title, children }) => (
-  <View style={styles.section}>
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <Ionicons name="chevron-down" size={20} color="#9BA5B0" />
+const FilterSection = ({ title, children }) => {
+  return (
+    <View style={styles.section}>
+      <View style={[styles.sectionHeader, { flexDirection: "row" }]}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        <Ionicons name="chevron-down" size={20} color="#9BA5B0" />
+      </View>
+      <View style={styles.sectionBody}>{children}</View>
     </View>
-    <View style={styles.sectionBody}>{children}</View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFF' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center' },
+  header: { justifyContent: 'space-between', padding: 20, alignItems: 'center' },
   headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#1A1C24' },
   content: { paddingHorizontal: 20 },
   section: { marginBottom: 30 },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 },
+  sectionHeader: { justifyContent: 'space-between', marginBottom: 15 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#1A1C24' },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  checkboxBox: { width: 20, height: 20, borderWidth: 1, borderColor: '#D5D9DE', borderRadius: 4, marginRight: 12 },
+  checkboxRow: { alignItems: 'center', marginBottom: 12 },
+  checkboxBox: { width: 20, height: 20, borderWidth: 1, borderColor: '#D5D9DE', borderRadius: 4, marginHorizontal: 12 },
   checkboxBoxSelected: { backgroundColor: '#5CC1FF', borderColor: '#5CC1FF' },
   checkboxLabel: { fontSize: 16, color: '#6B7280' },
   checkboxLabelSelected: { color: '#1A1C24', fontWeight: '700' },

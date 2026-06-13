@@ -38,7 +38,7 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
           />
         </View>
 
-        <Text style={styles.todayTitle}>{t('recommendation.todaysRecommendation')}</Text>
+        <Text style={[styles.todayTitle, { textAlign: "left" }]}>{t('recommendation.todaysRecommendation')}</Text>
 
         {hasData ? (
           <>
@@ -51,17 +51,17 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
               labelFontSize={14}
             />
 
-            {outfit?.score != null && (
-              <View style={styles.scoreRow}>
+{outfit?.score != null && (
+              <View style={[styles.scoreRow, { flexDirection: "row" }]}>
                 <Ionicons name="star" size={16} color="#F59E0B" />
                 <Text style={styles.scoreText}>{outfit.score.toFixed(1)}</Text>
               </View>
             )}
 
             {outfit?.breakdown && (
-              <View style={styles.breakdownRow}>
+              <View style={[styles.breakdownRow, { flexDirection: "row" }]}>
                 {Object.entries(outfit.breakdown).map(([key, val]) => (
-                  <View key={key} style={styles.breakdownChip}>
+                  <View key={key} style={[styles.breakdownChip, { flexDirection: "row" }]}>
                     <Text style={styles.breakdownLabel}>{key}</Text>
                     <Text style={styles.breakdownValue}>{val}</Text>
                   </View>
@@ -69,9 +69,9 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
               </View>
             )}
 
-            <Text style={styles.sectionTitle}>{t('recommendation.outfitDetails')}</Text>
+            <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('recommendation.outfitDetails')}</Text>
 
-            <View style={styles.itemsGrid}>
+            <View style={[styles.itemsGrid, { flexDirection: "row" }]}>
               {items.map((item) => (
                 <OutfitItemCard key={item._id || item.id || item.name || Math.random().toString()} item={item} />
               ))}
@@ -113,11 +113,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: Colors.textPrimary,
     marginBottom: 16,
-    textAlign: 'left',
     paddingVertical:10,
   },
   scoreRow: {
-    flexDirection: "row",
     alignItems: "center",
     marginTop: 16,
   },
@@ -125,16 +123,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: Colors.textPrimary,
-    marginLeft: 6,
   },
   breakdownRow: {
-    flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 10,
     gap: 8,
   },
   breakdownChip: {
-    flexDirection: "row",
     alignItems: "center",
     backgroundColor: Colors.white,
     borderRadius: 8,
@@ -146,7 +141,6 @@ const styles = StyleSheet.create({
   breakdownLabel: {
     fontSize: 12,
     color: Colors.textMuted,
-    marginRight: 4,
     textTransform: "capitalize",
   },
   breakdownValue: {
@@ -163,7 +157,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   itemsGrid: {
-    flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
   },

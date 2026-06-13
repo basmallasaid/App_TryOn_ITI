@@ -19,7 +19,7 @@ const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading, title, 
             <Text style={styles.subtitle}>{subtitle || 'This action cannot be undone.'}</Text>
           </View>
 
-          <View style={styles.footer}>
+          <View style={[styles.footer, { flexDirection: 'row' }]}>
             <View style={{ flex: 1 }}>
               <CustomizeAppButtonOutlined label="Cancel" onPress={onClose} />
             </View>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#6B7280'
   },
-  footer: { flexDirection: 'row', gap: 12, width: '100%' }
+  footer: { gap: 12, width: '100%' }
 });
 
 export default DeleteConfirmationModal;

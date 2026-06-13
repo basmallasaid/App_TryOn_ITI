@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from "react-native";
 import { Ionicons, AntDesign, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import Colors from "../../constants/theme/colors";
 import { useFavorites } from "../../context/FavoritesContext";
@@ -47,6 +48,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
   const item = match?.item || {};
   const score = match?.score || 0;
   const explanation = match?.explanation || "";
+  const { t } = useTranslation();
   const { isFavorite, addItem, removeItem } = useFavorites();
   const itemId = item?.id?.replace("store_", "");
 
@@ -95,7 +97,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
         <View style={styles.ratingRow}>
           <View style={styles.ratingBox}>
             <View style={styles.scoreBadge}>
-              <Text style={styles.scoreText}>{score}% match</Text>
+              <Text style={styles.scoreText}>{`${score}% ${t("matching.details.scoreMatch")}`}</Text>
             </View>
             {isStore && (
               <Text style={styles.ratingText}>
@@ -126,20 +128,20 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
 
         <View style={styles.infoSection}>
           <View style={styles.titlePriceRow}>
-            <Text style={styles.productTitle}>{item?.name || "Item"}</Text>
+            <Text style={styles.productTitle}>{item?.name || t("matching.details.noDescription")}</Text>
             {isStore && item?.price && (
               <Text style={styles.productPrice}>{item?.currency || "$"}{" "}{item?.price}</Text>
             )}
           </View>
           <Text style={styles.description}>
-            {explanation || item?.description || "No description available."}
+            {explanation || item?.description || t("matching.details.noDescription")}
           </Text>
         </View>
 
         {colors.length > 0 && (
           <View style={styles.selectionSection}>
             <Text style={styles.selectionTitle}>
-              Color <Text style={styles.selectionSub}>-{selectedColor}</Text>
+              {t("matching.details.color")} <Text style={styles.selectionSub}>-{selectedColor}</Text>
             </Text>
             <View style={styles.colorRow}>
               {colors.map((color) => (
@@ -160,7 +162,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
 
         <View style={styles.selectionSection}>
           <Text style={styles.selectionTitle}>
-            Size <Text style={styles.selectionSub}>-{selectedSize}</Text>
+            {t("matching.details.size")} <Text style={styles.selectionSub}>-{selectedSize}</Text>
           </Text>
           <View style={styles.sizeRow}>
             {uniqueSizes.map((size) => (
@@ -178,7 +180,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
         </View>
 
         <View style={styles.matchSection}>
-          <Text style={styles.matchTitle}>This item match your wardrobe</Text>
+          <Text style={styles.matchTitle}>{t("matching.details.matchesWardrobe")}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.matchList}>
             <View style={styles.matchCard}>
               <View style={styles.percentBadge}>
@@ -197,7 +199,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
       <View style={styles.bottomFixedContainer}>
         <TouchableOpacity style={styles.generateButton} onPress={() => navigation.goBack()}>
           <MaterialCommunityIcons name="auto-fix" size={20} color="#FFF" />
-          <Text style={styles.generateButtonText}>Try On This Item</Text>
+          <Text style={styles.generateButtonText}>{t("matching.details.tryOnThisItem")}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

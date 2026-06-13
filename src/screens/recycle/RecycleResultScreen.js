@@ -20,20 +20,17 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import { saveRecycleResult, getLatestRecycle } from "../../api/recycle_services/recycleService";
 
 export default function RecycleResultScreen({ route, navigation }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [alreadySaved, setAlreadySaved] = useState(false);
   const {
     resultImageUri,
     designTitle,
-    designTitleAr,
     designDescription,
-    designDescriptionAr,
   } = route.params || {};
 
-  const isAr = i18n.language === "ar";
-  const displayTitle = isAr && designTitleAr ? designTitleAr : designTitle;
-  const displayDescription = isAr && designDescriptionAr ? designDescriptionAr : designDescription;
+  const displayTitle = designTitle;
+  const displayDescription = designDescription;
 
   useEffect(() => {
     const checkIfSaved = async () => {

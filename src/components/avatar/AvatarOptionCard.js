@@ -2,7 +2,6 @@ import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 import { IMAGES } from '../../constants/images/images';
-
 const AvatarOptionCard = ({
   title,
   description,
@@ -14,7 +13,7 @@ const AvatarOptionCard = ({
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.card, selected && styles.cardSelected]}
+      style={[styles.card, { flexDirection: 'row' }, selected && styles.cardSelected]}
       onPress={onPress}
       activeOpacity={0.85}
     >
@@ -37,15 +36,15 @@ const AvatarOptionCard = ({
       </View>
 
       {rightContent ? (
-        <View style={styles.rightContainer}>{rightContent}</View>
+        <View style={[styles.rightContainer, { marginLeft: 12, marginRight: 0 }]}>{rightContent}</View>
       ) : image ? (
-        <View style={styles.imageWrap}>
+        <View style={[styles.imageWrap, { marginLeft: 12, marginRight: 0 }]}>
           <Image source={image} style={styles.image} resizeMode="cover" />
         </View>
       ) : null}
 
       {selected && (
-        <View style={styles.checkmark}>
+        <View style={[styles.checkmark, { right: 12, left: undefined }]}>
           <Ionicons name="checkmark-circle" size={24} color={Colors.primary} />
         </View>
       )}
@@ -55,7 +54,6 @@ const AvatarOptionCard = ({
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     borderWidth: 1.5,
@@ -106,12 +104,10 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   rightContainer: {
-    marginLeft: 12,
   },
   imageWrap: {
     width: 100,
     height: 130,
-    marginLeft: 12,
     borderRadius: 16,
     overflow: 'hidden',
     justifyContent: 'flex-start',
@@ -125,7 +121,6 @@ const styles = StyleSheet.create({
   checkmark: {
     position: 'absolute',
     top: 12,
-    right: 12,
   },
 });
 

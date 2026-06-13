@@ -26,7 +26,10 @@ import { openCamera, openGallery } from "../../utils/cameraAccess";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
-import { virtualTryOn, virtualTryOnOutfit } from "../../api/virtual_tryon_services/virtualTryonService";
+import {
+  virtualTryOn,
+  virtualTryOnOutfit,
+} from "../../api/virtual_tryon_services/virtualTryonService";
 import { ROUTES } from "../../navigation/routes";
 import GradientBorder from "../../components/recycle/GradientBorder";
 
@@ -42,11 +45,11 @@ export default function TryOnScreen({ navigation, route }) {
   const avatarUri =
     typeof avatarImage === "string"
       ? avatarImage
-      : avatarImage?.avatar?.image_url
-      || avatarImage?.image
-      || avatarImage?.imageUrl
-      || avatarImage?.url
-      || null;
+      : avatarImage?.avatar?.image_url ||
+        avatarImage?.image ||
+        avatarImage?.imageUrl ||
+        avatarImage?.url ||
+        null;
 
   useEffect(() => {
     if (avatarId) {
@@ -54,7 +57,14 @@ export default function TryOnScreen({ navigation, route }) {
       getAvatarById(avatarId)
         .then((res) => {
           const avatar = res?.avatar || res;
-          const uri = typeof avatar === "string" ? avatar : avatar?.image_url || avatar?.image || avatar?.imageUrl || avatar?.url || null;
+          const uri =
+            typeof avatar === "string"
+              ? avatar
+              : avatar?.image_url ||
+                avatar?.image ||
+                avatar?.imageUrl ||
+                avatar?.url ||
+                null;
           setAvatarFetchedUri(uri);
         })
         .catch(() => {})
@@ -116,10 +126,12 @@ export default function TryOnScreen({ navigation, route }) {
     });
     if (type && !prevType && cameraImages[index]) {
       setSelectedItems((prev) =>
-        prev.length >= 2 ? prev : [...prev, cameraImages[index]]
+        prev.length >= 2 ? prev : [...prev, cameraImages[index]],
       );
     } else if (!type && prevType && cameraImages[index]) {
-      setSelectedItems((prev) => prev.filter((id) => id !== cameraImages[index]));
+      setSelectedItems((prev) =>
+        prev.filter((id) => id !== cameraImages[index]),
+      );
     }
   };
 
@@ -130,6 +142,7 @@ export default function TryOnScreen({ navigation, route }) {
       updated[index] = type;
       return updated;
     });
+    console.log("gallery select:", { index, type, prevType, uri: galleryImages[index], selectedItemsLen: selectedItems.length });
     if (type && !prevType && galleryImages[index]) {
       setSelectedItems((prev) =>
         prev.length >= 2 ? prev : [...prev, galleryImages[index]]
@@ -163,7 +176,11 @@ export default function TryOnScreen({ navigation, route }) {
     }
 
     if (uri.startsWith("http")) {
-      const file = await File.downloadFileAsync(uri, new Directory(Paths.cache), { idempotent: true });
+      const file = await File.downloadFileAsync(
+        uri,
+        new Directory(Paths.cache),
+        { idempotent: true },
+      );
       return file.uri;
     }
 
@@ -174,7 +191,9 @@ export default function TryOnScreen({ navigation, route }) {
     let uri, type;
 
     if (selectedWardrobeIds.includes(itemId)) {
-      const item = wardrobeItems.find((i) => i._id === itemId || i.id === itemId);
+      const item = wardrobeItems.find(
+        (i) => i._id === itemId || i.id === itemId,
+      );
       uri = typeof item?.image === "string" ? item.image : null;
       type = item?.category || null;
     } else if (cameraImages.includes(itemId)) {
@@ -194,9 +213,33 @@ export default function TryOnScreen({ navigation, route }) {
   const classifyPosition = (type) => {
     if (!type) return null;
     const t = type.toLowerCase();
-    if (["tops", "top", "tshirt", "shirt", "jacket", "blouse", "hoodie", "sweater"].includes(t)) return "top";
-    if (["pants", "bottom", "jeans", "trousers", "skirt", "shorts", "leggings"].includes(t)) return "bottom";
-    if (["dresses", "dress", "jumpsuit", "overall", "gown", "robe"].includes(t)) return "bottom";
+    if (
+      [
+        "tops",
+        "top",
+        "tshirt",
+        "shirt",
+        "jacket",
+        "blouse",
+        "hoodie",
+        "sweater",
+      ].includes(t)
+    )
+      return "top";
+    if (
+      [
+        "pants",
+        "bottom",
+        "jeans",
+        "trousers",
+        "skirt",
+        "shorts",
+        "leggings",
+      ].includes(t)
+    )
+      return "bottom";
+    if (["dresses", "dress", "jumpsuit", "overall", "gown", "robe"].includes(t))
+      return "bottom";
     return null;
   };
 
@@ -226,9 +269,15 @@ export default function TryOnScreen({ navigation, route }) {
         appendToFormData(formData, "garmentImage", items[0].uri);
         result = await virtualTryOn(formData);
       } else {
-        const classified = items.map((it) => ({ ...it, position: classifyPosition(it.type) }));
-        const topItem = classified.find((p) => p.position === "top") || classified[0];
-        const bottomItem = classified.find((p) => p.position === "bottom") || classified[classified.length - 1];
+        const classified = items.map((it) => ({
+          ...it,
+          position: classifyPosition(it.type),
+        }));
+        const topItem =
+          classified.find((p) => p.position === "top") || classified[0];
+        const bottomItem =
+          classified.find((p) => p.position === "bottom") ||
+          classified[classified.length - 1];
         appendToFormData(formData, "topImage", topItem.uri);
         appendToFormData(formData, "bottomImage", bottomItem.uri);
         result = await virtualTryOnOutfit(formData);
@@ -236,10 +285,13 @@ export default function TryOnScreen({ navigation, route }) {
 
       navigation.navigate(ROUTES.TRY_ON_RESULT, { result });
     } catch (e) {
-      const serverMsg = e.response?.data?.message || e.response?.data?.error || JSON.stringify(e.response?.data);
-      const msg = serverMsg || e.message || "Virtual try-on failed";
+      const serverMsg =
+        e.response?.data?.message ||
+        e.response?.data?.error ||
+        JSON.stringify(e.response?.data);
+      const msg = serverMsg || e.message || t("tryOn.virtualTryOn.virtualTryOnFailed");
       setGenerateError(msg);
-      Alert.alert("Error", msg);
+      Alert.alert(t("common.error"), msg);
     } finally {
       setGenerating(false);
     }
@@ -247,15 +299,20 @@ export default function TryOnScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
-        <Text style={styles.headerTitle}>
-          {t("tryOn.virtualTryOn.title")}
-        </Text>
-        <Ionicons name="help-circle-outline" size={24} color={Colors.iconGray} />
+        <Text style={styles.headerTitle}>{t("tryOn.virtualTryOn.title")}</Text>
+        <Ionicons
+          name="help-circle-outline"
+          size={24}
+          color={Colors.iconGray}
+        />
       </View>
-
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {activeTab === "Camera" ? (
           <>
             {cameraImages.length > 0 ? (
@@ -266,26 +323,64 @@ export default function TryOnScreen({ navigation, route }) {
                   return (
                     <View
                       key={index}
-                      style={[styles.galleryItem, isDisabled && { opacity: 0.5 }]}
-                      onLayout={(e) => { itemWidths.current[`cam_${index}`] = e.nativeEvent.layout.width; }}
+                      style={[
+                        styles.galleryItem,
+                        isDisabled && { opacity: 0.5 },
+                      ]}
+                      onLayout={(e) => {
+                        itemWidths.current[`cam_${index}`] =
+                          e.nativeEvent.layout.width;
+                      }}
                     >
                       {isSelected && itemWidths.current[`cam_${index}`] ? (
-                        <GradientBorder width={itemWidths.current[`cam_${index}`]} height={220} borderRadius={16}>
+                        <GradientBorder
+                          width={itemWidths.current[`cam_${index}`]}
+                          height={220}
+                          borderRadius={16}
+                        >
                           <View style={styles.gallerySelectedInner}>
-                            <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
-                            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.galleryCheckIcon} />
-                            <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeCameraImage(index)}>
-                              <Ionicons name="close" size={14} color="#FFFFFF" />
+                            <Image
+                              source={{ uri }}
+                              style={styles.galleryItemImage}
+                              resizeMode="cover"
+                            />
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={20}
+                              color="#A5E142"
+                              style={styles.galleryCheckIcon}
+                            />
+                            <TouchableOpacity
+                              style={styles.galleryRemoveBtn}
+                              onPress={() => removeCameraImage(index)}
+                            >
+                              <Ionicons
+                                name="close"
+                                size={14}
+                                color="#FFFFFF"
+                              />
                             </TouchableOpacity>
                           </View>
                         </GradientBorder>
                       ) : (
                         <View style={{ flex: 1 }}>
-                          <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
+                          <Image
+                            source={{ uri }}
+                            style={styles.galleryItemImage}
+                            resizeMode="cover"
+                          />
                           {isSelected && (
-                            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.galleryCheckIcon} />
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={20}
+                              color="#A5E142"
+                              style={styles.galleryCheckIcon}
+                            />
                           )}
-                          <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeCameraImage(index)}>
+                          <TouchableOpacity
+                            style={styles.galleryRemoveBtn}
+                            onPress={() => removeCameraImage(index)}
+                          >
                             <Ionicons name="close" size={14} color="#FFFFFF" />
                           </TouchableOpacity>
                         </View>
@@ -295,12 +390,16 @@ export default function TryOnScreen({ navigation, route }) {
                 })}
                 {cameraImages.length < 2 && (
                   <View style={styles.galleryItem}>
-                    <UploadBox label="Open Camera" onPress={handleCameraCapture} style={styles.compactUploadBox} />
+                    <UploadBox
+                      label={t("tryOn.virtualTryOn.openCamera")}
+                      onPress={handleCameraCapture}
+                      style={styles.compactUploadBox}
+                    />
                   </View>
                 )}
               </View>
             ) : (
-              <UploadBox label="Open Camera" onPress={handleCameraCapture} />
+              <UploadBox label={t("tryOn.virtualTryOn.openCamera")} onPress={handleCameraCapture} />
             )}
           </>
         ) : activeTab === "Gallery" ? (
@@ -313,26 +412,64 @@ export default function TryOnScreen({ navigation, route }) {
                   return (
                     <View
                       key={index}
-                      style={[styles.galleryItem, isDisabled && { opacity: 0.5 }]}
-                      onLayout={(e) => { itemWidths.current[`gal_${index}`] = e.nativeEvent.layout.width; }}
+                      style={[
+                        styles.galleryItem,
+                        isDisabled && { opacity: 0.5 },
+                      ]}
+                      onLayout={(e) => {
+                        itemWidths.current[`gal_${index}`] =
+                          e.nativeEvent.layout.width;
+                      }}
                     >
                       {isSelected && itemWidths.current[`gal_${index}`] ? (
-                        <GradientBorder width={itemWidths.current[`gal_${index}`]} height={220} borderRadius={16}>
+                        <GradientBorder
+                          width={itemWidths.current[`gal_${index}`]}
+                          height={220}
+                          borderRadius={16}
+                        >
                           <View style={styles.gallerySelectedInner}>
-                            <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
-                            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.galleryCheckIcon} />
-                            <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeGalleryImage(index)}>
-                              <Ionicons name="close" size={14} color="#FFFFFF" />
+                            <Image
+                              source={{ uri }}
+                              style={styles.galleryItemImage}
+                              resizeMode="cover"
+                            />
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={20}
+                              color="#A5E142"
+                              style={styles.galleryCheckIcon}
+                            />
+                            <TouchableOpacity
+                              style={styles.galleryRemoveBtn}
+                              onPress={() => removeGalleryImage(index)}
+                            >
+                              <Ionicons
+                                name="close"
+                                size={14}
+                                color="#FFFFFF"
+                              />
                             </TouchableOpacity>
                           </View>
                         </GradientBorder>
                       ) : (
                         <View style={{ flex: 1 }}>
-                          <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
+                          <Image
+                            source={{ uri }}
+                            style={styles.galleryItemImage}
+                            resizeMode="cover"
+                          />
                           {isSelected && (
-                            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.galleryCheckIcon} />
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={20}
+                              color="#A5E142"
+                              style={styles.galleryCheckIcon}
+                            />
                           )}
-                          <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeGalleryImage(index)}>
+                          <TouchableOpacity
+                            style={styles.galleryRemoveBtn}
+                            onPress={() => removeGalleryImage(index)}
+                          >
                             <Ionicons name="close" size={14} color="#FFFFFF" />
                           </TouchableOpacity>
                         </View>
@@ -342,12 +479,19 @@ export default function TryOnScreen({ navigation, route }) {
                 })}
                 {galleryImages.length < 2 && (
                   <View style={styles.galleryItem}>
-                    <UploadBox label="Upload image here" onPress={handleGalleryPick} style={styles.compactUploadBox} />
+                    <UploadBox
+                      label={t("tryOn.virtualTryOn.uploadImageHere")}
+                      onPress={handleGalleryPick}
+                      style={styles.compactUploadBox}
+                    />
                   </View>
                 )}
               </View>
             ) : (
-              <UploadBox label={t("tryOn.uploadPhoto.uploadLabel")} onPress={handleGalleryPick} />
+              <UploadBox
+                label={t("tryOn.uploadPhoto.uploadLabel")}
+                onPress={handleGalleryPick}
+              />
             )}
           </>
         ) : (
@@ -397,11 +541,18 @@ export default function TryOnScreen({ navigation, route }) {
               <Text style={styles.sectionTitle}>
                 {t("tryOn.virtualTryOn.activeWardrobe")}
               </Text>
-          <TouchableOpacity onPress={() => navigation.navigate(ROUTES.MAIN, { screen: ROUTES.WARDROBE, params: { screen: ROUTES.WARDROBE_MAIN } })}>
-            <Text style={styles.seeAll}>
-              {t("tryOn.virtualTryOn.seeAll")}
-            </Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(ROUTES.MAIN, {
+                    screen: ROUTES.WARDROBE,
+                    params: { screen: ROUTES.WARDROBE_MAIN },
+                  })
+                }
+              >
+                <Text style={styles.seeAll}>
+                  {t("tryOn.virtualTryOn.seeAll")}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <FlatList
@@ -412,7 +563,9 @@ export default function TryOnScreen({ navigation, route }) {
               contentContainerStyle={{ paddingLeft: 20 }}
               ListEmptyComponent={
                 <View style={styles.emptyWardrobe}>
-                  <Text style={styles.emptyWardrobeText}>{t("tryOn.virtualTryOn.noItemsTitle")}</Text>
+                  <Text style={styles.emptyWardrobeText}>
+                    {t("tryOn.virtualTryOn.noItemsTitle")}
+                  </Text>
                 </View>
               }
               renderItem={({ item }) => (
@@ -429,7 +582,9 @@ export default function TryOnScreen({ navigation, route }) {
 
         <View style={styles.selectedSection}>
           <Text style={styles.sectionTitle}>
-            {t("tryOn.virtualTryOn.selectedItems", { count: selectedItems.length })}
+            {t("tryOn.virtualTryOn.selectedItems", {
+              count: selectedItems.length,
+            })}
           </Text>
 
           <View style={styles.noItemsBox}>
@@ -439,14 +594,14 @@ export default function TryOnScreen({ navigation, route }) {
             <View>
               <Text style={styles.noItemsTitle}>
                 {selectedItems.length > 0
-                  ? `${selectedItems.length} item${selectedItems.length > 1 ? "s" : ""} selected`
+                  ? t("tryOn.virtualTryOn.itemSelected", { count: selectedItems.length })
                   : t("tryOn.virtualTryOn.noItemsTitle")}
               </Text>
               <Text style={styles.noItemsSub}>
                 {selectedItems.length > 0
                   ? selectedWardrobeIds.length > 0
-                    ? "Item selected from your wardrobe"
-                    : "Item captured from camera or gallery"
+                    ? t("tryOn.virtualTryOn.itemFromWardrobe")
+                    : t("tryOn.virtualTryOn.itemFromCamera")
                   : t("tryOn.virtualTryOn.noItemsSub")}
               </Text>
             </View>
@@ -458,7 +613,7 @@ export default function TryOnScreen({ navigation, route }) {
             {cameraImages.map((_, index) => (
               <ItemSelector
                 key={index}
-                label={index === 0 ? "First Image" : "Second Image"}
+                label={index === 0 ? t("tryOn.virtualTryOn.firstImage") : t("tryOn.virtualTryOn.secondImage")}
                 selectedType={cameraItemTypes[index]}
                 onSelectType={(type) => handleSelectCameraType(index, type)}
                 disabled={selectedItems.length >= 2 && !cameraItemTypes[index]}
@@ -470,7 +625,7 @@ export default function TryOnScreen({ navigation, route }) {
             {galleryImages.map((_, index) => (
               <ItemSelector
                 key={index}
-                label={index === 0 ? "First Image" : "Second Image"}
+                label={index === 0 ? t("tryOn.virtualTryOn.firstImage") : t("tryOn.virtualTryOn.secondImage")}
                 selectedType={galleryItemTypes[index]}
                 onSelectType={(type) => handleSelectGalleryType(index, type)}
                 disabled={selectedItems.length >= 2 && !galleryItemTypes[index]}
@@ -483,13 +638,19 @@ export default function TryOnScreen({ navigation, route }) {
           <TouchableOpacity
             style={[
               styles.generateBtn,
-              (selectedItems.length > 0 && !generating) ? styles.activeBtn : styles.disabledBtn,
+              selectedItems.length > 0 && !generating
+                ? styles.activeBtn
+                : styles.disabledBtn,
             ]}
             onPress={handleGenerate}
             disabled={selectedItems.length === 0 || generating}
           >
             {generating ? (
-              <ActivityIndicator size="small" color="white" style={{ marginRight: 8 }} />
+              <ActivityIndicator
+                size="small"
+                color="white"
+                style={{ marginRight: 8 }}
+              />
             ) : (
               <MaterialCommunityIcons
                 name="auto-fix"
@@ -499,7 +660,9 @@ export default function TryOnScreen({ navigation, route }) {
               />
             )}
             <Text style={styles.generateBtnText}>
-              {generating ? t("tryOn.virtualTryOn.generating") || "Generating..." : t("tryOn.virtualTryOn.generate")}
+              {generating
+                ? t("tryOn.virtualTryOn.generating")
+                : t("tryOn.virtualTryOn.generate")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -520,7 +683,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-   
   },
   headerTitle: { fontSize: 20, fontWeight: "700", color: "#1A202C" },
 
@@ -679,7 +841,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
 
-  tabsRow: { flexDirection: "row", justifyContent: "space-around", padding: 20 },
+  tabsRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 20,
+  },
 
   sectionHeader: {
     flexDirection: "row",

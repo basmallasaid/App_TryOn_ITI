@@ -142,7 +142,6 @@ const UploadPhotoScreen = ({ navigation, route }) => {
                 title={t(item.titleKey)}
                 sub={t(item.descKey)}
                 mainIconName={item.mainIconName}
-                iconBgColor={item.iconBgColor}
               />
             ))}
           </View>
@@ -179,12 +178,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 10,
   },
   title: {
     ...Typography.screenTitleLarge,
     textAlign: "center",
     marginBottom: 8,
+    marginTop:12,
   },
   subtitle: {
     fontFamily: "Roboto_400Regular",

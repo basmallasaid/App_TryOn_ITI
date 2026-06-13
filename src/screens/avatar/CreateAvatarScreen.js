@@ -201,7 +201,7 @@ const CreateAvatarScreen = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
-  }, [avatarProfile, navigation]);
+  }, [avatarProfile, navigation, t]);
 
   const tabKeys = tabList.map((t) => t.key);
   const activeTab = tabList[currentStep];
@@ -234,6 +234,7 @@ const CreateAvatarScreen = ({ navigation }) => {
 
   const tabsWithProps = tabList.map((tab) => ({
     ...tab,
+    label: t(tab.labelKey),
     props: {
       ...avatarProfile,
       onUpdate: updateProfile,

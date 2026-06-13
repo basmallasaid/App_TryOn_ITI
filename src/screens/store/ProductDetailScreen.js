@@ -14,6 +14,7 @@ import CustomBackButton from '../../components/common/CustomBackButton';
 import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { translateProduct, translateToArabic } from '../../utils/dynamicTranslator';
 
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
@@ -24,6 +25,7 @@ export default function ProductDetailScreen({ route }) {
   const { productId } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
   
   const [product, setProduct] = useState(null);
+  const [displayProduct, setDisplayProduct] = useState(null); // translated version
   const [loading, setLoading] = useState(true);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedColor, setSelectedColor] = useState('');
@@ -39,7 +41,11 @@ export default function ProductDetailScreen({ route }) {
       try {
         const data = await getProductById(productId);
         setProduct(data);
+        setDisplayProduct(data);
         if (data.color_tags?.length > 0) setSelectedColor(data.color_tags[0]);
+        // Translate product details dynamically when in Arabic
+        const translated = await translateProduct(data);
+        setDisplayProduct(translated);
       } catch (error) {
         console.error(error);
       } finally {
@@ -73,7 +79,7 @@ export default function ProductDetailScreen({ route }) {
         }
       } catch (e) {
         const msg = e.response?.data || e.message;
-        Alert.alert(t("store.productDetail.matchError"), typeof msg === "string" ? msg : JSON.stringify(msg));
+        Alert.alert(t('store.matchError'), typeof msg === "string" ? msg : JSON.stringify(msg));
         setWardrobeMatches([]);
       } finally {
         setMatchingLoading(false);
@@ -137,9 +143,9 @@ export default function ProductDetailScreen({ route }) {
           
           <View style={[styles.rowBetween, { flexDirection: "row" }]}>
             <View style={{flex: 1}}>
-              <Text style={[styles.productTitle, { textAlign: "left" }]}>{product?.name}</Text>
+              <Text style={styles.productTitle}>{displayProduct?.name || product?.name}</Text>
               <TouchableOpacity onPress={() => openUrl(product?.purchase_url)}>
-                <Text style={styles.brandName}>{product?.store_id?.name || t("store.productDetail.officialStore")} <Ionicons name="open-outline" size={12} /></Text>
+                <Text style={styles.brandName}>{product?.store_id?.name || t('store.officialStore')} <Ionicons name="open-outline" size={12} /></Text>
               </TouchableOpacity>
             </View>
             <View style={[styles.priceContainer, { alignItems: "flex-end" }]}>
@@ -149,19 +155,19 @@ export default function ProductDetailScreen({ route }) {
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>{t("store.productDetail.description")}</Text>
+            <Text style={styles.sectionTitle}>{t('store.description')}</Text>
             <Text style={styles.description} numberOfLines={showFullDescription ? undefined : 2}>
-              {product?.description}
+              {displayProduct?.description || product?.description}
             </Text>
-            <TouchableOpacity style={[styles.moreBtn, { flexDirection: "row" }]} onPress={() => setShowFullDescription(!showFullDescription)}>
-              <Text style={styles.moreText}>{showFullDescription ? t("store.productDetail.showLess") : t("store.productDetail.seeMore")}</Text>
-              <Ionicons name={showFullDescription ? "chevron-up" : "chevron-down"} size={14} color="#5CC1FF" style={{ marginLeft: 4, marginRight: 0 }} />
+            <TouchableOpacity style={styles.moreBtn} onPress={() => setShowFullDescription(!showFullDescription)}>
+              <Text style={styles.moreText}>{showFullDescription ? t('store.showLess') : t('store.seeMore')}</Text>
+              <Ionicons name={showFullDescription ? "chevron-up" : "chevron-down"} size={14} color="#5CC1FF" style={{ marginLeft: 4 }} />
             </TouchableOpacity>
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>{t("store.productDetail.color")} <Text style={styles.selectedSub}>{selectedColor}</Text></Text>
-            <View style={[styles.optionsRow, { flexDirection: "row" }]}>
+            <Text style={styles.sectionTitle}>{t('store.color')} <Text style={styles.selectedSub}>{selectedColor}</Text></Text>
+            <View style={styles.optionsRow}>
               {product?.color_tags?.map((color, index) => (
                 <TouchableOpacity 
                   key={index} 
@@ -182,8 +188,8 @@ export default function ProductDetailScreen({ route }) {
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>{t("store.productDetail.size")} <Text style={styles.selectedSub}>{selectedSize}</Text></Text>
-            <View style={[styles.optionsRow, { flexDirection: "row" }]}>
+            <Text style={styles.sectionTitle}>{t('store.size')} <Text style={styles.selectedSub}>{selectedSize}</Text></Text>
+            <View style={styles.optionsRow}>
               {sizes.map((size) => (
                 <TouchableOpacity 
                   key={size} 
@@ -197,11 +203,11 @@ export default function ProductDetailScreen({ route }) {
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>{t("store.productDetail.wardrobeMatches")}</Text>
+            <Text style={styles.sectionTitle}>{t('store.wardrobeMatches')}</Text>
             {matchingLoading ? (
               <ActivityIndicator size="small" color="#5CC1FF" style={{ marginVertical: 20 }} />
             ) : wardrobeMatches.length === 0 ? (
-              <Text style={styles.noMatchText}>{t("store.productDetail.noMatches")}</Text>
+              <Text style={styles.noMatchText}>{t('store.noMatches')}</Text>
             ) : (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.matchScroll}>
                 {wardrobeMatches.map((match, index) => {
@@ -229,10 +235,10 @@ export default function ProductDetailScreen({ route }) {
             )}
           </View>
 
-          <View style={[styles.actionRow, { flexDirection: "row" }]}>
-            <TouchableOpacity style={[styles.mainBtn, { flexDirection: "row" }]} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.STORE, itemId: productId, itemType: product?.category, productImage: product?.images?.[0], productName: product?.name } })}>
-              <Ionicons name="sparkles" size={20} color={Colors.white} />
-              <Text style={[styles.mainBtnText, { marginLeft: 10, marginRight: 0 }]}>{t("store.productDetail.generateTryOn")}</Text>
+          <View style={styles.actionRow}>
+            <TouchableOpacity style={styles.mainBtn} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.STORE, itemId: productId, itemType: product?.category, productImage: product?.images?.[0], productName: product?.name } })}>
+              <Ionicons name="sparkles" size={20} color="white" />
+              <Text style={styles.mainBtnText}>{t('store.generateTryOn')}</Text>
             </TouchableOpacity>
           </View>
 

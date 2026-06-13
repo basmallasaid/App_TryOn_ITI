@@ -45,11 +45,11 @@ const colorMap = {
 };
 
 export default function MatchingResultDetailsScreen({ navigation, route }) {
+  const { t } = useTranslation();
   const { match, imageUri } = route.params || {};
   const item = match?.item || {};
   const score = match?.score || 0;
   const explanation = match?.explanation || "";
-  const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const { isFavorite, addItem, removeItem } = useFavorites();
   const itemId = item?.id?.replace("store_", "");

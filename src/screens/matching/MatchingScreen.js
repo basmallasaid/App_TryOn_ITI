@@ -29,6 +29,7 @@ import { getWardrobeMatches, analyzeImage, getMatchesByAnalysis } from "../../ap
 import { getAllProducts } from "../../api/user_services/userService";
 import { useFavorites } from "../../context/FavoritesContext";
 import { ROUTES } from "../../navigation/routes";
+import { translateMatch } from "../../utils/dynamicTranslator";
 
 
 
@@ -49,6 +50,10 @@ export default function MatchingScreen({ navigation }) {
   const [wardrobeMatches, setWardrobeMatches] = useState([]);
   const [storeMatches, setStoreMatches] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
+
+  // Dynamic translation state for match results
+  const [translatedWardrobeMatches, setTranslatedWardrobeMatches] = useState([]);
+  const [translatedStoreMatches, setTranslatedStoreMatches] = useState([]);
 
   useEffect(() => {
     getAllProducts().then((data) => setAllProducts(Array.isArray(data) ? data : [])).catch(() => {});
@@ -109,10 +114,26 @@ export default function MatchingScreen({ navigation }) {
       : t("matching.itemFromCamera")
     : t("matching.selectItemHint");
 
-  const processMatches = (raw) => {
+  const processMatches = async (raw) => {
     const list = raw?.matches || raw?.data?.matches || (Array.isArray(raw) ? raw : []);
-    setWardrobeMatches(list.filter((m) => m.item?.source === "wardrobe"));
-    setStoreMatches(list.filter((m) => m.item?.source === "store"));
+    const wMatches = list.filter((m) => m.item?.source === "wardrobe");
+    const sMatches = list.filter((m) => m.item?.source === "store");
+    setWardrobeMatches(wMatches);
+    setStoreMatches(sMatches);
+    
+    // Dynamically translate match content sequentially to avoid rate limiting
+    const translatedW = [];
+    for (const m of wMatches) {
+        translatedW.push(await translateMatch(m));
+    }
+    
+    const translatedS = [];
+    for (const m of sMatches) {
+        translatedS.push(await translateMatch(m));
+    }
+    
+    setTranslatedWardrobeMatches(translatedW);
+    setTranslatedStoreMatches(translatedS);
   };
 
   const handleSeeMatching = async () => {
@@ -147,6 +168,8 @@ export default function MatchingScreen({ navigation }) {
       Alert.alert(t("matching.matchError"), typeof msg === "string" ? msg : JSON.stringify(msg));
       setWardrobeMatches([]);
       setStoreMatches([]);
+      setTranslatedWardrobeMatches([]);
+      setTranslatedStoreMatches([]);
     } finally {
       setGenerating(false);
     }
@@ -346,18 +369,19 @@ export default function MatchingScreen({ navigation }) {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.matchList}
             >
-              {wardrobeMatches.length === 0 ? (
+              {(translatedWardrobeMatches.length > 0 ? translatedWardrobeMatches : wardrobeMatches).length === 0 ? (
                 <View style={styles.emptyMatches}>
                   <Text style={styles.emptyMatchesText}>{t("matching.noMatches")}</Text>
                 </View>
               ) : (
-                  wardrobeMatches.map((match, index) => {
-                  const imgSrc = getMatchImage(match);
+                  (translatedWardrobeMatches.length > 0 ? translatedWardrobeMatches : wardrobeMatches).map((match, index) => {
+                  const originalMatch = wardrobeMatches[index] || match;
+                  const imgSrc = getMatchImage(originalMatch);
                   const imageUri = imgSrc?.uri;
                   return (
                     <TouchableOpacity
                       key={match.item?.id || index}
-                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match, imageUri })}
+                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match: originalMatch, imageUri })}
                     >
                       <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>
@@ -384,18 +408,19 @@ export default function MatchingScreen({ navigation }) {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.matchList}
             >
-              {storeMatches.length === 0 ? (
+              {(translatedStoreMatches.length > 0 ? translatedStoreMatches : storeMatches).length === 0 ? (
                 <View style={styles.emptyMatches}>
                   <Text style={styles.emptyMatchesText}>{t("matching.noStoreMatches")}</Text>
                 </View>
               ) : (
-                storeMatches.map((match, index) => {
-                  const imgSrc = getMatchImage(match);
+                (translatedStoreMatches.length > 0 ? translatedStoreMatches : storeMatches).map((match, index) => {
+                  const originalMatch = storeMatches[index] || match;
+                  const imgSrc = getMatchImage(originalMatch);
                   const imageUri = imgSrc?.uri;
                   return (
                     <TouchableOpacity
                       key={match.item?.id || index}
-                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match, imageUri })}
+                      onPress={() => navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, { match: originalMatch, imageUri })}
                     >
                         <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>

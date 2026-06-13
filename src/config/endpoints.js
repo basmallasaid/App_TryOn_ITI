@@ -37,4 +37,7 @@ export const ENDPOINTS = {
   USER_NOTIFICATIONS: '/users/settings/notifications',
   USER_DARK_MODE: '/users/settings/dark-mode',
   USER_IMAGE: '/users/user-image',
+  CREATE_CHECKOUT_SESSION: '/payments/create-checkout-session',
+  CANCEL_SUBSCRIPTION: '/payments/cancel-subscription',
+  SYNC_SUBSCRIPTION: '/payments/sync-subscription',
 };

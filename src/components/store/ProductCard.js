@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from "../../constants/theme/colors";
-import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from 'react-i18next';
+
 export const ProductCard = ({
   name,
   brand,
@@ -16,8 +17,61 @@ export const ProductCard = ({
   onToggleFavorite,
   onTryOnPress,
 }) => {
-  const { themeVersion } = useTheme();
-const styles = React.useMemo(() => StyleSheet.create({
+  const { t } = useTranslation();
+  return (
+    <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onPress}>
+      <View style={styles.imageWrapper}>
+        <Image source={{ uri: image }} style={styles.img} resizeMode="cover" />
+        <View style={[styles.overlayHeader, { flexDirection: 'row' }]}>
+          {badge ? (
+            <View
+              style={[styles.badge, { backgroundColor: badgeColor || '#5CC1FF' }]}
+            >
+              <Text style={styles.badgeText}>{badge}</Text>
+            </View>
+          ) : (
+            <View />
+          )}
+
+          <TouchableOpacity style={styles.heartBtn} onPress={onToggleFavorite}>
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={20}
+              color={isFavorite ? '#FF8A3D' : Colors.textPrimary}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.info}>
+        <Text style={[styles.name, { textAlign: 'left' }]} numberOfLines={1}>
+          {name}
+        </Text>
+        <Text style={[styles.brand, { textAlign: 'left' }]} numberOfLines={1}>
+          {brand}
+        </Text>
+
+        <View style={[styles.footer, { flexDirection: 'row' }]}> 
+          <Text style={styles.price} numberOfLines={1}>
+            {price}
+          </Text>
+
+          {isOutlined ? (
+            <TouchableOpacity style={styles.tryOnBtn} onPress={onTryOnPress}>
+              <Text style={styles.tryOnText}>{t('store.tryOn')}</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={onTryOnPress}>
+              <Text style={styles.tryOnLink}>{t('store.tryOn')}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
   card: {
     width: '48%',
     backgroundColor: Colors.white,
@@ -38,7 +92,6 @@ const styles = React.useMemo(() => StyleSheet.create({
     borderRadius: 18,
     overflow: 'hidden',
     position: 'relative',
-    // backgroundColor: '#F9FAFB',
   },
   img: {
     width: '100%',
@@ -115,58 +168,4 @@ const styles = React.useMemo(() => StyleSheet.create({
     fontSize: 11,
     fontWeight: 'bold',
   },
-}), [themeVersion]);
-
-  return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onPress}>
-      <View style={styles.imageWrapper}>
-        <Image source={{ uri: image }} style={styles.img} resizeMode="cover" />
-        <View style={[styles.overlayHeader, { flexDirection: 'row' }]}>
-          {badge ? (
-            <View
-              style={[styles.badge, { backgroundColor: badgeColor || '#5CC1FF' }]}
-            >
-              <Text style={styles.badgeText}>{badge}</Text>
-            </View>
-          ) : (
-            <View />
-          )}
-
-          <TouchableOpacity style={styles.heartBtn} onPress={onToggleFavorite}>
-            <Ionicons
-              name={isFavorite ? 'heart' : 'heart-outline'}
-              size={20}
-              color={isFavorite ? '#FF8A3D' : Colors.textPrimary}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={styles.info}>
-        <Text style={[styles.name, { textAlign: 'left' }]} numberOfLines={1}>
-          {name}
-        </Text>
-        <Text style={[styles.brand, { textAlign: 'left' }]} numberOfLines={1}>
-          {brand}
-        </Text>
-
-        <View style={[styles.footer, { flexDirection: 'row' }]}>
-          <Text style={styles.price} numberOfLines={1}>
-            {price}
-          </Text>
-
-          {isOutlined ? (
-            <TouchableOpacity style={styles.tryOnBtn} onPress={onTryOnPress}>
-              <Text style={styles.tryOnText}>Try On</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity>
-              <Text style={styles.tryOnLink}>Try-on</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
+});

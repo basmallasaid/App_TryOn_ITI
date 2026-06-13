@@ -71,6 +71,7 @@ export const ROUTES = {
   FAVORITES: 'Favorites',
   AVATAR_DETAIL: 'AvatarDetail',
   SUBSCRIPTION: 'Subscription',
+  MANAGE_SUBSCRIPTION: 'ManageSubscription',
 };
 
 // Entry source constants

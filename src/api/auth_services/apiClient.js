@@ -1,11 +1,11 @@
-import axios from 'axios';
-import { BASE_URL } from '../../config/env';
+import axios from "axios";
+import { BASE_URL } from "../../config/env";
 import { getToken, clearToken } from "../../storage/TokenStorage";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { "Content-Type": "application/json" },
 });
 
 // Attach token to every request
@@ -15,7 +15,6 @@ apiClient.interceptors.request.use(async (config) => {
   return config;
 });
 
-
 apiClient.interceptors.response.use(
   (res) => res,
   async (error) => {
@@ -23,7 +22,7 @@ apiClient.interceptors.response.use(
       await clearToken();
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

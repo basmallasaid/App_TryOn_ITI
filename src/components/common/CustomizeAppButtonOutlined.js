@@ -10,6 +10,8 @@ const CustomizeAppButtonOutlined = ({
   loading = false,
   disabled = false,
   icon,
+  buttonHeight,
+  labelStyle,
 }) => {
   const { themeVersion } = useTheme();
   const isDisabled = disabled || loading;
@@ -53,6 +55,7 @@ const styles = React.useMemo(() => StyleSheet.create({
         styles.button,
         { borderColor: resolvedBorder },
         isDisabled && styles.disabledOpacity,
+        buttonHeight && { height: buttonHeight },
       ]}
       onPress={onPress}
       disabled={isDisabled}

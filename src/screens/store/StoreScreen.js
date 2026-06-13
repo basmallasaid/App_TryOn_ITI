@@ -11,9 +11,10 @@ import { getAllProducts } from '../../api/user_services/userService';
 import { FilterModal } from './FilterModal';
 import { useFavorites } from '../../context/FavoritesContext';
 import { useTranslation } from 'react-i18next';
-
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES, SOURCE } from '../../navigation/routes';
+import { translateProduct } from '../../utils/dynamicTranslator';
+import i18n from '../../localization/i18n';
 
 export default function StoreScreen() {
     const navigation = useNavigation();
@@ -111,16 +112,23 @@ export default function StoreScreen() {
 
             try {
                 const data = await getAllProducts();
-                setAllProducts(Array.isArray(data) ? data : []);
+                let products = Array.isArray(data) ? data : [];
+                
+                // Translate products if in Arabic
+                if (i18n.language === 'ar') {
+                    products = await Promise.all(products.map(p => translateProduct(p, 'ar')));
+                }
+                
+                setAllProducts(products);
             } catch (err) {
-                setError(t("store.loadError"));
+                setError(t('store.error'));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProducts();
-    }, []);
+    }, [i18n.language]);
 
     const categories = useMemo(() => buildCategoriesFromProducts(allProducts), [allProducts]);
 
@@ -235,7 +243,7 @@ export default function StoreScreen() {
                 contentContainerStyle={{ paddingBottom: 20 }}
                 ListEmptyComponent={() => (
                     <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>{t("store.noProducts")}</Text>
+                        <Text style={styles.emptyText}>{t('store.noProducts')}</Text>
                     </View>
                 )}
             />

@@ -61,7 +61,7 @@ export default function SubscriptionScreen({ navigation }) {
 
   const handleSubscribe = async () => {
     if (!user?.token) {
-      Alert.alert("Authentication Required", "Please log in to subscribe.");
+      Alert.alert(t("subscription.authRequiredTitle"), t("subscription.authRequiredMessage"));
       return;
     }
 
@@ -89,7 +89,7 @@ export default function SubscriptionScreen({ navigation }) {
     } catch (err) {
       const message =
         err.response?.data?.message ||
-        "Something went wrong. Please try again.";
+        t("subscription.errorFallback");
       showFeedback({ type: "error", title: t("subscription.checkoutError"), message });
     } finally {
       setLoading(false);

@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import i18n from "../../localization/i18n";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import BenefitsList from "../../components/subscription/BenefitsList";
@@ -200,7 +201,8 @@ export default function ManageSubscriptionScreen({ navigation }) {
   const formatDate = (dateStr) => {
     if (!dateStr) return "\u2014";
     const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", {
+    const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
+    return d.toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       year: "numeric",

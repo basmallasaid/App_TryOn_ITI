@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -18,6 +18,8 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useFavorites } from "../../context/FavoritesContext";
+import { translateToArabic } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
 
 const { width } = Dimensions.get("window");
 
@@ -56,6 +58,31 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
 
   const [selectedSize, setSelectedSize] = useState("m");
   const [selectedColor, setSelectedColor] = useState(item?.color || "black");
+  const [translatedItem, setTranslatedItem] = useState(null);
+  const [translatedExplanation, setTranslatedExplanation] = useState(explanation);
+
+  useEffect(() => {
+    const translateData = async () => {
+      if (i18n.language !== 'ar') return;
+      try {
+        const [nameAr, descAr, explAr] = await Promise.all([
+          translateToArabic(item.name),
+          translateToArabic(item.description),
+          translateToArabic(explanation),
+        ]);
+        setTranslatedItem({
+          ...item,
+          name: nameAr || item.name,
+          description: descAr || item.description,
+        });
+        setTranslatedExplanation(explAr || explanation);
+      } catch (err) {}
+    };
+    translateData();
+  }, [match]);
+
+  const displayItem = translatedItem || item;
+  const displayExplanation = translatedExplanation || explanation;
 
   const colors = useMemo(() => {
     if (item?.colors?.length > 0) {
@@ -130,13 +157,13 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
 
         <View style={styles.infoSection}>
           <View style={styles.titlePriceRow}>
-            <Text style={styles.productTitle}>{item?.name || t("matching.details.noDescription")}</Text>
+            <Text style={styles.productTitle}>{displayItem?.name || t("matching.details.noDescription")}</Text>
             {isStore && item?.price && (
               <Text style={styles.productPrice}>{item?.currency || "$"}{" "}{item?.price}</Text>
             )}
           </View>
           <Text style={styles.description}>
-            {explanation || item?.description || t("matching.details.noDescription")}
+            {displayExplanation || displayItem?.description || t("matching.details.noDescription")}
           </Text>
         </View>
 

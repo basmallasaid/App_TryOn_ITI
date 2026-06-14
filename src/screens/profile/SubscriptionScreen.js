@@ -15,6 +15,11 @@ export default function SubscriptionScreen() {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
 
+  const getPlans = () => PLANS.map(p => ({
+    ...p,
+    badge: p.badge ? t("subscription.bestValue") : undefined,
+  }));
+
   const handleSubscribe = (plan) => {
     Alert.alert("Demo", t("subscription.selectedPlan", { plan: plan.id }));
   };
@@ -28,7 +33,7 @@ export default function SubscriptionScreen() {
         <Text style={styles.title}>{t('subscription.title')}</Text>
         <Text style={styles.subtitle}>{t('subscription.subtitle')}</Text>
 
-        {PLANS.map((plan) => (
+        {getPlans().map((plan) => (
           <TouchableOpacity
             key={plan.id}
             style={styles.planCard}
@@ -39,7 +44,7 @@ export default function SubscriptionScreen() {
               <Text style={styles.planName}>{plan.id === 'monthly' ? t("subscription.monthly") : t("subscription.yearly")}</Text>
               {plan.badge && (
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{t("subscription.bestValue")}</Text>
+                  <Text style={styles.badgeText}>{plan.badge}</Text>
                 </View>
               )}
             </View>

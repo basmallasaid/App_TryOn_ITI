@@ -1,10 +1,11 @@
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
+import i18n from "../localization/i18n";
 
 export const openCamera = async () => {
   const { status } = await ImagePicker.requestCameraPermissionsAsync();
   if (status !== "granted") {
-    Alert.alert("Permission needed", "Camera permission is required.");
+    Alert.alert(i18n.t("common.permissionTitle"), i18n.t("common.cameraPermission"));
     return null;
   }
   const result = await ImagePicker.launchCameraAsync({
@@ -18,7 +19,7 @@ export const openCamera = async () => {
 export const openGallery = async () => {
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (status !== "granted") {
-    Alert.alert("Permission needed", "Gallery permission is required.");
+    Alert.alert(i18n.t("common.permissionTitle"), i18n.t("common.galleryPermission"));
     return null;
   }
   const result = await ImagePicker.launchImageLibraryAsync({
@@ -27,4 +28,4 @@ export const openGallery = async () => {
     base64: true,
   });
   return result;
-}
+};

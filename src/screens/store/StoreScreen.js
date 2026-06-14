@@ -31,7 +31,7 @@ export default function StoreScreen() {
             brand: product.store_id?.name || 'Store',
             price: `${product.price} ${product.currency || t("store.currency")}`,
             image: product.images?.[0],
-            badge: hasMatches ? 'Match' : '',
+            badge: hasMatches ? t('store.badge') : '',
             badgeColor: Colors.secondary,
             isOutlined: hasMatches,
         };
@@ -57,14 +57,26 @@ export default function StoreScreen() {
             if (category) categorySet.add(category);
         });
 
+        const categoryKeyMap = {
+            top: 'wardrobe.categories.top',
+            dress: 'wardrobe.categories.dress',
+            bottom: 'wardrobe.categories.bottom',
+            suit: 'wardrobe.categories.suit',
+            bag: 'wardrobe.categories.bag',
+            shoes: 'wardrobe.categories.shoes',
+            jacket: 'wardrobe.categories.jacket',
+            accessories: 'wardrobe.categories.accessories',
+        };
+
         const categories = [{ id: 'all', name: t("store.all"), icon: null, value: 'all' }];
 
         Array.from(categorySet)
             .sort()
             .forEach((category) => {
+                const key = categoryKeyMap[category];
                 categories.push({
                     id: category,
-                    name: category.charAt(0).toUpperCase() + category.slice(1),
+                    name: key ? t(key) : category.charAt(0).toUpperCase() + category.slice(1).toLowerCase(),
                     value: category,
                     icon: getCategoryIcon(category),
                 });

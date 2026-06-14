@@ -19,6 +19,8 @@ import {
   getDailyOutfitData,
 } from "../storage/TokenStorage";
 import { useAuth } from "./AuthContext";
+import { translateToArabic } from "../utils/dynamicTranslator";
+import i18n from "../localization/i18n";
 
 function toLocalDateKey(date) {
   const y = date.getFullYear();
@@ -72,6 +74,21 @@ const DAY_NAMES = [
 
 const RecommendationContext = createContext();
 
+async function translateOutfitItems(outfit) {
+  if (!outfit || i18n.language !== 'ar') return outfit;
+  const items = outfit.items || outfit.outfits?.[0]?.items || [];
+  const translatedItems = await Promise.all(
+    items.map(async (item) => {
+      const nameAr = await translateToArabic(item.name);
+      return { ...item, name: nameAr || item.name };
+    })
+  );
+  if (outfit.outfits?.[0]) {
+    return { ...outfit, outfits: [{ ...outfit.outfits[0], items: translatedItems }] };
+  }
+  return { ...outfit, items: translatedItems };
+}
+
 export const RecommendationProvider = ({ children }) => {
   const { user } = useAuth();
   const userId = user?._id;
@@ -89,8 +106,15 @@ export const RecommendationProvider = ({ children }) => {
   const fetchHistory = useCallback(async () => {
     try {
       const result = await getAllRecommendations();
-      if (result.history?.[0]) logOutfitItems("fetchHistory[0]", result.history[0]);
-      setHistory(result.history || []);
+      if (result.history) {
+        const translated = await Promise.all(
+          result.history.map(async (entry) => {
+            const translatedEntry = await translateOutfitItems(entry);
+            return { ...entry, ...translatedEntry };
+          })
+        );
+        setHistory(translated);
+      }
     } catch (e) {
     }
   }, []);
@@ -104,8 +128,8 @@ export const RecommendationProvider = ({ children }) => {
       if (lastDate === today) {
         const cached = await getDailyOutfitData(userId);
         if (cached?.outfits?.[0]) {
-          logOutfitItems("cached on foreground", cached.outfits[0]);
-          setTodaysOutfit(cached.outfits[0]);
+          const translatedOutfit = await translateOutfitItems(cached.outfits[0]);
+          setTodaysOutfit(translatedOutfit);
           setTodaysWeather(cached.weather || cached.outfits[0]?.weather || null);
         }
         await fetchHistory();
@@ -116,11 +140,11 @@ export const RecommendationProvider = ({ children }) => {
         setLoading(true);
         try {
           const result = await requestRecommendations();
-          if (result.outfits?.[0]) logOutfitItems("fresh API", result.outfits[0]);
           await setDailyOutfitDate(today, userId);
           await setDailyOutfitData(result, userId);
           if (result?.outfits?.[0]) {
-            setTodaysOutfit(result.outfits[0]);
+            const translatedOutfit = await translateOutfitItems(result.outfits[0]);
+            setTodaysOutfit(translatedOutfit);
             setTodaysWeather(result.weather || result.outfits[0]?.weather || null);
           }
         } catch (e) {

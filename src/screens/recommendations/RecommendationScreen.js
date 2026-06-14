@@ -21,10 +21,12 @@ import { useProfileContext } from "../../context/ProfileContext";
 import { useRecommendation } from "../../context/RecommendationContext";
 import { ROUTES } from "../../navigation/routes";
 import { getGreeting } from "../../utils/greeting";
+import i18n from "../../localization/i18n";
 
 function formatDateLabel(dateStr) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
+  return d.toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
 function getShortDay(dayName) {

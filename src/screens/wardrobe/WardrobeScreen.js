@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   FlatList,
@@ -29,6 +29,8 @@ import { openCamera, openGallery } from '../../utils/cameraAccess';
 import { useTranslation } from 'react-i18next';
 import { useFeedback } from "../../context/FeedbackContext";
 import { ROUTES } from '../../navigation/routes';
+import { translateWardrobeItem } from '../../utils/dynamicTranslator';
+import i18n from '../../localization/i18n';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = 175; // Based on your WardrobeItemCard width
 const GAP = 15;
@@ -51,6 +53,21 @@ const WardrobeScreen = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [analyzing, setAnalyzing] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [translatedItems, setTranslatedItems] = useState([]);
+
+  useEffect(() => {
+    const translateAll = async () => {
+      if (i18n.language !== 'ar' || items.length === 0) {
+        setTranslatedItems(items);
+        return;
+      }
+      const results = await Promise.all(
+        items.map(item => translateWardrobeItem(item, 'ar'))
+      );
+      setTranslatedItems(results);
+    };
+    translateAll();
+  }, [items]);
 
   useFocusEffect(
     useCallback(() => {
@@ -82,13 +99,14 @@ const WardrobeScreen = ({ navigation }) => {
   const categories = rawCategories;
 
   const filteredItems = useMemo(() => {
+    const itemsToFilter = translatedItems.length > 0 ? translatedItems : items;
     return selectedCategory === 'All'
-      ? items
-      : items.filter(
+      ? itemsToFilter
+      : itemsToFilter.filter(
           item =>
             item.category?.toLowerCase() === selectedCategory.toLowerCase(),
         );
-  }, [items, selectedCategory]);
+  }, [translatedItems, items, selectedCategory]);
 
   const listData = useMemo(
     () => [{ _id: 'add-item', type: 'add' }, ...filteredItems],

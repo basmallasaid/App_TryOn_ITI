@@ -11,7 +11,6 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { File, Directory, Paths } from "expo-file-system";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -33,10 +32,12 @@ import {
 } from "../../api/virtual_tryon_services/virtualTryonService";
 import { ROUTES } from "../../navigation/routes";
 import GradientBorder from "../../components/recycle/GradientBorder";
+import { useFeedback } from "../../context/FeedbackContext";
 
 export default function TryOnScreen({ navigation, route }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const { items: wardrobeItems } = useWardrobe();
   const photoUri = route?.params?.photoUri;
   const avatarImage = route?.params?.avatarImage;
@@ -154,11 +155,66 @@ export default function TryOnScreen({ navigation, route }) {
     }
   };
 
+  const getWardrobeCategory = (id) => {
+    const item = wardrobeItems.find(i => i._id === id || i.id === id);
+    return item?.category || null;
+  };
+
+  const mapCategoryToType = (cat) => {
+    if (!cat) return null;
+    const t = cat.toLowerCase();
+    if (["tops", "top", "tshirt", "shirt", "jacket", "blouse", "hoodie", "sweater"].includes(t)) return "Tops";
+    if (["pants", "bottom", "jeans", "trousers", "skirt", "shorts", "leggings"].includes(t)) return "Pants";
+    if (["dresses", "dress", "jumpsuit", "overall", "gown", "robe"].includes(t)) return "Dresses";
+    return null;
+  };
+
+  const hasCategoryConflict = (id) => {
+    const newType = mapCategoryToType(getWardrobeCategory(id));
+    if (!newType) return false;
+    for (const existingId of selectedWardrobeIds) {
+      const existingType = mapCategoryToType(getWardrobeCategory(existingId));
+      if (!existingType) continue;
+      if ((existingType === "Tops" || existingType === "Dresses") && (newType === "Tops" || newType === "Dresses")) return true;
+      if (existingType === "Pants" && newType === "Pants") return true;
+    }
+    return false;
+  };
+
+  const computeDisabledOptions = (index, sourceType) => {
+    const allTypes = [];
+    selectedWardrobeIds.forEach(id => {
+      const type = mapCategoryToType(getWardrobeCategory(id));
+      if (type) allTypes.push(type);
+    });
+    if (sourceType === 'camera') {
+      cameraItemTypes.forEach((t, i) => {
+        if (t && i !== index) allTypes.push(t);
+      });
+    } else if (sourceType === 'gallery') {
+      galleryItemTypes.forEach((t, i) => {
+        if (t && i !== index) allTypes.push(t);
+      });
+    }
+    const disabled = new Set();
+    for (const t of allTypes) {
+      if (t === "Tops" || t === "Dresses") { disabled.add("Tops"); disabled.add("Dresses"); }
+      else if (t === "Pants") { disabled.add("Pants"); }
+    }
+    return Array.from(disabled);
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSelectedItems([]);
+    setSelectedWardrobeIds([]);
+  };
+
   const toggleItem = (id) => {
     if (selectedWardrobeIds.includes(id)) {
       setSelectedWardrobeIds(selectedWardrobeIds.filter((i) => i !== id));
       setSelectedItems((prev) => prev.filter((itemId) => itemId !== id));
-    } else if (selectedWardrobeIds.length < 2 && selectedItems.length < 2) {
+    } else if (selectedWardrobeIds.length < 2 && selectedItems.length < 2 && !hasCategoryConflict(id)) {
       setSelectedWardrobeIds([...selectedWardrobeIds, id]);
       setSelectedItems((prev) => [...prev, id]);
     }
@@ -293,7 +349,7 @@ export default function TryOnScreen({ navigation, route }) {
         JSON.stringify(e.response?.data);
       const msg = serverMsg || e.message || t("tryOn.virtualTryOn.virtualTryOnFailed");
       setGenerateError(msg);
-      Alert.alert(t("common.error"), msg);
+      showFeedback({ type: "error", title: t("common.error"), message: msg });
     } finally {
       setGenerating(false);
     }
@@ -346,7 +402,7 @@ export default function TryOnScreen({ navigation, route }) {
                             <Image
                               source={{ uri }}
                               style={styles.galleryItemImage}
-                              resizeMode="cover"
+                              resizeMode="contain"
                             />
                             <Ionicons
                               name="checkmark-circle"
@@ -371,7 +427,7 @@ export default function TryOnScreen({ navigation, route }) {
             <Image
               source={{ uri }}
               style={styles.galleryItemImage}
-              resizeMode="cover"
+              resizeMode="contain"
             />
             {isSelected && (
               <Ionicons
@@ -435,7 +491,7 @@ export default function TryOnScreen({ navigation, route }) {
                             <Image
                               source={{ uri }}
                               style={styles.galleryItemImage}
-                              resizeMode="cover"
+                              resizeMode="contain"
                             />
                             <Ionicons
                               name="checkmark-circle"
@@ -460,7 +516,7 @@ export default function TryOnScreen({ navigation, route }) {
                           <Image
                             source={{ uri }}
                             style={styles.galleryItemImage}
-                            resizeMode="cover"
+                            resizeMode="contain"
                           />
                           {isSelected && (
                             <Ionicons
@@ -523,19 +579,19 @@ export default function TryOnScreen({ navigation, route }) {
             label={t("tryOn.virtualTryOn.myWardrobe")}
             iconName="shirt-outline"
             isActive={activeTab === "My Wardrobe"}
-            onPress={() => setActiveTab("My Wardrobe")}
+            onPress={() => handleTabChange("My Wardrobe")}
           />
           <ActionTab
             label={t("tryOn.virtualTryOn.camera")}
             iconName="camera-outline"
             isActive={activeTab === "Camera"}
-            onPress={() => setActiveTab("Camera")}
+            onPress={() => handleTabChange("Camera")}
           />
           <ActionTab
             label={t("tryOn.virtualTryOn.gallery")}
             iconName="images-outline"
             isActive={activeTab === "Gallery"}
-            onPress={() => setActiveTab("Gallery")}
+            onPress={() => handleTabChange("Gallery")}
           />
         </View>
 
@@ -577,7 +633,7 @@ export default function TryOnScreen({ navigation, route }) {
                   item={item}
                   isSelected={selectedWardrobeIds.includes(item._id)}
                   onToggle={toggleItem}
-                  disabled={selectedItems.length >= 2}
+                  disabled={selectedItems.length >= 2 || (!selectedWardrobeIds.includes(item._id) && hasCategoryConflict(item._id))}
                 />
               )}
             />
@@ -621,6 +677,7 @@ export default function TryOnScreen({ navigation, route }) {
                 selectedType={cameraItemTypes[index]}
                 onSelectType={(type) => handleSelectCameraType(index, type)}
                 disabled={selectedItems.length >= 2 && !cameraItemTypes[index]}
+                disabledOptions={computeDisabledOptions(index, 'camera')}
               />
             ))}
           </View>
@@ -633,6 +690,7 @@ export default function TryOnScreen({ navigation, route }) {
                 selectedType={galleryItemTypes[index]}
                 onSelectType={(type) => handleSelectGalleryType(index, type)}
                 disabled={selectedItems.length >= 2 && !galleryItemTypes[index]}
+                disabledOptions={computeDisabledOptions(index, 'gallery')}
               />
             ))}
           </View>
@@ -865,22 +923,24 @@ const createStyles = () => StyleSheet.create({
   noItemsBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.backgroundColor,
-    padding: 15,
-    borderRadius: 15,
-    marginTop: 15,
+    backgroundColor: Colors.borderDefault,
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 12,
+    gap: 14,
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
   },
   iconCircle: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: Colors.backgroundColor,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 15,
   },
-  noItemsTitle: { fontWeight: "700", color: Colors.textPrimary, fontSize: 14 },
-  noItemsSub: { color: Colors.textMuted, fontSize: 12 },
+  noItemsTitle: {  fontFamily: "Roboto_700Bold",fontWeight: "700", color: Colors.textPrimary, fontSize: 14, marginBottom: 2 },
+  noItemsSub: { fontFamily: "Roboto_400Regular", color: Colors.textSecondary, fontSize: 12, lineHeight: 18 },
 
   emptyWardrobe: {
     width: 200,

@@ -1,10 +1,13 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 const CustomBackButton = ({ onPress, iconColor, borderColor,backgroundColor }) => {
   const { themeVersion } = useTheme();
+  const { i18n } = useTranslation();
+  const isRTL = i18n.dir() === "rtl";
 const styles = React.useMemo(() => StyleSheet.create({
   container: {
     width: 56,
@@ -24,7 +27,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       onPress={onPress}
     >
       <Ionicons
-        name="chevron-back"
+        name={isRTL ? "chevron-forward" : "chevron-back"}
         size={18}
         color={iconColor || Colors.iconGray}
       />

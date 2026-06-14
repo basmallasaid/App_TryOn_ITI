@@ -23,8 +23,10 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import { IMAGES } from "../../constants/images/images";
 import { generateAvatar } from "../../api/avatar_services/avatarService";
 import { ROUTES, SOURCE } from "../../navigation/routes";
+import { useFeedback } from "../../context/FeedbackContext";
+import { useProfileContext } from "../../context/ProfileContext";
 
-const subStyles = StyleSheet.create({
+const useSubStyles = (themeVersion) => React.useMemo(() => StyleSheet.create({
   tabContent: {
     paddingTop: 8,
   },
@@ -37,10 +39,11 @@ const subStyles = StyleSheet.create({
   },
   genderRow: {
     flexDirection: "row",
+    justifyContent: "center",
     gap: 16,
     marginBottom: 8,
   },
-});
+}), [themeVersion]);
 
 const skinTones = (t) => [
   { id: "very-light", color: "#F6DFC8", label: t("avatar.create.skinTones.veryLight") },
@@ -62,6 +65,8 @@ const hairColors = (t) => [
 
 const GeneralInfoTab = ({ age, gender, onUpdate }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const subStyles = useSubStyles(themeVersion);
   return (
     <View style={subStyles.tabContent}>
       <MeasurementSlider
@@ -92,6 +97,8 @@ const GeneralInfoTab = ({ age, gender, onUpdate }) => {
 
 const MeasurementsTab = ({ height, weight, onUpdate }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const subStyles = useSubStyles(themeVersion);
   return (
     <View style={subStyles.tabContent}>
       <MeasurementSlider
@@ -118,6 +125,8 @@ const MeasurementsTab = ({ height, weight, onUpdate }) => {
 
 const SkinToneTab = ({ skinTone, onUpdate }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const subStyles = useSubStyles(themeVersion);
   return (
     <View style={subStyles.tabContent}>
       <ColorSelector
@@ -132,6 +141,8 @@ const SkinToneTab = ({ skinTone, onUpdate }) => {
 
 const HairColorTab = ({ hairColor, onUpdate }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const subStyles = useSubStyles(themeVersion);
   return (
     <View style={subStyles.tabContent}>
       <ColorSelector
@@ -154,6 +165,8 @@ const tabs = (t) => [
 const CreateAvatarScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
+  const { refreshProfile } = useProfileContext();
   const tabList = tabs(t);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -194,14 +207,15 @@ const CreateAvatarScreen = ({ navigation }) => {
       };
       const response = await generateAvatar(payload);
       console.log("Avatar API Response:", JSON.stringify(response, null, 2));
+      await refreshProfile();
       navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarImage: response, source: SOURCE.HOME });
     } catch (error) {
       console.error("Avatar generation failed:", error.response?.data || error.message);
-      Alert.alert(t("common.error"), error.response?.data?.message || t("avatar.create.failed"));
+      showFeedback({ type: "error", title: t("common.error"), message: error.response?.data?.message || t("avatar.create.failed") });
     } finally {
       setLoading(false);
     }
-  }, [avatarProfile, navigation, t]);
+  }, [avatarProfile, navigation, t, refreshProfile]);
 
   const tabKeys = tabList.map((t) => t.key);
   const activeTab = tabList[currentStep];
@@ -234,7 +248,6 @@ const CreateAvatarScreen = ({ navigation }) => {
 
   const tabsWithProps = tabList.map((tab) => ({
     ...tab,
-    label: t(tab.labelKey),
     props: {
       ...avatarProfile,
       onUpdate: updateProfile,
@@ -288,6 +301,9 @@ const CreateAvatarScreen = ({ navigation }) => {
   buttonWrap: {
     paddingBottom: 30,
     paddingTop: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
   },
   scrollContainer: {
   flexGrow: 1,

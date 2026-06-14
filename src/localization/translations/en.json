@@ -6,7 +6,9 @@
     "edit": "Edit",
     "loading": "Loading...",
     "error": "Something went wrong",
+    "success": "Success",
     "or": "OR",
+    "ok": "OK",
     "camera": "Camera",
     "gallery": "Gallery",
     "deleteTitle": "Are you sure you want to delete the selected products?",
@@ -390,6 +392,8 @@
   "recommendation": {
     "todaysRecommendation": "Today's recommendation",
     "lastRecommendations": "Our last recommendations",
+    "weeklyTitle": "This Week's Recommendations",
+    "noOutfitForDay": "No outfit yet",
     "outfitDetails": "Outfit Details",
     "emptyHistory": "No recommendations yet",
     "noOutfitTitle": "No outfit available",
@@ -397,7 +401,9 @@
     "subtitle": "Let's dress smart today.",
     "generatedDesign": "Generated Design",
     "untitled": "Untitled",
-    "noItemsAvailable": "No items available"
+    "noItemsAvailable": "No items available",
+    "recommendedOn": "Recommended on {{date}}",
+    "today": "Today"
   },
   "matching": {
     "title": "Matching",
@@ -541,6 +547,12 @@
         "winter": "Winter"
       }
     },
+    "promoBanner": {
+      "summerEssentials": "Summer Essentials",
+      "summerSubtitle": "Stay cool and stylish with our latest summer collection.",
+      "newCollection": "New Collection",
+      "newCollectionSubtitle": "Discover the latest trends and fresh arrivals."
+    },
     "productDetail": {
       "description": "Description",
       "showLess": "Show Less",
@@ -675,6 +687,7 @@
     "cancelSuccessTitle": "Subscription Cancelled",
     "cancelSuccessBody": "Your subscription has been cancelled. You'll continue enjoying Pro Stylist features until the end of your current billing period.",
     "cancelFailed": "Failed to cancel subscription.",
+    "checkoutError": "Checkout Error",
     "ok": "OK"
   },
   "tryOnResult": {

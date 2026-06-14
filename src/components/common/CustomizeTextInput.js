@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import Typography from "../../constants/theme/typography";
@@ -28,6 +29,8 @@ const CustomizeTextInput = ({
   editable = true,
 }) => {
   const { themeVersion } = useTheme();
+  const { i18n } = useTranslation();
+  const isRTL = i18n.dir() === "rtl";
   const [hidden, setHidden] = useState(secureTextEntry);
 
   const borderColor =
@@ -114,10 +117,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       <View
         style={[
           styles.container,
-          {
-            borderColor,
-            flexDirection: "row",
-          },
+          { borderColor },
         ]}
       >
         <TextInput
@@ -125,7 +125,7 @@ const styles = React.useMemo(() => StyleSheet.create({
             styles.input,
             {
               color: stateColor,
-              textAlign: "left",
+              textAlign: isRTL ? "right" : "left",
             },
           ]}
           placeholder={placeholder}
@@ -140,8 +140,7 @@ const styles = React.useMemo(() => StyleSheet.create({
           autoFocus={autoFocus}
           editable={editable}
         />
-
-        <View style={[styles.rightSection, { alignSelf: "flex-end" }]}>
+        <View style={[styles.rightSection, { alignSelf: "center" }]}>
           {secureTextEntry && (
             <TouchableOpacity onPress={() => setHidden((h) => !h)}>
               <Ionicons
@@ -151,10 +150,8 @@ const styles = React.useMemo(() => StyleSheet.create({
               />
             </TouchableOpacity>
           )}
-
           {!secureTextEntry && rightIcon}
         </View>
-
       </View>
 
       {state === "error" && errorMessage ? (

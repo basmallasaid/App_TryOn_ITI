@@ -9,7 +9,6 @@ import {
   SafeAreaView,
   Platform,
   StatusBar,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { Svg, Path, Defs, ClipPath, Rect } from "react-native-svg";
@@ -19,16 +18,24 @@ import { useTheme } from "../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import { saveRecycleResult, getLatestRecycle } from "../../api/recycle_services/recycleService";
+import { useFeedback } from "../../context/FeedbackContext";
+import { useRecentRecycles } from "../../context/RecentRecyclesContext";
+import { useProfileContext } from "../../context/ProfileContext";
 
 export default function RecycleResultScreen({ route, navigation }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
+  const { refresh: refreshRecentRecycles } = useRecentRecycles();
+  const { refreshProfile } = useProfileContext();
   const [saving, setSaving] = useState(false);
   const [alreadySaved, setAlreadySaved] = useState(false);
   const {
     resultImageUri,
     designTitle,
+    designTitleAr,
     designDescription,
+    designDescriptionAr,
   } = route.params || {};
 
   const displayTitle = designTitle;
@@ -58,14 +65,15 @@ export default function RecycleResultScreen({ route, navigation }) {
         designDescriptionAr,
       });
       setAlreadySaved(true);
-      Alert.alert(t("recycleResult.saved"), t("recycleResult.savedMessage"));
+      await Promise.all([refreshRecentRecycles(), refreshProfile()]);
+      showFeedback({ type: "success", title: t("recycleResult.saved"), message: t("recycleResult.savedMessage") });
       navigation.popToTop();
     } catch (error) {
       if (error.response?.status === 409) {
         setAlreadySaved(true);
-        Alert.alert(t("recycleResult.alreadySaved"), t("recycleResult.alreadySavedMessage"));
+        showFeedback({ type: "success", title: t("recycleResult.alreadySaved"), message: t("recycleResult.alreadySavedMessage") });
       } else {
-        Alert.alert(t("recycleResult.saveFailed"), t("recycleResult.saveFailedMessage"));
+        showFeedback({ type: "error", title: t("recycleResult.saveFailed"), message: t("recycleResult.saveFailedMessage") });
       }
     } finally {
       setSaving(false);

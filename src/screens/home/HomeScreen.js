@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Platform,
   StatusBar,
-  Alert,
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -24,9 +23,11 @@ import { ROUTES, SOURCE } from "../../navigation/routes";
 import { useFavorites } from "../../context/FavoritesContext";
 import { useRecommendation } from "../../context/RecommendationContext";
 import HorizontalScrollSection from "../../components/common/HorizontalScrollSection";
+import { useFeedback } from "../../context/FeedbackContext";
 
 export default function HomeScreen({ navigation }) {
   const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { profile, refreshProfile } = useProfileContext();
@@ -129,7 +130,7 @@ export default function HomeScreen({ navigation }) {
                     await addItem(item._id, 'TRYON');
                   }
                 } catch (e) {
-                  Alert.alert(t("common.error"), e.response?.data?.message || t("home.favoriteError"));
+                  showFeedback({ type: "error", title: t("common.error"), message: e.response?.data?.message || t("home.favoriteError") });
                 }
               }}
             />
@@ -153,7 +154,7 @@ export default function HomeScreen({ navigation }) {
                     await addItem(item._id, 'TRYON');
                   }
                 } catch (e) {
-                  Alert.alert(t("common.error"), e.response?.data?.message || t("home.favoriteError"));
+                  showFeedback({ type: "error", title: t("common.error"), message: e.response?.data?.message || t("home.favoriteError") });
                 }
               }}
             />

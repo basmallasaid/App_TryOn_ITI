@@ -537,12 +537,12 @@ export default function RecycleScreen({ navigation }) {
           />
         </View>
 
-        {apiError && (
+        {/* {apiError && (
           <View style={styles.errorBanner}>
             <Ionicons name="alert-circle" size={16} color={Colors.error} />
             <Text style={styles.errorText}>{apiError}</Text>
           </View>
-        )}
+        )} */}
 
         {ideas.length > 0 && (
           <View ref={ideasSectionRef} style={styles.ideasSection}>
@@ -593,7 +593,7 @@ export default function RecycleScreen({ navigation }) {
 const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.backgroundColor,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
@@ -783,11 +783,13 @@ const createStyles = () => StyleSheet.create({
   emptyStateBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.backgroundColor,
+    backgroundColor: Colors.borderDefault,
     borderRadius: 16,
     padding: 16,
     marginTop: 12,
     gap: 14,
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
   },
   itemsHeader: {
     marginTop: 16,

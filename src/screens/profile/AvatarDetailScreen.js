@@ -24,11 +24,11 @@ export default function AvatarDetailScreen() {
   const { profile } = useProfileContext();
 
   const avatarUri = route?.params?.avatarUri;
-  const isSubscribed = !!profile?.subscriptionStatus;
+  const isSubscribed = profile?.subscriptionStatus === "active";
 
   const handleCustomize = () => {
     if (isSubscribed) {
-      navigation.navigate(ROUTES.CREATE_AVATAR);
+      navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.CREATE_AVATAR });
     } else {
       navigation.navigate(ROUTES.SUBSCRIPTION);
     }

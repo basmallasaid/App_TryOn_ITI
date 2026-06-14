@@ -27,6 +27,7 @@ import { useFavorites } from '../../context/FavoritesContext';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { openCamera, openGallery } from '../../utils/cameraAccess';
 import { useTranslation } from 'react-i18next';
+import { useFeedback } from "../../context/FeedbackContext";
 import { ROUTES } from '../../navigation/routes';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = 175; // Based on your WardrobeItemCard width
@@ -37,6 +38,7 @@ const WardrobeScreen = ({ navigation }) => {
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
+  const { showFeedback } = useFeedback();
   const { items, loading, error, refetch } = useWardrobe();
   const { profile } = useProfileContext();
   const {
@@ -113,7 +115,7 @@ const WardrobeScreen = ({ navigation }) => {
       if (!result || result.canceled || !result.assets) return;
       await handleAnalyze(result.assets[0]);
     } catch (err) {
-      Alert.alert(t("wardrobe.error"), t("wardrobe.errorOccurred"));
+      showFeedback({ type: "error", title: t("wardrobe.error"), message: t("wardrobe.errorOccurred") });
     }
   };
 
@@ -146,10 +148,7 @@ const WardrobeScreen = ({ navigation }) => {
         analysisResult,
       });
     } catch (e) {
-      Alert.alert(
-        t("wardrobe.analysisFailed"),
-        e.response?.data?.error || t("wardrobe.analysisFailedMessage"),
-      );
+      showFeedback({ type: "error", title: t("wardrobe.analysisFailed"), message: e.response?.data?.error || t("wardrobe.analysisFailedMessage") });
     } finally {
       setAnalyzing(false);
     }
@@ -240,10 +239,7 @@ const WardrobeScreen = ({ navigation }) => {
                       await addItem(item._id, 'WARDROBE');
                     }
                   } catch (e) {
-                    Alert.alert(
-                      t("wardrobe.error"),
-                      e.response?.data?.message || t("wardrobe.favoriteError"),
-                    );
+                    showFeedback({ type: "error", title: t("wardrobe.error"), message: e.response?.data?.message || t("wardrobe.favoriteError") });
                     refetchFavorites();
                   }
                 }}

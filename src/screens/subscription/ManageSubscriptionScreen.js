@@ -8,7 +8,6 @@ import {
   StatusBar,
   SafeAreaView,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,11 +21,13 @@ import CancellationSuccessModal from "../../components/subscription/Cancellation
 import * as paymentService from "../../api/payment_services/paymentService";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
+import { useFeedback } from "../../context/FeedbackContext";
 
 export default function ManageSubscriptionScreen({ navigation }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
@@ -235,7 +236,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
     } catch (err) {
       const message =
         err.response?.data?.message || t("subscription.cancelFailed");
-      Alert.alert(t("common.error"), message);
+      showFeedback({ type: "error", title: t("common.error"), message });
     } finally {
       setCancelling(false);
     }

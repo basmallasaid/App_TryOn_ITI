@@ -29,6 +29,7 @@ import { FavoritesProvider } from './src/context/FavoritesContext';
 import { RecommendationProvider } from './src/context/RecommendationContext';
 import { RecentTryOnsProvider } from './src/context/RecentTryOnsContext';
 import { RecentRecyclesProvider } from './src/context/RecentRecyclesContext';
+import { FeedbackProvider } from './src/context/FeedbackContext';
 import { registerDailyRecommendationTask } from './src/background/DailyRecommendationTask';
 I18nManager.allowRTL(true);
 // DEV ONLY — comment out when done testing
@@ -103,7 +104,9 @@ export default function App() {
                   <RecentTryOnsProvider>
                     <RecentRecyclesProvider>
                       <RecommendationProviderWithAuthKey>
-                        <ThemedApp />
+                        <FeedbackProvider>
+                          <ThemedApp />
+                        </FeedbackProvider>
                       </RecommendationProviderWithAuthKey>
                     </RecentRecyclesProvider>
                   </RecentTryOnsProvider>

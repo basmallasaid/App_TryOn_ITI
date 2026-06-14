@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useRef,
+  useMemo,
 } from "react";
 import { AppState } from "react-native";
 import {
@@ -18,6 +19,56 @@ import {
   getDailyOutfitData,
 } from "../storage/TokenStorage";
 import { useAuth } from "./AuthContext";
+
+function toLocalDateKey(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function deduplicateByDate(entries) {
+  const map = {};
+  entries.forEach((entry) => {
+    const dateKey = entry.created_at
+      ? toLocalDateKey(new Date(entry.created_at))
+      : null;
+    if (
+      dateKey &&
+      (!map[dateKey] ||
+        new Date(entry.created_at) > new Date(map[dateKey].created_at))
+    ) {
+      map[dateKey] = entry;
+    }
+  });
+  return map;
+}
+
+function buildWeekFromSaturday() {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const daysSinceSaturday = (dayOfWeek + 1) % 7;
+  const saturday = new Date(now);
+  saturday.setDate(now.getDate() - daysSinceSaturday);
+  saturday.setHours(0, 0, 0, 0);
+  const week = [];
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(saturday);
+    day.setDate(saturday.getDate() + i);
+    week.push(day);
+  }
+  return week;
+}
+
+const DAY_NAMES = [
+  "Saturday",
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+];
 
 const RecommendationContext = createContext();
 
@@ -58,7 +109,7 @@ export const RecommendationProvider = ({ children }) => {
 
   const checkAndFetchDaily = useCallback(async () => {
     try {
-      const today = new Date().toISOString().split("T")[0];
+      const today = toLocalDateKey(new Date());
       const currentHour = new Date().getHours();
       const lastDate = await getDailyOutfitDate(userId);
 
@@ -115,11 +166,40 @@ export const RecommendationProvider = ({ children }) => {
     return () => subscription.remove();
   }, [checkAndFetchDaily]);
 
+  const weeklyOutfits = useMemo(() => {
+    const todayKey = toLocalDateKey(new Date());
+    const byDate = deduplicateByDate(history);
+
+    if (todaysOutfit && !byDate[todayKey]) {
+      byDate[todayKey] = {
+        _id: "today",
+        outfits: [todaysOutfit],
+        weather: todaysWeather || todaysOutfit?.weather || null,
+        created_at: new Date().toISOString(),
+      };
+    }
+
+    const weekDates = buildWeekFromSaturday();
+    return weekDates.map((dayDate, idx) => {
+      const dateKey = toLocalDateKey(dayDate);
+      const entry = byDate[dateKey] || null;
+      return {
+        dayName: DAY_NAMES[idx],
+        dayIndex: idx,
+        date: dateKey,
+        entry,
+        hasOutfit: !!entry,
+        isToday: dateKey === todayKey,
+      };
+    });
+  }, [history, todaysOutfit, todaysWeather]);
+
   return (
     <RecommendationContext.Provider
       value={{
         todaysOutfit,
         todaysWeather,
+        weeklyOutfits,
         history,
         loading,
         error,

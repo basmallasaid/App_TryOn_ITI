@@ -1,11 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo, useCallback } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
-  FlatList,
+  Animated,
+  PanResponder,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
@@ -15,12 +17,33 @@ import { IMAGES } from '../../constants/images/images';
 const { width } = Dimensions.get('window');
 const CONTAINER_PADDING = 20;
 const SLIDE_WIDTH = width - (CONTAINER_PADDING * 2);
+const IMG_W = 140;
+
+const Slide = React.memo(({ item, isRTL, styles }) => (
+  <View style={{ width: SLIDE_WIDTH }}>
+    <View style={[styles.banner, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={[styles.textContent, isRTL ? { paddingRight: 25, paddingLeft: 10 } : { paddingLeft: 25, paddingRight: 10 }]}>
+        <Text style={[styles.bannerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{item.title}</Text>
+        <Text style={[styles.bannerSub, { textAlign: isRTL ? 'right' : 'left' }]}>{item.subtitle}</Text>
+      </View>
+      <Image
+        source={item.image}
+        style={[styles.bannerImg]}
+        resizeMode="contain"
+      />
+    </View>
+  </View>
+));
 
 export const PromoBanner = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { themeVersion } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
-  const BANNERS = [
+  const isRTL = i18n.dir() === 'rtl';
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const currentIndex = useRef(0);
+
+  const BANNERS = useMemo(() => [
     {
       id: '1',
       title: t('store.promoBanner.summerEssentials'),
@@ -33,25 +56,42 @@ export const PromoBanner = () => {
       subtitle: t('store.promoBanner.newCollectionSubtitle'),
       image: IMAGES.PICK,
     },
-  ];
-  const onViewRef = useRef(({ viewableItems }) => {
-    if (viewableItems.length > 0) {
-      setActiveIndex(viewableItems[0].index || 0);
-    }
-  });
+  ], [t]);
 
-  const viewConfigRef = useRef({
-    viewAreaCoveragePercentThreshold: 50,
-  });
+  const snapToIndex = useCallback((index) => {
+    const clamped = Math.max(0, Math.min(index, BANNERS.length - 1));
+    Animated.spring(scrollX, {
+      toValue: -clamped * SLIDE_WIDTH,
+      useNativeDriver: true,
+      bounciness: 0,
+    }).start();
+    currentIndex.current = clamped;
+    setActiveIndex(clamped);
+  }, [scrollX, BANNERS.length]);
 
-  const styles = React.useMemo(() => StyleSheet.create({
+  const panResponder = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponder: (_, gesture) =>
+      Math.abs(gesture.dx) > 5 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+    onPanResponderMove: (_, gesture) => {
+      scrollX.setValue(-currentIndex.current * SLIDE_WIDTH + gesture.dx);
+    },
+    onPanResponderRelease: (_, gesture) => {
+      const threshold = SLIDE_WIDTH * 0.25;
+      if (gesture.dx < -threshold) {
+        snapToIndex(currentIndex.current + 1);
+      } else if (gesture.dx > threshold) {
+        snapToIndex(currentIndex.current - 1);
+      } else {
+        snapToIndex(currentIndex.current);
+      }
+    },
+  }), [scrollX, SLIDE_WIDTH, snapToIndex]);
+
+  const styles = useMemo(() => StyleSheet.create({
     mainWrapper: {
       marginVertical: 10,
-      position: 'relative', 
+      position: 'relative',
       alignItems: 'center',
-    },
-    slide: {
-      alignItems: 'center', 
     },
     banner: {
       width: SLIDE_WIDTH,
@@ -60,14 +100,12 @@ export const PromoBanner = () => {
       borderRadius: 25,
       borderWidth: 1.5,
       borderColor: Colors.borderDefault,
-      padding: 25,
-      alignItems: 'center',
       overflow: 'hidden',
     },
     textContent: {
-      flex: 1.2,
+      flex: 1,
       justifyContent: 'center',
-      zIndex: 2,
+      paddingVertical: 25,
     },
     bannerTitle: {
       fontSize: 24,
@@ -81,14 +119,12 @@ export const PromoBanner = () => {
       color: Colors.textMuted,
       marginTop: 10,
       lineHeight: 18,
-      width: '90%',
     },
     bannerImg: {
-      width: 160,
+      width: IMG_W,
       height: 160,
-      position: 'absolute',
-      right: -5,
-      bottom: 5,
+      alignSelf: 'flex-end',
+      marginBottom: 5,
     },
     pagination: {
       flexDirection: 'row',
@@ -111,47 +147,46 @@ export const PromoBanner = () => {
     },
   }), [themeVersion]);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.slide}>
-      <View style={[styles.banner, { flexDirection: 'row' }]}>
-        <View style={styles.textContent}>
-          <Text style={[styles.bannerTitle, { textAlign: 'left' }]}>{item.title}</Text>
-          <Text style={[styles.bannerSub, { textAlign: 'left' }]}>{item.subtitle}</Text>
-        </View>
-
-        <Image
-          source={item.image}
-          style={[styles.bannerImg, { right: -5, left: undefined }]}
-          resizeMode="contain"
-        />
-      </View>
-    </View>
-  );
-
   return (
     <View style={styles.mainWrapper}>
-      <FlatList
-        data={BANNERS}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        onViewableItemsChanged={onViewRef.current}
-        viewabilityConfig={viewConfigRef.current}
-        snapToAlignment="center"
-        decelerationRate="fast"
-      />
+      <View
+        style={{ width: SLIDE_WIDTH, height: 200, overflow: 'hidden' }}
+        {...panResponder.panHandlers}
+      >
+        {BANNERS.map((item, index) => (
+          <Animated.View
+            key={item.id}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: SLIDE_WIDTH,
+              height: 200,
+              transform: [{
+                translateX: Animated.add(scrollX, index * SLIDE_WIDTH),
+              }],
+            }}
+          >
+            <Slide item={item} isRTL={isRTL} styles={styles} />
+          </Animated.View>
+        ))}
+      </View>
 
       <View style={styles.pagination}>
         {BANNERS.map((_, index) => (
-          <View
+          <TouchableOpacity
             key={index}
-            style={[
-              styles.dot,
-              activeIndex === index && styles.dotActive,
-            ]}
-          />
+            onPress={() => snapToIndex(index)}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+          >
+            <View
+              style={[
+                styles.dot,
+                activeIndex === index && styles.dotActive,
+              ]}
+            />
+          </TouchableOpacity>
         ))}
       </View>
     </View>

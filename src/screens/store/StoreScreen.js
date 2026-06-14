@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View, Text, Platform, StatusBar } from 'react-native';
 import { StoreHeader } from '../../components/store/StoreHeader';
 import { ProductCard } from '../../components/store/ProductCard';
@@ -76,6 +76,9 @@ export default function StoreScreen() {
     const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchText, setSearchText] = useState('');
+    const searchTextRef = useRef(searchText);
+    searchTextRef.current = searchText;
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [filterVisible, setFilterVisible] = useState(false);
@@ -88,9 +91,16 @@ export default function StoreScreen() {
         price: 1000,
     });
 
-    const handleSearchSubmit = () => {
-        setSearchQuery((prevQuery) => prevQuery.trim());
-    };
+    const handleSearchSubmit = React.useCallback(() => {
+        setSearchQuery(searchTextRef.current.trim());
+    }, []);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchQuery(searchText.trim());
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchText]);
 
     const handleTryOn = (item) => {
         navigation.navigate(ROUTES.TRY_ON, {
@@ -186,6 +196,33 @@ export default function StoreScreen() {
             .map(mapProductToCard);
     }, [allProducts, searchQuery, selectedCategory, filterValues, productMatches]);
 
+    const listHeader = React.useMemo(() => (
+        <View style={{ padding: 20 }}>
+            <StoreHeader onFilterPress={() => setFilterVisible(true)} />
+            <FilterModal
+                visible={filterVisible}
+                onClose={() => setFilterVisible(false)}
+                onApply={handleFilterApply}
+                initialBrands={filterValues.brands}
+                initialSeasons={filterValues.seasons}
+                initialCategories={filterValues.categories}
+                initialColors={filterValues.colors}
+                initialPrice={filterValues.price}
+            />
+            <SearchBar
+                value={searchText}
+                onChangeText={setSearchText}
+                onSearch={handleSearchSubmit}
+            />
+            <PromoBanner />
+            <CategoryTabs
+                categories={categories}
+                activeCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+            />
+        </View>
+    ), [searchText, filterVisible, filterValues, categories, selectedCategory, handleSearchSubmit]);
+
     if (loading) {
         return (
             <View style={[styles.screenWrapper, styles.center]}>
@@ -209,32 +246,7 @@ export default function StoreScreen() {
                 numColumns={2}
               columnWrapperStyle={styles.row} 
                 
-                ListHeaderComponent={() => (
-                    <View style={{ padding: 20 }}>
-                        <StoreHeader onFilterPress={() => setFilterVisible(true)} />
-                             <FilterModal
-                                visible={filterVisible}
-                                onClose={() => setFilterVisible(false)}
-                                onApply={handleFilterApply}
-                                initialBrands={filterValues.brands}
-                                initialSeasons={filterValues.seasons}
-                                initialCategories={filterValues.categories}
-                                initialColors={filterValues.colors}
-                                initialPrice={filterValues.price}
-                              />
-                        <SearchBar
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
-                            onSearch={handleSearchSubmit}
-                        />
-                        <PromoBanner />
-                        <CategoryTabs
-                            categories={categories}
-                            activeCategory={selectedCategory}
-                            onCategoryChange={setSelectedCategory}
-                        />
-                    </View>
-                )}
+                ListHeaderComponent={listHeader}
                 renderItem={({ item }) => (
                     <ProductCard
                         {...item}

@@ -21,17 +21,41 @@ import { IMAGES } from "../../constants/images/images";
 import { useAuth } from "../../context/AuthContext";
 import { getUserProfile } from "../../api/user_services/userService";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
-import * as paymentService from "../../api/payment_services/paymentService";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 
-const PhotoPlaceholder = ({ photoStyles }) => {
+
+
+const photoPlaceholderStyles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+  },
+  circle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#F0F0F0",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  label: {
+    fontFamily: "Roboto_400Regular",
+    fontSize: 12,
+    color: Colors.iconGray,
+    textAlign: "center",
+  },
+});
+
+const PhotoPlaceholder = () => {
   const { t } = useTranslation();
   return (
-    <View style={photoStyles.container}>
-      <View style={photoStyles.circle}>
+    <View style={photoPlaceholderStyles.container}>
+      <View style={photoPlaceholderStyles.circle}>
         <Ionicons name="camera" size={24} color={Colors.iconGray} />
       </View>
-      <Text style={photoStyles.label}>{t('tryOn.selectModel.tapToUpload')}</Text>
+      <Text style={photoPlaceholderStyles.label}>{t('tryOn.selectModel.tapToUpload')}</Text>
     </View>
   );
 };
@@ -44,62 +68,6 @@ const SelectModelScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const productImage = route?.params?.productImage;
   const isStoreFlow = !!productImage;
-
-  const MODELS = [
-    {
-      id: "avatar",
-      title: t('tryOn.selectModel.avatarTitle'),
-      description: t('tryOn.selectModel.avatarDesc'),
-      badge: t('tryOn.selectModel.recommended'),
-      image: IMAGES.AVATAR,
-    },
-    {
-      id: "photo",
-      title: t('tryOn.selectModel.photoTitle'),
-      description: t('tryOn.selectModel.photoDesc'),
-      badge: null,
-      image: null,
-      rightContent: <PhotoPlaceholder />,
-    },
-  ];
-
-  const handleNext = async () => {
-    if (selected === "avatar") {
-      setLoading(true);
-      try {
-        const subData = await paymentService.syncSubscription(user._id);
-        const isSubscribed = subData?.subscriptionStatus === "active";
-        if (!isSubscribed) {
-          navigation.navigate(ROUTES.SUBSCRIPTION);
-          return;
-        }
-        const profile = await getUserProfile(user._id);
-        const avatars = profile?.avatars;
-        if (avatars && avatars.length > 0) {
-          const avatarInfo = avatars[0];
-          const avatarId = avatarInfo._id || avatarInfo;
-          if (isStoreFlow) {
-            const avatarData = await getAvatarById(avatarId);
-            const avatarObj = avatarData?.avatar || avatarData;
-            const avatarImg = typeof avatarObj === "string"
-              ? avatarObj
-              : avatarObj?.image_url || avatarObj?.image || avatarObj?.imageUrl || avatarObj?.url || null;
-            navigation.navigate(ROUTES.TRY_ON_RESULT, { productImage, avatarImage: avatarImg || avatarId, source: SOURCE.STORE });
-          } else {
-            navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarId, source: SOURCE.HOME });
-          }
-        } else {
-          navigation.navigate(ROUTES.CREATE_AVATAR);
-        }
-      } catch {
-        navigation.navigate(ROUTES.CREATE_AVATAR);
-      } finally {
-        setLoading(false);
-      }
-    } else if (selected === "photo") {
-      navigation.navigate(ROUTES.UPLOAD_PHOTO, isStoreFlow ? { productImage, source: SOURCE.STORE } : { source: SOURCE.HOME });
-    }
-  };
 
   const styles = React.useMemo(() => StyleSheet.create({
   safeArea: {
@@ -137,6 +105,57 @@ const SelectModelScreen = ({ navigation, route }) => {
   flexGrow: 1,
 },
 }), [themeVersion]);
+
+  const MODELS = [
+    {
+      id: "avatar",
+      title: t('tryOn.selectModel.avatarTitle'),
+      description: t('tryOn.selectModel.avatarDesc'),
+      badge: t('tryOn.selectModel.recommended'),
+      image: IMAGES.AVATAR,
+    },
+    {
+      id: "photo",
+      title: t('tryOn.selectModel.photoTitle'),
+      description: t('tryOn.selectModel.photoDesc'),
+      badge: null,
+      image: null,
+      rightContent: <PhotoPlaceholder />,
+    },
+  ];
+
+  const handleNext = async () => {
+    if (selected === "avatar") {
+      setLoading(true);
+      try {
+        const profile = await getUserProfile(user._id);
+        const avatars = profile?.avatars;
+        if (avatars && avatars.length > 0) {
+          const avatarInfo = avatars[0];
+          const avatarId = avatarInfo._id || avatarInfo;
+          if (isStoreFlow) {
+            const avatarData = await getAvatarById(avatarId);
+            const avatarObj = avatarData?.avatar || avatarData;
+            const avatarImg = typeof avatarObj === "string"
+              ? avatarObj
+              : avatarObj?.image_url || avatarObj?.image || avatarObj?.imageUrl || avatarObj?.url || null;
+            navigation.navigate(ROUTES.TRY_ON_RESULT, { productImage, avatarImage: avatarImg || avatarId, source: SOURCE.STORE });
+          } else {
+            navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarId, source: SOURCE.HOME });
+          }
+        } else {
+          navigation.navigate(ROUTES.CREATE_AVATAR);
+        }
+      } catch {
+        navigation.navigate(ROUTES.CREATE_AVATAR);
+      } finally {
+        setLoading(false);
+      }
+    } else if (selected === "photo") {
+      navigation.navigate(ROUTES.UPLOAD_PHOTO, isStoreFlow ? { productImage, source: SOURCE.STORE } : { source: SOURCE.HOME });
+    }
+  };
+
 
   return (
     <SafeAreaView style={styles.safeArea}>

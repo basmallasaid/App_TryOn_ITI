@@ -8,13 +8,13 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
-import HorizontalScrollSection from "../../components/common/HorizontalScrollSection";
 import WeatherCard from "../../components/recommendations/WeatherCard";
 import OutfitOverviewCard from "../../components/recommendations/OutfitOverviewCard";
 import { useProfileContext } from "../../context/ProfileContext";
@@ -22,14 +22,28 @@ import { useRecommendation } from "../../context/RecommendationContext";
 import { ROUTES } from "../../navigation/routes";
 import { getGreeting } from "../../utils/greeting";
 
+function formatDateLabel(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function getShortDay(dayName) {
+  return dayName.slice(0, 3);
+}
+
+const DAY_CARD_WIDTH = 155;
+
 export default function RecommendationScreen({ navigation }) {
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { profile } = useProfileContext();
-  const { todaysOutfit, todaysWeather, history, loading } = useRecommendation();
+  const { weeklyOutfits, todaysOutfit, todaysWeather, history, loading } = useRecommendation();
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
-  const weather = todaysWeather || todaysOutfit?.weather || history[0]?.weather || null;
+
+  const weather = todaysWeather || weeklyOutfits.find(d => d.isToday)?.entry?.weather || history[0]?.weather || null;
+  const todayEntry = weeklyOutfits.find(d => d.isToday);
+  const todayOutfit = todaysOutfit || todayEntry?.entry || history[0] || null;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -57,11 +71,11 @@ export default function RecommendationScreen({ navigation }) {
           <>
             {weather && <WeatherCard weather={weather} />}
 
-            {(todaysOutfit || history[0]) && (
+            {todayOutfit && (
               <>
                 <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('recommendation.todaysRecommendation')}</Text>
                 <OutfitOverviewCard
-                  outfit={todaysOutfit || history[0]}
+                  outfit={todayOutfit}
                   width="100%"
                   height={246}
                   borderRadius={8}
@@ -69,40 +83,63 @@ export default function RecommendationScreen({ navigation }) {
                   labelFontSize={15}
                   onPress={() =>
                     navigation.navigate(ROUTES.RECOMMENDATION_DETAIL, {
-                      outfit: todaysOutfit || history[0],
+                      outfit: todayOutfit,
                     })
                   }
                 />
               </>
             )}
 
-            <View style={styles.recentSection}>
-              <HorizontalScrollSection
-                title={t('recommendation.lastRecommendations')}
-                items={history}
-                onViewAll={() => navigation.navigate(ROUTES.RECOMMENDATIONS_GRID)}
-                renderItem={(item) => (
-                  <OutfitOverviewCard
-                    outfit={item}
-                    width={177}
-                    height={180}
-                    borderRadius={16}
-                    borderColor={Colors.borderDefault}
-                    labelFontSize={11}
-                    onPress={() =>
-                      navigation.navigate(ROUTES.RECOMMENDATION_DETAIL, { outfit: item })
-                    }
-                  />
-                )}
-                seeMoreCardStyle={{ width: 177, height: 180, borderRadius: 16 }}
-              />
-              {history.length === 0 && (
-                <View style={styles.emptyState}>
-                  <MaterialCommunityIcons name="wardrobe-outline" size={48} color={Colors.disabled} />
-                  <Text style={styles.emptyText}>{t('recommendation.emptyHistory')}</Text>
+            <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('recommendation.weeklyTitle')}</Text>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalScrollContent}
+            >
+              {weeklyOutfits.map((day) => (
+                <View key={day.dayName} style={styles.dayCard}>
+                  <View style={[styles.dayHeader, { flexDirection: "row" }]}>
+                    <Text style={[styles.dayName, day.isToday && styles.dayNameToday]}>
+                      {getShortDay(day.dayName)}
+                    </Text>
+                    {day.isToday && (
+                      <View style={styles.todayBadge}>
+                        <Text style={styles.todayBadgeText}>{t('recommendation.today')}</Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text style={styles.dayDate}>{formatDateLabel(day.date)}</Text>
+
+                  {day.hasOutfit ? (
+                    <OutfitOverviewCard
+                      outfit={day.entry}
+                      width={DAY_CARD_WIDTH}
+                      height={140}
+                      borderRadius={8}
+                      borderColor={day.isToday ? Colors.primary : Colors.borderDefault}
+                      labelFontSize={10}
+                      onPress={() =>
+                        navigation.navigate(ROUTES.RECOMMENDATION_DETAIL, {
+                          outfit: day.entry,
+                        })
+                      }
+                    />
+                  ) : (
+                    <View style={styles.emptyDayCard}>
+                      <MaterialCommunityIcons
+                        name="weather-sunny"
+                        size={24}
+                        color={Colors.disabled}
+                      />
+                      <Text style={styles.emptyDayText}>{t('recommendation.noOutfitForDay')}</Text>
+                    </View>
+                  )}
                 </View>
-              )}
-            </View>
+              ))}
+            </ScrollView>
+
+
           </>
         )}
       </ScrollView>
@@ -131,7 +168,7 @@ const createStyles = () => StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 8,
-    marginTop:20,
+    marginTop: 20,
   },
   greetingText: {
     fontFamily: 'Roboto_700Bold',
@@ -148,7 +185,7 @@ const createStyles = () => StyleSheet.create({
     lineHeight: 16,
     color: Colors.textSecondary,
     marginBottom: 25,
-    paddingBottom:5,
+    paddingBottom: 5,
   },
   loader: {
     marginTop: 80,
@@ -157,11 +194,62 @@ const createStyles = () => StyleSheet.create({
     fontFamily: 'Roboto_700Bold',
     fontSize: 18,
     color: Colors.textPrimary,
-    marginBottom:15,
-    marginTop:35,
+    marginBottom: 15,
+    marginTop: 35,
   },
-  recentSection: {
-    marginTop: 28,
+  horizontalScrollContent: {
+    paddingRight: 20,
+    gap: 12,
+  },
+  dayCard: {
+    width: DAY_CARD_WIDTH,
+  },
+  dayHeader: {
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 2,
+  },
+  dayName: {
+    fontFamily: 'Roboto_700Bold',
+    fontSize: 14,
+    color: Colors.textPrimary,
+  },
+  dayNameToday: {
+    color: Colors.primary,
+  },
+  todayBadge: {
+    backgroundColor: Colors.primary,
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  todayBadgeText: {
+    fontFamily: 'Roboto_500Medium',
+    fontSize: 10,
+    color: Colors.textInverse,
+  },
+  dayDate: {
+    fontFamily: 'Roboto',
+    fontSize: 12,
+    color: Colors.textMuted,
+    marginBottom: 8,
+  },
+  emptyDayCard: {
+    width: DAY_CARD_WIDTH,
+    height: 140,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.backgroundColor,
+    borderColor: Colors.borderDefault,
+  },
+  emptyDayText: {
+    fontFamily: 'Roboto',
+    fontSize: 12,
+    color: Colors.textMuted,
+    marginTop: 6,
   },
   emptyState: {
     alignItems: "center",

@@ -10,7 +10,6 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
-  Alert,
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,12 +21,14 @@ import { useTranslation } from "react-i18next";
 import CustomBackButton from '../../components/common/CustomBackButton';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { useFeedback } from "../../context/FeedbackContext";
 
 const { width } = Dimensions.get('window');
 
 const TryOnResult = ({ navigation, route }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const result = route?.params?.result || {};
   const productImage = route?.params?.productImage;
   const avatarImage = route?.params?.avatarImage;
@@ -103,10 +104,10 @@ const TryOnResult = ({ navigation, route }) => {
         taskId: (storeResult || result)?.taskId,
         model: (storeResult || result)?.model,
       });
-      Alert.alert(t("tryOn.results.saved"), t("tryOn.results.savedMessage"));
+      showFeedback({ type: "success", title: t("tryOn.results.saved"), message: t("tryOn.results.savedMessage") });
     } catch (e) {
       const msg = e.response?.data?.message || e.response?.data?.error || e.message || t("tryOn.results.saveFailed");
-      Alert.alert(t("common.error"), msg);
+      showFeedback({ type: "error", title: t("common.error"), message: msg });
     } finally {
       setSaving(false);
     }

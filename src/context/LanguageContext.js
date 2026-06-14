@@ -27,11 +27,8 @@ export const LanguageProvider = ({ children }) => {
     await saveLanguage(lang);
     setLanguage(lang);
     i18n.changeLanguage(lang);
-    const isRTL = lang === "ar";
-    if (I18nManager.isRTL !== isRTL) {
-      I18nManager.forceRTL(isRTL);
-      await Updates.reloadAsync();
-    }
+    I18nManager.forceRTL(lang === "ar");
+    await Updates.reloadAsync();
   };
 
   // Called after login/register — syncs to backend in background

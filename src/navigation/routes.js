@@ -55,7 +55,6 @@ export const ROUTES = {
 
   // Recommendation inner screens
   RECOMMENDATIONS_HISTORY: 'RecommendationsHistory',
-  RECOMMENDATIONS_GRID: 'RecommendationsGrid',
   RECOMMENDATION_DETAIL: 'RecommendationDetail',
 
   // Notifications

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { 
   StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, 
-  ActivityIndicator, Alert, SafeAreaView, Dimensions, StatusBar, Linking, Platform 
+  ActivityIndicator, SafeAreaView, Dimensions, StatusBar, Linking, Platform 
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { getProductById } from '../../api/user_services/userService'; 
@@ -14,12 +14,14 @@ import CustomBackButton from '../../components/common/CustomBackButton';
 import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { useFeedback } from "../../context/FeedbackContext";
 
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { productId } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
   
@@ -64,7 +66,7 @@ export default function ProductDetailScreen({ route }) {
         setWardrobeMatches(list.filter((m) => m.item?.source === "wardrobe"));
       } catch (e) {
         const msg = e.response?.data || e.message;
-        Alert.alert(t("store.productDetail.matchError"), typeof msg === "string" ? msg : JSON.stringify(msg));
+        showFeedback({ type: "error", title: t("store.productDetail.matchError"), message: typeof msg === "string" ? msg : JSON.stringify(msg) });
         setWardrobeMatches([]);
       } finally {
         setMatchingLoading(false);

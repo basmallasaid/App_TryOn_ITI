@@ -11,7 +11,7 @@ const options = (t) => [
   { id: "Dresses", label: t("itemSelector.dresses"), icon: "human-female-dance" },
 ];
 
-export default function ItemSelector({ label, selectedType, onSelectType, disabled }) {
+export default function ItemSelector({ label, selectedType, onSelectType, disabled, disabledOptions }) {
   const { themeVersion } = useTheme();
   const { t } = useTranslation();
   const styles = React.useMemo(() => StyleSheet.create({
@@ -80,30 +80,32 @@ export default function ItemSelector({ label, selectedType, onSelectType, disabl
       <View style={styles.optionsContainer}>
         {options(t).map((item) => {
           const isActive = selectedType === item.id;
+          const isItemDisabled = disabled || disabledOptions?.includes(item.id);
 
           return (
             <TouchableOpacity
               key={item.id}
               onPress={() => {
-                if (disabled) return;
+                if (isItemDisabled) return;
                 onSelectType(isActive ? null : item.id);
               }}
-              activeOpacity={disabled ? 1 : 0.7}
+              activeOpacity={isItemDisabled ? 1 : 0.7}
               style={[
                 styles.optionButton,
                 isActive ? styles.activeOption : styles.inactiveOption,
+                isItemDisabled && { opacity: 0.4 },
               ]}
             >
               <MaterialCommunityIcons
                 name={item.icon}
                 size={22}
-                  color={isActive ? "#40B9FF" : "#78909c"}
+                color={isItemDisabled ? "#ccc" : isActive ? "#40B9FF" : "#78909c"}
                 style={styles.iconStyle}
               />
               <Text
                 style={[
                   styles.optionText,
-                  { color: isActive ? "#37474f" : "#78909c" },
+                  { color: isItemDisabled ? "#ccc" : isActive ? "#37474f" : "#78909c" },
                 ]}
               >
                 {item.label}

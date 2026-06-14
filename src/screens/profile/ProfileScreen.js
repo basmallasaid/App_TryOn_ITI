@@ -32,10 +32,13 @@ import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { deleteAccount } from "../../api/user_services/userService";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
+import { useFeedback } from "../../context/FeedbackContext";
 
 const ProfileScreen = ({ navigation }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.dir() === "rtl";
   const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { logout } = useAuth();
   const { language, selectLanguage } = useLanguage();
@@ -142,7 +145,7 @@ const ProfileScreen = ({ navigation }) => {
       logout();
     } catch (err) {
       setDeleteModalVisible(false);
-      Alert.alert(t('common.error'), err.response?.data?.message || t('common.error'));
+      showFeedback({ type: "error", title: t("common.error"), message: err.response?.data?.message || t("common.error") });
     } finally {
       setDeleting(false);
     }
@@ -265,7 +268,7 @@ const ProfileScreen = ({ navigation }) => {
               setLangModalVisible(true);
             }}
             right={
-              <Ionicons name="chevron-forward" size={16} color={Colors.iconGray} />
+              <Ionicons name={isRTL ? "chevron-back" : "chevron-forward"} size={16} color={Colors.iconGray} />
             }
           />
 
@@ -275,7 +278,7 @@ const ProfileScreen = ({ navigation }) => {
             borderBottom={false}
             onPress={() => navigation.navigate(ROUTES.MANAGE_SUBSCRIPTION)}
             right={
-              <Ionicons name="chevron-forward" size={16} color={Colors.iconGray} />
+              <Ionicons name={isRTL ? "chevron-back" : "chevron-forward"} size={16} color={Colors.iconGray} />
             }
           />
         </View>

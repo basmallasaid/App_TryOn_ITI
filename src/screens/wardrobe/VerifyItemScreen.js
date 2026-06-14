@@ -25,6 +25,7 @@ import CustomBackButton from "../../components/common/CustomBackButton"; // Adde
 import { useTranslation } from 'react-i18next';
 import { ROUTES } from "../../navigation/routes";
 import { saveToWardrobe, editWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
+import { useFeedback } from "../../context/FeedbackContext";
 const { height: SCREEN_H } = Dimensions.get("window");
 
 const SHEET_EXPANDED_H = SCREEN_H * 0.65;
@@ -64,6 +65,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
   const garment = analysisResult?.garments?.[0] ?? {};
   const { refetch, updateItem } = useWardrobe();
   const { t } = useTranslation();
+  const { showFeedback } = useFeedback();
 
   const categoryLabels = {
     Bottom: t("wardrobe.categories.bottom"),
@@ -209,7 +211,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
         e.response?.data?.error ||
         e.response?.data?.message ||
         `Server error (${e.response?.status || "network connection"})`;
-      alert(msg);
+      showFeedback({ type: "error", title: t("common.error"), message: msg });
     } finally {
       setLoading(false);
     }

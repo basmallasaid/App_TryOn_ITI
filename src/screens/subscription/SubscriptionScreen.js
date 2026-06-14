@@ -21,11 +21,13 @@ import PlanCard from "../../components/subscription/PlanCard";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
 import * as paymentService from "../../api/payment_services/paymentService";
+import { useFeedback } from "../../context/FeedbackContext";
 
 export default function SubscriptionScreen({ navigation }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const [billing, setBilling] = useState("Monthly");
   const [loading, setLoading] = useState(false);
 
@@ -88,7 +90,7 @@ export default function SubscriptionScreen({ navigation }) {
       const message =
         err.response?.data?.message ||
         "Something went wrong. Please try again.";
-      Alert.alert("Checkout Error", message);
+      showFeedback({ type: "error", title: t("subscription.checkoutError"), message });
     } finally {
       setLoading(false);
     }

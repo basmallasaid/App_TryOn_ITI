@@ -6,7 +6,9 @@
     "edit": "تعديل",
     "loading": "جارٍ التحميل...",
     "error": "حدث خطأ ما",
+    "success": "تم بنجاح",
     "or": "أو",
+    "ok": "حسناً",
     "camera": "الكاميرا",
     "gallery": "المعرض",
     "deleteTitle": "هل أنت متأكد أنك تريد حذف المنتجات المحددة؟",
@@ -385,13 +387,17 @@
   "recommendation": {
     "todaysRecommendation": "توصية اليوم",
     "lastRecommendations": "آخر توصياتنا",
+    "weeklyTitle": "توصيات هذا الأسبوع",
+    "noOutfitForDay": "لا توجد إطلالة بعد",
     "outfitDetails": "تفاصيل الإطلالة",
     "emptyHistory": "لا توجد توصيات بعد",
     "noOutfitTitle": "لا توجد إطلالة متاحة",
     "noOutfitSubtitle": "قم بتوليد إطلالة مخصصة لرؤيتها هنا",
     "subtitle": "دعنا نرتقي بأناقتك اليوم.",
     "generatedDesign": "تصميم مولّد",
-    "untitled": "بدون عنوان"
+    "untitled": "بدون عنوان",
+    "recommendedOn": "تم التوصية في {{date}}",
+    "today": "اليوم"
   },
   "matching": {
     "title": "المطابقة",
@@ -527,6 +533,12 @@
         "winter": "شتاء"
       }
     },
+    "promoBanner": {
+      "summerEssentials": "أساسيات الصيف",
+      "summerSubtitle": "ابق منتعشاً وأنيقاً مع أحدث مجموعة صيفية.",
+      "newCollection": "مجموعة جديدة",
+      "newCollectionSubtitle": "اكتشف أحدث الصيحات والوافدين الجدد."
+    },
     "productDetail": {
       "description": "الوصف",
       "showLess": "عرض أقل",
@@ -659,6 +671,7 @@
     "cancelSuccessTitle": "تم إلغاء الاشتراك",
     "cancelSuccessBody": "تم إلغاء اشتراكك. ستستمر في الاستمتاع بميزات برو ستايليست حتى نهاية فترة الفوترة الحالية.",
     "cancelFailed": "فشل إلغاء الاشتراك.",
+    "checkoutError": "خطأ في الدفع",
     "ok": "حسناً"
   },
   "tryOnResult": {

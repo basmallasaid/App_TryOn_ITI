@@ -9,8 +9,8 @@ export const resetOnboardingAndLanguage = async () => {
     return;
   }
   await SecureStore.deleteItemAsync('onboarding_seen');
-  await SecureStore.deleteItemAsync('language_seen');
-  await SecureStore.deleteItemAsync('app_language');
+  //await SecureStore.deleteItemAsync('language_seen');
+  //await SecureStore.deleteItemAsync('app_language');
   // await SecureStore.deleteItemAsync('user_id');
   console.log('✅ Dev reset: onboarding + language flags cleared');
 };

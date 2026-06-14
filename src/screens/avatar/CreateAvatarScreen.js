@@ -22,7 +22,7 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import LoadingOverlay from "../../components/common/LoadingOverlay";
 import { IMAGES } from "../../constants/images/images";
 import { generateAvatar } from "../../api/avatar_services/avatarService";
-import { ROUTES } from "../../navigation/routes";
+import { ROUTES, SOURCE } from "../../navigation/routes";
 import { useFeedback } from "../../context/FeedbackContext";
 import { useProfileContext } from "../../context/ProfileContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
@@ -163,11 +163,13 @@ const tabs = (t) => [
   { key: "hairColor", label: t("avatar.create.hairColorTab"), component: HairColorTab },
 ];
 
-const CreateAvatarScreen = ({ navigation }) => {
+const CreateAvatarScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
   const { refreshProfile } = useProfileContext();
+  const source = route?.params?.source;
+  const productImage = route?.params?.productImage;
   const tabList = tabs(t);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -210,18 +212,28 @@ const CreateAvatarScreen = ({ navigation }) => {
       const payload = buildPayload();
       const response = await generateAvatar(payload);
       const imageUrl = response?.avatar?.image_url || response?.image_url || response?.imageUrl || null;
+      const avatarId = response?.avatar?._id || response?.avatar?.id || response?._id || response?.id || null;
       setGeneratedImage(imageUrl ? { uri: imageUrl } : null);
       await refreshProfile();
-      navigation.navigate(ROUTES.MAIN, {
-        screen: ROUTES.PROFILE,
-        params: { screen: ROUTES.AVATAR_DETAIL },
-      });
+
+      if (source === SOURCE.AVATAR_DETAIL) {
+        navigation.navigate(ROUTES.MAIN, {
+          screen: ROUTES.PROFILE,
+          params: { screen: ROUTES.AVATAR_DETAIL },
+        });
+      } else {
+        navigation.replace(ROUTES.TRY_ON_SCREEN, {
+          avatarId,
+          source: SOURCE.HOME,
+          ...(productImage && { productImage }),
+        });
+      }
     } catch (error) {
       showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(error, t) });
     } finally {
       setLoading(false);
     }
-  }, [avatarProfile, t, buildPayload, refreshProfile, navigation, showFeedback]);
+  }, [avatarProfile, t, buildPayload, refreshProfile, navigation, showFeedback, source, productImage]);
 
   const tabKeys = tabList.map((t) => t.key);
   const activeTab = tabList[currentStep];
@@ -329,7 +341,16 @@ const CreateAvatarScreen = ({ navigation }) => {
       contentContainerStyle={styles.scrollContainer}
     >
       <View style={styles.container}>
-        <CustomBackButton onPress={() => navigation.goBack()} />
+        <CustomBackButton onPress={() => {
+          if (source === SOURCE.AVATAR_DETAIL) {
+            navigation.navigate(ROUTES.MAIN, {
+              screen: ROUTES.PROFILE,
+              params: { screen: ROUTES.AVATAR_DETAIL },
+            });
+          } else {
+            navigation.goBack();
+          }
+        }} />
 
         <Text style={styles.title}>{t('tryOn.createAvatar.title')}</Text>
         <Text style={styles.stepLabel}>

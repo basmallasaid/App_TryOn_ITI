@@ -20,7 +20,7 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import CategoryChip from "../../components/wardrobe/CategoryChip";
 import WardrobeItemCard from "../../components/wardrobe/WardrobeItemCard";
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
-import { getCategoriesByGender } from "../../constants/wardrobe/wardrobeCategories";
+import { getCategoriesByGender, CATEGORY_TO_BACKEND } from "../../constants/wardrobe/wardrobeCategories";
 import { useTranslation } from 'react-i18next';
 import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
@@ -48,13 +48,14 @@ const EditWardrobeScreen = ({ navigation, route }) => {
 
   const categories = getCategoriesByGender(profile?.profile?.gender);
 
-  const filteredItems = useMemo(
-    () =>
-      selectedCategory === "All"
-        ? items
-        : items.filter((i) => i.category === selectedCategory),
-    [items, selectedCategory],
-  );
+  const filteredItems = useMemo(() => {
+    if (selectedCategory === "All") return items;
+    const backendCategory = CATEGORY_TO_BACKEND[selectedCategory];
+    if (!backendCategory) return items;
+    return items.filter(
+      (i) => i.category?.toLowerCase() === backendCategory,
+    );
+  }, [items, selectedCategory]);
 
   const toggleSelect = (id) => {
     setSelectedIds((prev) =>

@@ -13,7 +13,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { useProfileContext } from '../../context/ProfileContext';
 import { analyzeGarment } from '../../api/wardrobe_services/wardrobeService';
-import { getCategoriesByGender } from '../../constants/wardrobe/wardrobeCategories';
+import { getCategoriesByGender, CATEGORY_TO_BACKEND } from '../../constants/wardrobe/wardrobeCategories';
 import WardrobeHealthCard from '../../components/wardrobe/WardrobeHealthCard';
 import CategoryChip from '../../components/wardrobe/CategoryChip';
 import AddItemCard from '../../components/wardrobe/AddItemCard';
@@ -101,12 +101,12 @@ const WardrobeScreen = ({ navigation }) => {
 
   const filteredItems = useMemo(() => {
     const itemsToFilter = translatedItems.length > 0 ? translatedItems : items;
-    return selectedCategory === 'All'
-      ? itemsToFilter
-      : itemsToFilter.filter(
-          item =>
-            item.category?.toLowerCase() === selectedCategory.toLowerCase(),
-        );
+    if (selectedCategory === 'All') return itemsToFilter;
+    const backendCategory = CATEGORY_TO_BACKEND[selectedCategory];
+    if (!backendCategory) return itemsToFilter;
+    return itemsToFilter.filter(
+      item => item.category?.toLowerCase() === backendCategory,
+    );
   }, [translatedItems, items, selectedCategory]);
 
   const listData = useMemo(

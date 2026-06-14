@@ -26,9 +26,10 @@ export default function AvatarDetailScreen() {
   const [avatarUri, setAvatarUri] = useState(route?.params?.avatarUri || null);
 
   const isSubscribed = profile?.subscriptionStatus === "active";
+  const hasAvatar = profile?.avatars?.length > 0;
 
   useEffect(() => {
-    if (profile?.avatars?.length) {
+    if (hasAvatar) {
       const lastId = profile.avatars[profile.avatars.length - 1];
       const id = lastId?._id || lastId;
       getAvatarById(id)
@@ -41,7 +42,7 @@ export default function AvatarDetailScreen() {
   }, [profile?.avatars]);
 
   const handleCustomize = () => {
-    if (isSubscribed) {
+    if (!hasAvatar || isSubscribed) {
       navigation.navigate(ROUTES.TRY_ON, {
         screen: ROUTES.CREATE_AVATAR,
         params: { source: SOURCE.AVATAR_DETAIL },

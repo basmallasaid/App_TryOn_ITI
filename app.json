@@ -33,6 +33,12 @@
       "expo-notifications",
       "@react-native-community/datetimepicker",
       "expo-background-task"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f230f9f4-bc47-42d1-a245-df8407bd6bff"
+      }
+    },
+    "owner": "basmalla_said"
   }
 }

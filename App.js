@@ -10,7 +10,9 @@ import Colors from "./src/constants/theme/colors";
 import RootNavigator from "./src/navigation/RootNavigator";
 import React, { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
+import * as Notifications from "expo-notifications";
 import { useFonts } from "expo-font";
+import { ROUTES } from "./src/navigation/routes";
 import {
   Roboto_400Regular,
   Roboto_500Medium,
@@ -35,6 +37,15 @@ I18nManager.allowRTL(true);
 // DEV ONLY — comment out when done testing
 resetOnboardingAndLanguage();
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
 function RecommendationProviderWithAuthKey({ children }) {
   const { user } = useAuth();
   return (
@@ -46,6 +57,15 @@ function RecommendationProviderWithAuthKey({ children }) {
 
 function ThemedApp() {
   const { themeVersion, isDarkMode } = useTheme();
+
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener(() => {
+      if (navigationRef.isReady()) {
+        navigationRef.navigate(ROUTES.NOTIFICATIONS);
+      }
+    });
+    return () => sub.remove();
+  }, []);
 
   const navTheme = React.useMemo(
     () => ({

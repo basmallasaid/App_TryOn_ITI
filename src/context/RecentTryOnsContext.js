@@ -16,7 +16,6 @@ export const RecentTryOnsProvider = ({ children }) => {
       const data = await getUserProfile(user._id);
       setTryOns(data?.latestTryOn ?? []);
     } catch (e) {
-      console.warn('[RecentTryOnsContext] Failed to fetch:', e);
     } finally {
       setLoading(false);
     }

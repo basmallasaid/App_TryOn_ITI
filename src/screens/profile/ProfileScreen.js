@@ -38,7 +38,7 @@ import { useFeedback } from "../../context/FeedbackContext";
 const ProfileScreen = ({ navigation }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === "rtl";
-  const { themeVersion } = useTheme();
+  const { themeVersion, isDarkMode, setDarkMode } = useTheme();
   const { showFeedback } = useFeedback();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { logout } = useAuth();
@@ -51,7 +51,6 @@ const ProfileScreen = ({ navigation }) => {
     updateLanguage,
     updateUserImage,
   } = useProfileContext();
-  const { toggleTheme } = useTheme();
   const { items: favorites } = useFavorites();
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [tempLang, setTempLang] = useState(language);
@@ -59,6 +58,12 @@ const ProfileScreen = ({ navigation }) => {
   const [deleting, setDeleting] = useState(false);
   const [avatarImage, setAvatarImage] = useState(null);
   const [imageModalVisible, setImageModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (settings.darkMode !== isDarkMode) {
+      setDarkMode(settings.darkMode);
+    }
+  }, [settings.darkMode]);
 
   useEffect(() => {
     if (profile?.avatars?.length) {
@@ -258,7 +263,7 @@ const ProfileScreen = ({ navigation }) => {
                 value={settings.darkMode}
                 onValueChange={(val) => {
                   updateDarkMode(val);
-                  toggleTheme();
+                  setDarkMode(val);
                 }}
                 trackColor={{ false: Colors.disabled, true: Colors.primary }}
                 thumbColor={Colors.white}

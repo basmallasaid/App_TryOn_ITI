@@ -206,11 +206,9 @@ const CreateAvatarScreen = ({ navigation }) => {
         facial_expression: "smiling",
       };
       const response = await generateAvatar(payload);
-      console.log("Avatar API Response:", JSON.stringify(response, null, 2));
       await refreshProfile();
       navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarImage: response, source: SOURCE.HOME });
     } catch (error) {
-      console.error("Avatar generation failed:", error.response?.data || error.message);
       showFeedback({ type: "error", title: t("common.error"), message: error.response?.data?.message || t("avatar.create.failed") });
     } finally {
       setLoading(false);

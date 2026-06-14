@@ -18,10 +18,10 @@ import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 
 const NOTIF_ICONS = {
-  tryon: { name: "tshirt-outline", color: "#40B9FF", bg: "#E9F7FE" },
-  recycle: { name: "recycle", color: "#A6E22E", bg: "#F1F8E9" },
-  outfit: { name: "sparkles", color: "#FF7D9A", bg: "#FFF0F3" },
-  matching: { name: "shuffle", color: "#FF8A3D", bg: "#FFF3E0" },
+  tryon: { name: "tshirt-outline", color: Colors.primary, bg: Colors.primaryLight },
+  recycle: { name: "recycle", color: Colors.secondary, bg: Colors.secondaryLight },
+  outfit: { name: "sparkles", color: Colors.accent, bg: Colors.accentLight },
+  matching: { name: "shuffle", color: Colors.accentOrange, bg: Colors.accentLight },
 };
 
 function getNotifMeta(title = "") {

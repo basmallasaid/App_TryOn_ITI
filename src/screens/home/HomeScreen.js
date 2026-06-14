@@ -26,7 +26,7 @@ import HorizontalScrollSection from "../../components/common/HorizontalScrollSec
 import { useFeedback } from "../../context/FeedbackContext";
 
 export default function HomeScreen({ navigation }) {
-  const { themeVersion } = useTheme();
+  const { themeVersion, isDarkMode } = useTheme();
   const { showFeedback } = useFeedback();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
@@ -47,7 +47,6 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate(ROUTES.RECOMMENDATION, { screen: ROUTES.RECOMMENDATIONS_HISTORY });
 
   const goToDetail = () => {
-    console.log("[HomeScreen] goToDetail: activeOutfit=", activeOutfit ? "present" : "null");
     navigation.navigate(ROUTES.RECOMMENDATION, {
       screen: ROUTES.RECOMMENDATION_DETAIL,
       params: { outfit: activeOutfit },
@@ -71,18 +70,18 @@ export default function HomeScreen({ navigation }) {
             sub={t('home.actions.tryOnSub')}
             mainIconName="crop-free"
             innerIconName="tshirt-crew"
-            titleColor="#40B9FF"
-            iconBgColor="#E9F7FE"
-            iconColor="#40B9FF"
+            titleColor={Colors.primary}
+            iconBgColor={isDarkMode ? "#1E3A56" : "#E9F7FE"}
+            iconColor={Colors.primary}
             onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.HOME } })}
           />
           <ActionCard
             title={t('home.actions.recycle')}
             sub={t('home.actions.recycleSub')}
             mainIconName="recycle"
-            titleColor="#A6E22E"
-            iconBgColor="#F1F8E9"
-            iconColor="#A6E22E"
+            titleColor={Colors.secondary}
+            iconBgColor={isDarkMode ? "#274E13" : "#F1F8E9"}
+            iconColor={Colors.secondary}
             onPress={() => navigation.navigate(ROUTES.RECYCLE)}
           />
           <ActionCard
@@ -90,9 +89,9 @@ export default function HomeScreen({ navigation }) {
             sub={t('home.actions.generateOutfitSub')}
             useIonicons={true}
             mainIconName="sparkles"
-            titleColor="#FF7D9A"
-            iconBgColor="#FFF0F3"
-            iconColor="#FF6B8B"
+            titleColor={Colors.accent}
+            iconBgColor={isDarkMode ? "#3D1F2A" : "#FFF0F3"}
+            iconColor={Colors.accent}
             onPress={goToHistory}
           />
           <ActionCard
@@ -100,9 +99,9 @@ export default function HomeScreen({ navigation }) {
             sub={t('home.actions.matchingSub')}
             useIonicons={true}
             mainIconName="checkmark-circle-outline"
-            titleColor="#FF8A3D"
-            iconBgColor="#FFF3E0"
-            iconColor="#FF8A3D"
+            titleColor={Colors.accentOrange}
+            iconBgColor={isDarkMode ? "#3D2A1A" : "#FFF3E0"}
+            iconColor={Colors.accentOrange}
             onPress={() => navigation.navigate(ROUTES.MATCHING)}
           />
         </View>

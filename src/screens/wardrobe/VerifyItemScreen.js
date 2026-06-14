@@ -159,18 +159,6 @@ const VerifyItemScreen = ({ route, navigation }) => {
     });
   };
 
-  // const handleSave = async () => {
-  //   try {
-  //     setLoading(true);
-  //     await saveToWardrobe(analysisResult.analysis_id, 0);
-  //     await refetch();
-    //     navigation.navigate(ROUTES.WARDROBE_MAIN);
-  //   } catch (e) {
-  //     console.log(e);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
    const handleSave = async () => {
     try {
       setLoading(true);
@@ -204,9 +192,6 @@ const VerifyItemScreen = ({ route, navigation }) => {
       await refetch();
       navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (e) {
-      console.log("Save failed:", e.config?.url, "status:", e.response?.status, "body:", JSON.stringify(e.response?.data));
-      if (e.response) console.log("full response:", JSON.stringify(e.response));
-      console.log("request data:", JSON.stringify(e.config?.data));
       const msg =
         e.response?.data?.error ||
         e.response?.data?.message ||

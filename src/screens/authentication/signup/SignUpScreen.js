@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -13,10 +13,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../../context/AuthContext";
 import { useGoogleAuth } from "../../../hooks/useGoogleAuth";
+import { useTheme } from "../../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
 import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
 import Colors from "../../../constants/theme/colors";
-import Typography from "../../../constants/theme/typography";
 import { ICONS } from "../../../constants/images/icons";
 import { IMAGES } from "../../../constants/images/images";
 import BottomSheetLayout from "../../../components/authentication/BottomSheetLayout";
@@ -25,17 +25,17 @@ import { ROUTES } from "../../../navigation/routes";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-const GoogleIcon = () => (
+const GoogleIcon = ({ isDarkMode }) => (
   <View
     style={{
       width: 20,
       height: 20,
       borderRadius: 10,
-      backgroundColor: "#fff",
+      backgroundColor: isDarkMode ? Colors.white : "#fff",
       justifyContent: "center",
       alignItems: "center",
       borderWidth: 1,
-      borderColor: "#ddd",
+      borderColor: isDarkMode ? Colors.borderDefault : "#ddd",
     }}
   >
     <Image source={ICONS.GOOGLE_ICON} style={{ width: 20, height: 20 }} />
@@ -44,8 +44,9 @@ const GoogleIcon = () => (
 
 const SignUpScreen = ({ navigation }) => {
   const { t } = useTranslation();
-  const { register , updateProfile, loginWithGoogle } = useAuth();
+  const { register, updateProfile, loginWithGoogle } = useAuth();
   const { signInWithGoogle } = useGoogleAuth();
+  const { themeVersion, isDarkMode } = useTheme();
 
   const [form, setForm] = useState({
     firstName: "",
@@ -56,6 +57,57 @@ const SignUpScreen = ({ navigation }) => {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    nameRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      gap: 12,
+    },
+    halfInput: {
+      flex: 1,
+    },
+    successMsg: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      color: Colors.success,
+      backgroundColor: isDarkMode ? "#1A2E0A" : "#F0FDE4",
+      padding: 10,
+      borderRadius: 8,
+      marginBottom: 14,
+    },
+    errorMsg: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      color: Colors.error,
+      marginBottom: 10,
+    },
+    buttonWrap: {
+      marginTop: 50,
+      marginBottom: 29,
+    },
+    dividerRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 20,
+      justifyContent: "center",
+    },
+    dividerLine: {
+      width: "15%",
+      height: 1,
+      backgroundColor: Colors.primary,
+    },
+    dividerText: {
+      fontFamily: "Inter_700Bold",
+      fontWeight: "700",
+      fontSize: 12,
+      lineHeight: 25.6,
+      color: Colors.primary,
+      textAlign: "center",
+      marginHorizontal: 5,
+      marginTop: -9,
+    },
+  }), [themeVersion]);
 
   const update = (field) => (val) => {
     setForm((f) => ({ ...f, [field]: val }));
@@ -91,7 +143,7 @@ const SignUpScreen = ({ navigation }) => {
         form.password,
         form.confirmPassword,
       );
-      await updateProfile(token,form.firstName,form.lastName);
+      await updateProfile(token, form.firstName, form.lastName);
       navigation.navigate(ROUTES.CHECK_EMAIL, { email, token });
     } catch (e) {
       setError(
@@ -212,7 +264,7 @@ const SignUpScreen = ({ navigation }) => {
         }}
         outlined
         textColor={Colors.textPrimary}
-        icon={<GoogleIcon />}
+        icon={<GoogleIcon isDarkMode={isDarkMode} />}
       />
       {/* Login link */}
       <EnrichTextComponent
@@ -224,49 +276,4 @@ const SignUpScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-    nameRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  halfInput: {
-    flex: 1,
-  },
-  successMsg: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.success,
-    backgroundColor: "#F0FDE4",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 14,
-  },
-  errorMsg: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.error,
-    marginBottom: 10,
-  },
-  buttonWrap: {
-    marginTop: 50,
-    marginBottom: 29,
-  },
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-    justifyContent: "center",
-  },
-  dividerLine: {
-    width: "15%",
-    height: 1,
-    backgroundColor: Colors.primary,
-  },
-  dividerText: {
-    ...Typography.dividerText,
-    marginHorizontal: 5,
-    marginTop: -9,
-  },
-});
 export default SignUpScreen;

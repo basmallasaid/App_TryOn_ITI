@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../../context/AuthContext";
 import { useGoogleAuth } from "../../../hooks/useGoogleAuth";
+import { useTheme } from "../../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
 import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
 import Colors from "../../../constants/theme/colors";
-import Typography from "../../../constants/theme/typography";
 import { IMAGES } from "../../../constants/images/images";
 import { ICONS } from "../../../constants/images/icons";
 import EnrichTextComponent from "../../../components/common/EnrichTextComponent";
@@ -22,18 +22,17 @@ import { ROUTES } from "../../../navigation/routes";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-// Google icon
-const GoogleIcon = () => (
+const GoogleIcon = ({ isDarkMode }) => (
   <View
     style={{
       width: 20,
       height: 20,
       borderRadius: 10,
-      backgroundColor: "#fff",
+      backgroundColor: isDarkMode ? Colors.white : "#fff",
       justifyContent: "center",
       alignItems: "center",
       borderWidth: 1,
-      borderColor: "#ddd",
+      borderColor: isDarkMode ? Colors.borderDefault : "#ddd",
     }}
   >
     <Image source={ICONS.GOOGLE_ICON} style={{ width: 20, height: 20 }} />
@@ -42,8 +41,9 @@ const GoogleIcon = () => (
 
 const LoginScreen = ({ route, navigation }) => {
   const { t } = useTranslation();
-  const { login ,loginWithGoogle} = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const { signInWithGoogle } = useGoogleAuth();
+  const { themeVersion, isDarkMode } = useTheme();
   const successMessage = route?.params?.message ?? "";
 
   const [email, setEmail] = useState("");
@@ -53,6 +53,70 @@ const LoginScreen = ({ route, navigation }) => {
 
   const emailState = error ? "error" : "default";
   const passwordState = error ? "error" : "default";
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    successMsg: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      color: Colors.success,
+      backgroundColor: isDarkMode ? "#1A2E0A" : "#F0FDE4",
+      padding: 10,
+      borderRadius: 8,
+      marginBottom: 14,
+    },
+
+    errorMsg: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      color: Colors.error,
+      marginBottom: 10,
+    },
+
+    forgotWrap: {
+      alignSelf: "flex-end",
+      marginTop: -8,
+      marginBottom: 14,
+    },
+
+    forgotText: {
+      fontFamily: "Roboto_500Medium",
+      fontWeight: "500",
+      fontSize: 10,
+      lineHeight: 10,
+      color: Colors.primary,
+      textAlign: "right",
+      paddingVertical: 5,
+    },
+
+    buttonWrap: {
+      marginTop: 75,
+      marginBottom: 29,
+    },
+
+    dividerRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 20,
+      justifyContent: "center",
+    },
+
+    dividerLine: {
+      width: "15%",
+      height: 1,
+      backgroundColor: Colors.primary,
+    },
+
+    dividerText: {
+      fontFamily: "Inter_700Bold",
+      fontWeight: "700",
+      fontSize: 12,
+      lineHeight: 25.6,
+      color: Colors.primary,
+      textAlign: "center",
+      marginHorizontal: 5,
+      marginTop: -9,
+    },
+  }), [themeVersion]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -152,7 +216,7 @@ const LoginScreen = ({ route, navigation }) => {
         onPress={handleLoginWithGoogle}
         outlined
         textColor={Colors.textPrimary}
-        icon={<GoogleIcon />}
+        icon={<GoogleIcon isDarkMode={isDarkMode} />}
       />
       {/* Sign up link */}
       <EnrichTextComponent
@@ -163,59 +227,5 @@ const LoginScreen = ({ route, navigation }) => {
     </BottomSheetLayout>
   );
 };
-
-const styles = StyleSheet.create({
-  successMsg: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.success,
-    backgroundColor: "#F0FDE4",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 14,
-  },
-
-  errorMsg: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.error,
-    marginBottom: 10,
-  },
-
-  forgotWrap: {
-    alignSelf: "flex-end",
-    marginTop: -8,
-    marginBottom: 14,
-  },
-
-  forgotText: {
-    ...Typography.forgotPassword,
-    paddingVertical: 5,
-  },
-
-  buttonWrap: {
-    marginTop: 75,
-    marginBottom: 29,
-  },
-
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-    justifyContent: "center",
-  },
-
-  dividerLine: {
-    width: "15%",
-    height: 1,
-    backgroundColor: Colors.primary,
-  },
-
-  dividerText: {
-    ...Typography.dividerText,
-    marginHorizontal: 5,
-    marginTop: -9,
-  },
-});
 
 export default LoginScreen;

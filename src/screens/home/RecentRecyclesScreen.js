@@ -41,7 +41,6 @@ export default function RecentRecyclesScreen({ navigation }) {
         await addItem(item._id, 'TRYON');
       }
     } catch (e) {
-      console.warn('[RecentRecycles] fav error:', e);
     }
   };
 

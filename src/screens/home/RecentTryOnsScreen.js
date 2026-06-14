@@ -41,7 +41,6 @@ export default function RecentTryOnsScreen({ navigation }) {
         await addItem(item._id, 'TRYON');
       }
     } catch (e) {
-      console.warn('[RecentTryOns] fav error:', e);
     }
   };
 

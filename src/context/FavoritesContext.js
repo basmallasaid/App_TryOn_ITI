@@ -62,7 +62,6 @@ export const FavoritesProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       const data = await getFavorites();
-      console.log("GET /users/favorites response:", JSON.stringify(data, null, 2));
       const raw = data?.favorites ?? data?.items ?? [];
       const [wardrobeData, productsData, profileData] = await Promise.all([
         getWardrobeItems().catch(() => []),
@@ -111,7 +110,6 @@ export const FavoritesProvider = ({ children }) => {
       }
       setItems((prev) => [...prev, newItem]);
     } catch (e) {
-      console.error('addItem failed:', e.response?.data || e.message);
       throw e;
     }
   };
@@ -121,13 +119,11 @@ export const FavoritesProvider = ({ children }) => {
       const id = normalizeId(itemId);
       const favorite = items.find((i) => normalizeId(i.itemId) === id);
       if (!favorite) {
-        console.warn('removeItem: favorite not found for itemId', itemId);
         return;
       }
       await removeFavorite(favorite._id);
       setItems((prev) => prev.filter((i) => i._id !== favorite._id));
     } catch (e) {
-      console.error('removeItem failed:', e.response?.data || e.message);
       throw e;
     }
   };

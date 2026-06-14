@@ -76,7 +76,7 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
 
             {outfit?.score != null && (
               <View style={[styles.scoreRow, { flexDirection: "row" }]}>
-                <Ionicons name="star" size={16} color="#F59E0B" />
+                <Ionicons name="star" size={16} color={Colors.accentOrange} />
                 <Text style={styles.scoreText}>{outfit.score.toFixed(1)}</Text>
               </View>
             )}

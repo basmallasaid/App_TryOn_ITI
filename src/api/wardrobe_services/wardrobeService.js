@@ -17,7 +17,6 @@ export const analyzeGarment = async (formData) => {
       timeout: 60000,
     },
   );
-  console.log(data);
   return data;
 };
 

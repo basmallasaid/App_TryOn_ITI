@@ -72,7 +72,6 @@ const EditWardrobeScreen = ({ navigation, route }) => {
       setModalVisible(false);
       navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (error) {
-      console.error("Delete failed", error);
     } finally {
       setIsDeleting(false);
     }
@@ -196,7 +195,7 @@ const createStyles = () => StyleSheet.create({
     height: 15,
     top: 5,
     right: 5, // Adjusted to fit card
-    backgroundColor: '#8ED321',
+    backgroundColor: Colors.secondary,
     borderRadius: 999,
     justifyContent: "center",
     alignItems: "center",

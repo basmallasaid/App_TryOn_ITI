@@ -1,7 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Platform } from "react-native";
 import { useTranslation } from 'react-i18next';
 import { resetPassword } from "../../../api/auth_services/authServices";
+import { useTheme } from "../../../context/ThemeContext";
 import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
 import Colors from "../../../constants/theme/colors";
@@ -11,6 +12,7 @@ import { ROUTES } from "../../../navigation/routes";
 
 const ResetPasswordScreen = ({ route, navigation }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const { email } = route.params;
 
   const [form, setForm] = useState({
@@ -20,6 +22,20 @@ const ResetPasswordScreen = ({ route, navigation }) => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    errorMsg: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      color: Colors.error,
+      marginBottom: 12,
+    },
+
+    buttonWrap: {
+      marginTop: "auto",
+      paddingBottom: 24,
+    },
+  }), [themeVersion]);
 
   const update = (field) => (val) => {
     setForm((f) => ({ ...f, [field]: val }));
@@ -102,19 +118,5 @@ const ResetPasswordScreen = ({ route, navigation }) => {
     </BottomSheetLayout>
   );
 };
-
-const styles = StyleSheet.create({
-  errorMsg: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.error,
-    marginBottom: 12,
-  },
-
-  buttonWrap: {
-    marginTop: "auto",
-    paddingBottom: 24,
-  },
-});
 
 export default ResetPasswordScreen;

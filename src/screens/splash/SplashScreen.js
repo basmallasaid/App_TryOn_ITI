@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { IMAGES } from '../../constants/images/images';
+import Colors from '../../constants/theme/colors';
 
 const SplashScreen = () => {
 
@@ -65,6 +66,25 @@ const SplashScreen = () => {
     ],
   }));
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.backgroundColor,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    rLogo: {
+      width: 140,
+      height: 140,
+      position: 'absolute',
+    },
+    fullLogo: {
+      width: 260,
+      height: 120,
+      position: 'absolute',
+    },
+  });
+
   return (
     <View style={styles.container}>
 
@@ -83,28 +103,5 @@ const SplashScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-
-  container: {
-    flex: 1,
-    backgroundColor: '#f6f6f6',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  rLogo: {
-    width: 140,
-    height: 140,
-    position: 'absolute',
-  },
-
-  fullLogo: {
-    width: 260,
-    height: 120,
-    position: 'absolute',
-  },
-
-});
 
 export default SplashScreen;

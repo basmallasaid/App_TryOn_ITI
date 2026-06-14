@@ -146,7 +146,6 @@ export default function TryOnScreen({ navigation, route }) {
       updated[index] = type;
       return updated;
     });
-    console.log("gallery select:", { index, type, prevType, uri: galleryImages[index], selectedItemsLen: selectedItems.length });
     if (type && !prevType && galleryImages[index]) {
       setSelectedItems((prev) =>
         prev.length >= 2 ? prev : [...prev, galleryImages[index]]
@@ -408,7 +407,7 @@ export default function TryOnScreen({ navigation, route }) {
                             <Ionicons
                               name="checkmark-circle"
                               size={20}
-                              color="#A5E142"
+                              color={Colors.secondary}
                               style={styles.galleryCheckIcon}
                             />
                             <TouchableOpacity
@@ -434,7 +433,7 @@ export default function TryOnScreen({ navigation, route }) {
               <Ionicons
                 name="checkmark-circle"
                 size={20}
-                color="#A5E142"
+                color={Colors.secondary}
                 style={styles.galleryCheckIcon}
               />
             )}
@@ -497,7 +496,7 @@ export default function TryOnScreen({ navigation, route }) {
                             <Ionicons
                               name="checkmark-circle"
                               size={20}
-                              color="#A5E142"
+                              color={Colors.secondary}
                               style={styles.galleryCheckIcon}
                             />
                             <TouchableOpacity
@@ -523,7 +522,7 @@ export default function TryOnScreen({ navigation, route }) {
                             <Ionicons
                               name="checkmark-circle"
                               size={20}
-                              color="#A5E142"
+                              color={Colors.secondary}
                               style={styles.galleryCheckIcon}
                             />
                           )}
@@ -837,7 +836,7 @@ export default function TryOnScreen({ navigation, route }) {
     position: "absolute",
     width: 30,
     height: 30,
-    borderColor: "#00AEEF",
+    borderColor: Colors.primary,
     borderWidth: 3.5,
   },
   topLeft: {
@@ -887,7 +886,7 @@ export default function TryOnScreen({ navigation, route }) {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#00AEEF",
+    backgroundColor: Colors.primary,
     justifyContent: "center",
     alignItems: "center",
     elevation: 5,
@@ -956,7 +955,7 @@ export default function TryOnScreen({ navigation, route }) {
     alignItems: "center",
   },
   disabledBtn: { backgroundColor: Colors.disabled },
-  activeBtn: { backgroundColor: "#40B9FF" },
+  activeBtn: { backgroundColor: Colors.primary },
   generateBtnText: { color: Colors.textInverse, fontWeight: "700", fontSize: 16 },
   scrollContent: { paddingBottom: 40, flexGrow: 1 },
 });

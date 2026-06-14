@@ -107,7 +107,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
                 {item?.rating || "4.7"}
               </Text>
             )}
-            {isStore && <AntDesign name="star" size={16} color="#FF9500" style={{ marginLeft: 5 }} />}
+            {isStore && <AntDesign name="star" size={16} color={Colors.accentOrange} style={{ marginLeft: 5 }} />}
           </View>
           <TouchableOpacity onPress={async () => {
             if (!itemId) return;
@@ -118,13 +118,12 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
                 await addItem(itemId, "PRODUCT");
               }
             } catch (e) {
-              console.error(e);
             }
           }}>
             <Ionicons
               name={isFavorite(itemId) ? "heart" : "heart-outline"}
               size={22}
-              color={isFavorite(itemId) ? '#FF8A3D' : Colors.textPrimary}
+              color={isFavorite(itemId) ? Colors.accentOrange : Colors.textPrimary}
             />
           </TouchableOpacity>
         </View>
@@ -262,7 +261,7 @@ const createStyles = () => StyleSheet.create({
   ratingBox: { flexDirection: "row", alignItems: "center", gap: 8 },
   ratingText: { color: Colors.textPrimary, fontWeight: "600" },
   scoreBadge: {
-    backgroundColor: "#A5E142",
+    backgroundColor: Colors.secondary,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
@@ -305,7 +304,7 @@ const createStyles = () => StyleSheet.create({
   whiteColorCircle: { borderWidth: 1.5, borderColor: Colors.borderDefault },
   selectedColorCircle: {
     borderWidth: 2,
-    borderColor: "#44BEFF",
+    borderColor: Colors.primary,
     transform: [{ scale: 1.1 }],
   },
 
@@ -321,7 +320,7 @@ const createStyles = () => StyleSheet.create({
   selectedSizeBox: {
     backgroundColor: Colors.white,
     borderWidth: 1,
-    borderColor: "#44BEFF",
+    borderColor: Colors.primary,
   },
   sizeText: { color: Colors.textMuted, textTransform: "uppercase", fontWeight: "600" },
   selectedSizeText: { color: Colors.textPrimary },
@@ -336,7 +335,7 @@ const createStyles = () => StyleSheet.create({
     borderRadius: 12,
     marginRight: 15,
     borderWidth: 1,
-    borderColor: "#E0F4BE",
+    borderColor: Colors.secondaryLight,
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
@@ -346,7 +345,7 @@ const createStyles = () => StyleSheet.create({
     position: "absolute",
     top: 5,
     right: 5,
-    backgroundColor: "#A5E142",
+    backgroundColor: Colors.secondary,
     paddingHorizontal: 5,
     paddingVertical: 2,
     borderRadius: 5,
@@ -361,7 +360,7 @@ const createStyles = () => StyleSheet.create({
     paddingHorizontal: 20,
   },
   generateButton: {
-    backgroundColor: "#44BEFF",
+    backgroundColor: Colors.primary,
     height: 50,
     borderRadius: 12,
     flexDirection: "row",

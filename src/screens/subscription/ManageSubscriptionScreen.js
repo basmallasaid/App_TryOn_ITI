@@ -179,19 +179,12 @@ export default function ManageSubscriptionScreen({ navigation }) {
     try {
       const data = await paymentService.syncSubscription(user._id);
 
-      console.log("SYNC_SUBSCRIPTION RESPONSE:", JSON.stringify(data, null, 2));
-
-      console.log("subscriptionInterval:", data?.subscriptionInterval);
-      console.log("subscriptionPlan:", data?.subscriptionPlan);
-      console.log("subscriptionStatus:", data?.subscriptionStatus);
-
       if (data.subscriptionStatus === "active") {
         setSubscription(data);
       } else {
         setSubscription(null);
       }
     } catch (error) {
-      console.log("SYNC_SUBSCRIPTION ERROR:", error);
       setSubscription(null);
     } finally {
       setLoading(false);

@@ -125,7 +125,7 @@ const TryOnResult = ({ navigation, route }) => {
           <CustomBackButton onPress={() => navigation.goBack()} />
           <Text style={styles.headerTitle}>{t("tryOn.results.title")}</Text>
           <TouchableOpacity>
-            <Icon name="help-circle-outline" size={28} color="#546e7a" />
+            <Icon name="help-circle-outline" size={28} color={Colors.iconGray} />
           </TouchableOpacity>
         </View>
 
@@ -156,7 +156,7 @@ const TryOnResult = ({ navigation, route }) => {
             disabled={saving}
           >
             {saving ? (
-              <ActivityIndicator size="small" color="#fff" />
+              <ActivityIndicator size="small" color={Colors.white} />
             ) : (
               <Text style={styles.saveButtonText}>{t("tryOn.results.save")}</Text>
             )}
@@ -235,13 +235,13 @@ const createStyles = () => StyleSheet.create({
     paddingHorizontal: 20,
   },
   errorText: {
-    color: '#D32F2F',
+    color: Colors.error,
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 16,
   },
   retryBtn: {
-    backgroundColor: '#4AB8FF',
+    backgroundColor: Colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -252,7 +252,7 @@ const createStyles = () => StyleSheet.create({
     fontWeight: '600',
   },
   saveButton: {
-    backgroundColor: '#4AB8FF',
+    backgroundColor: Colors.primary,
     flex: 1,
     marginRight: 10,
     height: 55,
@@ -271,18 +271,18 @@ const createStyles = () => StyleSheet.create({
     fontWeight: '600',
   },
   tryAgainButton: {
-    backgroundColor: '#F9FAF3',
+    backgroundColor: Colors.backgroundColor,
     flex: 1,
     marginLeft: 10,
     height: 55,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: '#9ACD32',
+    borderColor: Colors.secondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   tryAgainText: {
-    color: '#9ACD32',
+    color: Colors.secondary,
     fontSize: 18,
     fontWeight: '600',
   },

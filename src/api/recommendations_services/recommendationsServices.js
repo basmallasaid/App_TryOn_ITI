@@ -16,7 +16,6 @@ export const requestRecommendations = async (lat = 30.0444, lon = 31.2357) => {
     }, { timeout: 30000 });
     return { outfits: data.outfits || [], weather: data.currentWeather || null };
   } catch (e) {
-    console.error("[requestRecommendations] Error:", e.message, e.code, e.response?.status, e.response?.data);
     throw e;
   }
 };

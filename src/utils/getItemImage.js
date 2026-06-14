@@ -33,7 +33,6 @@ export function getItemsList(outfit) {
 
 export function getCompositeImage(outfit) {
   if (!outfit) {
-    console.log(`[getCompositeImage] outfit is null/undefined`);
     return null;
   }
   const realOutfit = outfit.outfits?.[0] || outfit;
@@ -43,6 +42,5 @@ export function getCompositeImage(outfit) {
     outfit.compositeImage ||
     outfit.composite_image ||
     null;
-  console.log(`[getCompositeImage] raw=${raw ? `"${raw.slice(0, 80)}..."` : "null"}, outfit keys=${Object.keys(outfit).join(",")}, realOutfit keys=${Object.keys(realOutfit).join(",")}`);
   return raw ? ensureImageUri(raw) : null;
 }

@@ -26,8 +26,6 @@ export default function Header() {
   const isValid = typeof rawImage === 'string' && rawImage.length > 0 && rawImage !== 'null' && rawImage !== 'undefined';
   const showImage = isValid && !imgErr;
 
-  console.log('[Header] profile:', !!profile, 'showImage:', showImage, 'rawImage:', rawImage, 'initials:', initials, 'firstName:', firstName);
-
   const styles = React.useMemo(() => StyleSheet.create({
     header: {
       flexDirection: "row",

@@ -49,7 +49,6 @@ export const FilterModal = ({
       });
       setAvailableColors(Array.from(colors).sort());
     } catch (error) {
-      console.error('Unable to load colors:', error);
     }
   };
 
@@ -93,7 +92,6 @@ export const FilterModal = ({
       });
       onClose();
     } catch (error) {
-      console.error('Filter apply failed:', error);
     } finally {
       setLoading(false);
     }
@@ -191,9 +189,9 @@ export const FilterModal = ({
               style={{ width: '100%', height: 40 }}
               minimumValue={0}
               maximumValue={1000}
-              minimumTrackTintColor="#5CC1FF"
-              maximumTrackTintColor="#D5D9DE"
-              thumbTintColor="#5CC1FF"
+              minimumTrackTintColor={Colors.primary}
+              maximumTrackTintColor={Colors.borderStrong}
+              thumbTintColor={Colors.primary}
               value={price}
               onValueChange={setPrice}
             />
@@ -227,16 +225,16 @@ const createStyles = () => StyleSheet.create({
   sectionTitle: { fontSize: 18, fontWeight: 'bold', color: Colors.textPrimary },
   checkboxRow: { alignItems: 'center', marginBottom: 12 },
   checkboxBox: { width: 20, height: 20, borderWidth: 1, borderColor: Colors.borderDefault, borderRadius: 4, marginHorizontal: 12 },
-  checkboxBoxSelected: { backgroundColor: '#5CC1FF', borderColor: '#5CC1FF' },
+  checkboxBoxSelected: { backgroundColor: Colors.primary, borderColor: Colors.primary },
   checkboxLabel: { fontSize: 16, color: Colors.textMuted },
   checkboxLabelSelected: { color: Colors.textPrimary, fontWeight: '700' },
   pillsContainer: { flexDirection: 'row', flexWrap: 'wrap' },
   pill: { borderWidth: 1, borderColor: Colors.borderDefault, borderRadius: 20, paddingHorizontal: 20, paddingVertical: 8, marginRight: 10, marginBottom: 10 },
-  pillSelected: { backgroundColor: '#5CC1FF', borderColor: '#5CC1FF' },
+  pillSelected: { backgroundColor: Colors.primary, borderColor: Colors.primary },
   pillText: { color: Colors.textMuted },
   pillTextSelected: { color: Colors.textInverse },
   priceLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
   priceText: { color: Colors.textMuted, fontWeight: 'bold' },
-  applyBtn: { backgroundColor: '#5CC1FF', margin: 20, padding: 18, borderRadius: 15, alignItems: 'center' },
+  applyBtn: { backgroundColor: Colors.primary, margin: 20, padding: 18, borderRadius: 15, alignItems: 'center' },
   applyBtnText: { color: Colors.textInverse, fontWeight: 'bold', fontSize: 16 }
 });

@@ -53,7 +53,6 @@ const ItemDetailsScreen = ({ route, navigation }) => {
       const data = await getWardrobeItem(id);
       setItemData(data);
     } catch (error) {
-      console.error("Fetch Details Error:", error.response?.status, error.message);
     } finally {
       setLoading(false);
     }
@@ -91,7 +90,6 @@ const ItemDetailsScreen = ({ route, navigation }) => {
       setShowDeleteModal(false);
       navigation.goBack();
     } catch (error) {
-      console.error("Delete Error:", error);
     } finally {
       setDeleting(false);
     }

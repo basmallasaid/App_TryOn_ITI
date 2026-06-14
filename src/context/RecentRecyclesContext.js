@@ -16,7 +16,6 @@ export const RecentRecyclesProvider = ({ children }) => {
       const data = await getUserProfile(user._id);
       setRecycles(data?.latestRecycle ?? []);
     } catch (e) {
-      console.warn('[RecentRecyclesContext] Failed to fetch:', e);
     } finally {
       setLoading(false);
     }

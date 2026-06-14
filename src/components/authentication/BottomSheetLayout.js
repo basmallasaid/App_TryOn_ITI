@@ -10,14 +10,13 @@ import {
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import HeroImage from "./HeroImage";
-import Typography from "../../constants/theme/typography";
 
 const BottomSheetLayout = ({ title, subtitle, children }) => {
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => StyleSheet.create({
     root: {
       flex: 1,
-      backgroundColor: "#f4f4f5",
+      backgroundColor: Colors.backgroundColor,
     },
 
     sheetWrapper: {
@@ -51,12 +50,20 @@ const BottomSheetLayout = ({ title, subtitle, children }) => {
     },
 
     title: {
-      ...Typography.screenTitleLarge,
+      fontFamily: "Roboto_700Bold",
+      fontWeight: "700",
+      fontSize: 24,
+      lineHeight: 38.4,
+      color: Colors.textPrimary,
       textAlign: "center",
     },
 
     subtitle: {
-      ...Typography.screenSubtitle,
+      fontFamily: "Roboto_400Regular",
+      fontWeight: "400",
+      fontSize: 12,
+      lineHeight: 12,
+      color: Colors.textSecondary,
       paddingBottom: 10,
       paddingTop: 4,
       marginBottom: 32,

@@ -96,7 +96,7 @@ const createStyles = () => StyleSheet.create({
     color: Colors.textPrimary,
   },
   badge: {
-    backgroundColor: '#40B9FF',
+    backgroundColor: Colors.primary,
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderRadius: 12,

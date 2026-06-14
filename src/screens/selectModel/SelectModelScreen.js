@@ -13,7 +13,6 @@ import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
-import Typography from "../../constants/theme/typography";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import CustomBackButton from "../../components/common/CustomBackButton";
@@ -25,37 +24,14 @@ import { ROUTES, SOURCE } from "../../navigation/routes";
 
 
 
-const photoPlaceholderStyles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-  },
-  circle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#F0F0F0",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 8,
-  },
-  label: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.iconGray,
-    textAlign: "center",
-  },
-});
-
-const PhotoPlaceholder = () => {
+const PhotoPlaceholder = ({ styles }) => {
   const { t } = useTranslation();
   return (
-    <View style={photoPlaceholderStyles.container}>
-      <View style={photoPlaceholderStyles.circle}>
+    <View style={styles.photoContainer}>
+      <View style={styles.photoCircle}>
         <Ionicons name="camera" size={24} color={Colors.iconGray} />
       </View>
-      <Text style={photoPlaceholderStyles.label}>{t('tryOn.selectModel.tapToUpload')}</Text>
+      <Text style={styles.photoLabel}>{t('tryOn.selectModel.tapToUpload')}</Text>
     </View>
   );
 };
@@ -81,7 +57,11 @@ const SelectModelScreen = ({ navigation, route }) => {
     paddingTop: 20,
   },
   title: {
-    ...Typography.screenTitleLarge,
+    fontFamily: "Roboto_700Bold",
+    fontWeight: "700",
+    fontSize: 24,
+    lineHeight: 38.4,
+    color: Colors.textPrimary,
     textAlign: "center",
     marginBottom: 8,
   },
@@ -104,6 +84,26 @@ const SelectModelScreen = ({ navigation, route }) => {
   scrollContent: {
   flexGrow: 1,
 },
+  photoContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+  },
+  photoCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: Colors.borderDefault,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  photoLabel: {
+    fontFamily: "Roboto_400Regular",
+    fontSize: 12,
+    color: Colors.iconGray,
+    textAlign: "center",
+  },
 }), [themeVersion]);
 
   const MODELS = [
@@ -120,7 +120,7 @@ const SelectModelScreen = ({ navigation, route }) => {
       description: t('tryOn.selectModel.photoDesc'),
       badge: null,
       image: null,
-      rightContent: <PhotoPlaceholder />,
+      rightContent: <PhotoPlaceholder styles={styles} />,
     },
   ];
 

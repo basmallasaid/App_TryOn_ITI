@@ -83,27 +83,15 @@ export const RecommendationProvider = ({ children }) => {
   const appStateRef = useRef(AppState.currentState);
 
   const logOutfitItems = (label, outfit) => {
-    if (!outfit) { console.log(`[RecommendationContext] ${label}: outfit is null/undefined`); return; }
-    console.log(`[RecommendationContext] ${label}: keys=${Object.keys(outfit).join(",")}`);
-    const realOutfit = outfit.outfits?.[0] || outfit;
-    if (outfit.outfits) {
-      console.log(`[RecommendationContext] ${label}: has outfits[] array, outfits[0] keys=${Object.keys(realOutfit).join(",")}`);
-    }
-    const items = realOutfit.items || realOutfit.pieces || realOutfit.garments || [];
-    console.log(`[RecommendationContext] ${label}: items.length=${items.length}, first item keys=${items[0] ? Object.keys(items[0]).join(",") : "N/A"}`);
-    if (items[0]) {
-      console.log(`[RecommendationContext] ${label}: first item raw=`, JSON.stringify(items[0]).slice(0, 800));
-    }
+    if (!outfit) return;
   };
 
   const fetchHistory = useCallback(async () => {
     try {
       const result = await getAllRecommendations();
-      console.log(`[RecommendationContext] fetchHistory: history.length=${result.history?.length}`);
       if (result.history?.[0]) logOutfitItems("fetchHistory[0]", result.history[0]);
       setHistory(result.history || []);
     } catch (e) {
-      console.error("Failed to load recommendation history", e);
     }
   }, []);
 
@@ -128,7 +116,6 @@ export const RecommendationProvider = ({ children }) => {
         setLoading(true);
         try {
           const result = await requestRecommendations();
-          console.log(`[RecommendationContext] requestRecommendations: outfits.length=${result.outfits?.length}, weather=`, result.weather ? "present" : "null");
           if (result.outfits?.[0]) logOutfitItems("fresh API", result.outfits[0]);
           await setDailyOutfitDate(today, userId);
           await setDailyOutfitData(result, userId);
@@ -137,13 +124,11 @@ export const RecommendationProvider = ({ children }) => {
             setTodaysWeather(result.weather || result.outfits[0]?.weather || null);
           }
         } catch (e) {
-          console.error("Auto daily fetch failed", e);
         }
       }
 
       await fetchHistory();
     } catch (e) {
-      console.error("checkAndFetchDaily error", e);
     } finally {
       setLoading(false);
     }

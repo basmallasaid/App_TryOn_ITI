@@ -151,21 +151,14 @@ export default function MatchingScreen({ navigation }) {
     setGenerating(true);
     try {
       if (hasWardrobeItem) {
-        console.log("Selected wardrobe item ID:", selectedWardrobeId);
-        console.log(
-          "Request body:",
-          JSON.stringify({ wardrobe_item_id: selectedWardrobeId }),
-        );
         const res = await getWardrobeMatches(selectedWardrobeId);
         processMatches(res);
       } else if (hasCameraItem) {
-        console.log("Analyzing camera image:", cameraImage);
         const analysisRes = await analyzeImage(cameraImage);
         const analysisId =
           analysisRes?.analysis_id ||
           analysisRes?.id ||
           analysisRes?.data?.analysis_id;
-        console.log("Analysis ID:", analysisId);
         if (analysisId) {
           const matchRes = await getMatchesByAnalysis(
             analysisId,
@@ -175,13 +168,11 @@ export default function MatchingScreen({ navigation }) {
           processMatches(matchRes);
         }
       } else if (hasGalleryItem) {
-        console.log("Analyzing gallery image:", galleryImage);
         const analysisRes = await analyzeImage(galleryImage);
         const analysisId =
           analysisRes?.analysis_id ||
           analysisRes?.id ||
           analysisRes?.data?.analysis_id;
-        console.log("Analysis ID:", analysisId);
         if (analysisId) {
           const matchRes = await getMatchesByAnalysis(
             analysisId,
@@ -424,7 +415,7 @@ export default function MatchingScreen({ navigation }) {
                             <Ionicons
                               name="checkmark-circle"
                               size={20}
-                              color="#A5E142"
+                              color={Colors.secondary}
                               style={styles.checkIcon}
                             />
                           </View>
@@ -590,7 +581,6 @@ export default function MatchingScreen({ navigation }) {
                                 await addItem(id, "PRODUCT");
                               }
                             } catch (e) {
-                              console.error(e);
                             }
                           }}
                         >
@@ -603,7 +593,7 @@ export default function MatchingScreen({ navigation }) {
                             size={18}
                             color={
                               isFavorite(match.item?.id?.replace("store_", ""))
-                                ? "#FF8A3D"
+                                ? Colors.accentOrange
                                 : Colors.textPrimary
                             }
                           />
@@ -648,11 +638,11 @@ export default function MatchingScreen({ navigation }) {
           {generating ? (
             <ActivityIndicator
               size="small"
-              color="#FFF"
+              color={Colors.white}
               style={{ marginRight: 8 }}
             />
           ) : (
-            <MaterialCommunityIcons name="auto-fix" size={20} color="#FFF" />
+            <MaterialCommunityIcons name="auto-fix" size={20} color={Colors.white} />
           )}
           <Text style={styles.buttonText}>{t("matching.seeMatching")}</Text>
         </TouchableOpacity>
@@ -762,7 +752,7 @@ const createStyles = () =>
       justifyContent: "center",
       alignItems: "center",
       borderWidth: 1.5,
-      borderColor: "#E0F4BE",
+      borderColor: Colors.secondaryLight,
       position: "relative",
     },
     matchImg: {
@@ -788,7 +778,7 @@ const createStyles = () =>
       position: "absolute",
       top: 10,
       left: 10,
-      backgroundColor: "#A5E142",
+      backgroundColor: Colors.secondary,
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 6,
@@ -913,7 +903,7 @@ const createStyles = () =>
       gap: 8,
     },
     activeButton: {
-      backgroundColor: "#44BEFF",
+      backgroundColor: Colors.primary,
     },
     buttonText: {
       color: Colors.textInverse,

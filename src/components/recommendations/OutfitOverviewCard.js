@@ -16,7 +16,6 @@ export default function OutfitOverviewCard({ outfit, onPress, width, height, bor
   const isComposite = !!compositeImage;
   const fallbackImage = validImages[0]?._image || null;
   const imageUri = (!imageError && compositeImage) ? compositeImage : fallbackImage;
-  console.log(`[OutfitOverviewCard] compositeImage=${compositeImage ? compositeImage.slice(0, 60) + "..." : "null"}, validImages.length=${validImages.length}, imageUri=${imageUri ? imageUri.slice(0, 60) + "..." : "null"}, imageError=${imageError}`);
   const label = items.map(i => i._name).filter(Boolean).join(", ");
 
   const renderImages = () => {
@@ -29,7 +28,6 @@ export default function OutfitOverviewCard({ outfit, onPress, width, height, bor
         style={styles.image}
         resizeMode="contain"
         onError={(e) => {
-          console.log(`[OutfitOverviewCard] Image load error: ${e.nativeEvent?.error}, uri=${imageUri.slice(0, 80)}`);
           if (isComposite) {
             setImageError(true);
           }

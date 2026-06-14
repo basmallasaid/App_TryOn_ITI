@@ -32,7 +32,7 @@ export default function StoreScreen() {
             price: `${product.price} ${product.currency || t("store.currency")}`,
             image: product.images?.[0],
             badge: hasMatches ? 'Match' : '',
-            badgeColor: '#8ED321',
+            badgeColor: Colors.secondary,
             isOutlined: hasMatches,
         };
     };
@@ -296,7 +296,7 @@ const createStyles = () => StyleSheet.create({
         alignItems: 'center',
     },
     errorText: {
-        color: '#D32F2F',
+        color: Colors.error,
         fontSize: 16,
         textAlign: 'center',
         paddingHorizontal: 20,

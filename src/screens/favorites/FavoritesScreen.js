@@ -204,7 +204,7 @@ const FavoritesScreen = ({ navigation }) => {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: "rgba(255,255,255,0.9)",
+    backgroundColor: Colors.white,
     justifyContent: "center",
     alignItems: "center",
   },

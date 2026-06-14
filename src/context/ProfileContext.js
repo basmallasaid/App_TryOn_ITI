@@ -61,7 +61,6 @@ export const ProfileProvider = ({ children }) => {
       await updateLanguage(language);
       setSettings(prev => ({ ...prev, language }));
     } catch (err) {
-      console.warn('[ProfileContext] updateLanguage error:', err.message);
     }
   };
 
@@ -70,7 +69,6 @@ export const ProfileProvider = ({ children }) => {
       await updateNotifications(enabled);
       setSettings(prev => ({ ...prev, notifications: enabled }));
     } catch (err) {
-      console.warn('[ProfileContext] updateNotifications error:', err.message);
     }
   };
 
@@ -79,7 +77,6 @@ export const ProfileProvider = ({ children }) => {
       await updateDarkMode(darkMode);
       setSettings(prev => ({ ...prev, darkMode }));
     } catch (err) {
-      console.warn('[ProfileContext] updateDarkMode error:', err.message);
     }
   };
 
@@ -89,7 +86,6 @@ export const ProfileProvider = ({ children }) => {
       setProfile(prev => prev ? { ...prev, userImage: result.userImage } : prev);
       return result;
     } catch (err) {
-      console.warn('[ProfileContext] updateUserImage error:', err.message);
       throw err;
     }
   };

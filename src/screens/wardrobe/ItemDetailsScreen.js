@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
   deleteWardrobeItem,
 } from "../../api/wardrobe_services/wardrobeService";
 import { useWardrobe } from "../../context/WardrobeContext";
+import { useFavorites } from "../../context/FavoritesContext";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -37,16 +38,13 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   const { t } = useTranslation();
   const { itemId, analysisId } = route.params;
   const { removeItem, refetch } = useWardrobe();
+  const { isFavorite: checkIsFavorite, addItem: addFavoriteItem, removeItem: removeFavoriteItem } = useFavorites();
 
   const [itemData, setItemData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    fetchDetails();
-  }, [itemId]);
 
   const fetchDetails = async () => {
     try {
@@ -60,6 +58,30 @@ const ItemDetailsScreen = ({ route, navigation }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDetails();
+  }, [itemId]);
+
+  useEffect(() => {
+    if (itemData) {
+      setIsFavorite(checkIsFavorite(itemId));
+    }
+  }, [itemData, itemId, checkIsFavorite]);
+
+  const handleToggleFavorite = useCallback(async () => {
+    const wasFavorite = isFavorite;
+    setIsFavorite(!wasFavorite);
+    try {
+      if (wasFavorite) {
+        await removeFavoriteItem(itemId);
+      } else {
+        await addFavoriteItem(itemId, 'WARDROBE', itemData);
+      }
+    } catch (e) {
+      setIsFavorite(wasFavorite);
+    }
+  }, [isFavorite, itemId, itemData, addFavoriteItem, removeFavoriteItem]);
 
   const handleDelete = async () => {
     try {
@@ -116,7 +138,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
             resizeMode="contain"
           />
           <View style={styles.imageActions}>
-            <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
+            <TouchableOpacity onPress={handleToggleFavorite}>
               <View style={styles.iconCircle}>
                 <Ionicons
                   name={isFavorite ? "heart" : "heart-outline"}

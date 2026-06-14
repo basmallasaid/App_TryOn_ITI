@@ -13,9 +13,6 @@ import { ROUTES } from "./routes";
 
 const Tab = createBottomTabNavigator();
 
-const ACTIVE_COLOR = Colors.primarybrand;
-const INACTIVE_COLOR = Colors.disabled;
-
 const TAB_LABELS = {
   [ROUTES.HOME]: "navigation.tab.home",
   [ROUTES.WARDROBE]: "navigation.tab.wardrobe",
@@ -30,7 +27,7 @@ export default function AppStack() {
     activeIndicator: {
       height: 2,
       width: 40,
-      backgroundColor: ACTIVE_COLOR,
+      backgroundColor: Colors.primarybrand,
       marginTop: 4,
       borderRadius: 2,
     },
@@ -40,8 +37,8 @@ export default function AppStack() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: ACTIVE_COLOR,
-        tabBarInactiveTintColor: INACTIVE_COLOR,
+        tabBarActiveTintColor: Colors.primarybrand,
+        tabBarInactiveTintColor: Colors.disabled,
         tabBarStyle: {
           height: 70,
           paddingBottom: 10,

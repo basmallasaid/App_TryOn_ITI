@@ -1,13 +1,13 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
+  Pressable,
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
-  SafeAreaView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -48,6 +48,25 @@ function formatRelativeTime(dateString, t) {
   return new Date(dateString).toLocaleDateString();
 }
 
+function formatFullDate(dateString) {
+  const d = new Date(dateString);
+  return d.toLocaleDateString(undefined, {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+const RECENT_DAYS = 20;
+
+function isRecent(dateString) {
+  const cutoff = Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000;
+  return new Date(dateString).getTime() > cutoff;
+}
+
 export default function NotificationsScreen({ navigation }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
@@ -61,6 +80,12 @@ export default function NotificationsScreen({ navigation }) {
     markAllAsRead,
   } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
+  const [expandedIds, setExpandedIds] = useState({});
+
+  const recentNotifications = useMemo(
+    () => notifications.filter((n) => isRecent(n.createdAt)),
+    [notifications],
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -68,11 +93,16 @@ export default function NotificationsScreen({ navigation }) {
     setRefreshing(false);
   }, [fetchNotifications]);
 
+  const toggleExpand = useCallback((id) => {
+    setExpandedIds((prev) => ({ ...prev, [id]: !prev[id] }));
+  }, []);
+
   const handlePress = useCallback(
     (item) => {
       if (!item.read) markAsRead(item._id);
+      toggleExpand(item._id);
     },
-    [markAsRead],
+    [markAsRead, toggleExpand],
   );
 
   const handleDelete = useCallback(
@@ -82,22 +112,24 @@ export default function NotificationsScreen({ navigation }) {
 
   const handleMarkAll = useCallback(() => markAllAsRead(), [markAllAsRead]);
 
-  const hasUnread = notifications.some((n) => !n.read);
+  const hasUnread = recentNotifications.some((n) => !n.read);
 
   const renderItem = useCallback(
     ({ item }) => {
       const meta = getNotifMeta(item.title);
+      const isExpanded = expandedIds[item._id] || false;
+      const hasBody = !!item.body;
+
       return (
-        <TouchableOpacity
-          style={[styles.card, !item.read && styles.cardUnread]}
-          onPress={() => handlePress(item)}
-          activeOpacity={0.7}
-        >
+        <View style={[styles.card, !item.read && styles.cardUnread]}>
           <View style={[styles.iconCircle, { backgroundColor: meta.bg }]}>
             <Ionicons name={meta.name} size={20} color={meta.color} />
           </View>
 
-          <View style={styles.cardBody}>
+          <Pressable
+            style={styles.cardBody}
+            onPress={() => handlePress(item)}
+          >
             <View style={styles.cardTop}>
               <Text
                 style={[styles.cardTitle, !item.read && styles.cardTitleBold]}
@@ -107,15 +139,33 @@ export default function NotificationsScreen({ navigation }) {
               </Text>
               {!item.read && <View style={styles.unreadDot} />}
             </View>
-            {item.body ? (
-              <Text style={styles.cardBodyText} numberOfLines={2}>
+
+            {hasBody ? (
+              <Text
+                style={styles.cardBodyText}
+                numberOfLines={isExpanded ? undefined : 2}
+              >
                 {item.body}
               </Text>
             ) : null}
-            <Text style={styles.cardTime}>
-              {formatRelativeTime(item.createdAt, t)}
-            </Text>
-          </View>
+
+            {hasBody ? (
+              <Text style={styles.expandToggle}>
+                {isExpanded ? t("notifications.showLess") || "Show less" : t("notifications.showMore") || "See more"}
+              </Text>
+            ) : null}
+
+            <View style={styles.cardBottom}>
+              <Text style={styles.cardTime}>
+                {formatRelativeTime(item.createdAt, t)}
+              </Text>
+              {isExpanded ? (
+                <Text style={styles.cardFullDate}>
+                  {formatFullDate(item.createdAt)}
+                </Text>
+              ) : null}
+            </View>
+          </Pressable>
 
           <TouchableOpacity
             style={styles.deleteBtn}
@@ -124,18 +174,18 @@ export default function NotificationsScreen({ navigation }) {
           >
             <Ionicons name="trash-outline" size={16} color={Colors.borderDefault} />
           </TouchableOpacity>
-        </TouchableOpacity>
+        </View>
       );
     },
-    [handlePress, handleDelete],
+    [handlePress, handleDelete, expandedIds, t],
   );
 
   const renderHeader = useCallback(() => {
-    if (notifications.length === 0) return null;
+    if (recentNotifications.length === 0) return null;
     return (
       <View style={styles.listHeader}>
         <Text style={styles.listHeaderCount}>
-          {notifications.length}{" "}
+          {recentNotifications.length}{" "}
           {t("notifications.title")?.toLowerCase() || t("notifications.title")}
         </Text>
         {hasUnread ? (
@@ -148,7 +198,7 @@ export default function NotificationsScreen({ navigation }) {
         ) : null}
       </View>
     );
-  }, [notifications.length, hasUnread, t, handleMarkAll]);
+  }, [recentNotifications.length, hasUnread, t, handleMarkAll]);
 
   const renderEmpty = useCallback(() => {
     if (loading) return null;
@@ -310,11 +360,27 @@ export default function NotificationsScreen({ navigation }) {
     marginTop: 4,
     lineHeight: 18,
   },
+  expandToggle: {
+    fontFamily: "Roboto_500Medium",
+    fontSize: 12,
+    color: Colors.primary,
+    marginTop: 4,
+  },
+  cardBottom: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 6,
+  },
   cardTime: {
     fontFamily: "Roboto_400Regular",
     fontSize: 11,
     color: Colors.disabled,
-    marginTop: 6,
+  },
+  cardFullDate: {
+    fontFamily: "Roboto_400Regular",
+    fontSize: 11,
+    color: Colors.disabled,
   },
   deleteBtn: {
     marginLeft: 8,
@@ -333,19 +399,19 @@ export default function NotificationsScreen({ navigation }) {
         <View style={{ width: 56 }} />
       </View>
 
-      {loading && notifications.length === 0 ? (
+      {loading && recentNotifications.length === 0 ? (
         <View style={styles.loadingWrap}>
           <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       ) : (
         <FlatList
-          data={notifications}
+          data={recentNotifications}
           renderItem={renderItem}
           keyExtractor={(item) => item._id}
           ListHeaderComponent={renderHeader}
           ListEmptyComponent={renderEmpty}
           contentContainerStyle={
-            notifications.length === 0 ? styles.emptyContainer : styles.listPad
+            recentNotifications.length === 0 ? styles.emptyContainer : styles.listPad
           }
           refreshControl={
             <RefreshControl
@@ -356,10 +422,9 @@ export default function NotificationsScreen({ navigation }) {
             />
           }
           showsVerticalScrollIndicator={false}
+          extraData={expandedIds}
         />
       )}
     </View>
   );
 }
-
-

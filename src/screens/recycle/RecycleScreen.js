@@ -22,6 +22,7 @@ import * as FileSystem from "expo-file-system";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
+import LoadingOverlay from "../../components/common/LoadingOverlay";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { analyzeRecycle, generateRecycleIdea } from "../../api/recycle_services/recycleService";
 import SourceTab from "../../components/recycle/SourceTab";
@@ -579,12 +580,7 @@ export default function RecycleScreen({ navigation }) {
           </View>
         )}
 
-        {generating && (
-          <View style={styles.generatingOverlay}>
-            <ActivityIndicator size="large" color={Colors.primary} />
-            <Text style={styles.generatingText}>{t("recycle.generatingText")}</Text>
-          </View>
-        )}
+        <LoadingOverlay visible={analyzing || generating} type="recycle" />
       </ScrollView>
     </SafeAreaView>
   );

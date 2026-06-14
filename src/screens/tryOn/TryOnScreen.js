@@ -26,6 +26,7 @@ import { openCamera, openGallery } from "../../utils/cameraAccess";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
+import LoadingOverlay from "../../components/common/LoadingOverlay";
 import {
   virtualTryOn,
   virtualTryOnOutfit,
@@ -707,20 +708,12 @@ export default function TryOnScreen({ navigation, route }) {
             onPress={handleGenerate}
             disabled={selectedItems.length === 0 || generating}
           >
-            {generating ? (
-              <ActivityIndicator
-                size="small"
-                color="white"
-                style={{ marginRight: 8 }}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="auto-fix"
-                size={20}
-                color="white"
-                style={{ marginRight: 8 }}
-              />
-            )}
+            <MaterialCommunityIcons
+              name="auto-fix"
+              size={20}
+              color="white"
+              style={{ marginRight: 8 }}
+            />
             <Text style={styles.generateBtnText}>
               {generating
                 ? t("tryOn.virtualTryOn.generating")
@@ -729,11 +722,12 @@ export default function TryOnScreen({ navigation, route }) {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
-  );
-}
+        <LoadingOverlay visible={generating} type="tryOn" />
+      </SafeAreaView>
+    );
+  }
 
-const createStyles = () => StyleSheet.create({
+  const createStyles = () => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,

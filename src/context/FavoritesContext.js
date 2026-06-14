@@ -28,7 +28,15 @@ const enrichFavorites = (favorites, wardrobeItems, products, tryOnItems, recycle
   });
 };
 
-const enrichSingleItem = (fav, tryOnItems, recycleItems) => {
+const enrichSingleItem = (fav, wardrobeItems, products, tryOnItems, recycleItems) => {
+  if (fav.itemType === "WARDROBE") {
+    const item = wardrobeItems.find((w) => normalizeId(w._id) === normalizeId(fav.itemId));
+    if (item) return { ...fav, image: item.image, name: item.name, category: 'Wardrobe' };
+  }
+  if (fav.itemType === "PRODUCT") {
+    const product = products.find((p) => normalizeId(p._id) === normalizeId(fav.itemId));
+    if (product) return { ...fav, image: product.images?.[0], name: product.name, category: 'Store' };
+  }
   if (fav.itemType === "TRYON") {
     const recycleItem = recycleItems.find((r) => normalizeId(r._id) === normalizeId(fav.itemId));
     if (recycleItem) return { ...fav, image: recycleItem.imageUrl, name: recycleItem.designTitle || 'Recycle', category: 'Recycle' };
@@ -45,6 +53,8 @@ export const FavoritesProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const tryOnRef = useRef([]);
   const recycleRef = useRef([]);
+  const wardrobeRef = useRef([]);
+  const productsRef = useRef([]);
 
   const fetchFavorites = useCallback(async () => {
     if (!user?.token) return;
@@ -60,8 +70,11 @@ export const FavoritesProvider = ({ children }) => {
         getUserProfile(user._id).catch(() => ({})),
       ]);
       const products = Array.isArray(productsData) ? productsData : [];
+      const wardrobeItems = wardrobeData ?? [];
       const tryOnItems = profileData?.latestTryOn ?? [];
       const recycleItems = profileData?.latestRecycle ?? [];
+      wardrobeRef.current = wardrobeItems;
+      productsRef.current = products;
       tryOnRef.current = tryOnItems;
       recycleRef.current = recycleItems;
       setItems(enrichFavorites(raw, wardrobeData ?? [], products, tryOnItems, recycleItems));
@@ -76,7 +89,7 @@ export const FavoritesProvider = ({ children }) => {
     fetchFavorites();
   }, [fetchFavorites]);
 
-  const addItem = async (itemId, itemType) => {
+  const addItem = async (itemId, itemType, itemData = null) => {
     try {
       const id = normalizeId(itemId);
       const res = await addFavorite(id, itemType);
@@ -85,7 +98,17 @@ export const FavoritesProvider = ({ children }) => {
       newItem = { ...newItem, itemId: id, itemType };
       if (itemType === 'WARDROBE') newItem.category = 'Wardrobe';
       if (itemType === 'PRODUCT') newItem.category = 'Store';
-      newItem = enrichSingleItem(newItem, tryOnRef.current, recycleRef.current);
+      if (itemData) {
+        if (itemType === 'WARDROBE') {
+          newItem = { ...newItem, image: itemData.image, name: itemData.name, category: 'Wardrobe' };
+        } else if (itemType === 'PRODUCT') {
+          newItem = { ...newItem, image: itemData.image || itemData.images?.[0], name: itemData.name, category: 'Store' };
+        } else if (itemType === 'TRYON') {
+          newItem = { ...newItem, image: itemData.imageUrl, name: itemData.name || itemData.designTitle, category: itemData.designTitle ? 'Recycle' : 'Try On' };
+        }
+      } else {
+        newItem = enrichSingleItem(newItem, wardrobeRef.current, productsRef.current, tryOnRef.current, recycleRef.current);
+      }
       setItems((prev) => [...prev, newItem]);
     } catch (e) {
       console.error('addItem failed:', e.response?.data || e.message);
@@ -93,12 +116,12 @@ export const FavoritesProvider = ({ children }) => {
     }
   };
 
-  const removeItem = async (wardrobeItemId) => {
+  const removeItem = async (itemId) => {
     try {
-      const id = normalizeId(wardrobeItemId);
+      const id = normalizeId(itemId);
       const favorite = items.find((i) => normalizeId(i.itemId) === id);
       if (!favorite) {
-        console.warn('removeItem: favorite not found for itemId', wardrobeItemId);
+        console.warn('removeItem: favorite not found for itemId', itemId);
         return;
       }
       await removeFavorite(favorite._id);

@@ -64,7 +64,7 @@ const styles = React.useMemo(() => StyleSheet.create({
     flex: 1.4,
   },
   title: {
-    fontFamily: 'Roboto_700Bold',
+    fontFamily: 'Roboto_600SemiBold',
     fontSize: 22,
     color: Colors.textPrimary,
     marginBottom: 5,

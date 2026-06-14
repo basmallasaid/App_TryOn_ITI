@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -24,6 +24,7 @@ import LanguageBottomSheet from "../../components/profile/LanguageBottomSheet";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import CustomizeAppButtonOutlined from "../../components/common/CustomizeAppButtonOutlined";
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
+import SelectionModal from "../../components/wardrobe/SelectionModal";
 import Colors from "../../constants/theme/colors";
 import { ROUTES } from "../../navigation/routes";
 import { useTheme } from "../../context/ThemeContext";
@@ -50,14 +51,14 @@ const ProfileScreen = ({ navigation }) => {
     updateLanguage,
     updateUserImage,
   } = useProfileContext();
-  const { toggleTheme, setDarkMode, isDarkMode } = useTheme();
+  const { toggleTheme } = useTheme();
   const { items: favorites } = useFavorites();
   const [langModalVisible, setLangModalVisible] = useState(false);
-  const themeSynced = useRef(false);
   const [tempLang, setTempLang] = useState(language);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [avatarImage, setAvatarImage] = useState(null);
+  const [imageModalVisible, setImageModalVisible] = useState(false);
 
   useEffect(() => {
     if (profile?.avatars?.length) {
@@ -70,14 +71,6 @@ const ProfileScreen = ({ navigation }) => {
         .catch(() => {});
     }
   }, [profile?.avatars]);
-
-  useEffect(() => {
-    if (themeSynced.current) return;
-    if (settings.darkMode !== isDarkMode) {
-      setDarkMode(settings.darkMode);
-    }
-    themeSynced.current = true;
-  }, [settings.darkMode]);
 
   const completionScore = () => {
     if (!profile) return 0;
@@ -123,18 +116,32 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const handlePickImage = () => {
-    Alert.alert(t("profile.changePhoto"), "", [
-      {
-        text: t("common.camera"),
-        onPress: () => pickImage(ImagePicker.requestCameraPermissionsAsync),
-      },
-      {
-        text: t("common.gallery"),
-        onPress: () =>
-          pickImage(ImagePicker.requestMediaLibraryPermissionsAsync),
-      },
-      { text: t("common.cancel"), style: "cancel" },
-    ]);
+    if (Platform.OS === "ios") {
+      Alert.alert(t("profile.changePhoto"), "", [
+        {
+          text: t("common.camera"),
+          onPress: () => pickImage(ImagePicker.requestCameraPermissionsAsync),
+        },
+        {
+          text: t("common.gallery"),
+          onPress: () =>
+            pickImage(ImagePicker.requestMediaLibraryPermissionsAsync),
+        },
+        { text: t("common.cancel"), style: "cancel" },
+      ]);
+    } else {
+      setImageModalVisible(true);
+    }
+  };
+
+  const handleModalCamera = () => {
+    setImageModalVisible(false);
+    pickImage(ImagePicker.requestCameraPermissionsAsync);
+  };
+
+  const handleModalGallery = () => {
+    setImageModalVisible(false);
+    pickImage(ImagePicker.requestMediaLibraryPermissionsAsync);
   };
 
   const handleDeleteAccount = async () => {
@@ -325,6 +332,21 @@ const ProfileScreen = ({ navigation }) => {
         title={t('profile.deleteConfirmTitle')}
         subtitle={t('profile.deleteConfirmSubtitle')}
       />
+
+      {/* ── Image picker modal (Android) ── */}
+      {Platform.OS === "android" && (
+        <SelectionModal
+          visible={imageModalVisible}
+          onClose={() => setImageModalVisible(false)}
+          onCamera={handleModalCamera}
+          onGallery={handleModalGallery}
+          title={t("profile.changePhoto")}
+          subtitle=""
+          cameraLabel={t("common.camera")}
+          galleryLabel={t("common.gallery")}
+          cancelLabel={t("common.cancel")}
+        />
+      )}
     </View>
   );
 };

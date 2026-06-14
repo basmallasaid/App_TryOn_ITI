@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 
-const SelectionModal = ({ visible, onClose, onCamera, onGallery, title, subtitle }) => {
+const SelectionModal = ({ visible, onClose, onCamera, onGallery, title, subtitle, cameraLabel, galleryLabel, cancelLabel }) => {
   const { themeVersion } = useTheme();
   const { t } = useTranslation();
   const styles = React.useMemo(() => StyleSheet.create({
@@ -77,16 +77,16 @@ const SelectionModal = ({ visible, onClose, onCamera, onGallery, title, subtitle
                 {/* Left Side: Camera and Gallery */}
                 <View style={styles.leftActions}>
                   <TouchableOpacity onPress={onCamera} style={styles.actionButton}>
-                    <Text style={styles.primaryBtnText}>{t("wardrobe.camera")}</Text>
+                    <Text style={styles.primaryBtnText}>{cameraLabel || t("wardrobe.camera")}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={onGallery} style={styles.actionButton}>
-                    <Text style={styles.primaryBtnText}>{t("wardrobe.gallery")}</Text>
+                    <Text style={styles.primaryBtnText}>{galleryLabel || t("wardrobe.gallery")}</Text>
                   </TouchableOpacity>
                 </View>
 
                 {/* Right Side: Cancel */}
                 <TouchableOpacity onPress={onClose} style={styles.actionButton}>
-                  <Text style={styles.errorBtnText}>{t("wardrobe.cancel")}</Text>
+                  <Text style={styles.errorBtnText}>{cancelLabel || t("wardrobe.cancel")}</Text>
                 </TouchableOpacity>
               </View>
             </View>

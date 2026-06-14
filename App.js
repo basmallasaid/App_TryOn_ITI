@@ -66,7 +66,7 @@ function ThemedApp() {
   return (
     <>
       <StatusBar style={isDarkMode ? "light" : "dark"} />
-      <NavigationContainer ref={navigationRef} key={themeVersion} theme={navTheme}>
+      <NavigationContainer ref={navigationRef} theme={navTheme}>
         <RootNavigator />
       </NavigationContainer>
     </>

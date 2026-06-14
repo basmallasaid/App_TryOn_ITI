@@ -76,6 +76,10 @@ const UploadPhotoScreen = ({ navigation, route }) => {
       setSelectedImage(result.assets[0].uri);
     }
   };
+
+  const handleRemovePhoto = () => {
+    setSelectedImage(null);
+  };
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
@@ -124,7 +128,12 @@ const UploadPhotoScreen = ({ navigation, route }) => {
               </Svg>
             )}
             {selectedImage ? (
-              <Image source={{ uri: selectedImage }} style={styles.selectedImage} resizeMode="contain" />
+              <View style={styles.selectedImageWrapper}>
+                <Image source={{ uri: selectedImage }} style={styles.selectedImage} resizeMode="contain" />
+                <TouchableOpacity style={styles.removeBtn} onPress={handleRemovePhoto}>
+                  <Ionicons name="close" size={14} color={Colors.white} />
+                </TouchableOpacity>
+              </View>
             ) : (
               <View style={styles.uploadInnerContent}>
                 <Ionicons
@@ -208,10 +217,26 @@ const createStyles = () => StyleSheet.create({
     backgroundColor: "transparent",
     overflow: "hidden",
   },
+  selectedImageWrapper: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 24,
+  },
   selectedImage: {
     width: "100%",
     height: "100%",
     borderRadius: 24,
+  },
+  removeBtn: {
+    position: "absolute",
+    top: 8,
+    right: 12,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: Colors.error,
+    justifyContent: "center",
+    alignItems: "center",
   },
   uploadInnerContent: {
     justifyContent: "center",

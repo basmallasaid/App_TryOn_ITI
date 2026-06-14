@@ -236,7 +236,7 @@ const WardrobeScreen = ({ navigation }) => {
                     if (isFavorite(item._id)) {
                       await removeItem(item._id);
                     } else {
-                      await addItem(item._id, 'WARDROBE');
+                      await addItem(item._id, 'WARDROBE', item);
                     }
                   } catch (e) {
                     showFeedback({ type: "error", title: t("wardrobe.error"), message: e.response?.data?.message || t("wardrobe.favoriteError") });

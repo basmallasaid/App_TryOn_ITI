@@ -19,6 +19,7 @@ import { virtualTryOn } from '../../api/virtual_tryon_services/virtualTryonServi
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import { useTranslation } from "react-i18next";
 import CustomBackButton from '../../components/common/CustomBackButton';
+import LoadingOverlay from "../../components/common/LoadingOverlay";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useFeedback } from "../../context/FeedbackContext";
@@ -128,13 +129,9 @@ const TryOnResult = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
 
+        <LoadingOverlay visible={generating} type="tryOn" />
         <View style={styles.imageContainer}>
-          {generating ? (
-            <View style={styles.generatingOverlay}>
-              <ActivityIndicator size="large" color="#4AB8FF" />
-              <Text style={styles.generatingText}>{t("tryOn.results.generating")}</Text>
-            </View>
-          ) : generateError ? (
+          {generateError ? (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{generateError}</Text>
               <TouchableOpacity style={styles.retryBtn} onPress={handleStoreGenerate}>

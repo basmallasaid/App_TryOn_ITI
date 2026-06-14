@@ -574,6 +574,8 @@
     "markAllRead": "تحديد الكل كمقروء",
     "emptyTitle": "لا توجد إشعارات",
     "emptySubtitle": "كل شيء محدث! سنخبرك عند وصول شيء جديد.",
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل",
     "now": "الآن",
     "minutesAgo": "{{count}}د",
     "hoursAgo": "{{count}}س",

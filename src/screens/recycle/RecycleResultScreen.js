@@ -19,6 +19,7 @@ import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButton
 import CustomBackButton from "../../components/common/CustomBackButton";
 import { saveRecycleResult, getLatestRecycle } from "../../api/recycle_services/recycleService";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import { useRecentRecycles } from "../../context/RecentRecyclesContext";
 import { useProfileContext } from "../../context/ProfileContext";
 

@@ -1,6 +1,5 @@
 import apiClient from "../auth_services/apiClient";
 import { ENDPOINTS } from "../../config/endpoints";
-const HF_TOKEN = process.env.EXPO_PUBLIC_HF_TOKEN;
 
 export const analyzeGarment = async (formData) => {
   const { data } = await apiClient.post(
@@ -8,7 +7,6 @@ export const analyzeGarment = async (formData) => {
     formData, // Send the FormData object directly
     {
       headers: {
-        // "x-hf-token": HF_TOKEN,
         "Content-Type": "multipart/form-data", // Tell the server to expect a file
       },
       transformRequest: (data, headers) => {

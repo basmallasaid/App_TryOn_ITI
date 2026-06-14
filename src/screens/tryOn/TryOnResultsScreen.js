@@ -23,6 +23,7 @@ import LoadingOverlay from "../../components/common/LoadingOverlay";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
 const { width } = Dimensions.get('window');
 
@@ -89,7 +90,7 @@ const TryOnResult = ({ navigation, route }) => {
       const res = await virtualTryOn(formData);
       setStoreResult(res);
     } catch (e) {
-      const msg = e.response?.data?.message || e.response?.data?.error || e.message || t("tryOn.results.generationFailed");
+      const msg = getUserFriendlyErrorMessage(e, t);
       setGenerateError(msg);
     } finally {
       setGenerating(false);

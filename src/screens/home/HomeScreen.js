@@ -24,6 +24,7 @@ import { useFavorites } from "../../context/FavoritesContext";
 import { useRecommendation } from "../../context/RecommendationContext";
 import HorizontalScrollSection from "../../components/common/HorizontalScrollSection";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
 export default function HomeScreen({ navigation }) {
   const { themeVersion, isDarkMode } = useTheme();
@@ -129,7 +130,7 @@ export default function HomeScreen({ navigation }) {
                     await addItem(item._id, 'TRYON');
                   }
                 } catch (e) {
-                  showFeedback({ type: "error", title: t("common.error"), message: e.response?.data?.message || t("home.favoriteError") });
+                  showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
                 }
               }}
             />
@@ -153,7 +154,7 @@ export default function HomeScreen({ navigation }) {
                     await addItem(item._id, 'TRYON');
                   }
                 } catch (e) {
-                  showFeedback({ type: "error", title: t("common.error"), message: e.response?.data?.message || t("home.favoriteError") });
+                  showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
                 }
               }}
             />

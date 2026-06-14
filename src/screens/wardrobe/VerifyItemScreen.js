@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { ROUTES } from "../../navigation/routes";
 import { saveToWardrobe, editWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 const { height: SCREEN_H } = Dimensions.get("window");
 
 const SHEET_EXPANDED_H = SCREEN_H * 0.65;
@@ -192,10 +193,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
       await refetch();
       navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (e) {
-      const msg =
-        e.response?.data?.error ||
-        e.response?.data?.message ||
-        `Server error (${e.response?.status || "network connection"})`;
+      const msg = getUserFriendlyErrorMessage(e, t);
       showFeedback({ type: "error", title: t("common.error"), message: msg });
     } finally {
       setLoading(false);

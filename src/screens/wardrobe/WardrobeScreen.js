@@ -28,6 +28,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { openCamera, openGallery } from '../../utils/cameraAccess';
 import { useTranslation } from 'react-i18next';
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import { ROUTES } from '../../navigation/routes';
 import { translateWardrobeItem } from '../../utils/dynamicTranslator';
 import i18n from '../../localization/i18n';
@@ -166,7 +167,7 @@ const WardrobeScreen = ({ navigation }) => {
         analysisResult,
       });
     } catch (e) {
-      showFeedback({ type: "error", title: t("wardrobe.analysisFailed"), message: e.response?.data?.error || t("wardrobe.analysisFailedMessage") });
+      showFeedback({ type: "error", title: t("wardrobe.analysisFailed"), message: getUserFriendlyErrorMessage(e, t) });
     } finally {
       setAnalyzing(false);
     }
@@ -257,7 +258,7 @@ const WardrobeScreen = ({ navigation }) => {
                       await addItem(item._id, 'WARDROBE', item);
                     }
                   } catch (e) {
-                    showFeedback({ type: "error", title: t("wardrobe.error"), message: e.response?.data?.message || t("wardrobe.favoriteError") });
+                    showFeedback({ type: "error", title: t("wardrobe.error"), message: getUserFriendlyErrorMessage(e, t) });
                     refetchFavorites();
                   }
                 }}

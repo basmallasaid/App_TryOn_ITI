@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import { translateProduct, translateMatch } from "../../utils/dynamicTranslator";
 import i18n from "../../localization/i18n";
 
@@ -73,8 +74,7 @@ export default function ProductDetailScreen({ route }) {
         }
         setWardrobeMatches(list);
       } catch (e) {
-        const msg = e.response?.data || e.message;
-        showFeedback({ type: "error", title: t("store.productDetail.matchError"), message: typeof msg === "string" ? msg : JSON.stringify(msg) });
+        showFeedback({ type: "error", title: t("store.productDetail.matchError"), message: getUserFriendlyErrorMessage(e, t) });
         setWardrobeMatches([]);
       } finally {
         setMatchingLoading(false);

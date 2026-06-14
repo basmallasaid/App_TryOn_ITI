@@ -3,6 +3,8 @@ import { getFavorites, addFavorite, removeFavorite } from '../api/favorites_serv
 import { getWardrobeItems } from '../api/wardrobe_services/wardrobeService';
 import { getAllProducts, getUserProfile } from '../api/user_services/userService';
 import { useAuth } from './AuthContext';
+import { getUserFriendlyErrorMessage } from '../utils/errorMessages';
+import i18n from '../localization/i18n';
 
 const FavoritesContext = createContext();
 
@@ -78,7 +80,7 @@ export const FavoritesProvider = ({ children }) => {
       recycleRef.current = recycleItems;
       setItems(enrichFavorites(raw, wardrobeData ?? [], products, tryOnItems, recycleItems));
     } catch (e) {
-      setError(e.response?.data?.message || 'Failed to load favorites.');
+      setError(getUserFriendlyErrorMessage(e, i18n.t.bind(i18n)));
     } finally {
       setLoading(false);
     }

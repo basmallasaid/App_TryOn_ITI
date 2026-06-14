@@ -1,5 +1,6 @@
 export const IMAGES ={
     REDOLAPY_LOGO: require('../../../assets/images/fullLogo.png'),
+    REDOLAPY_LOGO_Dark: require('../../../assets/images/fullLogoDark.png'),
     REDOLAPY_R_SHAPE_LOGO: require('../../../assets/images/logoRShape.png'),
     AUTH_HERO:require('../../../assets/images/store.jpg'),
     SUCCESS_ILLUSTRATION:require("../../../assets/images/New year party.png"),

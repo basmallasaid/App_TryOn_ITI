@@ -27,7 +27,7 @@ const LANGUAGES = ["en", "ar"];
 
 const SelectLanguageScreen = ({ navigation }) => {
   const { t } = useTranslation();
-  const { themeVersion } = useTheme();
+  const { isDarkMode, themeVersion } = useTheme();
   const [selected, setSelected] = useState(null);
 
   const styles = React.useMemo(() => StyleSheet.create({
@@ -92,7 +92,7 @@ const SelectLanguageScreen = ({ navigation }) => {
       >
         {/* Logo */}
         <Image
-          source={IMAGES.REDOLAPY_LOGO}
+          source={isDarkMode ? IMAGES.REDOLAPY_LOGO_Dark : IMAGES.REDOLAPY_LOGO}
           style={styles.logo}
           resizeMode="contain"
         />

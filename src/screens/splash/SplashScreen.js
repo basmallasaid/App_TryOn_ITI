@@ -9,8 +9,10 @@ import Animated, {
 
 import { IMAGES } from '../../constants/images/images';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 
 const SplashScreen = () => {
+  const { isDarkMode } = useTheme();
 
   const rOpacity = useSharedValue(0);
   const rScale = useSharedValue(0.7);
@@ -95,7 +97,7 @@ const SplashScreen = () => {
       />
 
       <Animated.Image
-        source={IMAGES.REDOLAPY_LOGO}
+        source={isDarkMode ? IMAGES.REDOLAPY_LOGO_Dark : IMAGES.REDOLAPY_LOGO}
         style={[styles.fullLogo, logoAnimatedStyle]}
         resizeMode="contain"
       />

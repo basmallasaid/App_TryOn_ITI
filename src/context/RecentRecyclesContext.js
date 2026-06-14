@@ -14,7 +14,16 @@ export const RecentRecyclesProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await getUserProfile(user._id);
-      setRecycles(data?.latestRecycle ?? []);
+      const allRecycles = data?.latestRecycle ?? [];
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const filtered = allRecycles.filter((item) => {
+        const raw = item.created_at || item.createdAt;
+        if (!raw) return true;
+        const itemDate = new Date(raw);
+        return !isNaN(itemDate.getTime()) && itemDate >= thirtyDaysAgo;
+      });
+      setRecycles(filtered);
     } catch (e) {
     } finally {
       setLoading(false);

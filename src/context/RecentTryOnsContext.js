@@ -14,7 +14,16 @@ export const RecentTryOnsProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await getUserProfile(user._id);
-      setTryOns(data?.latestTryOn ?? []);
+      const allTryOns = data?.latestTryOn ?? [];
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const filtered = allTryOns.filter((item) => {
+        const raw = item.created_at || item.createdAt;
+        if (!raw) return true;
+        const itemDate = new Date(raw);
+        return !isNaN(itemDate.getTime()) && itemDate >= thirtyDaysAgo;
+      });
+      setTryOns(filtered);
     } catch (e) {
     } finally {
       setLoading(false);

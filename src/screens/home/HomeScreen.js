@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -23,6 +23,7 @@ import { ROUTES, SOURCE } from "../../navigation/routes";
 import { useFavorites } from "../../context/FavoritesContext";
 import { useRecommendation } from "../../context/RecommendationContext";
 import HorizontalScrollSection from "../../components/common/HorizontalScrollSection";
+import OutfitViewModal from "../../components/common/OutfitViewModal";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
@@ -41,8 +42,21 @@ export default function HomeScreen({ navigation }) {
     }, [refreshProfile]),
   );
 
-  const latestTryOn = profile?.latestTryOn || [];
-  const latestRecycle = profile?.latestRecycle || [];
+  const [selectedOutfit, setSelectedOutfit] = useState(null);
+
+  const filterLast30Days = (items) => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return items.filter((item) => {
+      const raw = item.created_at || item.createdAt;
+      if (!raw) return true;
+      const itemDate = new Date(raw);
+      return !isNaN(itemDate.getTime()) && itemDate >= thirtyDaysAgo;
+    });
+  };
+
+  const latestTryOn = filterLast30Days(profile?.latestTryOn || []);
+  const latestRecycle = filterLast30Days(profile?.latestRecycle || []);
 
   const goToHistory = () =>
     navigation.navigate(ROUTES.RECOMMENDATION, { screen: ROUTES.RECOMMENDATIONS_HISTORY });
@@ -129,6 +143,7 @@ export default function HomeScreen({ navigation }) {
                   showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
                 }
               }}
+              onViewOutfit={() => setSelectedOutfit(item)}
             />
           )}
           seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginRight: 15 }}
@@ -149,11 +164,27 @@ export default function HomeScreen({ navigation }) {
                   showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
                 }
               }}
+              onViewOutfit={() => setSelectedOutfit(item)}
             />
           )}
           seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginRight: 15 }}
         />
       </ScrollView>
+
+      <OutfitViewModal
+        visible={!!selectedOutfit}
+        onClose={() => setSelectedOutfit(null)}
+        imageUri={selectedOutfit?.imageUrl}
+        isFavorite={selectedOutfit ? isFavorite(selectedOutfit._id) : false}
+        onToggleFavorite={async () => {
+          if (!selectedOutfit) return;
+          try {
+            await toggleFavorite(selectedOutfit._id, 'TRYON');
+          } catch (e) {
+            showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }

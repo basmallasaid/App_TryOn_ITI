@@ -64,6 +64,14 @@ const SENSITIVE_PATTERNS = [
   "apikey",
 ];
 
+const DUPLICATE_PATTERNS = [
+  "already exists",
+  "duplicate",
+  "item already",
+  "already in your wardrobe",
+  "already added",
+];
+
 function matchesPatterns(message, patterns) {
   const lower = message.toLowerCase();
   return patterns.some(p => lower.includes(p));
@@ -111,6 +119,10 @@ export function getUserFriendlyErrorMessage(error, t) {
 
   if (status === 401 || status === 403) {
     return t("errors.authError");
+  }
+
+  if (status === 409 || (rawMsg && matchesPatterns(rawMsg, DUPLICATE_PATTERNS))) {
+    return t("errors.duplicateItem");
   }
 
   if (status >= 500) {

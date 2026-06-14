@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Colors from "../constants/theme/colors";
 import { useTheme } from "../context/ThemeContext";
 import ProfileStack from "../navigation/ProfileStack";
@@ -23,6 +24,7 @@ const TAB_LABELS = {
 export default function AppStack() {
   const { themeVersion } = useTheme();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const styles = React.useMemo(() => StyleSheet.create({
     activeIndicator: {
       height: 2,
@@ -40,8 +42,8 @@ export default function AppStack() {
         tabBarActiveTintColor: Colors.primarybrand,
         tabBarInactiveTintColor: Colors.disabled,
         tabBarStyle: {
-          height: 70,
-          paddingBottom: 10,
+          height: 70 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
           paddingTop: 10,
           backgroundColor: Colors.white,
           borderTopWidth: 1,

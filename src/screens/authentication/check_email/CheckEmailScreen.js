@@ -118,8 +118,26 @@ const CheckEmailScreen = ({ route, navigation }) => {
   }), [themeVersion]);
 
   const openGmail = async () => {
-    const supported = await Linking.canOpenURL('googlegmail://');
-    Linking.openURL(supported ? 'googlegmail://' : 'https://mail.google.com');
+    try {
+      if (Platform.OS === 'ios') {
+        const supported = await Linking.canOpenURL('googlegmail://');
+        if (supported) {
+          await Linking.openURL('googlegmail://');
+        } else {
+          await Linking.openURL('https://mail.google.com');
+        }
+      } else {
+        const intentUrl = 'intent://;scheme=googlegmail;package=com.google.android.gm;end';
+        const supported = await Linking.canOpenURL(intentUrl);
+        if (supported) {
+          await Linking.openURL(intentUrl);
+        } else {
+          await Linking.openURL('https://mail.google.com');
+        }
+      }
+    } catch (error) {
+      await Linking.openURL('https://mail.google.com');
+    }
   };
 
   const handleResend = async () => {

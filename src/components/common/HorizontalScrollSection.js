@@ -17,7 +17,6 @@ export default function HorizontalScrollSection({
   if (!items || items.length === 0) return null;
 
   const displayed = items.slice(0, 5);
-  const hasMore = items.length > 5;
 
 const styles = React.useMemo(() => StyleSheet.create({
   sectionHeader: {
@@ -77,16 +76,14 @@ const styles = React.useMemo(() => StyleSheet.create({
             {renderItem(item, index)}
           </View>
         ))}
-        {hasMore && (
-          <TouchableOpacity
-            style={[styles.seeMoreCard, seeMoreCardStyle]}
-            onPress={onViewAll}
-            activeOpacity={0.8}
-          >
-            <MaterialCommunityIcons name="dots-horizontal" size={28} color={Colors.textSecondary} />
-            <Text style={styles.seeMoreText}>{t('home.viewAll')}</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          style={[styles.seeMoreCard, seeMoreCardStyle]}
+          onPress={onViewAll}
+          activeOpacity={0.8}
+        >
+          <MaterialCommunityIcons name="dots-horizontal" size={28} color={Colors.textSecondary} />
+          <Text style={styles.seeMoreText}>{t('home.viewAll')}</Text>
+        </TouchableOpacity>
       </ScrollView>
     </>
   );

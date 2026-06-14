@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
-export default function TryOnCard({ imageUri, isFavorite, onToggleFavorite }) {
+export default function TryOnCard({ imageUri, isFavorite, onToggleFavorite, onViewOutfit }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
 
@@ -73,7 +73,7 @@ const styles = React.useMemo(() => StyleSheet.create({
         resizeMode="contain"
       />
 
-      <TouchableOpacity style={[styles.button, { flexDirection: 'row' }]} activeOpacity={0.8}>
+      <TouchableOpacity style={[styles.button, { flexDirection: 'row' }]} activeOpacity={0.8} onPress={onViewOutfit}>
         <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
       </TouchableOpacity>
     </View>

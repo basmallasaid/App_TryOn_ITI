@@ -5,6 +5,7 @@ import { Svg, Rect, Defs, LinearGradient as SvgGradient, Stop } from "react-nati
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import i18n from "../../localization/i18n";
 
 const CARD_WIDTH = 260;
 const COLLAPSED_HEIGHT = 200;
@@ -18,8 +19,12 @@ export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
   const [expanded, setExpanded] = useState(false);
   const cardNumber = String(index + 1).padStart(2, "0");
 
-  const displayTitle = idea.title;
-  const displayDescription = idea.design_description;
+  const displayTitle = i18n.language === 'ar' && idea.title_ar
+    ? idea.title_ar
+    : idea.title;
+  const displayDescription = i18n.language === 'ar' && idea.design_description_ar
+    ? idea.design_description_ar
+    : idea.design_description;
 
   const cardHeight = expanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT;
 

@@ -218,8 +218,9 @@ const ProfileScreen = ({ navigation }) => {
           <View style={styles.statRow}>
             <StatCard
               icon="card-outline"
-              title={t("profile.credits")}
-              subtitle={t("profile.creditsAmount")}
+              title={t("profile.plan")}
+              subtitle={profile?.subscriptionStatus === "active" ? t("profile.premium") : t("profile.free")}
+              onPress={() => navigation.navigate(ROUTES.SUBSCRIPTION)}
             />
             <StatCard
               icon="heart-outline"

@@ -111,7 +111,7 @@ const LoadingOverlay = ({ visible, type = "general" }) => {
   );
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={() => {}}>
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <LottieView

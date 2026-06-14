@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   FlatList,
@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useRecentRecycles } from '../../context/RecentRecyclesContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import RecentItemCard from '../../components/home/RecentItemCard';
+import OutfitViewModal from '../../components/common/OutfitViewModal';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
@@ -32,6 +33,7 @@ export default function RecentRecyclesScreen({ navigation }) {
   const { t } = useTranslation();
   const { recycles, loading } = useRecentRecycles();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const [selectedOutfit, setSelectedOutfit] = useState(null);
 
   const handleToggleFavorite = async (item) => {
     try {
@@ -46,6 +48,7 @@ export default function RecentRecyclesScreen({ navigation }) {
         item={item}
         isFavorite={isFavorite(item._id)}
         onToggleFavorite={() => handleToggleFavorite(item)}
+        onPress={() => setSelectedOutfit(item)}
       />
     </View>
   );
@@ -89,6 +92,20 @@ export default function RecentRecyclesScreen({ navigation }) {
           showsVerticalScrollIndicator={false}
         />
       )}
+
+      <OutfitViewModal
+        visible={!!selectedOutfit}
+        onClose={() => setSelectedOutfit(null)}
+        imageUri={selectedOutfit?.imageUrl || selectedOutfit?.image}
+        isFavorite={selectedOutfit ? isFavorite(selectedOutfit._id) : false}
+        onToggleFavorite={async () => {
+          if (!selectedOutfit) return;
+          try {
+            await toggleFavorite(selectedOutfit._id, 'TRYON');
+          } catch (e) {
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }

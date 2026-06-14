@@ -24,6 +24,7 @@ import { useTheme } from "../../context/ThemeContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import LoadingOverlay from "../../components/common/LoadingOverlay";
 import { useWardrobe } from "../../context/WardrobeContext";
+import { useFeedback } from "../../context/FeedbackContext";
 import { analyzeRecycle, generateRecycleIdea } from "../../api/recycle_services/recycleService";
 import SourceTab from "../../components/recycle/SourceTab";
 import DesignIdeaCard from "../../components/recycle/DesignIdeaCard";
@@ -33,6 +34,7 @@ import { ROUTES } from "../../navigation/routes";
 import GradientBorder from "../../components/recycle/GradientBorder";
 import DashedGradientBorder from "../../components/recycle/DashedGradientBorder";
 import { translateDesignIdea } from "../../utils/dynamicTranslator";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import i18n from "../../localization/i18n";
 
 const MAX_ITEMS = 2;
@@ -41,6 +43,7 @@ export default function RecycleScreen({ navigation }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const { items: wardrobeItems } = useWardrobe();
+  const { showFeedback } = useFeedback();
 
   const [activeTab, setActiveTab] = useState("Wardrobe");
   const [selectedItems, setSelectedItems] = useState([]);
@@ -241,10 +244,14 @@ export default function RecycleScreen({ navigation }) {
         setIdeas(ideasList);
         scrollToRef(ideasSectionRef);
       } else {
-        setApiError(result.error || t("recycle.analysisFailed"));
+        const errorMsg = getUserFriendlyErrorMessage({ response: { data: { error: result.error } } }, t);
+        setApiError(errorMsg);
+        showFeedback({ type: "error", title: t("recycle.analysisFailed"), message: errorMsg });
       }
     } catch (e) {
-      setApiError(e.response?.data?.error || e.response?.data?.message || t("recycle.analysisFailed"));
+      const errorMsg = getUserFriendlyErrorMessage(e, t);
+      setApiError(errorMsg);
+      showFeedback({ type: "error", title: t("recycle.analysisFailed"), message: errorMsg });
     } finally {
       setAnalyzing(false);
     }
@@ -277,10 +284,14 @@ export default function RecycleScreen({ navigation }) {
           ideaId: selectedIdeaId,
         });
       } else {
-        setApiError(result.error || t("recycle.generationFailed"));
+        const errorMsg = getUserFriendlyErrorMessage({ response: { data: { error: result.error } } }, t);
+        setApiError(errorMsg);
+        showFeedback({ type: "error", title: t("recycle.generationFailed"), message: errorMsg });
       }
     } catch (e) {
-      setApiError(e.response?.data?.error || t("recycle.generationFailed"));
+      const errorMsg = getUserFriendlyErrorMessage(e, t);
+      setApiError(errorMsg);
+      showFeedback({ type: "error", title: t("recycle.generationFailed"), message: errorMsg });
     } finally {
       setGenerating(false);
     }
@@ -550,13 +561,6 @@ export default function RecycleScreen({ navigation }) {
             icon={!analyzing ? <SparkleIcon size={18} color={Colors.white} /> : null}
           />
         </View>
-
-        {/* {apiError && (
-          <View style={styles.errorBanner}>
-            <Ionicons name="alert-circle" size={16} color={Colors.error} />
-            <Text style={styles.errorText}>{apiError}</Text>
-          </View>
-        )} */}
 
         {ideas.length > 0 && (
           <View ref={ideasSectionRef} style={styles.ideasSection}>

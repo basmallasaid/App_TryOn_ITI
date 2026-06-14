@@ -47,6 +47,7 @@ const ProfileScreen = ({ navigation }) => {
   const {
     profile,
     settings,
+    settingsLoaded,
     updateNotifications,
     updateDarkMode,
     updateLanguage,
@@ -61,10 +62,10 @@ const ProfileScreen = ({ navigation }) => {
   const [imageModalVisible, setImageModalVisible] = useState(false);
 
   useEffect(() => {
-    if (settings.darkMode !== isDarkMode) {
-      setDarkMode(settings.darkMode);
+    if (settingsLoaded && settings.darkMode !== isDarkMode) {
+      updateDarkMode(isDarkMode);
     }
-  }, [settings.darkMode]);
+  }, [settingsLoaded, settings.darkMode]);
 
   useEffect(() => {
     if (profile?.avatars?.length) {

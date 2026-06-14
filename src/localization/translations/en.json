@@ -295,8 +295,8 @@
       "activeWardrobe": "Active wardrobe",
       "seeAll": "See All",
       "selectedItems": "Selected Items ({{count}})",
-      "noItemsTitle": "No items selected yet",
-      "noItemsSub": "Add items from above to try them on.",
+      "noItemsTitle": "Nothing selected yet.",
+      "noItemsSub": "Pick some clothes from above and let's see the magic!",
       "generate": "Generate Try-on",
       "generating": "Generating...",
       "firstImage": "First Image",
@@ -350,7 +350,7 @@
     "openCamera": "Open Camera",
     "uploadFromGallery": "Upload from Gallery",
     "addMore": "Add more",
-    "wardrobeEmpty": "Your wardrobe is empty.\nAdd items first to recycle them.",
+      "wardrobeEmpty": "Your wardrobe is emptier than my inbox.\nAdd some clothes to recycle!",
     "maxReached": "Maximum reached",
     "maxReachedMessage": "You can select up to {{max}} items.",
     "permissionNeeded": "Permission needed",
@@ -365,8 +365,8 @@
     "photo": "Photo",
     "seeMore": "See More",
     "seeLess": "See Less",
-    "noUploadsTitle": "No items uploaded yet",
-    "noUploadsSub": "Add items from above to recycle them.",
+    "noUploadsTitle": "Nothing to recycle yet.",
+    "noUploadsSub": "Drop some clothes above and let's get creative!",
     "noItemsCount": "No Items  (0)",
     "itemsCount": "Items  ({{count}})",
     "oneItemTitle": "1 item captured",
@@ -389,8 +389,8 @@
   },
   "favorites": {
     "title": "Favorites",
-    "emptyTitle": "Your favorites are lonely.",
-    "emptySubtitle": "Start exploring our curated collections to build your digital favorite screen.",
+    "emptyTitle": "Your favorites are staging a protest.",
+    "emptySubtitle": "They're demanding to be loved. Go tap some hearts!",
     "categories": {
       "all": "All",
       "wardrobe": "Wardrobe",
@@ -398,17 +398,17 @@
       "try on": "Try On",
       "recycle": "Recycle"
     },
-    "noItemsInCategory": "No items in this category"
+    "noItemsInCategory": "Nothing here... even the category is confused."
   },
   "recommendation": {
     "todaysRecommendation": "Today's recommendation",
     "lastRecommendations": "Our last recommendations",
     "weeklyTitle": "This Week's Recommendations",
-    "noOutfitForDay": "No outfit yet",
+    "noOutfitForDay": "Still deciding...",
     "outfitDetails": "Outfit Details",
-    "emptyHistory": "No recommendations yet",
-    "noOutfitTitle": "No outfit available",
-    "noOutfitSubtitle": "Generate a personalized outfit to see it here",
+    "emptyHistory": "No recommendations yet. Our AI is still figuring out your vibe.",
+    "noOutfitTitle": "Your closet is whispering...",
+    "noOutfitSubtitle": "Generate an outfit and let AI work its magic!",
     "subtitle": "Let's dress smart today.",
     "generatedDesign": "Generated Design",
     "untitled": "Untitled",
@@ -424,9 +424,9 @@
     "selectFromWardrobe": "select from wardrobe",
     "seeAll": "See All",
     "itemsMatch": "items match in your wardrobe",
-    "noMatches": "No matches found",
+    "noMatches": "No matches found. Your wardrobe is playing hard to get.",
     "storeMatches": "see what matching in store",
-    "noStoreMatches": "No store matches found",
+    "noStoreMatches": "No store matches. Even the store is speechless.",
     "seeMatching": "See matching",
     "matchError": "Match Error",
     "selectedItemsOne": "1 item selected",
@@ -483,8 +483,8 @@
       "subtitle": "You have {{count}} item(s) synced. Keep building your wardrobe!"
     },
     "empty": {
-      "title": "Your wardrobe is Empty",
-      "subtitle": "Add your clothes to get started",
+      "title": "Your wardrobe is feeling neglected.",
+      "subtitle": "Add some clothes and give it something to talk about!",
       "addButton": "Add to wardrobe"
     },
     "details": {
@@ -537,7 +537,7 @@
     "searchPlaceholder": "Tap to search",
     "all": "All",
     "loadError": "Unable to load products. Please try again.",
-    "noProducts": "No products found for this filter.",
+    "noProducts": "No products found. Maybe try a different filter?",
     "currency": "EGP",
     "badge": "Match",
     "productCard": {
@@ -599,8 +599,8 @@
   "notifications": {
     "title": "Notifications",
     "markAllRead": "Mark all as read",
-    "emptyTitle": "No notifications yet",
-    "emptySubtitle": "You're all caught up! We'll notify you when something arrives.",
+    "emptyTitle": "Shhh... it's quiet in here.",
+    "emptySubtitle": "No notifications yet. Enjoy the peace while it lasts!",
     "showMore": "See more",
     "showLess": "Show less",
     "now": "now",
@@ -617,8 +617,8 @@
     "recentTryOns": "Recent Try-ons",
     "recentRecycles": "Recent Recycles",
     "viewAll": "View all",
-    "noRecentTryOns": "No recent try-ons yet",
-    "noRecentRecycles": "No recent recycles yet",
+    "noRecentTryOns": "No try-ons yet. Your wardrobe is waiting for its debut!",
+    "noRecentRecycles": "No recycles yet. Your old clothes deserve a second chance!",
     "favoriteError": "Failed to update favorite",
     "hero": {
       "title1": "Your style, ",

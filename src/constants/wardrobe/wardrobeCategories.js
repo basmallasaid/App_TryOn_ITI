@@ -50,3 +50,24 @@ export const getCategoriesByGender = (gender) => {
     ? FEMALE_CATEGORIES
     : MALE_CATEGORIES;
 };
+
+/**
+ * Maps frontend category chip names to backend canonical category values.
+ * Backend stores: top, bottom, outerwear, dress, footwear, accessory
+ */
+export const CATEGORY_TO_BACKEND = {
+  Top: 'top',
+  Shirt: 'top',
+  'T-Shirt': 'top',
+  Bottom: 'bottom',
+  Jeans: 'bottom',
+  Short: 'bottom',
+  Jacket: 'outerwear',
+  Suit: 'outerwear',
+  Shoes: 'footwear',
+  Accessories: 'accessory',
+  Dress: 'dress',
+  Skirt: 'bottom',
+  Bag: 'accessory',
+  Abayas: 'dress',
+};

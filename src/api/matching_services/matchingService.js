@@ -10,18 +10,20 @@ export const getWardrobeMatches = async (wardrobeItemId) => {
 };
 
 const formDataConfig = {
-  headers: { "Content-Type": "multipart/form-data" },
   transformRequest: (data) => data,
   timeout: 60000,
 };
 
 export const analyzeImage = async (imageUri) => {
   const formData = new FormData();
-  const name = imageUri.split("/").pop() || "image.jpg";
+  const filename = imageUri.split("/").pop() || "image.jpg";
+  const match = /\.(\w+)$/.exec(filename);
+  const type = match ? `image/${match[1]}` : "image/jpeg";
+
   formData.append("image", {
     uri: Platform.OS === "android" ? imageUri : imageUri.replace("file://", ""),
-    name,
-    type: `image/${name.split(".").pop() || "jpeg"}`,
+    name: filename,
+    type,
   });
   const { data } = await apiClient.post(ENDPOINTS.ANALYZE, formData, formDataConfig);
   return data;

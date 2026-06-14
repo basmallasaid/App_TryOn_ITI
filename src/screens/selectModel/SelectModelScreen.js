@@ -144,10 +144,16 @@ const SelectModelScreen = ({ navigation, route }) => {
             navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarId, source: SOURCE.HOME });
           }
         } else {
-          navigation.navigate(ROUTES.CREATE_AVATAR);
+          navigation.navigate(ROUTES.CREATE_AVATAR, {
+            source: SOURCE.SELECT_MODEL,
+            ...(isStoreFlow && { productImage }),
+          });
         }
       } catch {
-        navigation.navigate(ROUTES.CREATE_AVATAR);
+        navigation.navigate(ROUTES.CREATE_AVATAR, {
+          source: SOURCE.SELECT_MODEL,
+          ...(isStoreFlow && { productImage }),
+        });
       } finally {
         setLoading(false);
       }

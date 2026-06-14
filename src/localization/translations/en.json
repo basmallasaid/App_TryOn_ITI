@@ -24,6 +24,7 @@
     "quotaReached": "You have reached your usage limit. Please try again later.",
     "authError": "Authentication error. Please log in again.",
     "serverError": "Server error. Please try again later.",
+    "duplicateItem": "This item already exists in your wardrobe.",
     "generic": "Something went wrong. Please try again."
   },
   "auth": {

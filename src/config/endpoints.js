@@ -15,6 +15,7 @@ export const ENDPOINTS = {
   GET_ALL_STORE: '/stores',
   GENERATE_AVATAR: '/avatars',
   GET_AVATAR: '/avatars',
+  UPDATE_AVATAR: '/avatars',
   VIRTUAL_TRYON: '/virtual-tryon',
   VIRTUAL_TRYON_OUTFIT: '/virtual-tryon/outfit',
   LATEST_TRYON: '/users/latest-tryon',

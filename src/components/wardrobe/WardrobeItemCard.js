@@ -3,16 +3,18 @@ import {
   TouchableOpacity,
   View,
   Text,
-  ImageBackground,
   StyleSheet,
   Platform,
 } from 'react-native';
+import { ImageBackground } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 
-const WardrobeItemCard = ({ item, onPress, onLongPress, isFavorite, onToggleFavorite }) => {
+const blurhash = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
+
+const WardrobeItemCardComponent = ({ item, onPress, onLongPress, isFavorite, onToggleFavorite }) => {
   const imageSource = item.image ? { uri: item.image } : null;
   const { themeVersion } = useTheme();
 
@@ -101,6 +103,8 @@ const styles = React.useMemo(() => StyleSheet.create({
         style={styles.image}
         imageStyle={styles.imageStyle}
         resizeMode="cover"
+        placeholder={blurhash}
+        transition={300}
       >
         <TouchableOpacity
           style={styles.favoriteBtnContainer}
@@ -135,5 +139,4 @@ const styles = React.useMemo(() => StyleSheet.create({
   );
 };
 
-
-export default WardrobeItemCard;
+export default React.memo(WardrobeItemCardComponent);

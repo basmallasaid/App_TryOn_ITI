@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from "../../constants/theme/colors";
 import { useTranslation } from 'react-i18next';
 import { useTheme } from "../../context/ThemeContext";
 
-export const ProductCard = ({
+const blurhash = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
+const ProductCardComponent = ({
   name,
   brand,
   price,
@@ -122,7 +124,7 @@ export const ProductCard = ({
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onPress}>
       <View style={styles.imageWrapper}>
-        <Image source={{ uri: image }} style={styles.img} resizeMode="cover" />
+        <Image source={{ uri: image }} style={styles.img} resizeMode="cover" placeholder={blurhash} transition={300} />
         <View style={[styles.overlayHeader, { flexDirection: 'row' }]}>
           {badge ? (
             <View
@@ -171,3 +173,5 @@ export const ProductCard = ({
     </TouchableOpacity>
   );
 };
+
+export const ProductCard = React.memo(ProductCardComponent);

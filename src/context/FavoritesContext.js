@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { getFavorites, addFavorite, removeFavorite } from '../api/favorites_services/favoritesService';
 import { getWardrobeItems } from '../api/wardrobe_services/wardrobeService';
 import { getAllProducts, getUserProfile } from '../api/user_services/userService';
@@ -57,6 +57,19 @@ export const FavoritesProvider = ({ children }) => {
   const recycleRef = useRef([]);
   const wardrobeRef = useRef([]);
   const productsRef = useRef([]);
+  const itemsRef = useRef([]);
+  const inFlight = useRef(new Set());
+
+  itemsRef.current = items;
+
+  const favoriteIds = useMemo(() => {
+    const set = new Set();
+    items.forEach((item) => set.add(normalizeId(item.itemId)));
+    return set;
+  }, [items]);
+
+  const favoriteIdsRef = useRef(favoriteIds);
+  favoriteIdsRef.current = favoriteIds;
 
   const fetchFavorites = useCallback(async () => {
     if (!user?.token) return;
@@ -65,20 +78,29 @@ export const FavoritesProvider = ({ children }) => {
       setError(null);
       const data = await getFavorites();
       const raw = data?.favorites ?? data?.items ?? [];
-      const [wardrobeData, productsData, profileData] = await Promise.all([
-        getWardrobeItems().catch(() => []),
-        getAllProducts().catch(() => []),
-        getUserProfile(user._id).catch(() => ({})),
-      ]);
-      const products = Array.isArray(productsData) ? productsData : [];
-      const wardrobeItems = wardrobeData ?? [];
-      const tryOnItems = profileData?.latestTryOn ?? [];
-      const recycleItems = profileData?.latestRecycle ?? [];
-      wardrobeRef.current = wardrobeItems;
-      productsRef.current = products;
-      tryOnRef.current = tryOnItems;
-      recycleRef.current = recycleItems;
-      setItems(enrichFavorites(raw, wardrobeData ?? [], products, tryOnItems, recycleItems));
+
+      let wardrobeItems = wardrobeRef.current;
+      let products = productsRef.current;
+      let tryOnItems = tryOnRef.current;
+      let recycleItems = recycleRef.current;
+
+      if (wardrobeItems.length === 0 || products.length === 0) {
+        const [wardrobeData, productsData, profileData] = await Promise.all([
+          getWardrobeItems().catch(() => []),
+          getAllProducts().catch(() => []),
+          getUserProfile(user._id).catch(() => ({})),
+        ]);
+        products = Array.isArray(productsData) ? productsData : [];
+        wardrobeItems = wardrobeData ?? [];
+        tryOnItems = profileData?.latestTryOn ?? [];
+        recycleItems = profileData?.latestRecycle ?? [];
+        wardrobeRef.current = wardrobeItems;
+        productsRef.current = products;
+        tryOnRef.current = tryOnItems;
+        recycleRef.current = recycleItems;
+      }
+
+      setItems(enrichFavorites(raw, wardrobeItems, products, tryOnItems, recycleItems));
     } catch (e) {
       setError(getUserFriendlyErrorMessage(e, i18n.t.bind(i18n)));
     } finally {
@@ -90,47 +112,82 @@ export const FavoritesProvider = ({ children }) => {
     fetchFavorites();
   }, [fetchFavorites]);
 
-  const addItem = async (itemId, itemType, itemData = null) => {
+  const addItem = useCallback(async (itemId, itemType, itemData = null) => {
+    const id = normalizeId(itemId);
+    const key = `add:${id}`;
+    if (inFlight.current.has(key)) return;
+    inFlight.current.add(key);
+
+    let newItem = { itemId: id, itemType };
+    if (itemType === 'WARDROBE') newItem.category = 'Wardrobe';
+    if (itemType === 'PRODUCT') newItem.category = 'Store';
+    if (itemData) {
+      if (itemType === 'WARDROBE') {
+        newItem = { ...newItem, image: itemData.image, name: itemData.name, category: 'Wardrobe' };
+      } else if (itemType === 'PRODUCT') {
+        newItem = { ...newItem, image: itemData.image || itemData.images?.[0], name: itemData.name, category: 'Store' };
+      } else if (itemType === 'TRYON') {
+        newItem = { ...newItem, image: itemData.imageUrl, name: itemData.name || itemData.designTitle, category: itemData.designTitle ? 'Recycle' : 'Try On' };
+      }
+    } else {
+      newItem = enrichSingleItem(newItem, wardrobeRef.current, productsRef.current, tryOnRef.current, recycleRef.current);
+    }
+
+    setItems((prev) => [...prev, newItem]);
+
     try {
-      const id = normalizeId(itemId);
       const res = await addFavorite(id, itemType);
-      let newItem = res?.favorite ?? res?.data ?? res;
-      if (!newItem?._id) newItem = { itemId: id, itemType };
-      newItem = { ...newItem, itemId: id, itemType };
-      if (itemType === 'WARDROBE') newItem.category = 'Wardrobe';
-      if (itemType === 'PRODUCT') newItem.category = 'Store';
-      if (itemData) {
-        if (itemType === 'WARDROBE') {
-          newItem = { ...newItem, image: itemData.image, name: itemData.name, category: 'Wardrobe' };
-        } else if (itemType === 'PRODUCT') {
-          newItem = { ...newItem, image: itemData.image || itemData.images?.[0], name: itemData.name, category: 'Store' };
-        } else if (itemType === 'TRYON') {
-          newItem = { ...newItem, image: itemData.imageUrl, name: itemData.name || itemData.designTitle, category: itemData.designTitle ? 'Recycle' : 'Try On' };
-        }
-      } else {
-        newItem = enrichSingleItem(newItem, wardrobeRef.current, productsRef.current, tryOnRef.current, recycleRef.current);
+      const serverItem = res?.favorite ?? res?.data ?? res;
+      if (serverItem?._id) {
+        setItems((prev) =>
+          prev.map((item) =>
+            normalizeId(item.itemId) === id ? { ...item, _id: serverItem._id } : item
+          )
+        );
       }
-      setItems((prev) => [...prev, newItem]);
     } catch (e) {
+      setItems((prev) => prev.filter((item) => normalizeId(item.itemId) !== id));
       throw e;
+    } finally {
+      inFlight.current.delete(key);
     }
-  };
+  }, []);
 
-  const removeItem = async (itemId) => {
+  const removeItem = useCallback(async (itemId) => {
+    const id = normalizeId(itemId);
+    const key = `remove:${id}`;
+    if (inFlight.current.has(key)) return;
+
+    const favorite = itemsRef.current.find((i) => normalizeId(i.itemId) === id);
+    if (!favorite) return;
+
+    inFlight.current.add(key);
+
+    setItems((prev) => prev.filter((i) => normalizeId(i.itemId) !== id));
+
     try {
-      const id = normalizeId(itemId);
-      const favorite = items.find((i) => normalizeId(i.itemId) === id);
-      if (!favorite) {
-        return;
-      }
       await removeFavorite(favorite._id);
-      setItems((prev) => prev.filter((i) => i._id !== favorite._id));
     } catch (e) {
+      setItems((prev) => {
+        if (prev.some((i) => normalizeId(i.itemId) === id)) return prev;
+        return [...prev, favorite];
+      });
       throw e;
+    } finally {
+      inFlight.current.delete(key);
     }
-  };
+  }, []);
 
-  const isFavorite = (itemId) => items.some((i) => normalizeId(i.itemId) === normalizeId(itemId));
+  const isFavorite = useCallback((itemId) => favoriteIdsRef.current.has(normalizeId(itemId)), []);
+
+  const toggleFavorite = useCallback(async (itemId, itemType, itemData = null) => {
+    const id = normalizeId(itemId);
+    if (favoriteIdsRef.current.has(id)) {
+      await removeItem(id);
+    } else {
+      await addItem(id, itemType, itemData);
+    }
+  }, [addItem, removeItem]);
 
   return (
     <FavoritesContext.Provider
@@ -141,6 +198,7 @@ export const FavoritesProvider = ({ children }) => {
         refetch: fetchFavorites,
         addItem,
         removeItem,
+        toggleFavorite,
         isFavorite,
       }}
     >

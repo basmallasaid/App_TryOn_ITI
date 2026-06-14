@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, Platform, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useProfileContext } from '../../context/ProfileContext';
-import { ROUTES } from '../../navigation/routes';
+import { getAvatarById } from '../../api/avatar_services/avatarService';
+import { ROUTES, SOURCE } from '../../navigation/routes';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
 import Colors from '../../constants/theme/colors';
@@ -22,13 +23,29 @@ export default function AvatarDetailScreen() {
   const route = useRoute();
   const insets = useSafeAreaInsets();
   const { profile } = useProfileContext();
+  const [avatarUri, setAvatarUri] = useState(route?.params?.avatarUri || null);
 
-  const avatarUri = route?.params?.avatarUri;
   const isSubscribed = profile?.subscriptionStatus === "active";
+
+  useEffect(() => {
+    if (profile?.avatars?.length) {
+      const lastId = profile.avatars[profile.avatars.length - 1];
+      const id = lastId?._id || lastId;
+      getAvatarById(id)
+        .then((res) => {
+          const uri = res?.avatar?.image_url || res?.image || res?.imageUrl || res?.url || null;
+          if (uri) setAvatarUri(uri);
+        })
+        .catch(() => {});
+    }
+  }, [profile?.avatars]);
 
   const handleCustomize = () => {
     if (isSubscribed) {
-      navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.CREATE_AVATAR });
+      navigation.navigate(ROUTES.TRY_ON, {
+        screen: ROUTES.CREATE_AVATAR,
+        params: { source: SOURCE.AVATAR_DETAIL },
+      });
     } else {
       navigation.navigate(ROUTES.SUBSCRIPTION);
     }
@@ -38,7 +55,7 @@ export default function AvatarDetailScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={[styles.header, { flexDirection: "row" }]}>
         <CustomBackButton onPress={() => navigation.goBack()} />
-        <Text style={[styles.headerTitle, { textAlign: "left" }]}>{t('profile.avatarTitle')}</Text>
+        <Text style={[styles.headerTitle, { textAlign: "center" }]}>{t('profile.avatarTitle')}</Text>
         <View style={{ width: 56 }} />
       </View>
 
@@ -72,9 +89,9 @@ export default function AvatarDetailScreen() {
         <CustomizeAppButtonFilled
           label={t('profile.customizeAvatar')}
           onPress={handleCustomize}
-          backgroundColor={Colors.error}
-          textColor={Colors.white}
-          icon={<Ionicons name="color-palette-outline" size={18} color={Colors.white} />}
+          backgroundColor={Colors.primary}
+          textColor={Colors.textInverse}
+          icon={<Ionicons name="color-palette-outline" size={18} color={Colors.textInverse} />}
           iconPosition="right"
         />
       </ScrollView>
@@ -109,26 +126,19 @@ const createStyles = () => StyleSheet.create({
     borderRadius: 20,
     padding: 16,
     alignItems: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-      },
-      android: { elevation: 4 },
-    }),
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
     marginBottom: 16,
   },
   avatarImage: {
     width: IMAGE_SIZE,
     height: IMAGE_SIZE * 1.2,
-    borderRadius: 12,
+    borderRadius: 10,
   },
   placeholder: {
     width: IMAGE_SIZE,
     height: IMAGE_SIZE * 1.2,
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: Colors.backgroundColor,
     justifyContent: 'center',
     alignItems: 'center',

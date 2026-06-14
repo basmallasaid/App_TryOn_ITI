@@ -3,7 +3,6 @@ import { ActivityIndicator, Modal, View, Text, StyleSheet, TouchableOpacity, Scr
 import { Ionicons } from '@expo/vector-icons';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import Slider from '@react-native-community/slider';
-import { getAllProducts } from '../../api/user_services/userService';
 import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
@@ -17,6 +16,7 @@ export const FilterModal = ({
   initialCategories = [],
   initialColors = [],
   initialPrice = 1000,
+  products = [],
 }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
@@ -37,20 +37,16 @@ export const FilterModal = ({
     }
   };
 
-  const loadAvailableColors = async () => {
-    try {
-      const data = await getAllProducts();
-      const colors = new Set();
-      Array.isArray(data) && data.forEach((product) => {
-        Array.isArray(product.color_tags) &&
-          product.color_tags.forEach((tag) => {
-            if (tag) colors.add(tag.toLowerCase());
-          });
-      });
-      setAvailableColors(Array.from(colors).sort());
-    } catch (error) {
-    }
-  };
+  const loadAvailableColors = React.useCallback(() => {
+    const colors = new Set();
+    products.forEach((product) => {
+      Array.isArray(product.color_tags) &&
+        product.color_tags.forEach((tag) => {
+          if (tag) colors.add(tag.toLowerCase());
+        });
+    });
+    setAvailableColors(Array.from(colors).sort());
+  }, [products]);
 
   useEffect(() => {
     if (visible) {
@@ -61,7 +57,7 @@ export const FilterModal = ({
       setSelectedColors(initialColors);
       setPrice(initialPrice);
     }
-  }, [visible, initialBrands, initialSeasons, initialCategories, initialColors, initialPrice]);
+  }, [visible]);
 
   const CheckboxItem = ({ label, selected, onPress }) => (
     <TouchableOpacity style={[styles.checkboxRow, { flexDirection: "row" }]} onPress={onPress}>

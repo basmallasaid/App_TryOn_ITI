@@ -10,7 +10,6 @@ import {
   FlatList,
   Platform,
   StatusBar,
-  ActivityIndicator,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -35,13 +34,14 @@ import { ROUTES } from "../../navigation/routes";
 import { translateMatch } from "../../utils/dynamicTranslator";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
+import LoadingOverlay from "../../components/common/LoadingOverlay";
 
 export default function MatchingScreen({ navigation }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
   const { items: wardrobeItems } = useWardrobe();
-  const { isFavorite, addItem, removeItem } = useFavorites();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedWardrobeId, setSelectedWardrobeId] = useState(null);
@@ -490,19 +490,23 @@ export default function MatchingScreen({ navigation }) {
                   const originalMatch = wardrobeMatches[index] || match;
                   const imgSrc = getMatchImage(originalMatch);
                   const imageUri = imgSrc?.uri;
+                  const wardrobeItem = wardrobeItems.find(
+                    (wi) => wi._id === originalMatch.item?.id || wi.id === originalMatch.item?.id,
+                  );
                   return (
                     <TouchableOpacity
                       key={match.item?.id || index}
                       onPress={() =>
-                        navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, {
-                          match: originalMatch,
-                          imageUri,
+                        navigation.navigate(ROUTES.MATCHING_ITEM_DETAILS, {
+                          itemId: wardrobeItem?._id || originalMatch.item?.id,
+                          analysisId: wardrobeItem?.analysis_id,
+                          source: "matching",
                         })
                       }
                     >
                       <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>
-                          <Text style={styles.scoreText}>{match.score}%</Text>
+                          <Text style={styles.scoreText}>{String(match.score ?? 0)}%</Text>
                         </View>
                         {imgSrc ? (
                           <Image
@@ -518,7 +522,7 @@ export default function MatchingScreen({ navigation }) {
                           />
                         )}
                         <Text style={styles.matchItemName} numberOfLines={1}>
-                          {match.item?.name}
+                          {String(match.item?.name ?? "")}
                         </Text>
                       </View>
                     </TouchableOpacity>
@@ -558,15 +562,15 @@ export default function MatchingScreen({ navigation }) {
                     <TouchableOpacity
                       key={match.item?.id || index}
                       onPress={() =>
-                        navigation.navigate(ROUTES.MATCHING_RESULT_DETAILS, {
-                          match: originalMatch,
-                          imageUri,
+                        navigation.navigate(ROUTES.MATCHING_PRODUCT_DETAIL, {
+                          productId: originalMatch.item?.id?.replace("store_", ""),
+                          source: "matching",
                         })
                       }
                     >
                       <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>
-                          <Text style={styles.scoreText}>{match.score}%</Text>
+                          <Text style={styles.scoreText}>{String(match.score ?? 0)}%</Text>
                         </View>
                         <TouchableOpacity
                           style={styles.heartIcon}
@@ -575,11 +579,7 @@ export default function MatchingScreen({ navigation }) {
                             if (!rawId) return;
                             const id = rawId.replace("store_", "");
                             try {
-                              if (isFavorite(id)) {
-                                await removeItem(id);
-                              } else {
-                                await addItem(id, "PRODUCT");
-                              }
+                              await toggleFavorite(id, "PRODUCT");
                             } catch (e) {
                             }
                           }}
@@ -612,11 +612,11 @@ export default function MatchingScreen({ navigation }) {
                           />
                         )}
                         <Text style={styles.matchItemName} numberOfLines={1}>
-                          {match.item?.name}
+                          {String(match.item?.name ?? "")}
                         </Text>
-                        {match.item?.price && (
+                        {match.item?.price != null && (
                           <Text style={styles.matchPrice}>
-                            {match.item?.currency || "$"} {match.item?.price}
+                            {String(match.item?.currency || "$")} {String(match.item?.price)}
                           </Text>
                         )}
                       </View>
@@ -635,18 +635,12 @@ export default function MatchingScreen({ navigation }) {
           onPress={handleSeeMatching}
           disabled={!isButtonReady || generating}
         >
-          {generating ? (
-            <ActivityIndicator
-              size="small"
-              color={Colors.white}
-              style={{ marginRight: 8 }}
-            />
-          ) : (
-            <MaterialCommunityIcons name="auto-fix" size={20} color={Colors.white} />
-          )}
+          <MaterialCommunityIcons name="auto-fix" size={20} color={Colors.white} />
           <Text style={styles.buttonText}>{t("matching.seeMatching")}</Text>
         </TouchableOpacity>
       </View>
+
+      <LoadingOverlay visible={generating} type="general" />
     </SafeAreaView>
   );
 }

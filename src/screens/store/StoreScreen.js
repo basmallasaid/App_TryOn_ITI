@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View, Text, Platform, StatusBar } from 'react-native';
 import { StoreHeader } from '../../components/store/StoreHeader';
 import { ProductCard } from '../../components/store/ProductCard';
@@ -14,7 +14,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import { translateProduct } from '../../utils/dynamicTranslator';
-import { checkProductMatches } from '../../api/matching_services/matchingService';
 import i18n from '../../localization/i18n';
 
 export default function StoreScreen() {
@@ -23,8 +22,8 @@ export default function StoreScreen() {
     const { themeVersion } = useTheme();
     const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
-    const mapProductToCard = (product) => {
-        const hasMatches = productMatches[product._id] ?? product.try_on_enabled;
+    const mapProductToCard = useCallback((product) => {
+        const hasMatches = product.try_on_enabled ?? false;
         return {
             id: product._id,
             name: product.name,
@@ -35,7 +34,7 @@ export default function StoreScreen() {
             badgeColor: Colors.secondary,
             isOutlined: hasMatches,
         };
-    };
+    }, [t]);
 
     const getCategoryIcon = (category) => {
         switch (category) {
@@ -84,7 +83,7 @@ export default function StoreScreen() {
 
         return categories;
     };
-    const { isFavorite, addItem, removeItem, refetch: refetchFavorites } = useFavorites();
+    const { isFavorite, toggleFavorite, refetch: refetchFavorites } = useFavorites();
     const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -94,7 +93,6 @@ export default function StoreScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [filterVisible, setFilterVisible] = useState(false);
-    const [productMatches, setProductMatches] = useState({});
     const [filterValues, setFilterValues] = useState({
         brands: [],
         seasons: [],
@@ -133,38 +131,30 @@ export default function StoreScreen() {
     };
 
     useEffect(() => {
+        let cancelled = false;
         const fetchProducts = async () => {
             setLoading(true);
             setError(null);
 
             try {
                 const data = await getAllProducts();
+                if (cancelled) return;
                 let products = Array.isArray(data) ? data : [];
                 
-                // Translate products if in Arabic
                 if (i18n.language === 'ar') {
                     products = await Promise.all(products.map(p => translateProduct(p, 'ar')));
                 }
                 
-                setAllProducts(products);
-
-                // Check matches for all products in parallel
-                const results = await Promise.allSettled(
-                    products.map(p => checkProductMatches(p._id))
-                );
-                const matchMap = {};
-                products.forEach((p, i) => {
-                    matchMap[p._id] = results[i].status === 'fulfilled' && results[i].value;
-                });
-                setProductMatches(matchMap);
+                if (!cancelled) setAllProducts(products);
             } catch (err) {
-                setError(t('store.loadError'));
+                if (!cancelled) setError(t('store.loadError'));
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
 
         fetchProducts();
+        return () => { cancelled = true; };
     }, [i18n.language]);
 
     const categories = useMemo(() => buildCategoriesFromProducts(allProducts), [allProducts]);
@@ -206,7 +196,7 @@ export default function StoreScreen() {
                 return priceValue <= filterValues.price;
             })
             .map(mapProductToCard);
-    }, [allProducts, searchQuery, selectedCategory, filterValues, productMatches]);
+    }, [allProducts, searchQuery, selectedCategory, filterValues]);
 
     const listHeader = React.useMemo(() => (
         <View style={{ padding: 20 }}>
@@ -220,6 +210,7 @@ export default function StoreScreen() {
                 initialCategories={filterValues.categories}
                 initialColors={filterValues.colors}
                 initialPrice={filterValues.price}
+                products={allProducts}
             />
             <SearchBar
                 value={searchText}
@@ -233,7 +224,7 @@ export default function StoreScreen() {
                 onCategoryChange={setSelectedCategory}
             />
         </View>
-    ), [searchText, filterVisible, filterValues, categories, selectedCategory, handleSearchSubmit]);
+    ), [searchText, filterVisible, filterValues, categories, selectedCategory, handleSearchSubmit, allProducts]);
 
     if (loading) {
         return (
@@ -256,8 +247,7 @@ export default function StoreScreen() {
             <FlatList
                 data={filteredProducts}
                 numColumns={2}
-              columnWrapperStyle={styles.row} 
-                
+                columnWrapperStyle={styles.row}
                 ListHeaderComponent={listHeader}
                 renderItem={({ item }) => (
                     <ProductCard
@@ -265,11 +255,7 @@ export default function StoreScreen() {
                         isFavorite={isFavorite(item.id)}
                         onToggleFavorite={async () => {
                             try {
-                                if (isFavorite(item.id)) {
-                                    await removeItem(item.id);
-                                } else {
-                                    await addItem(item.id, "PRODUCT");
-                                }
+                                await toggleFavorite(item.id, "PRODUCT");
                             } catch (e) {
                                 refetchFavorites();
                             }
@@ -280,6 +266,11 @@ export default function StoreScreen() {
                 )}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ paddingBottom: 20 }}
+                removeClippedSubviews={true}
+                maxToRenderPerBatch={8}
+                updateCellsBatchingPeriod={50}
+                windowSize={7}
+                initialNumToRender={6}
                 ListEmptyComponent={() => (
                     <View style={styles.emptyContainer}>
                         <Text style={styles.emptyText}>{t('store.noProducts')}</Text>

@@ -79,6 +79,10 @@ const SplashScreen = () => {
       width: 140,
       height: 140,
       position: 'absolute',
+      left: '50%',
+      top: '50%',
+      marginLeft: -70,
+      marginTop: -70,
     },
     fullLogo: {
       width: 260,

@@ -12,3 +12,8 @@ export const getAvatarById = async (id) => {
   const { data } = await apiClient.get(`${ENDPOINTS.GET_AVATAR}/${id}`);
   return data;
 };
+
+export const updateAvatar = async (id, payload) => {
+  const { data } = await apiClient.put(`${ENDPOINTS.UPDATE_AVATAR}/${id}`, payload);
+  return data;
+};

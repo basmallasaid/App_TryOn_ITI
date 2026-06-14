@@ -38,13 +38,12 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
-  const { itemId, analysisId } = route.params;
+  const { itemId, analysisId, source } = route.params;
   const { removeItem, refetch } = useWardrobe();
-  const { isFavorite: checkIsFavorite, addItem: addFavoriteItem, removeItem: removeFavoriteItem } = useFavorites();
+  const { isFavorite: checkIsFavorite, toggleFavorite } = useFavorites();
 
   const [itemData, setItemData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -67,25 +66,12 @@ const ItemDetailsScreen = ({ route, navigation }) => {
     fetchDetails();
   }, [itemId]);
 
-  useEffect(() => {
-    if (itemData) {
-      setIsFavorite(checkIsFavorite(itemId));
-    }
-  }, [itemData, itemId, checkIsFavorite]);
-
   const handleToggleFavorite = useCallback(async () => {
-    const wasFavorite = isFavorite;
-    setIsFavorite(!wasFavorite);
     try {
-      if (wasFavorite) {
-        await removeFavoriteItem(itemId);
-      } else {
-        await addFavoriteItem(itemId, 'WARDROBE', itemData);
-      }
+      await toggleFavorite(itemId, 'WARDROBE', itemData);
     } catch (e) {
-      setIsFavorite(wasFavorite);
     }
-  }, [isFavorite, itemId, itemData, addFavoriteItem, removeFavoriteItem]);
+  }, [itemId, itemData, toggleFavorite]);
 
   const handleDelete = async () => {
     try {
@@ -144,9 +130,9 @@ const ItemDetailsScreen = ({ route, navigation }) => {
             <TouchableOpacity onPress={handleToggleFavorite}>
               <View style={styles.iconCircle}>
                 <Ionicons
-                  name={isFavorite ? "heart" : "heart-outline"}
+                  name={checkIsFavorite(itemId) ? "heart" : "heart-outline"}
                   size={18}
-                  color={isFavorite ? Colors.error : Colors.white}
+                  color={checkIsFavorite(itemId) ? Colors.error : Colors.white}
                 />
               </View>
             </TouchableOpacity>

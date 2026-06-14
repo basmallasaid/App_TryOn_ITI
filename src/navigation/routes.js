@@ -49,6 +49,8 @@ export const ROUTES = {
   // Matching stack
   MATCHING_MAIN: 'MatchingMain',
   MATCHING_RESULT_DETAILS: 'MatchingResultDetails',
+  MATCHING_ITEM_DETAILS: 'MatchingItemDetails',
+  MATCHING_PRODUCT_DETAIL: 'MatchingProductDetail',
 
   // Recommendation stack (root-level)
   RECOMMENDATION: 'Recommendation',
@@ -78,4 +80,5 @@ export const SOURCE = {
   HOME: 'HOME',
   STORE: 'STORE',
   WARDROBE: 'WARDROBE',
+  AVATAR_DETAIL: 'AVATAR_DETAIL',
 };

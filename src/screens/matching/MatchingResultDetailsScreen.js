@@ -53,7 +53,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
   const score = match?.score || 0;
   const explanation = match?.explanation || "";
   const { themeVersion } = useTheme();
-  const { isFavorite, addItem, removeItem } = useFavorites();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const itemId = item?.id?.replace("store_", "");
 
   const [selectedSize, setSelectedSize] = useState("m");
@@ -139,11 +139,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
           <TouchableOpacity onPress={async () => {
             if (!itemId) return;
             try {
-              if (isFavorite(itemId)) {
-                await removeItem(itemId);
-              } else {
-                await addItem(itemId, "PRODUCT");
-              }
+              await toggleFavorite(itemId, "PRODUCT");
             } catch (e) {
             }
           }}>

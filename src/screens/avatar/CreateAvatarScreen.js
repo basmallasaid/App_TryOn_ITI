@@ -12,7 +12,6 @@ import {
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
-import Typography from "../../constants/theme/typography";
 import AvatarPreview from "../../components/avatar/AvatarPreview";
 import MeasurementSlider from "../../components/avatar/MeasurementSlider";
 import ColorSelector from "../../components/avatar/ColorSelector";
@@ -20,9 +19,10 @@ import GenderOptionCard from "../../components/profile/GenderOptionCard";
 import AvatarTabs from "../../components/avatar/AvatarTabs";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import CustomBackButton from "../../components/common/CustomBackButton";
+import LoadingOverlay from "../../components/common/LoadingOverlay";
 import { IMAGES } from "../../constants/images/images";
 import { generateAvatar } from "../../api/avatar_services/avatarService";
-import { ROUTES, SOURCE } from "../../navigation/routes";
+import { ROUTES } from "../../navigation/routes";
 import { useFeedback } from "../../context/FeedbackContext";
 import { useProfileContext } from "../../context/ProfileContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
@@ -171,6 +171,7 @@ const CreateAvatarScreen = ({ navigation }) => {
   const tabList = tabs(t);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState(null);
   const totalSteps = tabList.length;
 
   const [avatarProfile, setAvatarProfile] = useState({
@@ -186,35 +187,41 @@ const CreateAvatarScreen = ({ navigation }) => {
     setAvatarProfile((prev) => ({ ...prev, [key]: value }));
   }, []);
 
+  const buildPayload = useCallback(() => ({
+    age: `${avatarProfile.age}y`,
+    height: `${avatarProfile.height}cm`,
+    weight: `${avatarProfile.weight}kg`,
+    gender: avatarProfile.gender.toLowerCase(),
+    skin_tone: avatarProfile.skinTone,
+    face_shape: "oval",
+    hair_color: avatarProfile.hairColor,
+    eye_color: "brown eyes",
+    beard_style: "clean shave",
+    facial_expression: "smiling",
+  }), [avatarProfile]);
+
   const handleGenerate = useCallback(async () => {
     if (!avatarProfile.gender || !avatarProfile.skinTone || !avatarProfile.hairColor) {
       Alert.alert(t("avatar.create.missingFields"), t("avatar.create.missingFieldsMessage"));
-      setLoading(false);
       return;
     }
     setLoading(true);
     try {
-      const payload = {
-        age: `${avatarProfile.age}y`,
-        height: `${avatarProfile.height}cm`,
-        weight: `${avatarProfile.weight}kg`,
-        gender: avatarProfile.gender.toLowerCase(),
-        skin_tone: avatarProfile.skinTone,
-        face_shape: "oval",
-        hair_color: avatarProfile.hairColor,
-        eye_color: "brown eyes",
-        beard_style: "clean shave",
-        facial_expression: "smiling",
-      };
+      const payload = buildPayload();
       const response = await generateAvatar(payload);
+      const imageUrl = response?.avatar?.image_url || response?.image_url || response?.imageUrl || null;
+      setGeneratedImage(imageUrl ? { uri: imageUrl } : null);
       await refreshProfile();
-      navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarImage: response, source: SOURCE.HOME });
+      navigation.navigate(ROUTES.MAIN, {
+        screen: ROUTES.PROFILE,
+        params: { screen: ROUTES.AVATAR_DETAIL },
+      });
     } catch (error) {
       showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(error, t) });
     } finally {
       setLoading(false);
     }
-  }, [avatarProfile, navigation, t, refreshProfile]);
+  }, [avatarProfile, t, buildPayload, refreshProfile, navigation, showFeedback]);
 
   const tabKeys = tabList.map((t) => t.key);
   const activeTab = tabList[currentStep];
@@ -252,6 +259,12 @@ const CreateAvatarScreen = ({ navigation }) => {
       onUpdate: updateProfile,
     },
   }));
+
+  const buttonLabel = isLastStep
+    ? t("avatar.create.generateAvatar")
+    : t("avatar.create.next");
+
+  const buttonDisabled = !canProceed || loading;
 
   const styles = React.useMemo(() => StyleSheet.create({
   safeArea: {
@@ -333,7 +346,7 @@ const CreateAvatarScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.bodySection}>
-          <AvatarPreview image={IMAGES.AVATAR} />
+          <AvatarPreview image={generatedImage || IMAGES.AVATAR} />
 
           <AvatarTabs
             tabs={tabsWithProps}
@@ -347,15 +360,15 @@ const CreateAvatarScreen = ({ navigation }) => {
 
         <View style={styles.buttonWrap}>
           <CustomizeAppButtonFilled
-            label={isLastStep ? t("avatar.create.generateAvatar") : t("avatar.create.next")}
+            label={buttonLabel}
             onPress={handleNext}
-            disabled={!canProceed}
-            loading={loading}
+            disabled={buttonDisabled}
             backgroundColor={Colors.primary}
           />
         </View>
       </View>
     </ScrollView>
+    <LoadingOverlay visible={loading} type="general" />
   </SafeAreaView>
 );
 };

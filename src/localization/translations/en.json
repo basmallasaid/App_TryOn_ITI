@@ -185,6 +185,7 @@
       "next": "Next",
       "missingFields": "Missing Fields",
       "missingFieldsMessage": "Please fill in all required fields before generating your avatar.",
+      "generated": "Avatar generated successfully",
       "failed": "Failed to generate avatar",
       "skinTones": {
         "veryLight": "Very Light",

@@ -34,6 +34,7 @@ import { deleteAccount } from "../../api/user_services/userService";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
 const ProfileScreen = ({ navigation }) => {
   const { t, i18n } = useTranslation();
@@ -157,7 +158,7 @@ const ProfileScreen = ({ navigation }) => {
       logout();
     } catch (err) {
       setDeleteModalVisible(false);
-      showFeedback({ type: "error", title: t("common.error"), message: err.response?.data?.message || t("common.error") });
+      showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(err, t) });
     } finally {
       setDeleting(false);
     }

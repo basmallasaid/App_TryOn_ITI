@@ -27,6 +27,8 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import SelectionChip from "../../components/wardrobe/SelectionChip";
 import QuestionGroup from "../../components/wardrobe/QuestionGroup";
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
+import { translateWardrobeItem } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
 
 const CATEGORIES = ["Bottom", "Top", "Dress", "Suit", "Bag", "Shoes", "Jacket", "Accessories"];
 const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
@@ -50,7 +52,10 @@ const ItemDetailsScreen = ({ route, navigation }) => {
     try {
       setLoading(true);
       const id = analysisId || itemId;
-      const data = await getWardrobeItem(id);
+      let data = await getWardrobeItem(id);
+      if (i18n.language === 'ar') {
+        data = await translateWardrobeItem(data, 'ar');
+      }
       setItemData(data);
     } catch (error) {
     } finally {
@@ -183,7 +188,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
           </View>
         </View>
 
-        <Text style={styles.detailsLabel}>Item Details</Text>
+        <Text style={styles.detailsLabel}>{t("wardrobe.details.itemDetailsLabel")}</Text>
 
         <View style={styles.dataCard}>
           <QuestionGroup title={t("wardrobe.details.category")}>

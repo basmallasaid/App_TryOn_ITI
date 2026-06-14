@@ -32,6 +32,8 @@ import SparkleIcon from "../../components/recycle/SparkleIcon";
 import { ROUTES } from "../../navigation/routes";
 import GradientBorder from "../../components/recycle/GradientBorder";
 import DashedGradientBorder from "../../components/recycle/DashedGradientBorder";
+import { translateDesignIdea } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
 
 const MAX_ITEMS = 2;
 
@@ -232,7 +234,11 @@ export default function RecycleScreen({ navigation }) {
 
       if (result.success) {
         setSessionId(result.session_id);
-        setIdeas(result.ideas || []);
+        let ideasList = result.ideas || [];
+        if (i18n.language === 'ar') {
+          ideasList = await Promise.all(ideasList.map(idea => translateDesignIdea(idea, 'ar')));
+        }
+        setIdeas(ideasList);
         scrollToRef(ideasSectionRef);
       } else {
         setApiError(result.error || t("recycle.analysisFailed"));
@@ -254,11 +260,18 @@ export default function RecycleScreen({ navigation }) {
 
       if (result.success) {
         const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId);
+        const displayTitle = i18n.language === 'ar' && selectedIdea?.title_ar
+          ? selectedIdea.title_ar
+          : selectedIdea?.title || t("recommendation.generatedDesign");
+        const displayDesc = i18n.language === 'ar' && selectedIdea?.design_description_ar
+          ? selectedIdea.design_description_ar
+          : selectedIdea?.design_description || "";
+
         navigation.navigate(ROUTES.RECYCLE_RESULT, {
           resultImageUri: result.image_url,
-          designTitle: selectedIdea?.title || t("recommendation.generatedDesign"),
+          designTitle: displayTitle,
           designTitleAr: selectedIdea?.title_ar || null,
-          designDescription: selectedIdea?.design_description || "",
+          designDescription: displayDesc,
           designDescriptionAr: selectedIdea?.design_description_ar || null,
           sessionId,
           ideaId: selectedIdeaId,

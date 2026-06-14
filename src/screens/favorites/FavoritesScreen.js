@@ -24,13 +24,19 @@ const CARD_GAP = 12;
 const HORIZONTAL_PADDING = 16;
 const CARD_WIDTH = (width - HORIZONTAL_PADDING * 2 - CARD_GAP) / 2;
 
-const CATEGORIES = ["All", "Wardrobe", "Store", "Try On", "Recycle"];
-
 const FavoritesScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const { items, loading, error, refetch, removeItem } = useFavorites();
   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const CATEGORIES = [
+    { key: "All", label: t("favorites.categories.all") },
+    { key: "Wardrobe", label: t("favorites.categories.wardrobe") },
+    { key: "Store", label: t("favorites.categories.store") },
+    { key: "Try On", label: t("favorites.categories.try on") },
+    { key: "Recycle", label: t("favorites.categories.recycle") },
+  ];
 
   useFocusEffect(
     useCallback(() => {
@@ -256,18 +262,18 @@ const FavoritesScreen = ({ navigation }) => {
         <FlatList
           horizontal
           data={CATEGORIES}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.filterScroll}
           renderItem={({ item }) => {
-            const isActive = selectedCategory === item;
+            const isActive = selectedCategory === item.key;
             return (
               <TouchableOpacity
                 style={[
                   styles.filterChip,
                   isActive && styles.filterChipActive,
                 ]}
-                onPress={() => setSelectedCategory(item)}
+                onPress={() => setSelectedCategory(item.key)}
                 activeOpacity={0.8}
               >
                 <Text
@@ -276,9 +282,7 @@ const FavoritesScreen = ({ navigation }) => {
                     isActive && styles.filterLabelActive,
                   ]}
                 >
-                  {t(`favorites.categories.${item.toLowerCase()}`, {
-                    defaultValue: item,
-                  })}
+                  {item.label}
                 </Text>
               </TouchableOpacity>
             );

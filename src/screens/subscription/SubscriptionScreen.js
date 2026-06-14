@@ -22,6 +22,7 @@ import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
 import * as paymentService from "../../api/payment_services/paymentService";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
 export default function SubscriptionScreen({ navigation }) {
   const { t } = useTranslation();
@@ -61,7 +62,7 @@ export default function SubscriptionScreen({ navigation }) {
 
   const handleSubscribe = async () => {
     if (!user?.token) {
-      Alert.alert("Authentication Required", "Please log in to subscribe.");
+      Alert.alert(t("subscription.authRequiredTitle"), t("subscription.authRequiredMessage"));
       return;
     }
 
@@ -87,9 +88,7 @@ export default function SubscriptionScreen({ navigation }) {
       await paymentService.syncSubscription(user._id);
       navigation.navigate(ROUTES.MANAGE_SUBSCRIPTION);
     } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        "Something went wrong. Please try again.";
+      const message = getUserFriendlyErrorMessage(err, t);
       showFeedback({ type: "error", title: t("subscription.checkoutError"), message });
     } finally {
       setLoading(false);

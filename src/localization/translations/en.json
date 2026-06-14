@@ -18,6 +18,14 @@
     "cameraPermission": "Camera permission is required.",
     "galleryPermission": "Gallery permission is required."
   },
+  "errors": {
+    "networkError": "Network connection failed. Please check your internet and try again.",
+    "imageGenerationFailed": "Image generation failed. Please try again.",
+    "quotaReached": "You have reached your usage limit. Please try again later.",
+    "authError": "Authentication error. Please log in again.",
+    "serverError": "Server error. Please try again later.",
+    "generic": "Something went wrong. Please try again."
+  },
   "auth": {
     "login": {
       "title": "Welcome Back 👋",
@@ -482,7 +490,8 @@
       "color": "Color",
       "category": "Category",
       "season": "Season",
-      "style": "Style"
+      "style": "Style",
+      "itemDetailsLabel": "Item Details"
     },
     "verify": {
       "title": "Add to Wardrobe",
@@ -527,6 +536,7 @@
     "loadError": "Unable to load products. Please try again.",
     "noProducts": "No products found for this filter.",
     "currency": "EGP",
+    "badge": "Match",
     "productCard": {
       "tryOn": "Try On",
       "tryOnLink": "Try-on"
@@ -650,6 +660,9 @@
     "subtitle": "Subscribe to access avatar customization and more",
     "subscribe": "Subscribe Now",
     "bestValue": "Best Value",
+    "authRequiredTitle": "Authentication Required",
+    "authRequiredMessage": "Please log in to subscribe.",
+    "errorFallback": "Something went wrong. Please try again.",
     "selectedPlan": "You selected the {{plan}} plan. Payment integration coming soon.",
     "choosePlan": "Choose Your Plan",
     "choosePlanSub": "Unlock the full potential of your digital atelier.",

@@ -34,6 +34,7 @@ import { useFavorites } from "../../context/FavoritesContext";
 import { ROUTES } from "../../navigation/routes";
 import { translateMatch } from "../../utils/dynamicTranslator";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
 export default function MatchingScreen({ navigation }) {
   const { t } = useTranslation();
@@ -183,11 +184,10 @@ export default function MatchingScreen({ navigation }) {
         }
       }
     } catch (e) {
-      const msg = e.response?.data || e.message;
       showFeedback({
         type: "error",
         title: t("matching.matchError"),
-        message: typeof msg === "string" ? msg : JSON.stringify(msg),
+        message: getUserFriendlyErrorMessage(e, t),
       });
       setWardrobeMatches([]);
       setStoreMatches([]);

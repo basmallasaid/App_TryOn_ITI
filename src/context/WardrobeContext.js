@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getWardrobeItems,deleteWardrobeItem } from '../api/wardrobe_services/wardrobeService';
 import { useAuth } from './AuthContext';
+import { getUserFriendlyErrorMessage } from '../utils/errorMessages';
+import i18n from '../localization/i18n';
 
 const WardrobeContext = createContext();
 
@@ -18,7 +20,7 @@ export const WardrobeProvider = ({ children }) => {
       const data = await getWardrobeItems();
       setItems(data ?? []);
     } catch (e) {
-      setError(e.response?.data?.message || 'Failed to load wardrobe.');
+      setError(getUserFriendlyErrorMessage(e, i18n.t.bind(i18n)));
     } finally {
       setLoading(false);
     }

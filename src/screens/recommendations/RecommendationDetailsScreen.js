@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Platform,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -17,11 +18,15 @@ import OutfitOverviewCard from "../../components/recommendations/OutfitOverviewC
 import OutfitItemCard from "../../components/recommendations/OutfitItemCard";
 import { getItemsList } from "../../utils/getItemImage";
 import { useRecommendation } from "../../context/RecommendationContext";
+import { translateRecommendation } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
+
 
 function formatRecommendationDate(dateStr) {
   if (!dateStr) return null;
   const d = new Date(dateStr);
-  return d.toLocaleDateString("en-US", {
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
+  return d.toLocaleDateString(locale, {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -35,9 +40,21 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
   const { t } = useTranslation();
   const { todaysOutfit } = useRecommendation();
   const outfit = route.params?.outfit || todaysOutfit;
-  const items = getItemsList(outfit);
+  const [translatedOutfit, setTranslatedOutfit] = useState(null);
+  const items = getItemsList(translatedOutfit || outfit);
   const hasData = outfit && items.length > 0;
   const recommendedDate = formatRecommendationDate(outfit?.created_at);
+
+  useEffect(() => {
+    const translateOutfit = async () => {
+      if (i18n.language !== 'ar' || !outfit) return;
+      try {
+        const translated = await translateRecommendation(outfit, 'ar');
+        setTranslatedOutfit(translated);
+      } catch (err) {}
+    };
+    translateOutfit();
+  }, [outfit]);
 
   return (
     <SafeAreaView style={styles.safeArea}>

@@ -27,6 +27,7 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
 import LoadingOverlay from "../../components/common/LoadingOverlay";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import {
   virtualTryOn,
   virtualTryOnOutfit,
@@ -343,11 +344,7 @@ export default function TryOnScreen({ navigation, route }) {
 
       navigation.navigate(ROUTES.TRY_ON_RESULT, { result });
     } catch (e) {
-      const serverMsg =
-        e.response?.data?.message ||
-        e.response?.data?.error ||
-        JSON.stringify(e.response?.data);
-      const msg = serverMsg || e.message || t("tryOn.virtualTryOn.virtualTryOnFailed");
+      const msg = getUserFriendlyErrorMessage(e, t);
       setGenerateError(msg);
       showFeedback({ type: "error", title: t("common.error"), message: msg });
     } finally {

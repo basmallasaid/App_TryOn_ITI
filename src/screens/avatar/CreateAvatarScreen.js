@@ -25,6 +25,7 @@ import { generateAvatar } from "../../api/avatar_services/avatarService";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 import { useFeedback } from "../../context/FeedbackContext";
 import { useProfileContext } from "../../context/ProfileContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
 const useSubStyles = (themeVersion) => React.useMemo(() => StyleSheet.create({
   tabContent: {
@@ -209,7 +210,7 @@ const CreateAvatarScreen = ({ navigation }) => {
       await refreshProfile();
       navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarImage: response, source: SOURCE.HOME });
     } catch (error) {
-      showFeedback({ type: "error", title: t("common.error"), message: error.response?.data?.message || t("avatar.create.failed") });
+      showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(error, t) });
     } finally {
       setLoading(false);
     }

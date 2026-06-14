@@ -15,6 +15,9 @@ import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
+import { translateProduct, translateMatch } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
 
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
@@ -41,7 +44,10 @@ export default function ProductDetailScreen({ route }) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const data = await getProductById(productId);
+        let data = await getProductById(productId);
+        if (i18n.language === 'ar') {
+          data = await translateProduct(data, 'ar');
+        }
         setProduct(data);
         if (data.color_tags?.length > 0) setSelectedColor(data.color_tags[0]);
       } catch (error) {
@@ -61,11 +67,14 @@ export default function ProductDetailScreen({ route }) {
     const fetchMatches = async () => {
       try {
         const matchRes = await getMatchesByAnalysis(productId);
-        const list = matchRes?.matches || matchRes?.data?.matches || (Array.isArray(matchRes) ? matchRes : []);
-        setWardrobeMatches(list.filter((m) => m.item?.source === "wardrobe"));
+        let list = matchRes?.matches || matchRes?.data?.matches || (Array.isArray(matchRes) ? matchRes : []);
+        list = list.filter((m) => m.item?.source === "wardrobe");
+        if (i18n.language === 'ar') {
+          list = await Promise.all(list.map(m => translateMatch(m, 'ar')));
+        }
+        setWardrobeMatches(list);
       } catch (e) {
-        const msg = e.response?.data || e.message;
-        showFeedback({ type: "error", title: t("store.productDetail.matchError"), message: typeof msg === "string" ? msg : JSON.stringify(msg) });
+        showFeedback({ type: "error", title: t("store.productDetail.matchError"), message: getUserFriendlyErrorMessage(e, t) });
         setWardrobeMatches([]);
       } finally {
         setMatchingLoading(false);

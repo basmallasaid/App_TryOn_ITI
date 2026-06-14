@@ -157,3 +157,130 @@ export async function translateMatch(match, targetLang = i18n.language) {
     return match;
   }
 }
+
+/**
+ * Translates notification title and body.
+ */
+export async function translateNotification(notification, targetLang = i18n.language) {
+  if (!notification || targetLang !== "ar") return notification;
+
+  try {
+    const [titleAr, bodyAr] = await Promise.all([
+      translateToArabic(notification.title, targetLang),
+      translateToArabic(notification.body, targetLang),
+    ]);
+
+    return {
+      ...notification,
+      title: titleAr || notification.title,
+      body: bodyAr || notification.body,
+    };
+  } catch (err) {
+    return notification;
+  }
+}
+
+/**
+ * Translates wardrobe item name, category, season, style, and color.
+ */
+export async function translateWardrobeItem(item, targetLang = i18n.language) {
+  if (!item || targetLang !== "ar") return item;
+
+  try {
+    const [nameAr, categoryAr, seasonAr, styleAr, colorAr, specificTypeAr] = await Promise.all([
+      translateToArabic(item.name, targetLang),
+      translateToArabic(item.category, targetLang),
+      translateToArabic(Array.isArray(item.season) ? item.season.join(", ") : item.season, targetLang),
+      translateToArabic(item.style, targetLang),
+      translateToArabic(item.garments?.[0]?.colors?.[0]?.color, targetLang),
+      translateToArabic(item.garments?.[0]?.specificType, targetLang),
+    ]);
+
+    const translatedSeason = seasonAr && Array.isArray(item.season)
+      ? seasonAr.split(", ").map(s => s.trim())
+      : item.season;
+
+    return {
+      ...item,
+      name: nameAr || item.name,
+      category: categoryAr || item.category,
+      season: translatedSeason || item.season,
+      style: styleAr || item.style,
+      garments: item.garments
+        ? item.garments.map(g => ({
+            ...g,
+            specificType: specificTypeAr || g.specificType,
+            colors: g.colors
+              ? g.colors.map(c => ({ ...c, color: colorAr || c.color }))
+              : g.colors,
+          }))
+        : item.garments,
+    };
+  } catch (err) {
+    return item;
+  }
+}
+
+/**
+ * Translates recommendation outfit items (names, breakdown keys).
+ */
+export async function translateRecommendation(outfit, targetLang = i18n.language) {
+  if (!outfit || targetLang !== "ar") return outfit;
+
+  try {
+    const items = outfit.items || outfit.outfits?.[0]?.items || [];
+    const translatedItems = await Promise.all(
+      items.map(async (item) => {
+        const nameAr = await translateToArabic(item.name, targetLang);
+        return { ...item, name: nameAr || item.name };
+      })
+    );
+
+    if (outfit.outfits?.[0]) {
+      return {
+        ...outfit,
+        outfits: [{ ...outfit.outfits[0], items: translatedItems }],
+      };
+    }
+
+    return { ...outfit, items: translatedItems };
+  } catch (err) {
+    return outfit;
+  }
+}
+
+/**
+ * Translates recycle design idea title and description.
+ */
+export async function translateDesignIdea(idea, targetLang = i18n.language) {
+  if (!idea || targetLang !== "ar") return idea;
+
+  try {
+    const [titleAr, descAr] = await Promise.all([
+      translateToArabic(idea.title, targetLang),
+      translateToArabic(idea.design_description, targetLang),
+    ]);
+
+    return {
+      ...idea,
+      title_ar: titleAr || idea.title_ar,
+      design_description_ar: descAr || idea.design_description_ar,
+    };
+  } catch (err) {
+    return idea;
+  }
+}
+
+/**
+ * Translates a list of items in batch using the MyMemory endpoint.
+ * Useful for translating arrays of dynamic data.
+ */
+export async function translateBatch(items, translatorFn, targetLang = i18n.language) {
+  if (!items || !Array.isArray(items) || targetLang !== "ar") return items;
+
+  const results = [];
+  for (const item of items) {
+    results.push(await translatorFn(item, targetLang));
+  }
+  return results;
+}

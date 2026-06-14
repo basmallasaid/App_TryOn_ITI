@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import { useNotifications } from "../../context/NotificationContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { translateNotification } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
 
 const NOTIF_ICONS = {
   tryon: { name: "tshirt-outline", color: Colors.primary, bg: Colors.primaryLight },
@@ -81,11 +83,26 @@ export default function NotificationsScreen({ navigation }) {
   } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
   const [expandedIds, setExpandedIds] = useState({});
+  const [translatedNotifications, setTranslatedNotifications] = useState([]);
 
   const recentNotifications = useMemo(
-    () => notifications.filter((n) => isRecent(n.createdAt)),
-    [notifications],
+    () => {
+      const base = translatedNotifications.length > 0 ? translatedNotifications : notifications;
+      return base.filter((n) => isRecent(n.createdAt));
+    },
+    [notifications, translatedNotifications],
   );
+
+  useEffect(() => {
+    const translateAll = async () => {
+      if (i18n.language !== 'ar' || notifications.length === 0) return;
+      const results = await Promise.all(
+        notifications.map(n => translateNotification(n, 'ar'))
+      );
+      setTranslatedNotifications(results);
+    };
+    translateAll();
+  }, [notifications]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

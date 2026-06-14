@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import i18n from "../../localization/i18n";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import BenefitsList from "../../components/subscription/BenefitsList";
@@ -22,6 +23,7 @@ import * as paymentService from "../../api/payment_services/paymentService";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
 import { useFeedback } from "../../context/FeedbackContext";
+import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
 export default function ManageSubscriptionScreen({ navigation }) {
   const { t } = useTranslation();
@@ -200,7 +202,8 @@ export default function ManageSubscriptionScreen({ navigation }) {
   const formatDate = (dateStr) => {
     if (!dateStr) return "\u2014";
     const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", {
+    const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
+    return d.toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -227,8 +230,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
       setModalVisible(false);
       setSuccessVisible(true);
     } catch (err) {
-      const message =
-        err.response?.data?.message || t("subscription.cancelFailed");
+      const message = getUserFriendlyErrorMessage(err, t);
       showFeedback({ type: "error", title: t("common.error"), message });
     } finally {
       setCancelling(false);

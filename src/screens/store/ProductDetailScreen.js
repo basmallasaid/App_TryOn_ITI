@@ -28,7 +28,7 @@ export default function ProductDetailScreen({ route }) {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { productId, source } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
   
-  const { isFavorite, addItem, removeItem, refetch: refetchFavorites } = useFavorites();
+  const { isFavorite, toggleFavorite, refetch: refetchFavorites } = useFavorites();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -119,11 +119,7 @@ export default function ProductDetailScreen({ route }) {
             <View style={[styles.headerRight, { flexDirection: "row" }]}>
               <TouchableOpacity style={[styles.iconCircle, { marginLeft: 12, marginRight: 0 }]} onPress={async () => {
                   try {
-                    if (isFavorite(productId)) {
-                      await removeItem(productId);
-                    } else {
-                      await addItem(productId, "PRODUCT");
-                    }
+                    await toggleFavorite(productId, "PRODUCT");
                   } catch {
                     refetchFavorites();
                   }

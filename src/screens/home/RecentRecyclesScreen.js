@@ -31,15 +31,11 @@ export default function RecentRecyclesScreen({ navigation }) {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { recycles, loading } = useRecentRecycles();
-  const { isFavorite, addItem, removeItem } = useFavorites();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const handleToggleFavorite = async (item) => {
     try {
-      if (isFavorite(item._id)) {
-        await removeItem(item._id);
-      } else {
-        await addItem(item._id, 'TRYON');
-      }
+      await toggleFavorite(item._id, 'TRYON');
     } catch (e) {
     }
   };

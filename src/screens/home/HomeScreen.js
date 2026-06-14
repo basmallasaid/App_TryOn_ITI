@@ -32,7 +32,7 @@ export default function HomeScreen({ navigation }) {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { profile, refreshProfile } = useProfileContext();
-  const { isFavorite, addItem, removeItem } = useFavorites();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const { todaysOutfit, todaysWeather, history } = useRecommendation();
   const activeOutfit = todaysOutfit || history?.[0] || null;
   useFocusEffect(
@@ -124,11 +124,7 @@ export default function HomeScreen({ navigation }) {
               isFavorite={isFavorite(item._id)}
               onToggleFavorite={async () => {
                 try {
-                  if (isFavorite(item._id)) {
-                    await removeItem(item._id);
-                  } else {
-                    await addItem(item._id, 'TRYON');
-                  }
+                  await toggleFavorite(item._id, 'TRYON');
                 } catch (e) {
                   showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
                 }
@@ -148,11 +144,7 @@ export default function HomeScreen({ navigation }) {
               isFavorite={isFavorite(item._id)}
               onToggleFavorite={async () => {
                 try {
-                  if (isFavorite(item._id)) {
-                    await removeItem(item._id);
-                  } else {
-                    await addItem(item._id, 'TRYON');
-                  }
+                  await toggleFavorite(item._id, 'TRYON');
                 } catch (e) {
                   showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
                 }

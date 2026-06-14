@@ -41,7 +41,7 @@ export default function MatchingScreen({ navigation }) {
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
   const { items: wardrobeItems } = useWardrobe();
-  const { isFavorite, addItem, removeItem } = useFavorites();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedWardrobeId, setSelectedWardrobeId] = useState(null);
@@ -579,11 +579,7 @@ export default function MatchingScreen({ navigation }) {
                             if (!rawId) return;
                             const id = rawId.replace("store_", "");
                             try {
-                              if (isFavorite(id)) {
-                                await removeItem(id);
-                              } else {
-                                await addItem(id, "PRODUCT");
-                              }
+                              await toggleFavorite(id, "PRODUCT");
                             } catch (e) {
                             }
                           }}

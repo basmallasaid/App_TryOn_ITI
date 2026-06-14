@@ -46,8 +46,7 @@ const WardrobeScreen = ({ navigation }) => {
   const { profile } = useProfileContext();
   const {
     isFavorite,
-    addItem,
-    removeItem,
+    toggleFavorite,
     refetch: refetchFavorites,
   } = useFavorites();
 
@@ -72,8 +71,9 @@ const WardrobeScreen = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
+      if (items.length > 0) return;
       refetch();
-    }, [refetch]),
+    }, [refetch, items.length]),
   );
 
   const gender = profile?.profile?.gender ?? null;
@@ -252,11 +252,7 @@ const WardrobeScreen = ({ navigation }) => {
                 }
                 onToggleFavorite={async () => {
                   try {
-                    if (isFavorite(item._id)) {
-                      await removeItem(item._id);
-                    } else {
-                      await addItem(item._id, 'WARDROBE', item);
-                    }
+                    await toggleFavorite(item._id, 'WARDROBE', item);
                   } catch (e) {
                     showFeedback({ type: "error", title: t("wardrobe.error"), message: getUserFriendlyErrorMessage(e, t) });
                     refetchFavorites();
@@ -268,6 +264,11 @@ const WardrobeScreen = ({ navigation }) => {
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={8}
+          updateCellsBatchingPeriod={50}
+          windowSize={7}
+          initialNumToRender={6}
         />
       )}
     </View>

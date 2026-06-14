@@ -1,0 +1,133 @@
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Platform, StatusBar } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
+
+const PLANS = [
+  { id: 'monthly', price: '$9.99', period: 'month' },
+  { id: 'yearly', price: '$79.99', period: 'year', badge: 'Best Value' },
+];
+
+export default function SubscriptionScreen() {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
+  const { t } = useTranslation();
+
+  const handleSubscribe = (plan) => {
+    Alert.alert("Demo", t("subscription.selectedPlan", { plan: plan.id }));
+  };
+
+  return (
+    <View style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <Text style={styles.title}>{t('subscription.title')}</Text>
+        <Text style={styles.subtitle}>{t('subscription.subtitle')}</Text>
+
+        {PLANS.map((plan) => (
+          <TouchableOpacity
+            key={plan.id}
+            style={styles.planCard}
+            onPress={() => handleSubscribe(plan)}
+            activeOpacity={0.85}
+          >
+            <View style={[styles.planHeader, { flexDirection: "row" }]}>
+              <Text style={styles.planName}>{plan.id === 'monthly' ? t("subscription.monthly") : t("subscription.yearly")}</Text>
+              {plan.badge && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{t("subscription.bestValue")}</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.planPrice}>{plan.price}<Text style={styles.planPeriod}>{plan.period === 'month' ? t("subscription.perMonth") : t("subscription.perYear")}</Text></Text>
+            <View style={[styles.subscribeBtn, { flexDirection: "row" }]}>
+              <Text style={styles.subscribeText}>{t('subscription.subscribe')}</Text>
+              <Ionicons name="arrow-forward" size={18} color={Colors.white} />
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
+const createStyles = () => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    paddingBottom: 40,
+  },
+  title: {
+    fontFamily: 'Roboto_700Bold',
+    fontSize: 28,
+    color: Colors.textPrimary,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontFamily: 'Roboto_400Regular',
+    fontSize: 14,
+    color: Colors.textMuted,
+    marginBottom: 32,
+  },
+  planCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
+  },
+  planHeader: {
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  planName: {
+    fontFamily: 'Roboto_600SemiBold',
+    fontSize: 18,
+    color: Colors.textPrimary,
+  },
+  badge: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+  },
+  badgeText: {
+    fontFamily: 'Roboto_500Medium',
+    fontSize: 11,
+    color: Colors.textInverse,
+  },
+  planPrice: {
+    fontFamily: 'Roboto_700Bold',
+    fontSize: 32,
+    color: Colors.textPrimary,
+    marginBottom: 16,
+  },
+  planPeriod: {
+    fontFamily: 'Roboto_400Regular',
+    fontSize: 16,
+    color: Colors.textMuted,
+  },
+  subscribeBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: Colors.error,
+    paddingVertical: 14,
+    borderRadius: 8,
+  },
+  subscribeText: {
+    fontFamily: 'Roboto_600SemiBold',
+    fontSize: 16,
+    color: Colors.textInverse,
+  },
+});

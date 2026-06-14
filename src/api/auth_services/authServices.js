@@ -15,7 +15,6 @@ export const login = async (
   tokenSaver = saveToken
 ) => {
   const { data } = await client.post(ENDPOINTS.LOGIN, { email, password });
-  console.log("Login successful:", data);
   await tokenSaver(data.token);
   await saveUserId(data._id);
   return { email: data.email, token: data.token, _id: data._id };

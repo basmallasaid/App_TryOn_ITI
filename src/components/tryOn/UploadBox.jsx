@@ -3,9 +3,36 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Rect, Defs, LinearGradient as SvgGradient, Stop } from "react-native-svg";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function UploadBox({ label, onPress, style }) {
+  const { themeVersion } = useTheme();
   const [layout, setLayout] = useState({ width: 0, height: 0 });
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    container: {
+      width: "90%",
+      height: 450,
+      alignSelf: "center",
+      borderRadius: 24,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "transparent",
+      marginVertical: 16,
+    },
+    inner: {
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 20,
+    },
+    text: {
+      fontFamily: "Roboto_500Medium",
+      fontSize: 14,
+      color: Colors.textMuted,
+      textAlign: "center",
+      marginTop: 10,
+    },
+  }), [themeVersion]);
 
   return (
     <TouchableOpacity
@@ -44,28 +71,3 @@ export default function UploadBox({ label, onPress, style }) {
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: "90%",
-    height: 450,
-    alignSelf: "center",
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "transparent",
-    marginVertical: 16,
-  },
-  inner: {
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  text: {
-    fontFamily: "Roboto_500Medium",
-    fontSize: 14,
-    color: Colors.textMuted,
-    textAlign: "center",
-    marginTop: 10,
-  },
-});

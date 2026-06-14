@@ -1,133 +1,27 @@
-// import React from "react";
-// import { View, Text, StyleSheet, Dimensions, ScrollView } from "react-native";
-// import Colors from "../../constants/theme/colors";
-// import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
-// import { ANIMATIONS } from "../../constants/images/animations";
-// import LottieView from "lottie-react-native";
-
-// const { width } = Dimensions.get("window");
-
-// const WardrobeEmptyState = ({ onAdd }) => {
-//   return (
-//     <View style={styles.container}>
-//       <ScrollView >
-//         {/* Title */}
-//         <Text style={styles.title}>Your wardrobe is empty</Text>
-
-//         {/* Subtitle */}
-//         <Text style={styles.subtitle}>Add your clothes to get started</Text>
-
-//         {/* Illustration */}
-//         <LottieView
-//           source={ANIMATIONS.NOT_FOUND}
-//           autoPlay
-//           loop
-//           style={styles.animation}
-//         />
-
-//         {/* Action Button */}
-//         <View style={styles.buttonWrapper}>
-//           <CustomizeAppButtonFilled
-//             label="Add to wardrobe"
-//             onPress={onAdd}
-//             backgroundColor={Colors.primary}
-//           />
-//         </View>
-//       </ScrollView>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#F5F6F7",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     paddingHorizontal: 26,
-//   },
-//   title: {
-//     fontFamily: "Roboto_700Bold",
-//     fontSize: 24,
-//     lineHeight: 38.4,
-//     color: Colors.textPrimary,
-//     textAlign: "center",
-//   },
-//   subtitle: {
-//     fontFamily: "Roboto_400Regular",
-//     fontSize: 16,
-//     lineHeight: 16, // line-height 100% of 16px
-//     color: "#6B7280",
-//     textAlign: "center",
-//     marginTop: 8,
-//     marginBottom: 40,
-//     paddingBottom: 12,
-//   },
-//   animation: {
-//     width: 250,
-//     height: 280,
-//   },
-//   buttonWrapper: {
-//     width: "100%",
-//     marginTop: "40%",
-//   },
-// });
-
-// export default WardrobeEmptyState;
 import React from "react";
 import { View, Text, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 import { ANIMATIONS } from "../../constants/images/animations";
 import LottieView from "lottie-react-native";
 
 const WardrobeEmptyState = ({ onAdd }) => {
   const { t } = useTranslation();
-  return (
-    <ScrollView 
-      style={styles.container}
-      // flexGrow: 1 is key to making justifyContent work inside a ScrollView
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* Title */}
-      <Text style={styles.title}>{t('wardrobe.emptyTitle')}</Text>
+  const { themeVersion } = useTheme();
 
-      {/* Subtitle */}
-      <Text style={styles.subtitle}>{t('wardrobe.emptySubtitle')}</Text>
-
-      {/* Illustration */}
-      <LottieView
-        source={ANIMATIONS.NOT_FOUND}
-        autoPlay
-        loop
-        style={styles.animation}
-      />
-
-      {/* Action Button */}
-      <View style={styles.buttonWrapper}>
-        <CustomizeAppButtonFilled
-          label={t('wardrobe.addButton')}
-          onPress={onAdd}
-          backgroundColor={Colors.primary}
-        />
-      </View>
-    </ScrollView>
-  );
-};
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F6F7",
+    backgroundColor: Colors.backgroundColor,
   },
   scrollContent: {
-    flexGrow: 1, // Allows content to fill the screen to center vertically
-    justifyContent: "center", // Vertically centers content if it fits on one screen
-    alignItems: "center", // Horizontally centers content
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 26,
-    paddingVertical: 40, // Ensures space at top/bottom on very small screens
+    paddingVertical: 40,
   },
   title: {
     fontFamily: "Roboto_700Bold",
@@ -140,11 +34,11 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto_400Regular",
     fontSize: 16,
     lineHeight: 16,
-    color: "#6B7280",
+    color: Colors.textMuted,
     textAlign: "center",
     marginTop: 8,
     marginBottom: 20,
-    paddingBottom:20, // Reduced from 40 to keep it tighter
+    paddingBottom:20,
   },
   animation: {
     width: 280,
@@ -153,8 +47,37 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     width: "100%",
-    marginTop: 30, // Changed from 40% to a fixed margin for consistency
+    marginTop: 30,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.title}>{t("wardrobe.empty.title")}</Text>
+
+      <Text style={styles.subtitle}>{t("wardrobe.empty.subtitle")}</Text>
+
+      <LottieView
+        source={ANIMATIONS.NOT_FOUND}
+        autoPlay
+        loop
+        style={styles.animation}
+      />
+
+      <View style={styles.buttonWrapper}>
+        <CustomizeAppButtonFilled
+          label={t("wardrobe.empty.addButton")}
+          onPress={onAdd}
+          backgroundColor={Colors.primary}
+        />
+      </View>
+    </ScrollView>
+  );
+};
+
 
 export default WardrobeEmptyState;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import Typography from "../../constants/theme/typography";
 import { Ionicons } from "@expo/vector-icons";
-
 const CustomizeTextInput = ({
   label,
   placeholder,
@@ -27,6 +28,9 @@ const CustomizeTextInput = ({
   onRightIconPress,
   editable = true,
 }) => {
+  const { themeVersion } = useTheme();
+  const { i18n } = useTranslation();
+  const isRTL = i18n.dir() === "rtl";
   const [hidden, setHidden] = useState(secureTextEntry);
 
   const borderColor =
@@ -45,73 +49,7 @@ const CustomizeTextInput = ({
 
   const iconColor = state === "default" ? Colors.iconGray : stateColor;
 
-  return (
-    <View style={[styles.wrapper, wrapperStyle]}>
-      {label ? (
-        <Text
-          style={[
-            styles.label,
-            {
-              color: stateColor,
-            },
-          ]}
-        >
-          {label}
-        </Text>
-      ) : null}
-
-      <View
-        style={[
-          styles.container,
-          {
-            borderColor,
-          },
-        ]}
-      >
-        <TextInput
-          style={[
-            styles.input,
-            {
-              color: stateColor,
-            },
-          ]}
-          placeholder={placeholder}
-          placeholderTextColor={
-            state === "error" ? Colors.error : Colors.textMuted
-          }
-          value={value}
-          onChangeText={onChangeText}
-          secureTextEntry={hidden}
-          keyboardType={keyboardType}
-          autoCapitalize={autoCapitalize}
-          autoFocus={autoFocus}
-          editable={editable}
-        />
-
-        <View style={styles.rightSection}>
-          {secureTextEntry && (
-            <TouchableOpacity onPress={() => setHidden((h) => !h)}>
-              <Ionicons
-                name={hidden ? "eye-off-outline" : "eye-outline"}
-                size={20}
-                color={iconColor}
-              />
-            </TouchableOpacity>
-          )}
-
-          {!secureTextEntry && rightIcon}
-        </View>
-
-      </View>
-
-      {state === "error" && errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
-      ) : null}
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   wrapper: {
     marginBottom: 14,
   },
@@ -159,6 +97,69 @@ const styles = StyleSheet.create({
   alignItems: 'center',
   justifyContent: 'center',
 },
-});
+}), [themeVersion]);
+
+  return (
+    <View style={[styles.wrapper, wrapperStyle]}>
+      {label ? (
+        <Text
+          style={[
+            styles.label,
+            {
+              color: stateColor,
+            },
+          ]}
+        >
+          {label}
+        </Text>
+      ) : null}
+
+      <View
+        style={[
+          styles.container,
+          { borderColor },
+        ]}
+      >
+        <TextInput
+          style={[
+            styles.input,
+            {
+              color: stateColor,
+              textAlign: isRTL ? "right" : "left",
+            },
+          ]}
+          placeholder={placeholder}
+          placeholderTextColor={
+            state === "error" ? Colors.error : Colors.textMuted
+          }
+          value={value}
+          onChangeText={onChangeText}
+          secureTextEntry={hidden}
+          keyboardType={keyboardType}
+          autoCapitalize={autoCapitalize}
+          autoFocus={autoFocus}
+          editable={editable}
+        />
+        <View style={[styles.rightSection, { alignSelf: "center" }]}>
+          {secureTextEntry && (
+            <TouchableOpacity onPress={() => setHidden((h) => !h)}>
+              <Ionicons
+                name={hidden ? "eye-off-outline" : "eye-outline"}
+                size={20}
+                color={iconColor}
+              />
+            </TouchableOpacity>
+          )}
+          {!secureTextEntry && rightIcon}
+        </View>
+      </View>
+
+      {state === "error" && errorMessage ? (
+        <Text style={styles.errorText}>{errorMessage}</Text>
+      ) : null}
+    </View>
+  );
+};
+
 
 export default CustomizeTextInput;

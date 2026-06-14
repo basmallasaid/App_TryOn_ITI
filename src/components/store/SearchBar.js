@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from 'react-i18next';
 
 export const SearchBar = ({
@@ -9,6 +11,29 @@ export const SearchBar = ({
   onSearch,
 }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const styles = useMemo(() => StyleSheet.create({
+    searchContainer: {
+      backgroundColor: Colors.white,
+      borderWidth: 1,
+      borderColor: Colors.borderDefault,
+      paddingHorizontal: 15,
+      height: 55,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginBottom: 40,
+      marginTop: 10,
+      flexDirection: 'row',
+    },
+    input: {
+      flex: 1,
+      fontSize: 16,
+      color: Colors.textPrimary,
+      marginLeft: 10,
+      marginRight: 0,
+    },
+  }), [themeVersion]);
+
   return (
     <View style={styles.searchContainer}>
       <Ionicons name="search-outline" size={20} color="#9BA5B0" />
@@ -25,25 +50,3 @@ export const SearchBar = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  searchContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#FFF',
-    borderWidth: 1,
-    borderColor: '#D5D9DE',
-    paddingHorizontal: 15,
-    height: 55,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 40,
-    marginTop: 10,
-  },
-
-  input: {
-    flex: 1,
-    marginLeft: 10,
-    fontSize: 16,
-    color: '#1A1C24',
-  },
-});

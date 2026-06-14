@@ -63,7 +63,6 @@ async function translateChunk(chunk, targetLang) {
     clearTimeout(timeout);
 
     if (!res.ok) {
-      console.warn(`[DynamicTranslation] Chunk failed (${res.status})`);
       return chunk;
     }
 
@@ -75,7 +74,6 @@ async function translateChunk(chunk, targetLang) {
     return chunk;
   } catch (err) {
     clearTimeout(timeout);
-    console.warn("[DynamicTranslation] Chunk call failed:", err.message);
     return chunk;
   }
 }
@@ -105,7 +103,6 @@ export async function translateToArabic(text, targetLang = i18n.language) {
     saveCache(); // Persist cache
     return translated;
   } catch (error) {
-    console.warn("[DynamicTranslation] Translation overall failed:", error.message);
     return text;
   }
 }

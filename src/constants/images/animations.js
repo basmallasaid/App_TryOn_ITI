@@ -5,4 +5,6 @@ export const ANIMATIONS ={
     FIREWORKS:require("../../../assets/animations/fireworks.json"),
     NOT_FOUND:require("../../../assets/animations/not-found.json"),
     EMPTY:require("../../../assets/animations/Empty.json"),
+    SALESMAN:require("../../../assets/animations/sales_man_v2.json"),
+    WAVEANIMATION:require("../../../assets/animations/Wave Animation.json"),
 }

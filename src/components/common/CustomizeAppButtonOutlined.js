@@ -1,7 +1,7 @@
-
+import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
 import Colors from '../../constants/theme/colors';
-
+import { useTheme } from '../../context/ThemeContext';
 const CustomizeAppButtonOutlined = ({
   label,
   onPress,
@@ -13,9 +13,41 @@ const CustomizeAppButtonOutlined = ({
   buttonHeight,
   labelStyle,
 }) => {
+  const { themeVersion } = useTheme();
   const isDisabled = disabled || loading;
   const resolvedBorder = borderColor ?? Colors.success;
   const resolvedText   = textColor   ?? Colors.success;
+
+const styles = React.useMemo(() => StyleSheet.create({
+  button: {
+    width: '100%',
+    height: 48,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    backgroundColor: 'transparent',
+  },
+  disabledOpacity: {
+    opacity: 0.6,
+  },
+  inner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  iconWrap: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  label: {
+    fontFamily: 'Roboto_600SemiBold',
+    fontWeight: '600',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+}), [themeVersion]);
 
   return (
     <TouchableOpacity
@@ -32,8 +64,8 @@ const CustomizeAppButtonOutlined = ({
       {loading ? (
         <ActivityIndicator color={resolvedText} />
       ) : (
-        <View style={styles.inner}>
-          <Text style={[styles.label, { color: resolvedText }, labelStyle]}>{label}</Text>
+        <View style={[styles.inner, { flexDirection: 'row' }]}>
+          <Text style={[styles.label, { color: resolvedText }]}>{label}</Text>
           {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
         </View>
       )}
@@ -41,36 +73,5 @@ const CustomizeAppButtonOutlined = ({
   );
 };
 
-const styles = StyleSheet.create({
-  button: {
-    width: '100%',
-    height: 48,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    backgroundColor: 'transparent',
-  },
-  disabledOpacity: {
-    opacity: 0.6,
-  },
-  inner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  iconWrap: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  label: {
-    fontFamily: 'Roboto_600SemiBold',
-    fontWeight: '600',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-});
 
 export default CustomizeAppButtonOutlined;

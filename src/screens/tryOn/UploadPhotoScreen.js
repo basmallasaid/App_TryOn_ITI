@@ -1,3 +1,4 @@
+import React from "react";
 import {
   View,
   Text,
@@ -14,8 +15,10 @@ import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Rect, Defs, LinearGradient as SvgGradient, Stop } from "react-native-svg";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import Typography from "../../constants/theme/typography";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import PhotoInstructionCard from "../../components/tryOn/PhotoInstructionCard";
 import { openGallery } from "../../utils/cameraAccess";
 import { ROUTES, SOURCE } from "../../navigation/routes";
@@ -24,28 +27,28 @@ const instructions = [
   {
     key: "fullBody",
     mainIconName: "human",
-    iconBgColor: "#DBE8FF",
+    iconBgColor: Colors.primaryLight,
     titleKey: "tryOn.uploadPhoto.instructions.fullBody.title",
     descKey: "tryOn.uploadPhoto.instructions.fullBody.description",
   },
   {
     key: "goodLighting",
     mainIconName: "weather-sunny",
-    iconBgColor: "#FFF3DB",
+    iconBgColor: Colors.accentLight,
     titleKey: "tryOn.uploadPhoto.instructions.goodLighting.title",
     descKey: "tryOn.uploadPhoto.instructions.goodLighting.description",
   },
   {
     key: "faceCamera",
     mainIconName: "camera",
-    iconBgColor: "#E8F0FE",
+    iconBgColor: Colors.primaryLight,
     titleKey: "tryOn.uploadPhoto.instructions.faceCamera.title",
     descKey: "tryOn.uploadPhoto.instructions.faceCamera.description",
   },
   {
     key: "cleanWall",
     mainIconName: "image-outline",
-    iconBgColor: "#F0EBFF",
+    iconBgColor: Colors.accentLight,
     titleKey: "tryOn.uploadPhoto.instructions.cleanWall.title",
     descKey: "tryOn.uploadPhoto.instructions.cleanWall.description",
   },
@@ -53,6 +56,7 @@ const instructions = [
 
 const UploadPhotoScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const [layout, setLayout] = useState({ width: 0, height: 0 });
   const [selectedImage, setSelectedImage] = useState(null);
   const productImage = route?.params?.productImage;
@@ -73,15 +77,15 @@ const UploadPhotoScreen = ({ navigation, route }) => {
     }
   };
 
+  const handleRemovePhoto = () => {
+    setSelectedImage(null);
+  };
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={24} color={Colors.iconGray} />
-        </TouchableOpacity>
+        <CustomBackButton onPress={() => navigation.goBack()} />
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -124,7 +128,12 @@ const UploadPhotoScreen = ({ navigation, route }) => {
               </Svg>
             )}
             {selectedImage ? (
-              <Image source={{ uri: selectedImage }} style={styles.selectedImage} resizeMode="contain" />
+              <View style={styles.selectedImageWrapper}>
+                <Image source={{ uri: selectedImage }} style={styles.selectedImage} resizeMode="contain" />
+                <TouchableOpacity style={styles.removeBtn} onPress={handleRemovePhoto}>
+                  <Ionicons name="close" size={14} color={Colors.white} />
+                </TouchableOpacity>
+              </View>
             ) : (
               <View style={styles.uploadInnerContent}>
                 <Ionicons
@@ -146,7 +155,6 @@ const UploadPhotoScreen = ({ navigation, route }) => {
                 title={t(item.titleKey)}
                 sub={t(item.descKey)}
                 mainIconName={item.mainIconName}
-                iconBgColor={item.iconBgColor}
               />
             ))}
           </View>
@@ -171,7 +179,7 @@ const UploadPhotoScreen = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
@@ -182,19 +190,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    marginBottom: 8,
-  },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 10,
   },
   title: {
     ...Typography.screenTitleLarge,
     textAlign: "center",
     marginBottom: 8,
+    marginTop:12,
   },
   subtitle: {
     fontFamily: "Roboto_400Regular",
@@ -211,13 +214,29 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "transparent",
+    backgroundColor: Colors.white,
     overflow: "hidden",
+  },
+  selectedImageWrapper: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 24,
   },
   selectedImage: {
     width: "100%",
     height: "100%",
     borderRadius: 24,
+  },
+  removeBtn: {
+    position: "absolute",
+    top: 8,
+    right: 12,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: Colors.error,
+    justifyContent: "center",
+    alignItems: "center",
   },
   uploadInnerContent: {
     justifyContent: "center",

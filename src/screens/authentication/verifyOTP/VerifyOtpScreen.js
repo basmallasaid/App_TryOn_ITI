@@ -1,19 +1,21 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import {
   verifyOtp,
   forgotPassword,
 } from "../../../api/auth_services/authServices";
+import { useTheme } from "../../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
 import Colors from "../../../constants/theme/colors";
-import Typography from "../../../constants/theme/typography";
 import OtpInput from "../../../components/common/OtpInput";
 import SuccessModal from "../../../components/common/SuccessModal";
 import VerificationSucessComponent from "../../../components/authentication/VerificationSucessComponent";
@@ -21,6 +23,7 @@ import { ROUTES } from "../../../navigation/routes";
 
 const VerifyOtpScreen = ({ route, navigation }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const { email } = route.params;
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
@@ -28,6 +31,72 @@ const VerifyOtpScreen = ({ route, navigation }) => {
   const [countdown, setCountdown] = useState(60);
   const [expireCountdown, setExpireCountdown] = useState(290);
   const [showModal, setShowModal] = useState(false);
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: Colors.backgroundColor,
+      paddingHorizontal: 24,
+      paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+      paddingBottom: 40,
+    },
+    title: {
+      fontFamily: "Roboto_700Bold",
+      fontWeight: "700",
+      fontSize: 24,
+      lineHeight: 38.4,
+      color: Colors.textPrimary,
+      marginBottom: 8,
+      textAlign: "center",
+    },
+    subtitle: {
+      fontFamily: "Roboto_400Regular",
+      fontWeight: "400",
+      fontSize: 12,
+      lineHeight: 12,
+      color: Colors.textSecondary,
+      marginBottom: 28,
+      textAlign: "center",
+    },
+    label: {
+      fontFamily: "Roboto_600SemiBold",
+      fontWeight: "600",
+      fontSize: 20,
+      lineHeight: 20,
+      marginBottom: 16,
+      marginTop: 30,
+    },
+    errorMsg: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      color: Colors.error,
+      marginBottom: 12,
+      marginTop: 20,
+    },
+    expireText: {
+      marginTop: 50,
+      textAlign: "center",
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      color: Colors.error,
+    },
+    buttonWrap: {
+      marginTop: "80%",
+      marginBottom: 20,
+    },
+    resendWrap: {
+      alignItems: "center",
+      marginBottom: 20,
+    },
+    resendText: {
+      fontFamily: "Roboto_500Medium",
+      fontSize: 13,
+      color: Colors.success,
+    },
+    resendDisabled: {
+      color: Colors.textMuted,
+    },
+  }), [themeVersion]);
 
   useEffect(() => {
     if (countdown === 0) return;
@@ -144,59 +213,5 @@ const VerifyOtpScreen = ({ route, navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: Colors.backgroundColor,
-    paddingHorizontal: 24,
-    paddingTop: 124,
-  },
-  title: {
-    ...Typography.screenTitleLarge,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  subtitle: {
-    ...Typography.screenSubtitle,
-    marginBottom: 28,
-    textAlign: "center",
-  },
-  label: {
-    ...Typography.label,
-    marginBottom: 16,
-    marginTop: 30,
-  },
-  errorMsg: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.error,
-    marginBottom: 12,
-    marginTop: 20,
-  },
-  expireText: {
-    marginTop: 50,
-    textAlign: "center",
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.error,
-  },
-  buttonWrap: {
-    marginTop: "80%",
-    marginBottom: 20,
-  },
-  resendWrap: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  resendText: {
-    fontFamily: "Roboto_500Medium",
-    fontSize: 13,
-    color: Colors.success,
-  },
-  resendDisabled: {
-    color: Colors.textMuted,
-  },
-});
 
 export default VerifyOtpScreen;

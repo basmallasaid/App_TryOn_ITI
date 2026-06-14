@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -11,25 +11,34 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { File, Directory, Paths } from "expo-file-system";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import { IMAGES } from "../../constants/images/images";
 import ActionTab from "../../components/tryOn/ActionTab";
 import WardrobeCard from "../../components/tryOn/WardrobeCard";
 import UploadBox from "../../components/tryOn/UploadBox";
 import ItemSelector from "../../components/tryOn/ItemSelector";
 import { openCamera, openGallery } from "../../utils/cameraAccess";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
-import { virtualTryOn, virtualTryOnOutfit } from "../../api/virtual_tryon_services/virtualTryonService";
+import LoadingOverlay from "../../components/common/LoadingOverlay";
+import {
+  virtualTryOn,
+  virtualTryOnOutfit,
+} from "../../api/virtual_tryon_services/virtualTryonService";
 import { ROUTES } from "../../navigation/routes";
+import GradientBorder from "../../components/recycle/GradientBorder";
+import { useFeedback } from "../../context/FeedbackContext";
 
 export default function TryOnScreen({ navigation, route }) {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const { items: wardrobeItems } = useWardrobe();
   const photoUri = route?.params?.photoUri;
   const avatarImage = route?.params?.avatarImage;
@@ -40,11 +49,11 @@ export default function TryOnScreen({ navigation, route }) {
   const avatarUri =
     typeof avatarImage === "string"
       ? avatarImage
-      : avatarImage?.avatar?.image_url
-      || avatarImage?.image
-      || avatarImage?.imageUrl
-      || avatarImage?.url
-      || null;
+      : avatarImage?.avatar?.image_url ||
+        avatarImage?.image ||
+        avatarImage?.imageUrl ||
+        avatarImage?.url ||
+        null;
 
   useEffect(() => {
     if (avatarId) {
@@ -52,7 +61,14 @@ export default function TryOnScreen({ navigation, route }) {
       getAvatarById(avatarId)
         .then((res) => {
           const avatar = res?.avatar || res;
-          const uri = typeof avatar === "string" ? avatar : avatar?.image_url || avatar?.image || avatar?.imageUrl || avatar?.url || null;
+          const uri =
+            typeof avatar === "string"
+              ? avatar
+              : avatar?.image_url ||
+                avatar?.image ||
+                avatar?.imageUrl ||
+                avatar?.url ||
+                null;
           setAvatarFetchedUri(uri);
         })
         .catch(() => {})
@@ -71,6 +87,7 @@ export default function TryOnScreen({ navigation, route }) {
   const [galleryItemTypes, setGalleryItemTypes] = useState([]);
   const [generating, setGenerating] = useState(false);
   const [generateError, setGenerateError] = useState(null);
+  const itemWidths = useRef({});
 
   const handleCameraCapture = async () => {
     const result = await openCamera();
@@ -113,10 +130,12 @@ export default function TryOnScreen({ navigation, route }) {
     });
     if (type && !prevType && cameraImages[index]) {
       setSelectedItems((prev) =>
-        prev.length >= 2 ? prev : [...prev, cameraImages[index]]
+        prev.length >= 2 ? prev : [...prev, cameraImages[index]],
       );
     } else if (!type && prevType && cameraImages[index]) {
-      setSelectedItems((prev) => prev.filter((id) => id !== cameraImages[index]));
+      setSelectedItems((prev) =>
+        prev.filter((id) => id !== cameraImages[index]),
+      );
     }
   };
 
@@ -136,11 +155,66 @@ export default function TryOnScreen({ navigation, route }) {
     }
   };
 
+  const getWardrobeCategory = (id) => {
+    const item = wardrobeItems.find(i => i._id === id || i.id === id);
+    return item?.category || null;
+  };
+
+  const mapCategoryToType = (cat) => {
+    if (!cat) return null;
+    const t = cat.toLowerCase();
+    if (["tops", "top", "tshirt", "shirt", "jacket", "blouse", "hoodie", "sweater"].includes(t)) return "Tops";
+    if (["pants", "bottom", "jeans", "trousers", "skirt", "shorts", "leggings"].includes(t)) return "Pants";
+    if (["dresses", "dress", "jumpsuit", "overall", "gown", "robe"].includes(t)) return "Dresses";
+    return null;
+  };
+
+  const hasCategoryConflict = (id) => {
+    const newType = mapCategoryToType(getWardrobeCategory(id));
+    if (!newType) return false;
+    for (const existingId of selectedWardrobeIds) {
+      const existingType = mapCategoryToType(getWardrobeCategory(existingId));
+      if (!existingType) continue;
+      if ((existingType === "Tops" || existingType === "Dresses") && (newType === "Tops" || newType === "Dresses")) return true;
+      if (existingType === "Pants" && newType === "Pants") return true;
+    }
+    return false;
+  };
+
+  const computeDisabledOptions = (index, sourceType) => {
+    const allTypes = [];
+    selectedWardrobeIds.forEach(id => {
+      const type = mapCategoryToType(getWardrobeCategory(id));
+      if (type) allTypes.push(type);
+    });
+    if (sourceType === 'camera') {
+      cameraItemTypes.forEach((t, i) => {
+        if (t && i !== index) allTypes.push(t);
+      });
+    } else if (sourceType === 'gallery') {
+      galleryItemTypes.forEach((t, i) => {
+        if (t && i !== index) allTypes.push(t);
+      });
+    }
+    const disabled = new Set();
+    for (const t of allTypes) {
+      if (t === "Tops" || t === "Dresses") { disabled.add("Tops"); disabled.add("Dresses"); }
+      else if (t === "Pants") { disabled.add("Pants"); }
+    }
+    return Array.from(disabled);
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSelectedItems([]);
+    setSelectedWardrobeIds([]);
+  };
+
   const toggleItem = (id) => {
     if (selectedWardrobeIds.includes(id)) {
       setSelectedWardrobeIds(selectedWardrobeIds.filter((i) => i !== id));
       setSelectedItems((prev) => prev.filter((itemId) => itemId !== id));
-    } else if (selectedWardrobeIds.length < 2 && selectedItems.length < 2) {
+    } else if (selectedWardrobeIds.length < 2 && selectedItems.length < 2 && !hasCategoryConflict(id)) {
       setSelectedWardrobeIds([...selectedWardrobeIds, id]);
       setSelectedItems((prev) => [...prev, id]);
     }
@@ -160,7 +234,11 @@ export default function TryOnScreen({ navigation, route }) {
     }
 
     if (uri.startsWith("http")) {
-      const file = await File.downloadFileAsync(uri, new Directory(Paths.cache), { idempotent: true });
+      const file = await File.downloadFileAsync(
+        uri,
+        new Directory(Paths.cache),
+        { idempotent: true },
+      );
       return file.uri;
     }
 
@@ -171,7 +249,9 @@ export default function TryOnScreen({ navigation, route }) {
     let uri, type;
 
     if (selectedWardrobeIds.includes(itemId)) {
-      const item = wardrobeItems.find((i) => i._id === itemId || i.id === itemId);
+      const item = wardrobeItems.find(
+        (i) => i._id === itemId || i.id === itemId,
+      );
       uri = typeof item?.image === "string" ? item.image : null;
       type = item?.category || null;
     } else if (cameraImages.includes(itemId)) {
@@ -191,9 +271,33 @@ export default function TryOnScreen({ navigation, route }) {
   const classifyPosition = (type) => {
     if (!type) return null;
     const t = type.toLowerCase();
-    if (["tops", "top", "tshirt", "shirt", "jacket", "blouse", "hoodie", "sweater"].includes(t)) return "top";
-    if (["pants", "bottom", "jeans", "trousers", "skirt", "shorts", "leggings"].includes(t)) return "bottom";
-    if (["dresses", "dress", "jumpsuit", "overall", "gown", "robe"].includes(t)) return "bottom";
+    if (
+      [
+        "tops",
+        "top",
+        "tshirt",
+        "shirt",
+        "jacket",
+        "blouse",
+        "hoodie",
+        "sweater",
+      ].includes(t)
+    )
+      return "top";
+    if (
+      [
+        "pants",
+        "bottom",
+        "jeans",
+        "trousers",
+        "skirt",
+        "shorts",
+        "leggings",
+      ].includes(t)
+    )
+      return "bottom";
+    if (["dresses", "dress", "jumpsuit", "overall", "gown", "robe"].includes(t))
+      return "bottom";
     return null;
   };
 
@@ -223,9 +327,15 @@ export default function TryOnScreen({ navigation, route }) {
         appendToFormData(formData, "garmentImage", items[0].uri);
         result = await virtualTryOn(formData);
       } else {
-        const classified = items.map((it) => ({ ...it, position: classifyPosition(it.type) }));
-        const topItem = classified.find((p) => p.position === "top") || classified[0];
-        const bottomItem = classified.find((p) => p.position === "bottom") || classified[classified.length - 1];
+        const classified = items.map((it) => ({
+          ...it,
+          position: classifyPosition(it.type),
+        }));
+        const topItem =
+          classified.find((p) => p.position === "top") || classified[0];
+        const bottomItem =
+          classified.find((p) => p.position === "bottom") ||
+          classified[classified.length - 1];
         appendToFormData(formData, "topImage", topItem.uri);
         appendToFormData(formData, "bottomImage", bottomItem.uri);
         result = await virtualTryOnOutfit(formData);
@@ -233,70 +343,215 @@ export default function TryOnScreen({ navigation, route }) {
 
       navigation.navigate(ROUTES.TRY_ON_RESULT, { result });
     } catch (e) {
-      const serverMsg = e.response?.data?.message || e.response?.data?.error || JSON.stringify(e.response?.data);
-      const msg = serverMsg || e.message || "Virtual try-on failed";
+      const serverMsg =
+        e.response?.data?.message ||
+        e.response?.data?.error ||
+        JSON.stringify(e.response?.data);
+      const msg = serverMsg || e.message || t("tryOn.virtualTryOn.virtualTryOnFailed");
       setGenerateError(msg);
-      Alert.alert("Error", msg);
+      showFeedback({ type: "error", title: t("common.error"), message: msg });
     } finally {
       setGenerating(false);
     }
   };
 
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
+
   return (
     <SafeAreaView style={styles.container}>
+      
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={24} color={Colors.iconGray} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>
-          {t("tryOn.virtualTryOn.title")}
-        </Text>
-        <Ionicons name="help-circle-outline" size={24} color={Colors.iconGray} />
+        <CustomBackButton onPress={() => navigation.goBack()} />
+        <Text style={styles.headerTitle}>{t("tryOn.virtualTryOn.title")}</Text>
+        <Ionicons
+          name="help-circle-outline"
+          size={24}
+          color={Colors.iconGray}
+        />
       </View>
-
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {activeTab === "Camera" ? (
           <>
             {cameraImages.length > 0 ? (
               <View style={styles.galleryRow}>
-                {cameraImages.map((uri, index) => (
-                  <View key={index} style={styles.galleryItem}>
-                    <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
-                    <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeCameraImage(index)}>
-                      <Ionicons name="close" size={16} color="white" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                {cameraImages.map((uri, index) => {
+                  const isSelected = !!cameraItemTypes[index];
+                  const isDisabled = selectedItems.length >= 2 && !isSelected;
+                  return (
+                    <View
+                      key={index}
+                      style={[
+                        styles.galleryItem,
+                        isDisabled && { opacity: 0.5 },
+                      ]}
+                      onLayout={(e) => {
+                        itemWidths.current[`cam_${index}`] =
+                          e.nativeEvent.layout.width;
+                      }}
+                    >
+                      {isSelected && itemWidths.current[`cam_${index}`] ? (
+                        <GradientBorder
+                          width={itemWidths.current[`cam_${index}`]}
+                          height={220}
+                          borderRadius={16}
+                        >
+                          <View style={styles.gallerySelectedInner}>
+                            <Image
+                              source={{ uri }}
+                              style={styles.galleryItemImage}
+                              resizeMode="contain"
+                            />
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={20}
+                              color={Colors.secondary}
+                              style={styles.galleryCheckIcon}
+                            />
+                            <TouchableOpacity
+                              style={styles.galleryRemoveBtn}
+                              onPress={() => removeCameraImage(index)}
+                            >
+                              <Ionicons
+                                name="close"
+                  size={14}
+                  color={Colors.white}
+                />
+              </TouchableOpacity>
+            </View>
+          </GradientBorder>
+        ) : (
+          <View style={{ flex: 1 }}>
+            <Image
+              source={{ uri }}
+              style={styles.galleryItemImage}
+              resizeMode="contain"
+            />
+            {isSelected && (
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color={Colors.secondary}
+                style={styles.galleryCheckIcon}
+              />
+            )}
+            <TouchableOpacity
+              style={styles.galleryRemoveBtn}
+              onPress={() => removeCameraImage(index)}
+            >
+              <Ionicons name="close" size={14} color={Colors.white} />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
                 {cameraImages.length < 2 && (
                   <View style={styles.galleryItem}>
-                    <UploadBox label="Open Camera" onPress={handleCameraCapture} style={styles.compactUploadBox} />
+                    <UploadBox
+                      label={t("tryOn.virtualTryOn.openCamera")}
+                      onPress={handleCameraCapture}
+                      style={styles.compactUploadBox}
+                    />
                   </View>
                 )}
               </View>
             ) : (
-              <UploadBox label="Open Camera" onPress={handleCameraCapture} />
+              <UploadBox label={t("tryOn.virtualTryOn.openCamera")} onPress={handleCameraCapture} />
             )}
           </>
         ) : activeTab === "Gallery" ? (
           <>
             {galleryImages.length > 0 ? (
               <View style={styles.galleryRow}>
-                {galleryImages.map((uri, index) => (
-                  <View key={index} style={styles.galleryItem}>
-                    <Image source={{ uri }} style={styles.galleryItemImage} resizeMode="cover" />
-                    <TouchableOpacity style={styles.galleryRemoveBtn} onPress={() => removeGalleryImage(index)}>
-                      <Ionicons name="close" size={16} color="white" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                {galleryImages.map((uri, index) => {
+                  const isSelected = !!galleryItemTypes[index];
+                  const isDisabled = selectedItems.length >= 2 && !isSelected;
+                  return (
+                    <View
+                      key={index}
+                      style={[
+                        styles.galleryItem,
+                        isDisabled && { opacity: 0.5 },
+                      ]}
+                      onLayout={(e) => {
+                        itemWidths.current[`gal_${index}`] =
+                          e.nativeEvent.layout.width;
+                      }}
+                    >
+                      {isSelected && itemWidths.current[`gal_${index}`] ? (
+                        <GradientBorder
+                          width={itemWidths.current[`gal_${index}`]}
+                          height={220}
+                          borderRadius={16}
+                        >
+                          <View style={styles.gallerySelectedInner}>
+                            <Image
+                              source={{ uri }}
+                              style={styles.galleryItemImage}
+                              resizeMode="contain"
+                            />
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={20}
+                              color={Colors.secondary}
+                              style={styles.galleryCheckIcon}
+                            />
+                            <TouchableOpacity
+                              style={styles.galleryRemoveBtn}
+                              onPress={() => removeGalleryImage(index)}
+                            >
+                              <Ionicons
+                                name="close"
+                                size={14}
+                                color={Colors.white}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        </GradientBorder>
+                      ) : (
+                        <View style={{ flex: 1 }}>
+                          <Image
+                            source={{ uri }}
+                            style={styles.galleryItemImage}
+                            resizeMode="contain"
+                          />
+                          {isSelected && (
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={20}
+                              color={Colors.secondary}
+                              style={styles.galleryCheckIcon}
+                            />
+                          )}
+                          <TouchableOpacity
+                            style={styles.galleryRemoveBtn}
+                            onPress={() => removeGalleryImage(index)}
+                          >
+              <Ionicons name="close" size={14} color={Colors.white} />
+            </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
                 {galleryImages.length < 2 && (
                   <View style={styles.galleryItem}>
-                    <UploadBox label="Upload image here" onPress={handleGalleryPick} style={styles.compactUploadBox} />
+                    <UploadBox
+                      label={t("tryOn.virtualTryOn.uploadImageHere")}
+                      onPress={handleGalleryPick}
+                      style={styles.compactUploadBox}
+                    />
                   </View>
                 )}
               </View>
             ) : (
-              <UploadBox label={t("tryOn.uploadPhoto.uploadLabel")} onPress={handleGalleryPick} />
+              <UploadBox
+                label={t("tryOn.uploadPhoto.uploadLabel")}
+                onPress={handleGalleryPick}
+              />
             )}
           </>
         ) : (
@@ -324,19 +579,19 @@ export default function TryOnScreen({ navigation, route }) {
             label={t("tryOn.virtualTryOn.myWardrobe")}
             iconName="shirt-outline"
             isActive={activeTab === "My Wardrobe"}
-            onPress={() => setActiveTab("My Wardrobe")}
+            onPress={() => handleTabChange("My Wardrobe")}
           />
           <ActionTab
             label={t("tryOn.virtualTryOn.camera")}
             iconName="camera-outline"
             isActive={activeTab === "Camera"}
-            onPress={() => setActiveTab("Camera")}
+            onPress={() => handleTabChange("Camera")}
           />
           <ActionTab
             label={t("tryOn.virtualTryOn.gallery")}
             iconName="images-outline"
             isActive={activeTab === "Gallery"}
-            onPress={() => setActiveTab("Gallery")}
+            onPress={() => handleTabChange("Gallery")}
           />
         </View>
 
@@ -346,11 +601,18 @@ export default function TryOnScreen({ navigation, route }) {
               <Text style={styles.sectionTitle}>
                 {t("tryOn.virtualTryOn.activeWardrobe")}
               </Text>
-          <TouchableOpacity onPress={() => navigation.navigate(ROUTES.MAIN, { screen: ROUTES.WARDROBE, params: { screen: ROUTES.WARDROBE_MAIN } })}>
-            <Text style={styles.seeAll}>
-              {t("tryOn.virtualTryOn.seeAll")}
-            </Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(ROUTES.MAIN, {
+                    screen: ROUTES.WARDROBE,
+                    params: { screen: ROUTES.WARDROBE_MAIN },
+                  })
+                }
+              >
+                <Text style={styles.seeAll}>
+                  {t("tryOn.virtualTryOn.seeAll")}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <FlatList
@@ -361,7 +623,9 @@ export default function TryOnScreen({ navigation, route }) {
               contentContainerStyle={{ paddingLeft: 20 }}
               ListEmptyComponent={
                 <View style={styles.emptyWardrobe}>
-                  <Text style={styles.emptyWardrobeText}>{t("tryOn.virtualTryOn.noItemsTitle")}</Text>
+                  <Text style={styles.emptyWardrobeText}>
+                    {t("tryOn.virtualTryOn.noItemsTitle")}
+                  </Text>
                 </View>
               }
               renderItem={({ item }) => (
@@ -369,7 +633,7 @@ export default function TryOnScreen({ navigation, route }) {
                   item={item}
                   isSelected={selectedWardrobeIds.includes(item._id)}
                   onToggle={toggleItem}
-                  disabled={selectedItems.length >= 2}
+                  disabled={selectedItems.length >= 2 || (!selectedWardrobeIds.includes(item._id) && hasCategoryConflict(item._id))}
                 />
               )}
             />
@@ -378,19 +642,27 @@ export default function TryOnScreen({ navigation, route }) {
 
         <View style={styles.selectedSection}>
           <Text style={styles.sectionTitle}>
-            {t("tryOn.virtualTryOn.selectedItems", { count: selectedItems.length })}
+            {t("tryOn.virtualTryOn.selectedItems", {
+              count: selectedItems.length,
+            })}
           </Text>
 
           <View style={styles.noItemsBox}>
             <View style={styles.iconCircle}>
-              <MaterialCommunityIcons name="hanger" size={24} color="#1A202C" />
+              <MaterialCommunityIcons name="hanger" size={24} color={Colors.textPrimary} />
             </View>
             <View>
               <Text style={styles.noItemsTitle}>
-                {t("tryOn.virtualTryOn.noItemsTitle")}
+                {selectedItems.length > 0
+                  ? t("tryOn.virtualTryOn.itemSelected", { count: selectedItems.length })
+                  : t("tryOn.virtualTryOn.noItemsTitle")}
               </Text>
               <Text style={styles.noItemsSub}>
-                {t("tryOn.virtualTryOn.noItemsSub")}
+                {selectedItems.length > 0
+                  ? selectedWardrobeIds.length > 0
+                    ? t("tryOn.virtualTryOn.itemFromWardrobe")
+                    : t("tryOn.virtualTryOn.itemFromCamera")
+                  : t("tryOn.virtualTryOn.noItemsSub")}
               </Text>
             </View>
           </View>
@@ -401,10 +673,11 @@ export default function TryOnScreen({ navigation, route }) {
             {cameraImages.map((_, index) => (
               <ItemSelector
                 key={index}
-                label={index === 0 ? "First Image" : "Second Image"}
+                label={index === 0 ? t("tryOn.virtualTryOn.firstImage") : t("tryOn.virtualTryOn.secondImage")}
                 selectedType={cameraItemTypes[index]}
                 onSelectType={(type) => handleSelectCameraType(index, type)}
                 disabled={selectedItems.length >= 2 && !cameraItemTypes[index]}
+                disabledOptions={computeDisabledOptions(index, 'camera')}
               />
             ))}
           </View>
@@ -413,10 +686,11 @@ export default function TryOnScreen({ navigation, route }) {
             {galleryImages.map((_, index) => (
               <ItemSelector
                 key={index}
-                label={index === 0 ? "First Image" : "Second Image"}
+                label={index === 0 ? t("tryOn.virtualTryOn.firstImage") : t("tryOn.virtualTryOn.secondImage")}
                 selectedType={galleryItemTypes[index]}
                 onSelectType={(type) => handleSelectGalleryType(index, type)}
                 disabled={selectedItems.length >= 2 && !galleryItemTypes[index]}
+                disabledOptions={computeDisabledOptions(index, 'gallery')}
               />
             ))}
           </View>
@@ -426,35 +700,36 @@ export default function TryOnScreen({ navigation, route }) {
           <TouchableOpacity
             style={[
               styles.generateBtn,
-              (selectedItems.length > 0 && !generating) ? styles.activeBtn : styles.disabledBtn,
+              selectedItems.length > 0 && !generating
+                ? styles.activeBtn
+                : styles.disabledBtn,
             ]}
             onPress={handleGenerate}
             disabled={selectedItems.length === 0 || generating}
           >
-            {generating ? (
-              <ActivityIndicator size="small" color="white" style={{ marginRight: 8 }} />
-            ) : (
-              <MaterialCommunityIcons
-                name="auto-fix"
-                size={20}
-                color="white"
-                style={{ marginRight: 8 }}
-              />
-            )}
+            <MaterialCommunityIcons
+              name="auto-fix"
+              size={20}
+              color="white"
+              style={{ marginRight: 8 }}
+            />
             <Text style={styles.generateBtnText}>
-              {generating ? t("tryOn.virtualTryOn.generating") || "Generating..." : t("tryOn.virtualTryOn.generate")}
+              {generating
+                ? t("tryOn.virtualTryOn.generating")
+                : t("tryOn.virtualTryOn.generate")}
             </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
-  );
-}
+        <LoadingOverlay visible={generating} type="tryOn" />
+      </SafeAreaView>
+    );
+  }
 
-const styles = StyleSheet.create({
+  const createStyles = () => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FB",
+    backgroundColor: Colors.backgroundColor,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
@@ -463,14 +738,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: "white",
   },
-  headerTitle: { fontSize: 20, fontWeight: "700", color: "#1A202C" },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-  },
+  headerTitle: { fontSize: 20, fontWeight: "700", color: Colors.textPrimary },
 
   modelContainer: {
     width: "100%",
@@ -498,7 +767,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   galleryCameraCard: {
-    backgroundColor: "#E8EFFF",
+    backgroundColor: Colors.backgroundColor,
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 10,
@@ -507,7 +776,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.white,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
@@ -519,19 +788,29 @@ const styles = StyleSheet.create({
   },
   galleryCameraText: {
     fontSize: 14,
-    color: "#333",
+    color: Colors.textPrimary,
     fontWeight: "500",
   },
   galleryRemoveBtn: {
     position: "absolute",
-    top: 8,
-    right: 8,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    top: 6,
+    right: 6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: Colors.error,
     justifyContent: "center",
     alignItems: "center",
+  },
+  galleryCheckIcon: {
+    position: "absolute",
+    top: 6,
+    left: 6,
+  },
+  gallerySelectedInner: {
+    flex: 1,
+    borderRadius: 15,
+    overflow: "hidden",
   },
 
   compactUploadBox: {
@@ -557,7 +836,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 30,
     height: 30,
-    borderColor: "#00AEEF",
+    borderColor: Colors.primary,
     borderWidth: 3.5,
   },
   topLeft: {
@@ -607,7 +886,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#00AEEF",
+    backgroundColor: Colors.primary,
     justifyContent: "center",
     alignItems: "center",
     elevation: 5,
@@ -617,7 +896,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
 
-  tabsRow: { flexDirection: "row", justifyContent: "space-around", padding: 20 },
+  tabsRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 20,
+  },
 
   sectionHeader: {
     flexDirection: "row",
@@ -626,29 +909,31 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 15,
   },
-  sectionTitle: { fontSize: 16, fontWeight: "700", color: "#1A202C" },
-  seeAll: { color: "#718096", fontSize: 14 },
+  sectionTitle: { fontSize: 16, fontWeight: "700", color: Colors.textPrimary },
+  seeAll: { color: Colors.textMuted, fontSize: 14 },
 
   selectedSection: { paddingHorizontal: 20, marginTop: 25 },
   noItemsBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F0F4FF",
-    padding: 15,
-    borderRadius: 15,
-    marginTop: 15,
+    backgroundColor: Colors.borderDefault,
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 12,
+    gap: 14,
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
   },
   iconCircle: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    backgroundColor: "#DBE9FF",
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.backgroundColor,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 15,
   },
-  noItemsTitle: { fontWeight: "700", color: "#1A202C", fontSize: 14 },
-  noItemsSub: { color: "#718096", fontSize: 12 },
+  noItemsTitle: {  fontFamily: "Roboto_700Bold",fontWeight: "700", color: Colors.textPrimary, fontSize: 14, marginBottom: 2 },
+  noItemsSub: { fontFamily: "Roboto_400Regular", color: Colors.textSecondary, fontSize: 12, lineHeight: 18 },
 
   emptyWardrobe: {
     width: 200,
@@ -658,7 +943,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   emptyWardrobeText: {
-    color: "#A0AEC0",
+    color: Colors.disabled,
     fontSize: 14,
   },
 
@@ -669,7 +954,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  disabledBtn: { backgroundColor: "#A0AEC0" },
-  activeBtn: { backgroundColor: "#40B9FF" },
-  generateBtnText: { color: "white", fontWeight: "700", fontSize: 16 },
+  disabledBtn: { backgroundColor: Colors.disabled },
+  activeBtn: { backgroundColor: Colors.primary },
+  generateBtnText: { color: Colors.textInverse, fontWeight: "700", fontSize: 16 },
+  scrollContent: { paddingBottom: 40, flexGrow: 1 },
 });

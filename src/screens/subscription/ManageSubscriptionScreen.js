@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import BenefitsList from "../../components/subscription/BenefitsList";
@@ -20,10 +21,13 @@ import CancellationSuccessModal from "../../components/subscription/Cancellation
 import * as paymentService from "../../api/payment_services/paymentService";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
+import { useFeedback } from "../../context/FeedbackContext";
 
 export default function ManageSubscriptionScreen({ navigation }) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
@@ -34,25 +38,135 @@ export default function ManageSubscriptionScreen({ navigation }) {
     fetchSubscription();
   }, []);
 
-  // const fetchSubscription = async () => {
-  //   if (!user?._id) {
-  //     setLoading(false);
-  //     return;
-  //   }
-  //   setLoading(true);
-  //   try {
-  //     const data = await paymentService.syncSubscription(user._id);
-  //     if (data.subscriptionStatus === "active") {
-  //       setSubscription(data);
-  //     } else {
-  //       setSubscription(null);
-  //     }
-  //   } catch {
-  //     setSubscription(null);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+    const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        safeArea: {
+          flex: 1,
+          backgroundColor: Colors.backgroundColor,
+          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+        },
+        container: {
+          flex: 1,
+          paddingHorizontal: 20,
+        },
+        scrollContent: {
+          paddingBottom: 50,
+        },
+        centered: {
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        header: {
+          alignItems: "center",
+          gap: 4,
+          marginTop: 20,
+          marginBottom: 24,
+        },
+        title: {
+          fontFamily: "Roboto_700Bold",
+          fontSize: 24,
+          lineHeight: 38.4,
+          color: Colors.textPrimary,
+        },
+        subtitle: {
+          fontFamily: "Roboto_400Regular",
+          fontSize: 12,
+          lineHeight: 12,
+          color: Colors.iconGray,
+          textAlign: "center",
+        },
+        outerWrap: {
+          gap: 39,
+        },
+        infoSection: {
+          gap: 24,
+        },
+        contentCard: {
+          backgroundColor: Colors.white,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: Colors.borderStrong,
+          padding: 24,
+          gap: 32,
+        },
+        benefitsSection: {
+          gap: 16,
+          paddingBottom: 16,
+          borderBottomWidth: 1,
+          borderBottomColor: Colors.borderStrong,
+        },
+        badgeRow: {
+          flexDirection: "row",
+        },
+        activeBadge: {
+          backgroundColor: Colors.success,
+          paddingHorizontal: 14,
+          paddingVertical: 5,
+          borderRadius: 999,
+        },
+        activeBadgeText: {
+          fontFamily: "Roboto_600SemiBold",
+          fontSize: 10,
+          color: Colors.white,
+          letterSpacing: 0.5,
+        },
+        planWrap: {
+          gap: 12,
+          paddingBottom: 8,
+          borderBottomWidth: 1,
+          borderBottomColor: Colors.borderStrong,
+        },
+        planName: {
+          fontFamily: "Roboto_700Bold",
+          fontSize: 24,
+          lineHeight: 38.4,
+          color: Colors.textPrimary,
+          textAlign: "left",
+        },
+        planSubtitle: {
+          fontFamily: "Roboto_400Regular",
+          fontSize: 12,
+          lineHeight: 12,
+          color: Colors.iconGray,
+          textAlign: "left",
+        },
+        infoRow: {
+          flexDirection: "row",
+          justifyContent: "space-between",
+          gap: 16,
+          paddingBottom: 24,
+          borderBottomWidth: 1,
+          borderBottomColor: Colors.borderStrong,
+        },
+        infoBox: {
+          flex: 1,
+          backgroundColor: Colors.white,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: Colors.borderStrong,
+          paddingTop: 8,
+          paddingRight: 16,
+          paddingBottom: 8,
+          paddingLeft: 16,
+          gap: 8,
+        },
+        infoLabel: {
+          fontFamily: "Roboto_600SemiBold",
+          fontSize: 16,
+          lineHeight: 16,
+          color: Colors.textPrimary,
+        },
+        infoValue: {
+          fontFamily: "Roboto_500Medium",
+          fontSize: 14,
+          lineHeight: 16.38,
+          color: Colors.textSecondary,
+        },
+      }),
+    [themeVersion],
+  );
 
   const fetchSubscription = async () => {
     if (!user?._id) {
@@ -65,19 +179,12 @@ export default function ManageSubscriptionScreen({ navigation }) {
     try {
       const data = await paymentService.syncSubscription(user._id);
 
-      console.log("SYNC_SUBSCRIPTION RESPONSE:", JSON.stringify(data, null, 2));
-
-      console.log("subscriptionInterval:", data?.subscriptionInterval);
-      console.log("subscriptionPlan:", data?.subscriptionPlan);
-      console.log("subscriptionStatus:", data?.subscriptionStatus);
-
       if (data.subscriptionStatus === "active") {
         setSubscription(data);
       } else {
         setSubscription(null);
       }
     } catch (error) {
-      console.log("SYNC_SUBSCRIPTION ERROR:", error);
       setSubscription(null);
     } finally {
       setLoading(false);
@@ -122,7 +229,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
     } catch (err) {
       const message =
         err.response?.data?.message || t("subscription.cancelFailed");
-      Alert.alert(t("common.error"), message);
+      showFeedback({ type: "error", title: t("common.error"), message });
     } finally {
       setCancelling(false);
     }
@@ -232,130 +339,3 @@ export default function ManageSubscriptionScreen({ navigation }) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  scrollContent: {
-    paddingBottom: 50,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
-    alignItems: "center",
-    gap: 4,
-    marginTop: 20,
-    marginBottom: 24,
-  },
-  title: {
-    fontFamily: "Roboto_700Bold",
-    fontSize: 24,
-    lineHeight: 38.4,
-    color: Colors.textPrimary,
-  },
-  subtitle: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    lineHeight: 12,
-    color: Colors.iconGray,
-    textAlign: "center",
-  },
-  outerWrap: {
-    gap: 39,
-  },
-  infoSection: {
-    gap: 24,
-  },
-  contentCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.borderStrong,
-    padding: 24,
-    gap: 32,
-  },
-  benefitsSection: {
-    gap: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderStrong,
-  },
-  badgeRow: {
-    flexDirection: "row",
-  },
-  activeBadge: {
-    backgroundColor: Colors.success,
-    paddingHorizontal: 14,
-    paddingVertical: 5,
-    borderRadius: 999,
-  },
-  activeBadgeText: {
-    fontFamily: "Roboto_600SemiBold",
-    fontSize: 10,
-    color: Colors.white,
-    letterSpacing: 0.5,
-  },
-  planWrap: {
-    gap: 12,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderStrong,
-  },
-  planName: {
-    fontFamily: "Roboto_700Bold",
-    fontSize: 24,
-    lineHeight: 38.4,
-    color: Colors.textPrimary,
-    textAlign: "left",
-  },
-  planSubtitle: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    lineHeight: 12,
-    color: Colors.iconGray,
-    textAlign: "left",
-  },
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 16,
-    paddingBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderStrong,
-  },
-  infoBox: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.borderStrong,
-    paddingTop: 8,
-    paddingRight: 16,
-    paddingBottom: 8,
-    paddingLeft: 16,
-    gap: 8,
-  },
-  infoLabel: {
-    fontFamily: "Roboto_600SemiBold",
-    fontSize: 16,
-    lineHeight: 16,
-    color: Colors.textPrimary,
-  },
-  infoValue: {
-    fontFamily: "Roboto_500Medium",
-    fontSize: 14,
-    lineHeight: 16.38,
-    color: Colors.textSecondary,
-  },
-
-});

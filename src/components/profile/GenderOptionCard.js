@@ -8,13 +8,14 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../../constants/theme/colors';
-
+import { useTheme } from '../../context/ThemeContext';
 const GenderOptionCard = ({
   gender,
   selected,
   onPress,
 }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
 
   const isMale =
     gender === 'Male';
@@ -28,10 +29,33 @@ const GenderOptionCard = ({
 
   const iconColor =
     !selected
-      ? '#A0A6B2'
+      ? Colors.textMuted
       : isMale
-      ? '#121826'
+      ? Colors.textPrimary
       : '#FF6B8A';
+
+const styles = React.useMemo(() => StyleSheet.create({
+
+  container: {
+    width: 130,
+    height: 40,
+
+    borderRadius: 8,
+
+    paddingHorizontal: 8,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    gap: 8,
+  },
+
+  title: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+
+}), [themeVersion]);
 
   return (
     <TouchableOpacity
@@ -41,6 +65,7 @@ const GenderOptionCard = ({
         styles.container,
         {
           backgroundColor,
+          flexDirection: 'row',
         },
       ]}
     >
@@ -68,28 +93,5 @@ const GenderOptionCard = ({
   );
 };
 
-const styles = StyleSheet.create({
-
-  container: {
-    width: 130,
-    height: 40,
-
-    borderRadius: 8,
-
-    paddingHorizontal: 8,
-
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    gap: 8,
-  },
-
-  title: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-
-});
 
 export default GenderOptionCard;

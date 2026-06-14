@@ -1,29 +1,15 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import { getItemImage } from "../../utils/getItemImage";
 
 export default function OutfitItemCard({ item }) {
   const imageUri = getItemImage(item);
   const itemName = item?.name || item?.title || item?.label || "";
+  const { themeVersion } = useTheme();
 
-  return (
-    <View style={styles.card}>
-      {imageUri ? (
-        <Image
-          source={{ uri: imageUri }}
-          style={styles.image}
-          resizeMode="contain"
-        />
-      ) : (
-        <View style={styles.imagePlaceholder} />
-      )}
-      <Text style={styles.name} numberOfLines={2}>{itemName || "—"}</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
+const styles = React.useMemo(() => StyleSheet.create({
   card: {
     width: "48%",
     height: 138,
@@ -49,9 +35,26 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   name: {
+    fontFamily: 'Roboto_500Medium',
     fontSize: 12,
-    fontWeight: "500",
     color: Colors.textPrimary,
     textAlign: "center",
   },
-});
+}), [themeVersion]);
+
+  return (
+    <View style={styles.card}>
+      {imageUri ? (
+        <Image
+          source={{ uri: imageUri }}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      ) : (
+        <View style={styles.imagePlaceholder} />
+      )}
+      <Text style={styles.name} numberOfLines={2}>{itemName || "—"}</Text>
+    </View>
+  );
+}
+

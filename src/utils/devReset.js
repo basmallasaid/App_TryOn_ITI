@@ -5,12 +5,10 @@ const isDev = __DEV__; // React Native built-in — true in dev, false in produc
 
 export const resetOnboardingAndLanguage = async () => {
   if (!isDev) {
-    console.warn('resetOnboardingAndLanguage: only available in development');
     return;
   }
   await SecureStore.deleteItemAsync('onboarding_seen');
-  await SecureStore.deleteItemAsync('language_seen');
-  await SecureStore.deleteItemAsync('app_language');
+  //await SecureStore.deleteItemAsync('language_seen');
+  //await SecureStore.deleteItemAsync('app_language');
   // await SecureStore.deleteItemAsync('user_id');
-  console.log('✅ Dev reset: onboarding + language flags cleared');
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,25 +14,33 @@ import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import BillingToggle from "../../components/subscription/BillingToggle";
 import PlanCard from "../../components/subscription/PlanCard";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
 import * as paymentService from "../../api/payment_services/paymentService";
+import { useFeedback } from "../../context/FeedbackContext";
 
 export default function SubscriptionScreen({ navigation }) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { themeVersion } = useTheme();
+  const { showFeedback } = useFeedback();
   const [billing, setBilling] = useState("Monthly");
   const [loading, setLoading] = useState(false);
 
-  const FEATURES_ESSENTIAL = t("subscription.featuresEssential", { returnObjects: true });
+  const FEATURES_ESSENTIAL = t("subscription.featuresEssential", {
+    returnObjects: true,
+  });
   const FEATURES_PRO = t("subscription.featuresPro", { returnObjects: true });
 
   const isYearly = billing === "Yearly";
   const proPrice = isYearly ? "$12.19" : "$16.19";
-  const proPerUnit = isYearly ? t("subscription.perYear") : t("subscription.perMonth");
+  const proPerUnit = isYearly
+    ? t("subscription.perYear")
+    : t("subscription.perMonth");
   const proFooter = isYearly
     ? t("subscription.footerYearly")
     : t("subscription.footerMonthly");
@@ -82,11 +90,65 @@ export default function SubscriptionScreen({ navigation }) {
       const message =
         err.response?.data?.message ||
         "Something went wrong. Please try again.";
-      Alert.alert("Checkout Error", message);
+      showFeedback({ type: "error", title: t("subscription.checkoutError"), message });
     } finally {
       setLoading(false);
     }
   };
+
+  const styles = React.useMemo(
+  () =>
+    StyleSheet.create({
+      safeArea: {
+        flex: 1,
+        backgroundColor: Colors.backgroundColor,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+      },
+      container: {
+        flex: 1,
+        paddingHorizontal: 20,
+      },
+      scrollContent: {
+        paddingBottom: 50,
+      },
+      header: {
+        alignItems: "center",
+        gap: 6,
+        marginTop: 20,
+        marginBottom: 24,
+      },
+      title: {
+        fontFamily: "Roboto_700Bold",
+        fontSize: 24,
+        lineHeight: 38.4,
+        color: Colors.textPrimary,
+      },
+      subtitle: {
+        fontFamily: "Roboto_400Regular",
+        fontSize: 12,
+        color: Colors.iconGray,
+        textAlign: "center",
+      },
+      plansGap: {
+        height: 16,
+      },
+      divider: {
+        height: 1,
+        backgroundColor: Colors.borderDefault,
+        marginVertical: 24,
+      },
+      disclaimer: {
+        fontFamily: "Roboto_400Regular",
+        fontSize: 12,
+        color: Colors.iconGray,
+        textAlign: "center",
+        lineHeight: 12,
+        letterSpacing: 0,
+      },
+    }),
+  [themeVersion],
+);
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -102,9 +164,7 @@ export default function SubscriptionScreen({ navigation }) {
 
         <View style={styles.header}>
           <Text style={styles.title}>{t("subscription.choosePlan")}</Text>
-          <Text style={styles.subtitle}>
-            {t("subscription.choosePlanSub")}
-          </Text>
+          <Text style={styles.subtitle}>{t("subscription.choosePlanSub")}</Text>
         </View>
 
         <BillingToggle selected={billing} onSelect={setBilling} />
@@ -140,7 +200,11 @@ export default function SubscriptionScreen({ navigation }) {
           perUnit={proPerUnit}
           description={t("subscription.includesEverything")}
           features={FEATURES_PRO}
-          buttonLabel={isSubscribed ? t("subscription.manageSubscription") : t("subscription.subscribeNow")}
+          buttonLabel={
+            isSubscribed
+              ? t("subscription.manageSubscription")
+              : t("subscription.subscribeNow")
+          }
           highlighted
           footerText={proFooter}
           buttonLoading={loading}
@@ -202,59 +266,8 @@ export default function SubscriptionScreen({ navigation }) {
 
         <View style={styles.divider} />
 
-        <Text style={styles.disclaimer}>
-          {t("subscription.disclaimer")}
-        </Text>
+        <Text style={styles.disclaimer}>{t("subscription.disclaimer")}</Text>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  scrollContent: {
-    paddingBottom: 50,
-  },
-  header: {
-    alignItems: "center",
-    gap: 6,
-    marginTop: 20,
-    marginBottom: 24,
-  },
-  title: {
-    fontFamily: "Roboto_700Bold",
-    fontSize: 24,
-    lineHeight: 38.4,
-    color: Colors.textPrimary,
-  },
-  subtitle: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.iconGray,
-    textAlign: "center",
-  },
-  plansGap: {
-    height: 16,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: Colors.borderDefault,
-    marginVertical: 24,
-  },
-  disclaimer: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.iconGray,
-    textAlign: "center",
-    lineHeight: 12,
-    letterSpacing: 0,
-  },
-});

@@ -43,7 +43,7 @@ const Typography = {
     fontWeight: "600",
     fontSize: 16,
     lineHeight: 16,
-    color: Colors.white,
+    color: Colors.textInverse,
     textAlign: "center",
   },
   label: {

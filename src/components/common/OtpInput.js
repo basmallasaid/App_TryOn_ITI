@@ -6,6 +6,7 @@ import {
 } from "react-native";
 
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 const OtpInput = ({
   value,
@@ -13,6 +14,7 @@ const OtpInput = ({
   state = "default",
   length = 6,
 }) => {
+  const { themeVersion } = useTheme();
   const inputs = useRef([]);
 
   const borderColor =
@@ -48,6 +50,23 @@ const OtpInput = ({
     }
   };
 
+  const styles = React.useMemo(() => StyleSheet.create({
+    row: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+
+    box: {
+      width: 50,
+      height: 65,
+      borderWidth: 1,
+      borderRadius: 8,
+      fontSize: 22,
+      textAlign: "center",
+      color: Colors.textPrimary,
+    },
+  }), [themeVersion]);
+
   return (
     <View style={styles.row}>
       {[...Array(length)].map((_, index) => (
@@ -78,22 +97,5 @@ const OtpInput = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-
-  box: {
-    width: 50,
-    height: 65,
-    borderWidth: 1,
-    borderRadius: 8,
-    fontSize: 22,
-    textAlign: "center",
-    color: Colors.textPrimary,
-  },
-});
 
 export default OtpInput;

@@ -1,6 +1,8 @@
+import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 import CustomizeAppButtonOutlined from "../common/CustomizeAppButtonOutlined";
 
@@ -32,6 +34,86 @@ export default function PlanCard({
   footerStyle,
   contentWrapStyle,
 }) {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => StyleSheet.create({
+    card: {
+      backgroundColor: Colors.white,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: Colors.borderStrong,
+      padding: 20,
+      gap: 12,
+    },
+    cardHighlighted: {
+      borderColor: Colors.error,
+      borderWidth: 2,
+    },
+    badge: {
+      alignSelf: "flex-start",
+      backgroundColor: Colors.error,
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+      borderRadius: 999,
+    },
+    badgeText: {
+      fontFamily: "Roboto_600SemiBold",
+      fontSize: 11,
+      color: Colors.white,
+      letterSpacing: 1,
+    },
+    namePriceWrap: {
+      gap: 0,
+      marginBottom: 8,
+    },
+    planName: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 16,
+      color: Colors.textPrimary,
+    },
+    priceRow: {
+      flexDirection: "row",
+      alignItems: "baseline",
+    },
+    price: {
+      fontFamily: "Roboto_700Bold",
+      fontSize: 28,
+      color: Colors.textPrimary,
+    },
+    perUnit: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 16,
+      color: Colors.iconGray,
+      lineHeight: 16,
+    },
+    description: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 13,
+      color: Colors.textSecondary,
+      lineHeight: 18,
+    },
+    featuresList: {
+      gap: 10,
+    },
+    featureRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    featureText: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 15,
+      color: Colors.iconGray,
+      lineHeight: 15,
+    },
+    footerText: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 11,
+      color: Colors.textMuted,
+      textAlign: "center",
+      lineHeight: 15,
+    },
+  }), [themeVersion]);
+
   return (
     <View style={[styles.card, highlighted && styles.cardHighlighted, cardStyle]}>
       {badge && (
@@ -90,81 +172,4 @@ export default function PlanCard({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.borderStrong,
-    padding: 20,
-    gap: 12,
-  },
-  cardHighlighted: {
-    borderColor: Colors.error,
-    borderWidth: 2,
-  },
-  badge: {
-    alignSelf: "flex-start",
-    backgroundColor: Colors.error,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 999,
-  },
-  badgeText: {
-    fontFamily: "Roboto_600SemiBold",
-    fontSize: 11,
-    color: Colors.white,
-    letterSpacing: 1,
-  },
-  namePriceWrap: {
-    gap: 0,
-    marginBottom: 8,
-  },
-  planName: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 16,
-    color: Colors.textPrimary,
-  },
-  priceRow: {
-    flexDirection: "row",
-    alignItems: "baseline",
-  },
-  price: {
-    fontFamily: "Roboto_700Bold",
-    fontSize: 28,
-    color: Colors.textPrimary,
-  },
-  perUnit: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 16,
-    color: Colors.iconGray,
-    lineHeight: 16,
-  },
-  description: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 13,
-    color: Colors.textSecondary,
-    lineHeight: 18,
-  },
-  featuresList: {
-    gap: 10,
-  },
-  featureRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  featureText: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 15,
-    color: Colors.iconGray,
-    lineHeight: 15,
-  },
-  footerText: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 11,
-    color: Colors.textMuted,
-    textAlign: "center",
-    lineHeight: 15,
-  },
-});
+

@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getToken, clearToken,getUserId, clearUserId  } from '../storage/TokenStorage';
+import { getToken, clearToken,getUserId, clearUserId } from '../storage/TokenStorage';
 import * as authService from "../api/auth_services/authServices";
 import { useLanguage } from './LanguageContext';
 const AuthContext = createContext();

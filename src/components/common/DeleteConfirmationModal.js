@@ -1,11 +1,47 @@
 import React from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import CustomizeAppButtonFilled from '../common/CustomizeAppButtonFilled';
 import CustomizeAppButtonOutlined from '../common/CustomizeAppButtonOutlined';
 
-const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading }) => {
+const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading, title, subtitle }) => {
+  const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+const styles = React.useMemo(() => StyleSheet.create({
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
+  container: {
+    width: 343,
+    height: 207,
+    padding: 16,
+    backgroundColor: Colors.white,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  iconContainer: { marginTop: 4 },
+  textContainer: { gap: 8, alignItems: 'center' },
+  title: {
+    fontFamily: 'Roboto',
+    fontWeight: '600',
+    fontSize: 16,
+    textAlign: 'center',
+    color: Colors.textPrimary
+  },
+  subtitle: {
+    fontFamily: 'Roboto',
+    fontWeight: '400',
+    fontSize: 12,
+    textAlign: 'center',
+    color: Colors.textMuted
+  },
+  footer: { gap: 12, width: '100%' }
+}), [themeVersion]);
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -15,17 +51,17 @@ const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading }) => {
           </View>
           
           <View style={styles.textContainer}>
-            <Text style={styles.title}>Are you sure you want to delete the selected products?</Text>
-            <Text style={styles.subtitle}>This action cannot be undone.</Text>
+            <Text style={styles.title}>{title || t('common.deleteTitle')}</Text>
+            <Text style={styles.subtitle}>{subtitle || t('common.deleteDesc')}</Text>
           </View>
 
-          <View style={styles.footer}>
+          <View style={[styles.footer, { flexDirection: 'row' }]}>
             <View style={{ flex: 1 }}>
-              <CustomizeAppButtonOutlined label="Cancel" onPress={onClose} />
+              <CustomizeAppButtonOutlined label={t('common.cancel')} onPress={onClose} />
             </View>
             <View style={{ flex: 1 }}>
               <CustomizeAppButtonFilled 
-                label="Delete" 
+                label={t('common.deleteBtn')} 
                 backgroundColor={Colors.error} 
                 onPress={onConfirm} 
                 loading={loading}
@@ -38,36 +74,5 @@ const DeleteConfirmationModal = ({ visible, onClose, onConfirm, loading }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
-  container: {
-    width: 343,
-    height: 207,
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#D5D9DE',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  iconContainer: { marginTop: 4 },
-  textContainer: { gap: 8, alignItems: 'center' },
-  title: {
-    fontFamily: 'Roboto',
-    fontWeight: '600',
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#121826'
-  },
-  subtitle: {
-    fontFamily: 'Roboto',
-    fontWeight: '400',
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#6B7280'
-  },
-  footer: { flexDirection: 'row', gap: 12, width: '100%' }
-});
 
 export default DeleteConfirmationModal;

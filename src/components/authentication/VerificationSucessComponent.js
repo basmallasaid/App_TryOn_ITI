@@ -5,9 +5,44 @@ import { IMAGES } from "../../constants/images/images";
 import LottieView from "lottie-react-native";
 import { ANIMATIONS } from "../../constants/images/animations";
 import Typography from "../../constants/theme/typography";
+import { useTheme } from "../../context/ThemeContext";
 
 const VerificationSucessComponent = () => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    container: {
+      alignItems: "center",
+      width: "100%",
+    },
+    illustrationWrapper: {
+      width: 160,
+      height: 160,
+      marginBottom: 16,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    illustration: {
+      width: 130,
+      height: 130,
+    },
+    animation: {
+      position: "absolute",
+      width: 350,
+      height: 280,
+    },
+    title: {
+      ...Typography.label,
+      marginBottom: 8,
+      textAlign: "center",
+    },
+    subtitle: {
+      ...Typography.subtitleBase,
+      textAlign: "center",
+    },
+  }), [themeVersion]);
+
   return (
     <View style={styles.container}>
 
@@ -34,37 +69,5 @@ const VerificationSucessComponent = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    width: "100%",
-  },
-  illustrationWrapper: {
-    width: 160,
-    height: 160,
-    marginBottom: 16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  illustration: {
-    width: 130,
-    height: 130,
-  },
-  animation: {
-    position: "absolute", 
-    width: 350,            
-    height: 280,
-  },
-  title: {
-    ...Typography.label,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  subtitle: {
-    ...Typography.subtitleBase,
-    textAlign: "center",
-  },
-});
 
 export default VerificationSucessComponent;

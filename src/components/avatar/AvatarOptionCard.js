@@ -1,8 +1,9 @@
+import React from 'react';
 import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { IMAGES } from '../../constants/images/images';
-
 const AvatarOptionCard = ({
   title,
   description,
@@ -12,54 +13,13 @@ const AvatarOptionCard = ({
   selected,
   onPress,
 }) => {
-  return (
-    <TouchableOpacity
-      style={[styles.card, selected && styles.cardSelected]}
-      onPress={onPress}
-      activeOpacity={0.85}
-    >
-      <View style={styles.leftContent}>
-        <Text style={[styles.title, selected && styles.titleSelected]}>
-          {title}
-        </Text>
-
-        {badge ? (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{badge}</Text>
-          </View>
-        ) : null}
-
-        <Text
-          style={[styles.description, selected && styles.descriptionSelected]}
-        >
-          {description}
-        </Text>
-      </View>
-
-      {rightContent ? (
-        <View style={styles.rightContainer}>{rightContent}</View>
-      ) : image ? (
-        <View style={styles.imageWrap}>
-          <Image source={image} style={styles.image} resizeMode="cover" />
-        </View>
-      ) : null}
-
-      {selected && (
-        <View style={styles.checkmark}>
-          <Ionicons name="checkmark-circle" size={24} color={Colors.primary} />
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-};
-
-const styles = StyleSheet.create({
+  const { themeVersion } = useTheme();
+const styles = React.useMemo(() => StyleSheet.create({
   card: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: '#E9EBEE',
+    borderColor: Colors.borderDefault,
     padding: 16,
     alignItems: 'center',
     position: 'relative',
@@ -90,7 +50,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   badgeText: {
-    color: Colors.white,
+    color: Colors.textInverse,
     fontSize: 10,
     fontWeight: '700',
     fontFamily: 'Roboto_700Bold',
@@ -106,12 +66,10 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   rightContainer: {
-    marginLeft: 12,
   },
   imageWrap: {
     width: 100,
     height: 130,
-    marginLeft: 12,
     borderRadius: 16,
     overflow: 'hidden',
     justifyContent: 'flex-start',
@@ -125,8 +83,49 @@ const styles = StyleSheet.create({
   checkmark: {
     position: 'absolute',
     top: 12,
-    right: 12,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <TouchableOpacity
+      style={[styles.card, { flexDirection: 'row' }, selected && styles.cardSelected]}
+      onPress={onPress}
+      activeOpacity={0.85}
+    >
+      <View style={styles.leftContent}>
+        <Text style={[styles.title, selected && styles.titleSelected]}>
+          {title}
+        </Text>
+
+        {badge ? (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{badge}</Text>
+          </View>
+        ) : null}
+
+        <Text
+          style={[styles.description, selected && styles.descriptionSelected]}
+        >
+          {description}
+        </Text>
+      </View>
+
+      {rightContent ? (
+        <View style={[styles.rightContainer, { marginLeft: 12, marginRight: 0 }]}>{rightContent}</View>
+      ) : image ? (
+        <View style={[styles.imageWrap, { marginLeft: 12, marginRight: 0 }]}>
+          <Image source={image} style={styles.image} resizeMode="cover" />
+        </View>
+      ) : null}
+
+      {selected && (
+        <View style={[styles.checkmark, { right: 12, left: undefined }]}>
+          <Ionicons name="checkmark-circle" size={24} color={Colors.primary} />
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
 
 export default AvatarOptionCard;

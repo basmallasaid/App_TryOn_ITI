@@ -1,39 +1,23 @@
 // src/components/profile/StatCard.js
+import React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
-
-/**
- * StatCard
- * Props:
- *  icon      string  — Ionicons name
- *  title     string
- *  subtitle  string
- *  onPress   func
- */
-const StatCard = ({ icon, title, subtitle, onPress }) => (
-  <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-    <Ionicons name={icon} size={22} color={Colors.textPrimary} />
-    <View style={styles.texts}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>{subtitle}</Text>
-    </View>
-  </TouchableOpacity>
-);
-
-const styles = StyleSheet.create({
+import { useTheme } from '../../context/ThemeContext';
+const StatCard = ({ icon, title, subtitle, onPress }) => {
+  const { themeVersion } = useTheme();
+const styles = React.useMemo(() => StyleSheet.create({
   card: {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#E9EBEE',
+    borderColor: Colors.borderDefault,
     paddingHorizontal: 16,
     paddingVertical: 8,
     height: 70,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
   },
   texts: {
     gap: 4,
@@ -42,14 +26,26 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_500Medium',
     fontSize: 14,
     lineHeight: 16.38,
-    color: '#121826',
+    color: Colors.textPrimary,
   },
   subtitle: {
     fontFamily: 'Roboto_500Medium',
     fontSize: 10,
     lineHeight: 10,
-    color: '#1E1E24',
+    color: Colors.textPrimary,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <TouchableOpacity style={[styles.card, { flexDirection: 'row' }]} onPress={onPress} activeOpacity={0.8}>
+      <Ionicons name={icon} size={22} color={Colors.textPrimary} />
+      <View style={styles.texts}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.subtitle}>{subtitle}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 
 export default StatCard;

@@ -1,64 +1,15 @@
 // src/components/wardrobe/SaveResultModal.js
+import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 
-/**
- * SaveResultModal — shown after saving item to wardrobe
- * Props:
- *  visible   bool
- *  success   bool    — true = success, false = error
- *  message   string  — optional custom message
- *  onClose   func
- */
-const SaveResultModal = ({ visible, success, message, onClose }) => (
-  <Modal
-    visible={visible}
-    transparent
-    animationType="fade"
-    onRequestClose={onClose}
-  >
-    <View style={styles.overlay}>
-      <View style={styles.card}>
-
-        {/* Icon */}
-        <View style={[styles.iconWrap, success ? styles.iconSuccess : styles.iconError]}>
-          <Ionicons
-            name={success ? 'checkmark' : 'close'}
-            size={32}
-            color="#FFFFFF"
-          />
-        </View>
-
-        {/* Title */}
-        <Text style={styles.title}>
-          {success ? 'Item Added!' : 'Something went wrong'}
-        </Text>
-
-        {/* Message */}
-        <Text style={styles.message}>
-          {message || (success
-            ? 'Your item has been saved to your wardrobe successfully.'
-            : 'We couldn\'t save this item. Please try again.'
-          )}
-        </Text>
-
-        {/* Button */}
-        <TouchableOpacity
-          style={[styles.btn, success ? styles.btnSuccess : styles.btnError]}
-          onPress={onClose}
-        >
-          <Text style={styles.btnText}>
-            {success ? 'View Wardrobe' : 'Try Again'}
-          </Text>
-        </TouchableOpacity>
-
-      </View>
-    </View>
-  </Modal>
-);
-
-const styles = StyleSheet.create({
+const SaveResultModal = ({ visible, success, message, onClose }) => {
+  const { t } = useTranslation();
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -67,7 +18,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     borderRadius: 24,
     padding: 32,
     alignItems: 'center',
@@ -91,14 +42,14 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Roboto_700Bold',
     fontSize: 22,
-    color: '#121826',
+    color: Colors.textPrimary,
     textAlign: 'center',
   },
   message: {
     fontFamily: 'Roboto_400Regular',
     fontSize: 14,
     lineHeight: 20,
-    color: '#6B7280',
+    color: Colors.textMuted,
     textAlign: 'center',
   },
   btn: {
@@ -118,8 +69,47 @@ const styles = StyleSheet.create({
   btnText: {
     fontFamily: 'Roboto_600SemiBold',
     fontSize: 16,
-    color: '#FFFFFF',
+    color: Colors.textInverse,
   },
-});
+}), [themeVersion]);
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View style={styles.overlay}>
+        <View style={styles.card}>
+          <View style={[styles.iconWrap, success ? styles.iconSuccess : styles.iconError]}>
+            <Ionicons
+              name={success ? 'checkmark' : 'close'}
+              size={32}
+              color="#FFFFFF"
+            />
+          </View>
+          <Text style={styles.title}>
+            {success ? t('wardrobe.saveResult.successTitle') : t('wardrobe.saveResult.errorTitle')}
+          </Text>
+          <Text style={styles.message}>
+            {message || (success
+              ? t('wardrobe.saveResult.successMessage')
+              : t('wardrobe.saveResult.errorMessage')
+            )}
+          </Text>
+          <TouchableOpacity
+            style={[styles.btn, success ? styles.btnSuccess : styles.btnError]}
+            onPress={onClose}
+          >
+            <Text style={styles.btnText}>
+              {success ? t('wardrobe.saveResult.viewWardrobe') : t('wardrobe.saveResult.tryAgain')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 export default SaveResultModal;

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../constants/theme/colors";
+import { useTheme } from "../context/ThemeContext";
 import ProfileStack from "../navigation/ProfileStack";
 import StoreStack from "./StoreStack";
 import HomeScreen from '../screens/home/HomeScreen';
@@ -11,9 +12,6 @@ import WardrobeStack from "./WardrobeStack";
 import { ROUTES } from "./routes";
 
 const Tab = createBottomTabNavigator();
-
-const ACTIVE_COLOR = Colors.primarybrand;
-const INACTIVE_COLOR = Colors.disabled;
 
 const TAB_LABELS = {
   [ROUTES.HOME]: "navigation.tab.home",
@@ -23,20 +21,31 @@ const TAB_LABELS = {
 };
 
 export default function AppStack() {
+  const { themeVersion } = useTheme();
   const { t } = useTranslation();
+  const styles = React.useMemo(() => StyleSheet.create({
+    activeIndicator: {
+      height: 2,
+      width: 40,
+      backgroundColor: Colors.primarybrand,
+      marginTop: 4,
+      borderRadius: 2,
+    },
+  }), [themeVersion]);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: ACTIVE_COLOR,
-        tabBarInactiveTintColor: INACTIVE_COLOR,
+        tabBarActiveTintColor: Colors.primarybrand,
+        tabBarInactiveTintColor: Colors.disabled,
         tabBarStyle: {
           height: 70,
           paddingBottom: 10,
           paddingTop: 10,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: Colors.white,
           borderTopWidth: 1,
-          borderTopColor: "#F0F0F0",
+          borderTopColor: Colors.borderDefault,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -116,13 +125,3 @@ export default function AppStack() {
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  activeIndicator: {
-    height: 2,
-    width: 40,
-    backgroundColor: ACTIVE_COLOR,
-    marginTop: 4,
-    borderRadius: 2,
-  },
-});

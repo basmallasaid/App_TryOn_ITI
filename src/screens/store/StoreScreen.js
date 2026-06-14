@@ -1,78 +1,88 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View, Text } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, StyleSheet, View, Text, Platform, StatusBar } from 'react-native';
 import { StoreHeader } from '../../components/store/StoreHeader';
 import { ProductCard } from '../../components/store/ProductCard';
 import { SearchBar } from '../../components/store/SearchBar';
 import { PromoBanner } from '../../components/store/PromoBanner';
 import { CategoryTabs } from '../../components/store/CategoryTabs';
 import Colors from '../../constants/theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { getAllProducts } from '../../api/user_services/userService';
 import { FilterModal } from './FilterModal';
 import { useFavorites } from '../../context/FavoritesContext';
 import { useTranslation } from 'react-i18next';
-
-const mapProductToCard = (product) => ({
-    id: product._id,
-    name: product.name,
-    brand: product.store_id?.name || 'Store',
-    price: `${product.price} ${product.currency || 'USD'}`,
-    image: product.images?.[0],
-    badge: product.try_on_enabled ? 'Match' : product.is_active ? '' : 'Inactive',
-    badgeColor: product.try_on_enabled ? '#8ED321' : '#8A9BAD',
-    isOutlined: product.try_on_enabled,
-});
-
-const getCategoryIcon = (category) => {
-    switch (category) {
-        case 'dresses':
-            return 'dresses';
-        case 'top':
-            return 'tshirt-crew-outline';
-        case 'pants':
-            return 'human-male-height';
-        default:
-            return null;
-    }
-};
-
-const buildCategoriesFromProducts = (products) => {
-    const categorySet = new Set();
-    products.forEach((product) => {
-        const category = product.category?.toLowerCase();
-        if (category) categorySet.add(category);
-    });
-
-    const categories = [{ id: 'all', name: 'All', icon: null, value: 'all' }];
-
-    Array.from(categorySet)
-        .sort()
-        .forEach((category) => {
-            categories.push({
-                id: category,
-                name: category.charAt(0).toUpperCase() + category.slice(1),
-                value: category,
-                icon: getCategoryIcon(category),
-            });
-        });
-
-    return categories;
-};
-
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import { translateProduct } from '../../utils/dynamicTranslator';
+import { checkProductMatches } from '../../api/matching_services/matchingService';
 import i18n from '../../localization/i18n';
 
 export default function StoreScreen() {
     const navigation = useNavigation();
     const { t } = useTranslation();
+    const { themeVersion } = useTheme();
+    const styles = React.useMemo(() => createStyles(), [themeVersion]);
+
+    const mapProductToCard = (product) => {
+        const hasMatches = productMatches[product._id] ?? product.try_on_enabled;
+        return {
+            id: product._id,
+            name: product.name,
+            brand: product.store_id?.name || 'Store',
+            price: `${product.price} ${product.currency || t("store.currency")}`,
+            image: product.images?.[0],
+            badge: hasMatches ? 'Match' : '',
+            badgeColor: Colors.secondary,
+            isOutlined: hasMatches,
+        };
+    };
+
+    const getCategoryIcon = (category) => {
+        switch (category) {
+            case 'dresses':
+                return 'dresses';
+            case 'top':
+                return 'tshirt-crew-outline';
+            case 'pants':
+                return 'human-male-height';
+            default:
+                return null;
+        }
+    };
+
+    const buildCategoriesFromProducts = (products) => {
+        const categorySet = new Set();
+        products.forEach((product) => {
+            const category = product.category?.toLowerCase();
+            if (category) categorySet.add(category);
+        });
+
+        const categories = [{ id: 'all', name: t("store.all"), icon: null, value: 'all' }];
+
+        Array.from(categorySet)
+            .sort()
+            .forEach((category) => {
+                categories.push({
+                    id: category,
+                    name: category.charAt(0).toUpperCase() + category.slice(1),
+                    value: category,
+                    icon: getCategoryIcon(category),
+                });
+            });
+
+        return categories;
+    };
     const { isFavorite, addItem, removeItem, refetch: refetchFavorites } = useFavorites();
     const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchText, setSearchText] = useState('');
+    const searchTextRef = useRef(searchText);
+    searchTextRef.current = searchText;
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [filterVisible, setFilterVisible] = useState(false);
+    const [productMatches, setProductMatches] = useState({});
     const [filterValues, setFilterValues] = useState({
         brands: [],
         seasons: [],
@@ -81,9 +91,16 @@ export default function StoreScreen() {
         price: 1000,
     });
 
-    const handleSearchSubmit = () => {
-        setSearchQuery((prevQuery) => prevQuery.trim());
-    };
+    const handleSearchSubmit = React.useCallback(() => {
+        setSearchQuery(searchTextRef.current.trim());
+    }, []);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchQuery(searchText.trim());
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchText]);
 
     const handleTryOn = (item) => {
         navigation.navigate(ROUTES.TRY_ON, {
@@ -118,8 +135,18 @@ export default function StoreScreen() {
                 }
                 
                 setAllProducts(products);
+
+                // Check matches for all products in parallel
+                const results = await Promise.allSettled(
+                    products.map(p => checkProductMatches(p._id))
+                );
+                const matchMap = {};
+                products.forEach((p, i) => {
+                    matchMap[p._id] = results[i].status === 'fulfilled' && results[i].value;
+                });
+                setProductMatches(matchMap);
             } catch (err) {
-                setError(t('store.error'));
+                setError(t('store.loadError'));
             } finally {
                 setLoading(false);
             }
@@ -167,7 +194,34 @@ export default function StoreScreen() {
                 return priceValue <= filterValues.price;
             })
             .map(mapProductToCard);
-    }, [allProducts, searchQuery, selectedCategory, filterValues]);
+    }, [allProducts, searchQuery, selectedCategory, filterValues, productMatches]);
+
+    const listHeader = React.useMemo(() => (
+        <View style={{ padding: 20 }}>
+            <StoreHeader onFilterPress={() => setFilterVisible(true)} />
+            <FilterModal
+                visible={filterVisible}
+                onClose={() => setFilterVisible(false)}
+                onApply={handleFilterApply}
+                initialBrands={filterValues.brands}
+                initialSeasons={filterValues.seasons}
+                initialCategories={filterValues.categories}
+                initialColors={filterValues.colors}
+                initialPrice={filterValues.price}
+            />
+            <SearchBar
+                value={searchText}
+                onChangeText={setSearchText}
+                onSearch={handleSearchSubmit}
+            />
+            <PromoBanner />
+            <CategoryTabs
+                categories={categories}
+                activeCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+            />
+        </View>
+    ), [searchText, filterVisible, filterValues, categories, selectedCategory, handleSearchSubmit]);
 
     if (loading) {
         return (
@@ -192,32 +246,7 @@ export default function StoreScreen() {
                 numColumns={2}
               columnWrapperStyle={styles.row} 
                 
-                ListHeaderComponent={() => (
-                    <View style={{ padding: 20 }}>
-                        <StoreHeader onFilterPress={() => setFilterVisible(true)} />
-                             <FilterModal
-                                visible={filterVisible}
-                                onClose={() => setFilterVisible(false)}
-                                onApply={handleFilterApply}
-                                initialBrands={filterValues.brands}
-                                initialSeasons={filterValues.seasons}
-                                initialCategories={filterValues.categories}
-                                initialColors={filterValues.colors}
-                                initialPrice={filterValues.price}
-                              />
-                        <SearchBar
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
-                            onSearch={handleSearchSubmit}
-                        />
-                        <PromoBanner />
-                        <CategoryTabs
-                            categories={categories}
-                            activeCategory={selectedCategory}
-                            onCategoryChange={setSelectedCategory}
-                        />
-                    </View>
-                )}
+                ListHeaderComponent={listHeader}
                 renderItem={({ item }) => (
                     <ProductCard
                         {...item}
@@ -249,11 +278,11 @@ export default function StoreScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
      screenWrapper: {
         flex: 1,
         backgroundColor: Colors.backgroundColor,
-        paddingTop: 30,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
     listContent: {
         paddingHorizontal: 12, 
@@ -267,7 +296,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     errorText: {
-        color: '#D32F2F',
+        color: Colors.error,
         fontSize: 16,
         textAlign: 'center',
         paddingHorizontal: 20,
@@ -278,7 +307,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     emptyText: {
-        color: '#6B7280',
+        color: Colors.textMuted,
         fontSize: 14,
     },
 });

@@ -1,14 +1,14 @@
 import { I18nManager } from "react-native";
-import * as Updates from "expo-updates";
-import i18n from "./src/localization/i18n";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { navigationRef } from "./src/utils/navigationRef";
-import { AuthProvider } from "./src/context/AuthContext";
+import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { LanguageProvider } from "./src/context/LanguageContext";
+import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
+import Colors from "./src/constants/theme/colors";
 import RootNavigator from "./src/navigation/RootNavigator";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import {
@@ -27,20 +27,51 @@ import { WardrobeProvider } from './src/context/WardrobeContext';
 import { NotificationProvider } from "./src/context/NotificationContext";
 import { FavoritesProvider } from './src/context/FavoritesContext';
 import { RecommendationProvider } from './src/context/RecommendationContext';
+import { RecentTryOnsProvider } from './src/context/RecentTryOnsContext';
+import { RecentRecyclesProvider } from './src/context/RecentRecyclesContext';
+import { FeedbackProvider } from './src/context/FeedbackContext';
+import { registerDailyRecommendationTask } from './src/background/DailyRecommendationTask';
 I18nManager.allowRTL(true);
-
 // DEV ONLY — comment out when done testing
 resetOnboardingAndLanguage();
 
-i18n.on("languageChanged", async (lang) => {
-  const isRTL = lang === "ar";
-  if (I18nManager.isRTL !== isRTL) {
-    I18nManager.forceRTL(isRTL);
-    if (Updates.isEmbeddedLaunch) {
-      await Updates.reloadAsync();
-    }
-  }
-});
+function RecommendationProviderWithAuthKey({ children }) {
+  const { user } = useAuth();
+  return (
+    <RecommendationProvider key={user?._id || 'guest'}>
+      {children}
+    </RecommendationProvider>
+  );
+}
+
+function ThemedApp() {
+  const { themeVersion, isDarkMode } = useTheme();
+
+  const navTheme = React.useMemo(
+    () => ({
+      ...(isDarkMode ? DarkTheme : DefaultTheme),
+      colors: {
+        ...(isDarkMode ? DarkTheme.colors : DefaultTheme.colors),
+        primary: Colors.primary,
+        background: Colors.backgroundColor,
+        card: Colors.white,
+        text: Colors.textPrimary,
+        border: Colors.borderDefault,
+        notification: Colors.error,
+      },
+    }),
+    [themeVersion]
+  );
+
+  return (
+    <>
+      <StatusBar style={isDarkMode ? "light" : "dark"} />
+      <NavigationContainer ref={navigationRef} theme={navTheme}>
+        <RootNavigator />
+      </NavigationContainer>
+    </>
+  );
+}
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -54,29 +85,38 @@ export default function App() {
   });
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+      registerDailyRecommendationTask();
+    }
   }, [fontsLoaded]);
 
   if (!fontsLoaded) return null;
 
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <ProfileProvider>
-          <WardrobeProvider>
-            <NotificationProvider>
-              <FavoritesProvider>
-                <RecommendationProvider>
-                  <NavigationContainer ref={navigationRef}>
-                    <RootNavigator />
-                  </NavigationContainer>
-                </RecommendationProvider>
-              </FavoritesProvider>
-            </NotificationProvider>
-          </WardrobeProvider>
-        </ProfileProvider>
-      </AuthProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <ProfileProvider>
+            <WardrobeProvider>
+              <NotificationProvider>
+                <FavoritesProvider>
+                  <RecentTryOnsProvider>
+                    <RecentRecyclesProvider>
+                      <RecommendationProviderWithAuthKey>
+                        <FeedbackProvider>
+                          <ThemedApp />
+                        </FeedbackProvider>
+                      </RecommendationProviderWithAuthKey>
+                    </RecentRecyclesProvider>
+                  </RecentTryOnsProvider>
+                </FavoritesProvider>
+              </NotificationProvider>
+            </WardrobeProvider>
+          </ProfileProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -15,40 +15,36 @@ import { Ionicons } from "@expo/vector-icons";
 import {
   getWardrobeItem,
   deleteWardrobeItem,
-  editWardrobeItem,
 } from "../../api/wardrobe_services/wardrobeService";
 import { useWardrobe } from "../../context/WardrobeContext";
+import { useFavorites } from "../../context/FavoritesContext";
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
+import { useTranslation } from 'react-i18next';
 import { ROUTES, SOURCE } from "../../navigation/routes";
 import CustomBackButton from "../../components/common/CustomBackButton";
-import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import SelectionChip from "../../components/wardrobe/SelectionChip";
 import QuestionGroup from "../../components/wardrobe/QuestionGroup";
 import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal";
 
-const CATEGORIES = ["Basic", "Bottom", "Top", "Dress", "Suit", "Bag", "Shoes", "Jacket", "Accessories"];
+const CATEGORIES = ["Bottom", "Top", "Dress", "Suit", "Bag", "Shoes", "Jacket", "Accessories"];
 const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
 const STYLES = ["Casual", "Basic", "Formal","Mart-Casual"];
 
 const ItemDetailsScreen = ({ route, navigation }) => {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
+  const { t } = useTranslation();
   const { itemId, analysisId } = route.params;
-  const { removeItem, refetch, updateItem } = useWardrobe();
+  const { removeItem, refetch } = useWardrobe();
+  const { isFavorite: checkIsFavorite, addItem: addFavoriteItem, removeItem: removeFavoriteItem } = useFavorites();
 
   const [itemData, setItemData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedSeasons, setSelectedSeasons] = useState([]);
-  const [selectedStyle, setSelectedStyle] = useState(null);
-
-  useEffect(() => {
-    fetchDetails();
-  }, [itemId]);
 
   const fetchDetails = async () => {
     try {
@@ -56,56 +52,35 @@ const ItemDetailsScreen = ({ route, navigation }) => {
       const id = analysisId || itemId;
       const data = await getWardrobeItem(id);
       setItemData(data);
-      const garment = data?.garments?.[0] || {};
-      setSelectedCategory(garment.category || null);
-      setSelectedSeasons(garment.season || []);
-      setSelectedStyle(garment.style || null);
     } catch (error) {
-      console.error("Fetch Details Error:", error.response?.status, error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleCategory = (value) => {
-    setSelectedCategory((prev) => (prev === value ? null : value));
-  };
+  useEffect(() => {
+    fetchDetails();
+  }, [itemId]);
 
-  const toggleSeason = (value) => {
-    setSelectedSeasons((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value],
-    );
-  };
-
-  const toggleStyle = (value) => {
-    setSelectedStyle((prev) => (prev === value ? null : value));
-  };
-
-  const handleSave = async () => {
-    if (!itemData) return;
-    const garment = itemData?.garments?.[0] || {};
-    const id = analysisId || itemId;
-    try {
-      setSaving(true);
-      const category = selectedCategory || garment.category || "";
-      const style = selectedStyle || garment.style || "";
-      const season = selectedSeasons.length ? selectedSeasons : garment.season || [];
-      await editWardrobeItem(id, garment, {
-        name: garment.specificType || "",
-        category,
-        style,
-        season,
-      });
-      updateItem(itemId, { category: category.toLowerCase() });
-      navigation.goBack();
-    } catch (error) {
-      console.error("Save Error:", error);
-    } finally {
-      setSaving(false);
+  useEffect(() => {
+    if (itemData) {
+      setIsFavorite(checkIsFavorite(itemId));
     }
-  };
+  }, [itemData, itemId, checkIsFavorite]);
+
+  const handleToggleFavorite = useCallback(async () => {
+    const wasFavorite = isFavorite;
+    setIsFavorite(!wasFavorite);
+    try {
+      if (wasFavorite) {
+        await removeFavoriteItem(itemId);
+      } else {
+        await addFavoriteItem(itemId, 'WARDROBE', itemData);
+      }
+    } catch (e) {
+      setIsFavorite(wasFavorite);
+    }
+  }, [isFavorite, itemId, itemData, addFavoriteItem, removeFavoriteItem]);
 
   const handleDelete = async () => {
     try {
@@ -115,7 +90,6 @@ const ItemDetailsScreen = ({ route, navigation }) => {
       setShowDeleteModal(false);
       navigation.goBack();
     } catch (error) {
-      console.error("Delete Error:", error);
     } finally {
       setDeleting(false);
     }
@@ -138,6 +112,9 @@ const ItemDetailsScreen = ({ route, navigation }) => {
           .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
           .join("-")
       : "";
+  const category = garment.category ? normalize(garment.category) : "";
+  const seasons = (garment.season || []).map(normalize);
+  const style = garment.style ? normalize(garment.style) : "";
 
   return (
     <SafeAreaView style={styles.root}>
@@ -146,8 +123,8 @@ const ItemDetailsScreen = ({ route, navigation }) => {
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <View style={styles.headerText}>
-          <Text style={styles.title}>Item Details</Text>
-          <Text style={styles.subtitle}>{garment.specificType || "Garment"}</Text>
+          <Text style={styles.title}>{t("wardrobe.details.title")}</Text>
+          <Text style={styles.subtitle}>{garment.specificType || t("wardrobe.details.garment")}</Text>
         </View>
       </View>
 
@@ -159,7 +136,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
             resizeMode="contain"
           />
           <View style={styles.imageActions}>
-            <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
+            <TouchableOpacity onPress={handleToggleFavorite}>
               <View style={styles.iconCircle}>
                 <Ionicons
                   name={isFavorite ? "heart" : "heart-outline"}
@@ -194,7 +171,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
 
         <View style={styles.colorSection}>
           <Text style={styles.colorLabel}>
-            Color <Text style={styles.colorValue}>{primaryColorName}</Text>
+            {t("wardrobe.details.color")} <Text style={styles.colorValue}>{primaryColorName}</Text>
           </Text>
           <View style={[styles.colorRing, { borderColor: Colors.primary }]}>
             <View
@@ -209,46 +186,63 @@ const ItemDetailsScreen = ({ route, navigation }) => {
         <Text style={styles.detailsLabel}>Item Details</Text>
 
         <View style={styles.dataCard}>
-          <QuestionGroup title="Category">
-            {CATEGORIES.map((cat) => (
-              <SelectionChip
-                key={cat}
-                label={cat}
-                isSelected={normalize(selectedCategory) === cat}
-                onPress={() => toggleCategory(cat)}
-              />
-            ))}
+          <QuestionGroup title={t("wardrobe.details.category")}>
+            {CATEGORIES.map((cat) => {
+              const catLabel = {
+                Bottom: t("wardrobe.categories.bottom"),
+                Top: t("wardrobe.categories.top"),
+                Dress: t("wardrobe.categories.dress"),
+                Suit: t("wardrobe.categories.suit"),
+                Bag: t("wardrobe.categories.bag"),
+                Shoes: t("wardrobe.categories.shoes"),
+                Jacket: t("wardrobe.categories.jacket"),
+                Accessories: t("wardrobe.categories.accessories"),
+              }[cat];
+              return (
+                <SelectionChip
+                  key={cat}
+                  label={catLabel || cat}
+                  isSelected={category === cat}
+                />
+              );
+            })}
           </QuestionGroup>
 
-          <QuestionGroup title="Season">
-            {SEASONS.map((s) => (
-              <SelectionChip
-                key={s}
-                label={s}
-                isSelected={selectedSeasons.some((item) => normalize(item) === s)}
-                onPress={() => toggleSeason(s)}
-              />
-            ))}
+          <QuestionGroup title={t("wardrobe.details.season")}>
+            {SEASONS.map((s) => {
+              const seasonLabel = {
+                Summer: t("wardrobe.seasons.summer"),
+                Winter: t("wardrobe.seasons.winter"),
+                Spring: t("wardrobe.seasons.spring"),
+                Fall: t("wardrobe.seasons.fall"),
+              }[s];
+              return (
+                <SelectionChip
+                  key={s}
+                  label={seasonLabel || s}
+                  isSelected={seasons.includes(s)}
+                />
+              );
+            })}
           </QuestionGroup>
 
-          <QuestionGroup title="Style">
-            {STYLES.map((st) => (
-              <SelectionChip
-                key={st}
-                label={st}
-                isSelected={selectedStyle?.toLowerCase() === st.toLowerCase()}
-                onPress={() => toggleStyle(st)}
-              />
-            ))}
+          <QuestionGroup title={t("wardrobe.details.style")}>
+            {STYLES.map((st) => {
+              const styleLabel = {
+                Casual: t("wardrobe.styles.casual"),
+                Basic: t("wardrobe.styles.basic"),
+                Formal: t("wardrobe.styles.formal"),
+                "Mart-Casual": t("wardrobe.styles.martCasual"),
+              }[st];
+              return (
+                <SelectionChip
+                  key={st}
+                  label={styleLabel || st}
+                  isSelected={style?.toLowerCase() === st.toLowerCase()}
+                />
+              );
+            })}
           </QuestionGroup>
-        </View>
-
-        <View style={styles.saveWrap}>
-          <CustomizeAppButtonFilled
-            label="Save Changes"
-            onPress={handleSave}
-            loading={saving}
-          />
         </View>
       </ScrollView>
 
@@ -262,7 +256,9 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+export default ItemDetailsScreen;
+
+const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
@@ -400,9 +396,4 @@ const styles = StyleSheet.create({
       android: { elevation: 4 },
     }),
   },
-  saveWrap: {
-    marginTop: 24,
-  },
 });
-
-export default ItemDetailsScreen;

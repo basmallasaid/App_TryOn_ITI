@@ -45,7 +45,38 @@ The codebase uses `image_url || image || imageUrl || url` as the fallback chain 
 - Created: `RecommendationContext.js`, `WeatherCard.js`, `OutfitOverviewCard.js`, `OutfitItemCard.js`, `weatherIcons.js`, `greeting.js`, `getItemImage.js`
 - Edited: `routes.js`, `RootNavigator.js`, `RecommendationsStack.js`, `HomeScreen.js`, `OutfitCard.js`, `RecommendationScreen.js`, `RecommendationDetailsScreen.js`, `en.json`, `ar.json`, `RecommendationContext.js`
 
-### Testing / Debugging
-- Fire up the app, navigate to recommendations, open DevTools console (or `adb logcat` / Xcode console) to see `[RecommendationContext]` logs.
-- Look for: `items.length`, `first item keys`, `first item raw` — these will show the actual API response structure. If `first item keys` doesn't include `image_url`, `image`, or `imageUrl`, then the items structure is different from what we expect.
-- The logging now also shows `outfits[0] keys` for history entries, revealing the nested outfit structure (e.g. `_id,user_id,outfits,weather,created_at,...`).
+### Dark Mode Theming Fix
+
+#### Goal
+Move `const styles = StyleSheet.create({...})` from module scope into component functions so `Colors` values re-evaluate on theme change.
+
+#### Approach
+- Use `React.useMemo(() => StyleSheet.create({...}), [])` inside the component, placed right before the `return` statement
+- If file already imports `useMemo`, use `useMemo()` directly
+- Files missing `React` import get it added
+- `CreateAvatarScreen` required extracting sub-component styles (`tabContent`, `genderLabel`, `genderRow`) into a module-level `subStyles` since `GeneralInfoTab` etc. are defined outside the main component
+
+#### Files Modified (29 total)
+- **Home:** `HomeScreen.js`, `RecentTryOnsScreen.js`, `RecentRecyclesScreen.js`
+- **Recommendations:** `RecommendationScreen.js`, `RecommendationDetailsScreen.js`, `AllRecommendationsScreen.js`
+- **Wardrobe:** `WardrobeScreen.js`, `EditWardrobeScreen.js`, `VerifyItemScreen.js`, `ItemDetailsScreen.js`
+- **Profile:** `ProfileScreen.js`, `SubscriptionScreen.js`, `EditProfileScreen.js`, `AvatarDetailScreen.js`
+- **Store:** `StoreScreen.js`, `ProductDetailScreen.js`, `FilterModal.js`
+- **TryOn:** `TryOnScreen.js`, `TryOnResultsScreen.js`, `UploadPhotoScreen.js`
+- **Recycle:** `RecycleScreen.js`, `RecycleResultScreen.js`
+- **Matching:** `MatchingScreen.js`, `MatchingResultDetailsScreen.js`
+- **Onboarding:** `OnboardingScreen.js`
+- **Favorites:** `FavoritesScreen.js`
+- **Notifications:** `NotificationsScreen.js`
+- **SelectModel:** `SelectModelScreen.js`
+- **Avatar:** `CreateAvatarScreen.js` (created `subStyles` for sub-components)
+
+#### Excluded
+- `src/screens/authentication/` — not processed
+- `src/screens/language/SelectLanguageScreen.js` — not processed
+- `src/screens/splash/SplashScreen.js` — uses hardcoded `#f6f6f6`, no `Colors` dependency
+- `src/screens/settings/SettingsScreen.js` — empty styles object, no `Colors` dependency
+
+#### Notes
+- SplashScreen remains excluded because its styles use a hardcoded background color (`#f6f6f6`) rather than importing `Colors`.
+- `StyleSheet.create` at module scope resolves `Colors` at import time; wrapping it in `React.useMemo` inside the component ensures it picks up the current theme values on each mount.

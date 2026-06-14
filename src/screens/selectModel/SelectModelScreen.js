@@ -1,10 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   SafeAreaView,
   StyleSheet,
-  TouchableOpacity,
   Platform,
   StatusBar,
   Alert,
@@ -13,62 +12,99 @@ import {
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
-import Typography from "../../constants/theme/typography";
+import { useTheme } from "../../context/ThemeContext";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
+import CustomBackButton from "../../components/common/CustomBackButton";
 import { IMAGES } from "../../constants/images/images";
 import { useAuth } from "../../context/AuthContext";
 import { getUserProfile } from "../../api/user_services/userService";
 import { getAvatarById } from "../../api/avatar_services/avatarService";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 
-const PhotoPlaceholder = () => {
+
+
+const PhotoPlaceholder = ({ styles }) => {
   const { t } = useTranslation();
   return (
-    <View style={photoStyles.container}>
-      <View style={photoStyles.circle}>
-        <Ionicons name="camera" size={24} color="#6B7280" />
+    <View style={styles.photoContainer}>
+      <View style={styles.photoCircle}>
+        <Ionicons name="camera" size={24} color={Colors.iconGray} />
       </View>
-      <Text style={photoStyles.label}>{t('tryOn.selectModel.tapToUpload')}</Text>
+      <Text style={styles.photoLabel}>{t('tryOn.selectModel.tapToUpload')}</Text>
     </View>
   );
 };
 
-const photoStyles = StyleSheet.create({
-  container: {
-    backgroundColor: "#E7EBFE",
-    borderRadius: 16,
-    padding: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 100,
-    height: 130,
-  },
-  circle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#FFFFFF",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  label: {
-    fontSize: 10,
-    color: "#6B7280",
-    fontWeight: "500",
-    fontFamily: "Roboto_500Medium",
-    textAlign: "center",
-  },
-});
-
 const SelectModelScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const { user } = useAuth();
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
   const productImage = route?.params?.productImage;
   const isStoreFlow = !!productImage;
+
+  const styles = React.useMemo(() => StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  title: {
+    fontFamily: "Roboto_700Bold",
+    fontWeight: "700",
+    fontSize: 24,
+    lineHeight: 38.4,
+    color: Colors.textPrimary,
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontFamily: "Roboto_400Regular",
+    fontWeight: "400",
+    fontSize: 16,
+    color: Colors.textMuted,
+    textAlign: "center",
+    marginBottom: 32,
+  },
+  optionsWrap: {
+    gap: 16,
+    paddingTop: 10,
+  },
+  buttonWrap: {
+    paddingBottom: 30,
+    paddingTop: 50,
+  },
+  scrollContent: {
+  flexGrow: 1,
+},
+  photoContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+  },
+  photoCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: Colors.borderDefault,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  photoLabel: {
+    fontFamily: "Roboto_400Regular",
+    fontSize: 12,
+    color: Colors.iconGray,
+    textAlign: "center",
+  },
+}), [themeVersion]);
 
   const MODELS = [
     {
@@ -84,7 +120,7 @@ const SelectModelScreen = ({ navigation, route }) => {
       description: t('tryOn.selectModel.photoDesc'),
       badge: null,
       image: null,
-      rightContent: <PhotoPlaceholder />,
+      rightContent: <PhotoPlaceholder styles={styles} />,
     },
   ];
 
@@ -120,6 +156,7 @@ const SelectModelScreen = ({ navigation, route }) => {
     }
   };
 
+
   return (
     <SafeAreaView style={styles.safeArea}>
   <ScrollView
@@ -127,16 +164,7 @@ const SelectModelScreen = ({ navigation, route }) => {
     showsVerticalScrollIndicator={false}
   >
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backBtn}
-        onPress={() => navigation.goBack()}
-      >
-        <Ionicons
-          name="chevron-back"
-          size={24}
-          color={Colors.iconGray}
-        />
-      </TouchableOpacity>
+      <CustomBackButton onPress={() => navigation.goBack()} />
 
       <Text style={styles.title}>
         {t('tryOn.selectModel.title')}
@@ -175,48 +203,5 @@ const SelectModelScreen = ({ navigation, route }) => {
 </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    marginBottom: 16,
-  },
-  title: {
-    ...Typography.screenTitleLarge,
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontFamily: "Roboto_400Regular",
-    fontWeight: "400",
-    fontSize: 16,
-    color: Colors.textMuted,
-    textAlign: "center",
-    marginBottom: 32,
-  },
-  optionsWrap: {
-    gap: 16,
-    paddingTop: 10,
-  },
-  buttonWrap: {
-    paddingBottom: 30,
-    paddingTop: 50,
-  },
-  scrollContent: {
-  flexGrow: 1,
-},
-});
 
 export default SelectModelScreen;

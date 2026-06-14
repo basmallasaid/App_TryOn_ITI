@@ -14,13 +14,14 @@ import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from '@react-native-community/datetimepicker'; // Import DatePicker
 
 import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 import CustomizeTextInput from "../../components/common/CustomizeTextInput";
 import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButtonFilled";
 import GenderOptionCard from "../../components/profile/GenderOptionCard";
 import { getToken } from "../../storage/TokenStorage";
 import { useProfileContext } from "../../context/ProfileContext";
 import { useAuth } from "../../context/AuthContext";
-import CustomBackButton from "../../components/common/CustomBackButton"; // Using your custom back button
+import CustomBackButton from "../../components/common/CustomBackButton";
 
 const formatDate = (date) => {
   if (!date) return "";
@@ -32,6 +33,8 @@ const formatDate = (date) => {
 };
 
 const EditProfileScreen = ({ navigation }) => {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { profile, loading, setProfile } = useProfileContext();
   const { updateProfile } = useAuth();
@@ -117,7 +120,7 @@ const EditProfileScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
+        <View style={[styles.header, { flexDirection: "row" }]}>
           <CustomBackButton onPress={() => navigation.goBack()} />
           <Text style={styles.title}>{t('editProfile.title')}</Text>
           <View style={{ width: 56 }} /> 
@@ -130,14 +133,14 @@ const EditProfileScreen = ({ navigation }) => {
             label={t('editProfile.firstName')}
             value={firstName}
             onChangeText={setFirstName}
-            rightIcon={<Ionicons name="pencil-outline" size={18} color="#6B7280" />}
+            rightIcon={<Ionicons name="pencil-outline" size={18} color={Colors.iconGray} />}
           />
 
           <CustomizeTextInput
             label={t('editProfile.lastName')}
             value={lastName}
             onChangeText={setLastName}
-            rightIcon={<Ionicons name="pencil-outline" size={18} color="#6B7280" />}
+            rightIcon={<Ionicons name="pencil-outline" size={18} color={Colors.iconGray} />}
           />
 
           {/* Date of Birth Trigger */}
@@ -148,7 +151,7 @@ const EditProfileScreen = ({ navigation }) => {
                 value={dateOfBirth}
                 placeholder={t('editProfile.datePlaceholder')}
                 editable={false}
-                rightIcon={<Ionicons name="calendar-outline" size={18} color="#6B7280" />}
+                rightIcon={<Ionicons name="calendar-outline" size={18} color={Colors.iconGray} />}
               />
             </View>
           </TouchableOpacity>
@@ -166,18 +169,18 @@ const EditProfileScreen = ({ navigation }) => {
 
           {/* iOS needs a confirm button for the spinner display mode */}
           {showPicker && Platform.OS === "ios" && (
-            <View style={styles.iosDateButtons}>
+            <View style={[styles.iosDateButtons, { flexDirection: "row" }]}>
               <TouchableOpacity onPress={toggleDatepicker} style={styles.dateBtn}>
-                <Text style={{ color: Colors.error }}>Cancel</Text>
+                <Text style={{ color: Colors.error }}>{t("editProfile.cancel")}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={confirmIosDate} style={styles.dateBtn}>
-                <Text style={{ color: Colors.primary }}>Confirm</Text>
+                <Text style={{ color: Colors.primary }}>{t("editProfile.confirm")}</Text>
               </TouchableOpacity>
             </View>
           )}
 
           <Text style={styles.genderLabel}>{t('editProfile.gender')}</Text>
-          <View style={styles.genderRow}>
+          <View style={[styles.genderRow, { flexDirection: "row" }]}>
             <GenderOptionCard
               gender="Male"
               selected={gender === "Male"}
@@ -201,10 +204,12 @@ const EditProfileScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+export default EditProfileScreen;
+
+const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
+    backgroundColor: Colors.backgroundColor,
   },
   scrollContent: {
     paddingHorizontal: 16,
@@ -217,7 +222,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 24,
@@ -225,12 +229,12 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "Roboto_700Bold",
     fontSize: 24,
-    color: "#121826",
+    color: Colors.textPrimary,
   },
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.white,
     borderWidth: 1,
-    borderColor: "#E9EBEE",
+    borderColor: Colors.borderDefault,
     borderRadius: 16,
     paddingHorizontal: 24,
     paddingVertical: 35,
@@ -239,18 +243,16 @@ const styles = StyleSheet.create({
   },
   genderLabel: {
     fontSize: 14,
-    color: "#121826",
+    color: Colors.textPrimary,
     fontFamily: "Roboto_500Medium",
     marginBottom: 12,
   },
   genderRow: {
-    flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10,
     marginTop: 5,
   },
   iosDateButtons: {
-    flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 20
   },
@@ -258,5 +260,3 @@ const styles = StyleSheet.create({
     padding: 10,
   }
 });
-
-export default EditProfileScreen;

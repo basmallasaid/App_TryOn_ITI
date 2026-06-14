@@ -57,10 +57,18 @@ export const ROUTES = {
   RECOMMENDATIONS_HISTORY: 'RecommendationsHistory',
   RECOMMENDATION_DETAIL: 'RecommendationDetail',
 
+  // Notifications
+  NOTIFICATIONS: 'Notifications',
+
+  // Recent screens
+  RECENT_TRYONS: 'RecentTryOns',
+  RECENT_RECYCLES: 'RecentRecycles',
+
   // Profile stack
   PROFILE_MAIN: 'Profile',
   EDIT_PROFILE: 'EditProfile',
   FAVORITES: 'Favorites',
+  AVATAR_DETAIL: 'AvatarDetail',
   SUBSCRIPTION: 'Subscription',
   MANAGE_SUBSCRIPTION: 'ManageSubscription',
 };

@@ -1,8 +1,23 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function GradientDashedBorder({ children, style }) {
+  const { themeVersion } = useTheme();
+  const styles = React.useMemo(() => StyleSheet.create({
+    gradient: {
+      borderRadius: 16,
+      padding: 2,
+    },
+    inner: {
+      flex: 1,
+      borderRadius: 14,
+      backgroundColor: Colors.white,
+    },
+  }), [themeVersion]);
+
   return (
     <LinearGradient
       colors={["#FF8C42", "#40B9FF", "#8ED321"]}
@@ -14,15 +29,3 @@ export default function GradientDashedBorder({ children, style }) {
     </LinearGradient>
   );
 }
-
-const styles = StyleSheet.create({
-  gradient: {
-    borderRadius: 16,
-    padding: 2,
-  },
-  inner: {
-    flex: 1,
-    borderRadius: 14,
-    backgroundColor: "#FFFFFF",
-  },
-});

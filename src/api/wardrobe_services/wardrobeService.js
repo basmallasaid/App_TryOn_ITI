@@ -8,7 +8,7 @@ export const analyzeGarment = async (formData) => {
     formData, // Send the FormData object directly
     {
       headers: {
-        "x-hf-token": HF_TOKEN,
+        // "x-hf-token": HF_TOKEN,
         "Content-Type": "multipart/form-data", // Tell the server to expect a file
       },
       transformRequest: (data, headers) => {
@@ -17,7 +17,6 @@ export const analyzeGarment = async (formData) => {
       timeout: 60000,
     },
   );
-  console.log(data);
   return data;
 };
 
@@ -47,14 +46,10 @@ export const editWardrobeItem = async (id, originalGarment, updateData) => {
     detectionType: "single",
     garments: [
       {
-        // Fields allowed to change
         specificType: updateData.name,
         category: updateData.category.toLowerCase(),
         style: updateData.style.toLowerCase(),
         season: updateData.season.map((s) => s.toLowerCase()),
-
-        // Fields kept from original (Read-Only)
-        specificType: originalGarment.specificType,
         colors: originalGarment.colors,
         confidence: originalGarment.confidence || 1,
         pattern: originalGarment.pattern || "solid",

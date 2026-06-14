@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,10 +12,10 @@ import {
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../../context/AuthContext";
+import { useTheme } from "../../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../../../components/common/CustomizeAppButtonFilled";
 import CustomizeTextInput from "../../../components/common/CustomizeTextInput";
 import Colors from "../../../constants/theme/colors";
-import Typography from "../../../constants/theme/typography";
 import { IMAGES } from "../../../constants/images/images";
 import { ICONS } from "../../../constants/images/icons";
 import { forgotPassword } from "../../../api/auth_services/authServices";
@@ -26,9 +26,36 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const { t } = useTranslation();
+  const { themeVersion } = useTheme();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    errorMsg: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      color: Colors.error,
+      marginBottom: 12,
+    },
+    buttonWrap: {
+      marginTop: "82%",
+      marginBottom: 20,
+    },
+    loginLinkWrap: {
+      alignItems: "center",
+    },
+    loginLinkText: {
+      fontFamily: "Roboto_400Regular",
+      fontSize: 12,
+      color: Colors.textDark,
+    },
+    loginLink: {
+      fontFamily: "Roboto_500Medium",
+      fontSize: 14,
+      color: Colors.success,
+    },
+  }), [themeVersion]);
 
   const emailState = error ? "error" : "default";
 
@@ -96,31 +123,5 @@ const ForgotPasswordScreen = ({ navigation }) => {
     </BottomSheetLayout>
   );
 };
-
-const styles = StyleSheet.create({
-  errorMsg: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.error,
-    marginBottom: 12,
-  },
-  buttonWrap: {
-    marginTop: "82%",
-    marginBottom: 20,
-  },
-  loginLinkWrap: {
-    alignItems: "center",
-  },
-  loginLinkText: {
-    fontFamily: "Roboto_400Regular",
-    fontSize: 12,
-    color: Colors.textDark,
-  },
-  loginLink: {
-    fontFamily: "Roboto_500Medium",
-    fontSize: 14,
-    color: Colors.success,
-  },
-});
 
 export default ForgotPasswordScreen;

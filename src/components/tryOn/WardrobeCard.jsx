@@ -1,9 +1,49 @@
 import React from "react";
 import { TouchableOpacity, View, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Colors from "../../constants/theme/colors";
+import { useTheme } from "../../context/ThemeContext";
+import GradientBorder from "../recycle/GradientBorder";
+
+const CARD_W = 90;
+const CARD_H = 110;
 
 export default function WardrobeCard({ item, isSelected, onToggle, disabled }) {
+  const { themeVersion } = useTheme();
   const imageSource = typeof item.image === "string" ? { uri: item.image } : item.image;
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    cardContainer: {
+      marginRight: 12,
+    },
+    imageWrapper: {
+      width: CARD_W,
+      height: CARD_H,
+      borderRadius: 12,
+      backgroundColor: Colors.white,
+      borderWidth: 1,
+      borderColor: Colors.borderDefault,
+      justifyContent: "center",
+      alignItems: "center",
+      position: "relative",
+    },
+    selectedContent: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 11,
+      overflow: "hidden",
+    },
+    itemImage: {
+      width: "100%",
+      height: "100%",
+    },
+    checkIcon: {
+      position: "absolute",
+      top: 4,
+      right: 4,
+    },
+  }), [themeVersion]);
 
   return (
     <TouchableOpacity
@@ -14,49 +54,19 @@ export default function WardrobeCard({ item, isSelected, onToggle, disabled }) {
       }}
       activeOpacity={disabled && !isSelected ? 1 : 0.7}
     >
-      <View style={[styles.imageWrapper, isSelected && styles.activeImageWrapper]}>
-        <Image source={imageSource} style={styles.itemImage} resizeMode="contain" />
-        <View style={[styles.checkCircle, isSelected && styles.activeCheckCircle]}>
-          <Ionicons name="checkmark" size={14} color="white" />
+      {isSelected ? (
+        <GradientBorder width={CARD_W} height={CARD_H} borderRadius={12} borderWidth={2}>
+          <View style={styles.selectedContent}>
+            <Image source={imageSource} style={styles.itemImage} resizeMode="contain" />
+            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.checkIcon} />
+          </View>
+        </GradientBorder>
+      ) : (
+        <View style={styles.imageWrapper}>
+          <Image source={imageSource} style={styles.itemImage} resizeMode="contain" />
+          <Ionicons name="checkmark-circle" size={20} color="#9BA5B7" style={styles.checkIcon} />
         </View>
-      </View>
+      )}
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    marginRight: 15,
-  },
-  imageWrapper: {
-    width: 100,
-    height: 120,
-    borderRadius: 12,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    padding: 10,
-    position: "relative",
-  },
-  activeImageWrapper: {
-    borderColor: "#A0AEC0",
-  },
-  itemImage: {
-    width: "100%",
-    height: "100%",
-  },
-  checkCircle: {
-    position: "absolute",
-    top: 5,
-    right: 5,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: "#CBD5E0",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  activeCheckCircle: {
-    backgroundColor: "#008BFF",
-  },
-});

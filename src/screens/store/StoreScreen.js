@@ -273,7 +273,7 @@ export default function StoreScreen() {
                 initialNumToRender={6}
                 ListEmptyComponent={() => (
                     <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>{t('store.noProducts')}</Text>
+                        <Text style={styles.emptyTitle}>{t('store.noProducts')}</Text>
                     </View>
                 )}
             />
@@ -305,12 +305,15 @@ const createStyles = () => StyleSheet.create({
         paddingHorizontal: 20,
     },
     emptyContainer: {
-        width: '100%',
-        padding: 40,
+        flex: 1,
+        minHeight: 300,
+        justifyContent: 'center',
         alignItems: 'center',
+        paddingHorizontal: 40,
     },
-    emptyText: {
+    emptyTitle: {
         color: Colors.textMuted,
-        fontSize: 14,
+        fontSize: 16,
+        textAlign: 'center',
     },
 });

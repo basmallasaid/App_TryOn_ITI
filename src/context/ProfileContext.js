@@ -24,6 +24,7 @@ export const ProfileProvider = ({ children }) => {
     darkMode: false,
     mobile: {},
   });
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   const refreshProfile = useCallback(async () => {
     if (!user?._id) {
@@ -46,6 +47,7 @@ export const ProfileProvider = ({ children }) => {
         darkMode: settingsData.darkMode ?? prev.darkMode,
         mobile: settingsData.mobile || prev.mobile,
       }));
+      setSettingsLoaded(true);
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -103,6 +105,7 @@ export const ProfileProvider = ({ children }) => {
         refreshProfile,
         setProfile,
         settings,
+        settingsLoaded,
         updateLanguage: handleUpdateLanguage,
         updateNotifications: handleUpdateNotifications,
         updateDarkMode: handleUpdateDarkMode,

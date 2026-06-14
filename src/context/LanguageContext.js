@@ -12,12 +12,13 @@ export const LanguageProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Load saved language on app start
-  useEffect(() => {
+   useEffect(() => {
     getLanguage()
       .then((lang) => {
         const resolved = lang ?? "en";
         setLanguage(resolved);
         i18n.changeLanguage(resolved);
+        I18nManager.forceRTL(resolved === "ar");
       })
       .finally(() => setLoading(false));
   }, []);

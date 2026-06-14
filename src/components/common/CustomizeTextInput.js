@@ -117,7 +117,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       <View
         style={[
           styles.container,
-          { borderColor },
+          { borderColor, flexDirection: isRTL ? "row-reverse" : "row" },
         ]}
       >
         <TextInput

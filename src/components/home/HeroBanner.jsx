@@ -6,9 +6,9 @@ import {
     Image,
     StyleSheet,
     useWindowDimensions,
-    I18nManager,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
+import i18n from "../../localization/i18n";
 import { IMAGES } from "../../constants/images/images";
 import { Ionicons } from '@expo/vector-icons';
 import Colors from "../../constants/theme/colors";
@@ -19,6 +19,7 @@ export default function HeroBanner({ onPress }) {
     const { t } = useTranslation();
     const { width } = useWindowDimensions();
     const { themeVersion } = useTheme();
+    const isRTL = i18n.dir() === 'rtl';
 
 const styles = React.useMemo(() => StyleSheet.create({
     banner: {
@@ -81,7 +82,7 @@ const styles = React.useMemo(() => StyleSheet.create({
     return (
         <View style={[styles.banner, { flexDirection: "row" }]}>
             <View style={[styles.bannerContent, { paddingRight: 10, paddingLeft: 0 }]}>
-                <View style={{ flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row', flexWrap: 'wrap', alignItems: 'baseline' }}>
+                <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', flexWrap: 'wrap', alignItems: 'baseline' }}>
                     <Text style={styles.bannerTitle}>{t('home.hero.title1')}</Text>
                     <MaskedView
                         maskElement={
@@ -91,8 +92,8 @@ const styles = React.useMemo(() => StyleSheet.create({
                         }
                     >
                         <LinearGradient
-                            start={I18nManager.isRTL ? { x: 1, y: 0 } : { x: 0, y: 0 }}
-                            end={I18nManager.isRTL ? { x: 0, y: 0 } : { x: 1, y: 0 }}
+                            start={isRTL ? { x: 1, y: 0 } : { x: 0, y: 0 }}
+                            end={isRTL ? { x: 0, y: 0 } : { x: 1, y: 0 }}
                             colors={[Colors.primary, Colors.error, Colors.success]}
                         >
                             <Text style={[styles.bannerTitle, { opacity: 0 }]}>
@@ -103,13 +104,13 @@ const styles = React.useMemo(() => StyleSheet.create({
                     <Text style={styles.bannerTitle}>{t('home.hero.title2')}</Text>
                 </View>
 
-                <Text style={[styles.bannerSubTitle, { textAlign: "left" }]}>
+                <Text style={[styles.bannerSubTitle, { textAlign: isRTL ? "right" : "left" }]}>
                     {t('home.hero.subtitle')}
                 </Text>
 
-                <TouchableOpacity style={[styles.generateButton, { flexDirection: "row", alignSelf: "flex-start" }]} onPress={onPress}>
+                <TouchableOpacity style={[styles.generateButton, { flexDirection: isRTL ? "row-reverse" : "row", alignSelf: isRTL ? "flex-end" : "flex-start" }]} onPress={onPress}>
                     <Ionicons name="sparkles" size={24} color="white" />
-                    <Text style={[styles.generateButtonText, { marginLeft: 6, marginRight: 0 }]}>
+                    <Text style={[styles.generateButtonText, { marginHorizontal: 6 }]}>
                         {t('home.actions.generateOutfit')}
                     </Text>
 

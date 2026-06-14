@@ -26,7 +26,7 @@ export default function ProductDetailScreen({ route }) {
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
-  const { productId } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
+  const { productId, source } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
   
   const { isFavorite, addItem, removeItem, refetch: refetchFavorites } = useFavorites();
 
@@ -217,21 +217,24 @@ export default function ProductDetailScreen({ route }) {
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.matchScroll}>
                 {wardrobeMatches.map((match, index) => {
                   const imgSrc = getMatchImage(match);
+                  const wardrobeItem = wardrobeItems.find(
+                    (wi) => wi._id === match.item?.id || wi.id === match.item?.id,
+                  );
                   return (
                     <TouchableOpacity
                       key={match.item?.id || index}
-                      onPress={() => navigation.navigate(ROUTES.MATCHING, { screen: ROUTES.MATCHING_RESULT_DETAILS, params: { match, imageUri: imgSrc?.uri } })}
+                      onPress={() => navigation.navigate(ROUTES.MATCHING, { screen: ROUTES.MATCHING_ITEM_DETAILS, params: { itemId: wardrobeItem?._id || match.item?.id, analysisId: wardrobeItem?.analysis_id, source: "store" } })}
                     >
                       <View style={styles.matchCard}>
                         <View style={styles.scoreBadge}>
-                          <Text style={styles.scoreText}>{match.score}%</Text>
+                          <Text style={styles.scoreText}>{String(match.score ?? 0)}%</Text>
                         </View>
                         {imgSrc ? (
                           <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
                         ) : (
                           <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color={Colors.disabled} />
                         )}
-                        <Text style={styles.matchItemName} numberOfLines={1}>{match.item?.name}</Text>
+                        <Text style={styles.matchItemName} numberOfLines={1}>{String(match.item?.name ?? "")}</Text>
                       </View>
                     </TouchableOpacity>
                   );

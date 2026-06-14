@@ -131,7 +131,7 @@ const SelectModelScreen = ({ navigation, route }) => {
         const profile = await getUserProfile(user._id);
         const avatars = profile?.avatars;
         if (avatars && avatars.length > 0) {
-          const avatarInfo = avatars[0];
+          const avatarInfo = avatars[avatars.length - 1];
           const avatarId = avatarInfo._id || avatarInfo;
           if (isStoreFlow) {
             const avatarData = await getAvatarById(avatarId);

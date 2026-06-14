@@ -38,7 +38,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
-  const { itemId, analysisId } = route.params;
+  const { itemId, analysisId, source } = route.params;
   const { removeItem, refetch } = useWardrobe();
   const { isFavorite: checkIsFavorite, addItem: addFavoriteItem, removeItem: removeFavoriteItem } = useFavorites();
 

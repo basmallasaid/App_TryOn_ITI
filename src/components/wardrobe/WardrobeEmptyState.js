@@ -7,7 +7,7 @@ import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 import { ANIMATIONS } from "../../constants/images/animations";
 import LottieView from "lottie-react-native";
 
-const WardrobeEmptyState = ({ onAdd }) => {
+const WardrobeEmptyState = React.memo(({ onAdd }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
 
@@ -77,7 +77,6 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
     </ScrollView>
   );
-};
-
+});
 
 export default WardrobeEmptyState;

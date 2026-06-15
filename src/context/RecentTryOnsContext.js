@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { getUserProfile } from '../api/user_services/userService';
 
@@ -34,8 +34,10 @@ export const RecentTryOnsProvider = ({ children }) => {
     refresh();
   }, [refresh]);
 
+  const value = useMemo(() => ({ tryOns, loading, refresh }), [tryOns, loading, refresh]);
+
   return (
-    <RecentTryOnsContext.Provider value={{ tryOns, loading, refresh }}>
+    <RecentTryOnsContext.Provider value={value}>
       {children}
     </RecentTryOnsContext.Provider>
   );

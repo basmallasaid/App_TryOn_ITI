@@ -3,10 +3,10 @@ import {
     View,
     Text,
     TouchableOpacity,
-    Image,
     StyleSheet,
     useWindowDimensions,
 } from "react-native";
+import { Image } from "expo-image";
 import { useTranslation } from 'react-i18next';
 import i18n from "../../localization/i18n";
 import { IMAGES } from "../../constants/images/images";
@@ -15,7 +15,7 @@ import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
-export default function HeroBanner({ onPress }) {
+const HeroBanner = React.memo(function HeroBanner({ onPress }) {
     const { t } = useTranslation();
     const { width } = useWindowDimensions();
     const { themeVersion } = useTheme();
@@ -126,8 +126,10 @@ const styles = React.useMemo(() => StyleSheet.create({
                         height: width * 0.48,
                     },
                 ]}
-                resizeMode="contain"
+                contentFit="contain"
             />
         </View>
     );
-}
+});
+
+export default HeroBanner;

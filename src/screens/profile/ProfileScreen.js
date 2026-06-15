@@ -63,9 +63,9 @@ const ProfileScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (settingsLoaded && settings.darkMode !== isDarkMode) {
-      updateDarkMode(isDarkMode);
+      setDarkMode(settings.darkMode);
     }
-  }, [settingsLoaded, settings.darkMode]);
+  }, [settingsLoaded, settings.darkMode, isDarkMode]);
 
   useEffect(() => {
     if (profile?.avatars?.length) {
@@ -263,10 +263,10 @@ const ProfileScreen = ({ navigation }) => {
             title={t("profile.darkMode")}
             right={
               <Switch
-                value={settings.darkMode}
+                value={isDarkMode}
                 onValueChange={(val) => {
-                  updateDarkMode(val);
                   setDarkMode(val);
+                  updateDarkMode(val);
                 }}
                 trackColor={{ false: Colors.disabled, true: Colors.primary }}
                 thumbColor={Colors.white}

@@ -1,5 +1,5 @@
 // src/context/LanguageContext.js
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { I18nManager } from "react-native";
 import * as Updates from "expo-updates";
 import { getLanguage, saveLanguage } from "../storage/TokenStorage";
@@ -39,10 +39,10 @@ export const LanguageProvider = ({ children }) => {
 
   const isRTL = language === "ar";
 
+  const value = useMemo(() => ({ language, loading, isRTL, selectLanguage, syncLanguage }), [language, loading, isRTL, selectLanguage, syncLanguage]);
+
   return (
-    <LanguageContext.Provider
-      value={{ language, loading, isRTL, selectLanguage, syncLanguage }}
-    >
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

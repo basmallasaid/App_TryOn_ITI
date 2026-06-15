@@ -62,3 +62,6 @@ export const saveTheme = (mode) =>
 
 export const getTheme = () =>
   SecureStore.getItemAsync(THEME_KEY);
+
+export const clearTheme = () =>
+  SecureStore.deleteItemAsync(THEME_KEY);

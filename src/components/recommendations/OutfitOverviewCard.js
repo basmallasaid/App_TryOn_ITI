@@ -1,12 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
 
-export default function OutfitOverviewCard({ outfit, onPress, width, height, borderRadius, borderColor, labelFontSize }) {
+const blurhash = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
+
+const OutfitOverviewCard = React.memo(function OutfitOverviewCard({ outfit, onPress, width, height, borderRadius, borderColor, labelFontSize }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const [imageError, setImageError] = useState(false);
@@ -26,8 +29,11 @@ export default function OutfitOverviewCard({ outfit, onPress, width, height, bor
       <Image
         source={{ uri: imageUri }}
         style={styles.image}
-        resizeMode="contain"
-        onError={(e) => {
+        contentFit="contain"
+        placeholder={blurhash}
+        transition={300}
+        cachePolicy="disk"
+        onError={() => {
           if (isComposite) {
             setImageError(true);
           }
@@ -79,5 +85,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
     </TouchableOpacity>
   );
-}
+});
+
+export default OutfitOverviewCard;
 

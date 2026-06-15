@@ -7,10 +7,10 @@ import {
   ActivityIndicator,
   Dimensions,
   TouchableOpacity,
-  Image,
   Platform,
   StatusBar,
 } from "react-native";
+import { Image } from "expo-image";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -49,13 +49,50 @@ const FavoritesScreen = ({ navigation }) => {
     return items.filter((item) => item.category === selectedCategory);
   }, [items, selectedCategory]);
 
-  const handleRemove = async (favoriteItem) => {
+  const handleRemove = useCallback(async (favoriteItem) => {
     try {
       await removeItem(favoriteItem.itemId);
     } catch {
       refetch();
     }
-  };
+  }, [removeItem, refetch]);
+
+  const favoritesKeyExtractor = useCallback((item) => item._id, []);
+
+  const blurhash = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
+
+  const renderFavoriteItem = useCallback(({ item }) => {
+    const imageSource = item.image ? { uri: item.image } : null;
+    return (
+      <View style={styles.card}>
+        <View style={styles.cardImageWrap}>
+          {imageSource ? (
+            <Image
+              source={imageSource}
+              style={styles.cardImage}
+              contentFit="cover"
+              placeholder={blurhash}
+              transition={300}
+              cachePolicy="disk"
+            />
+          ) : (
+            <View style={styles.cardPlaceholder}>
+              <Ionicons name="image-outline" size={28} color={Colors.borderDefault} />
+            </View>
+          )}
+          <TouchableOpacity
+            style={styles.heartBtn}
+            onPress={() => handleRemove(item)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.heartCircle}>
+              <Ionicons name="heart" size={14} color={Colors.error} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }, [handleRemove, styles]);
 
   const styles = useMemo(() => StyleSheet.create({
   screen: {
@@ -306,40 +343,17 @@ const FavoritesScreen = ({ navigation }) => {
       ) : (
         <FlatList
           data={filteredItems}
-          keyExtractor={(item) => item._id}
+          keyExtractor={favoritesKeyExtractor}
           numColumns={2}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.gridContent}
           columnWrapperStyle={styles.gridRow}
-          renderItem={({ item }) => {
-            const imageSource = item.image ? { uri: item.image } : null;
-            return (
-              <View style={styles.card}>
-                <View style={styles.cardImageWrap}>
-                  {imageSource ? (
-                    <Image
-                      source={imageSource}
-                      style={styles.cardImage}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View style={styles.cardPlaceholder}>
-                      <Ionicons name="image-outline" size={28} color={Colors.borderDefault} />
-                    </View>
-                  )}
-                  <TouchableOpacity
-                    style={styles.heartBtn}
-                    onPress={() => handleRemove(item)}
-                    activeOpacity={0.7}
-                  >
-                    <View style={styles.heartCircle}>
-                      <Ionicons name="heart" size={14} color={Colors.error} />
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
-          }}
+          renderItem={renderFavoriteItem}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={8}
+          updateCellsBatchingPeriod={50}
+          windowSize={7}
+          initialNumToRender={6}
         />
       )}
     </View>

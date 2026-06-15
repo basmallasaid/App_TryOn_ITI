@@ -1,8 +1,9 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { getToken, clearToken,getUserId, clearUserId } from '../storage/TokenStorage';
 import * as authService from "../api/auth_services/authServices";
 import { useLanguage } from './LanguageContext';
+import { useTheme } from './ThemeContext';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -10,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole]     = useState(null);
   const [loading, setLoading] = useState(true);
  const { syncLanguage } = useLanguage();
+ const { resetTheme } = useTheme();
   useEffect(() => {
   Promise.all([getToken(), getUserId()]).then(([token, _id]) => {
     if (token && _id) {
@@ -51,12 +53,15 @@ const loginWithGoogle = async (idToken) => {
   const logout = async () => {
     await authService.logout();
     await clearUserId();
+    await resetTheme();
     setUser(null);
     setRole(null);
   };
 
+  const value = useMemo(() => ({ user, role, loading, login, register, updateProfile, deleteAccount, loginWithGoogle, logout }), [user, role, loading, login, register, updateProfile, deleteAccount, loginWithGoogle, logout]);
+
   return (
-    <AuthContext.Provider value={{ user, role, loading, login, register, updateProfile, deleteAccount,loginWithGoogle, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

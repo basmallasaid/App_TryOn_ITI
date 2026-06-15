@@ -27,7 +27,7 @@ const getCategoryIcon = (category) => {
   return null;
 };
 
-export const CategoryTabs = ({ categories: categoriesProp, activeCategory = 'all', onCategoryChange }) => {
+export const CategoryTabs = React.memo(({ categories: categoriesProp, activeCategory = 'all', onCategoryChange }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const allLabel = t('store.all');
@@ -68,5 +68,5 @@ const styles = React.useMemo(() => StyleSheet.create({
       })}
     </ScrollView>
   );
-};
+});
 

@@ -189,19 +189,13 @@ export const FavoritesProvider = ({ children }) => {
     }
   }, [addItem, removeItem]);
 
+  const value = useMemo(() => ({
+    items, loading, error, refetch: fetchFavorites,
+    addItem, removeItem, toggleFavorite, isFavorite,
+  }), [items, loading, error, fetchFavorites, addItem, removeItem, toggleFavorite, isFavorite]);
+
   return (
-    <FavoritesContext.Provider
-      value={{
-        items,
-        loading,
-        error,
-        refetch: fetchFavorites,
-        addItem,
-        removeItem,
-        toggleFavorite,
-        isFavorite,
-      }}
-    >
+    <FavoritesContext.Provider value={value}>
       {children}
     </FavoritesContext.Provider>
   );

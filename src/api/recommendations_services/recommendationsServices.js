@@ -4,7 +4,7 @@ import { ENDPOINTS } from "../../config/endpoints";
 
 export const getAllRecommendations = async () => {
   const { data } = await apiClient.get(ENDPOINTS.RECOMMENDATIONS);
-  return { history: data.history || [], weather: data.currentWeather || null };
+  return { history: data.history || [], weather: data.currentWeather || data.weather || null };
 };
 
 export const requestRecommendations = async (lat = 30.0444, lon = 31.2357) => {
@@ -14,7 +14,7 @@ export const requestRecommendations = async (lat = 30.0444, lon = 31.2357) => {
       lat,
       lon,
     }, { timeout: 30000 });
-    return { outfits: data.outfits || [], weather: data.currentWeather || null };
+    return { outfits: data.outfits || [], weather: data.currentWeather || data.weather || null };
   } catch (e) {
     throw e;
   }

@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  useMemo,
 } from "react";
 
 import { useAuth } from "./AuthContext";
@@ -92,26 +93,41 @@ export const ProfileProvider = ({ children }) => {
     }
   };
 
+  const resetProfile = useCallback(() => {
+    setProfile(null);
+    setSettings({
+      language: 'en',
+      notifications: true,
+      darkMode: false,
+      mobile: {},
+    });
+    setSettingsLoaded(false);
+    setLoading(true);
+    setError(null);
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      resetProfile();
+    }
+  }, [user, resetProfile]);
+
   useEffect(() => {
     refreshProfile();
   }, [refreshProfile]);
 
+  const value = useMemo(() => ({
+    profile, loading, error, refreshProfile, setProfile,
+    settings, settingsLoaded,
+    updateLanguage: handleUpdateLanguage,
+    updateNotifications: handleUpdateNotifications,
+    updateDarkMode: handleUpdateDarkMode,
+    updateUserImage: handleUpdateUserImage,
+    resetProfile,
+  }), [profile, loading, error, refreshProfile, setProfile, settings, settingsLoaded, handleUpdateLanguage, handleUpdateNotifications, handleUpdateDarkMode, handleUpdateUserImage, resetProfile]);
+
   return (
-    <ProfileContext.Provider
-      value={{
-        profile,
-        loading,
-        error,
-        refreshProfile,
-        setProfile,
-        settings,
-        settingsLoaded,
-        updateLanguage: handleUpdateLanguage,
-        updateNotifications: handleUpdateNotifications,
-        updateDarkMode: handleUpdateDarkMode,
-        updateUserImage: handleUpdateUserImage,
-      }}
-    >
+    <ProfileContext.Provider value={value}>
       {children}
     </ProfileContext.Provider>
   );

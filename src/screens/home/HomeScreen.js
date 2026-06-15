@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -34,8 +34,10 @@ export default function HomeScreen({ navigation }) {
   const { t } = useTranslation();
   const { profile, refreshProfile } = useProfileContext();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { todaysOutfit, todaysWeather, history } = useRecommendation();
-  const activeOutfit = todaysOutfit || history?.[0] || null;
+  const { todaysOutfit, todaysWeather, fallbackOutfit, history } = useRecommendation();
+  const activeOutfit = todaysOutfit || fallbackOutfit || history?.[0] || null;
+  const selectedOutfitRef = useRef(null);
+
   useFocusEffect(
     useCallback(() => {
       refreshProfile();
@@ -58,15 +60,77 @@ export default function HomeScreen({ navigation }) {
   const latestTryOn = filterLast30Days(profile?.latestTryOn || []);
   const latestRecycle = filterLast30Days(profile?.latestRecycle || []);
 
-  const goToHistory = () =>
-    navigation.navigate(ROUTES.RECOMMENDATION, { screen: ROUTES.RECOMMENDATIONS_HISTORY });
+  const goToHistory = useCallback(() =>
+    navigation.navigate(ROUTES.RECOMMENDATION, { screen: ROUTES.RECOMMENDATIONS_HISTORY }),
+    [navigation]);
 
-  const goToDetail = () => {
+  const goToDetail = useCallback(() => {
     navigation.navigate(ROUTES.RECOMMENDATION, {
       screen: ROUTES.RECOMMENDATION_DETAIL,
       params: { outfit: activeOutfit },
     });
-  };
+  }, [navigation, activeOutfit]);
+
+  const onTryOnPress = useCallback(() =>
+    navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.HOME } }),
+    [navigation]);
+
+  const onRecyclePress = useCallback(() =>
+    navigation.navigate(ROUTES.RECYCLE),
+    [navigation]);
+
+  const onMatchingPress = useCallback(() =>
+    navigation.navigate(ROUTES.MATCHING),
+    [navigation]);
+
+  const onViewAllTryOns = useCallback(() =>
+    navigation.navigate(ROUTES.RECENT_TRYONS),
+    [navigation]);
+
+  const onViewAllRecycles = useCallback(() =>
+    navigation.navigate(ROUTES.RECENT_RECYCLES),
+    [navigation]);
+
+  const onCloseModal = useCallback(() => setSelectedOutfit(null), []);
+
+  const renderTryOnCard = useCallback((item) => (
+    <TryOnCard
+      imageUri={item.imageUrl}
+      isFavorite={isFavorite(item._id)}
+      onToggleFavorite={async () => {
+        try {
+          await toggleFavorite(item._id, 'TRYON');
+        } catch (e) {
+          showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
+        }
+      }}
+      onViewOutfit={() => setSelectedOutfit(item)}
+    />
+  ), [isFavorite, toggleFavorite, showFeedback, t]);
+
+  const renderRecycleCard = useCallback((item) => (
+    <TryOnCard
+      imageUri={item.imageUrl}
+      isFavorite={isFavorite(item._id)}
+      onToggleFavorite={async () => {
+        try {
+          await toggleFavorite(item._id, 'TRYON');
+        } catch (e) {
+          showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
+        }
+      }}
+      onViewOutfit={() => setSelectedOutfit(item)}
+    />
+  ), [isFavorite, toggleFavorite, showFeedback, t]);
+
+  const onModalToggleFavorite = useCallback(async () => {
+    if (!selectedOutfit) return;
+    try {
+      await toggleFavorite(selectedOutfit._id, 'TRYON');
+    } catch (e) {
+      showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
+    }
+  }, [selectedOutfit, toggleFavorite, showFeedback, t]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -88,7 +152,7 @@ export default function HomeScreen({ navigation }) {
             titleColor={Colors.primary}
             iconBgColor={isDarkMode ? "#1E3A56" : "#E9F7FE"}
             iconColor={Colors.primary}
-            onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.HOME } })}
+            onPress={onTryOnPress}
           />
           <ActionCard
             title={t('home.actions.recycle')}
@@ -97,7 +161,7 @@ export default function HomeScreen({ navigation }) {
             titleColor={Colors.secondary}
             iconBgColor={isDarkMode ? "#274E13" : "#F1F8E9"}
             iconColor={Colors.secondary}
-            onPress={() => navigation.navigate(ROUTES.RECYCLE)}
+            onPress={onRecyclePress}
           />
           <ActionCard
             title={t('home.actions.generateOutfit')}
@@ -117,7 +181,7 @@ export default function HomeScreen({ navigation }) {
             titleColor={Colors.accentOrange}
             iconBgColor={isDarkMode ? "#3D2A1A" : "#FFF3E0"}
             iconColor={Colors.accentOrange}
-            onPress={() => navigation.navigate(ROUTES.MATCHING)}
+            onPress={onMatchingPress}
           />
         </View>
 
@@ -131,59 +195,26 @@ export default function HomeScreen({ navigation }) {
         <HorizontalScrollSection
           title={t('home.recentTryOns')}
           items={latestTryOn}
-          onViewAll={() => navigation.navigate(ROUTES.RECENT_TRYONS)}
-          renderItem={(item) => (
-            <TryOnCard
-              imageUri={item.imageUrl}
-              isFavorite={isFavorite(item._id)}
-              onToggleFavorite={async () => {
-                try {
-                  await toggleFavorite(item._id, 'TRYON');
-                } catch (e) {
-                  showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
-                }
-              }}
-              onViewOutfit={() => setSelectedOutfit(item)}
-            />
-          )}
+          onViewAll={onViewAllTryOns}
+          renderItem={renderTryOnCard}
           seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginRight: 15 }}
         />
 
         <HorizontalScrollSection
           title={t('home.recentRecycles')}
           items={latestRecycle}
-          onViewAll={() => navigation.navigate(ROUTES.RECENT_RECYCLES)}
-          renderItem={(item) => (
-            <TryOnCard
-              imageUri={item.imageUrl}
-              isFavorite={isFavorite(item._id)}
-              onToggleFavorite={async () => {
-                try {
-                  await toggleFavorite(item._id, 'TRYON');
-                } catch (e) {
-                  showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
-                }
-              }}
-              onViewOutfit={() => setSelectedOutfit(item)}
-            />
-          )}
+          onViewAll={onViewAllRecycles}
+          renderItem={renderRecycleCard}
           seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginRight: 15 }}
         />
       </ScrollView>
 
       <OutfitViewModal
         visible={!!selectedOutfit}
-        onClose={() => setSelectedOutfit(null)}
+        onClose={onCloseModal}
         imageUri={selectedOutfit?.imageUrl}
         isFavorite={selectedOutfit ? isFavorite(selectedOutfit._id) : false}
-        onToggleFavorite={async () => {
-          if (!selectedOutfit) return;
-          try {
-            await toggleFavorite(selectedOutfit._id, 'TRYON');
-          } catch (e) {
-            showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
-          }
-        }}
+        onToggleFavorite={onModalToggleFavorite}
       />
     </SafeAreaView>
   );

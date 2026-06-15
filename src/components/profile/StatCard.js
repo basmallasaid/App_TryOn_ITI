@@ -4,7 +4,7 @@ import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
-const StatCard = ({ icon, title, subtitle, onPress }) => {
+const StatCard = React.memo(({ icon, title, subtitle, onPress }) => {
   const { themeVersion } = useTheme();
 const styles = React.useMemo(() => StyleSheet.create({
   card: {
@@ -45,7 +45,6 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
     </TouchableOpacity>
   );
-};
-
+});
 
 export default StatCard;

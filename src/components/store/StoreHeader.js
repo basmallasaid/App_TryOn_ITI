@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import Colors from '../../constants/theme/colors';
 
-export const StoreHeader = ({ onFilterPress }) => {
+export const StoreHeader = React.memo(({ onFilterPress }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => StyleSheet.create({
@@ -36,5 +36,5 @@ export const StoreHeader = ({ onFilterPress }) => {
       </TouchableOpacity>
     </View>
   );
-};
+});
 

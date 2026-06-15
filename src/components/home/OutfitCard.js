@@ -1,5 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -10,27 +11,30 @@ import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
 import { useTheme } from "../../context/ThemeContext";
 
 const FALLBACK_IMAGE = IMAGES.PICK;
+const blurhash = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
-export default function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
+const OutfitCard = React.memo(function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const [compositeError, setCompositeError] = useState(false);
 
   const compositeImage = getCompositeImage(todaysOutfit);
   const items = getItemsList(todaysOutfit);
   const validImages = items.filter(i => i._image);
-  const hasOutfit = !!compositeImage || validImages.length > 0;
+  const showComposite = compositeImage && !compositeError;
+  const hasOutfit = !!showComposite || validImages.length > 0;
   const weatherIcon = getWeatherIcon(todaysWeather?.condition).material;
   const temp = todaysWeather?.temperature;
   const label = items.map(i => i._name).filter(Boolean).join(", ");
 
   const renderImages = () => {
-    if (compositeImage) {
-      return <Image source={{ uri: compositeImage }} style={styles.fitImage} resizeMode="contain" />;
+    if (showComposite) {
+      return <Image source={{ uri: compositeImage }} style={styles.fitImage} contentFit="contain" placeholder={blurhash} transition={300} cachePolicy="disk" onError={() => setCompositeError(true)} />;
     }
     if (validImages.length === 0) {
-      return <Image source={FALLBACK_IMAGE} style={styles.fitImage} resizeMode="contain" />;
+      return <Image source={FALLBACK_IMAGE} style={styles.fitImage} contentFit="contain" placeholder={blurhash} transition={300} />;
     }
-    return <Image source={{ uri: validImages[0]._image }} style={styles.fitImage} resizeMode="contain" />;
+    return <Image source={{ uri: validImages[0]._image }} style={styles.fitImage} contentFit="contain" placeholder={blurhash} transition={300} cachePolicy="disk" />;
   };
 
 const styles = React.useMemo(() => StyleSheet.create({
@@ -142,5 +146,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
     </View>
   );
-}
+});
+
+export default OutfitCard;
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   FlatList,
@@ -35,14 +35,16 @@ export default function RecentRecyclesScreen({ navigation }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const [selectedOutfit, setSelectedOutfit] = useState(null);
 
-  const handleToggleFavorite = async (item) => {
+  const handleToggleFavorite = useCallback(async (item) => {
     try {
       await toggleFavorite(item._id, 'TRYON');
     } catch (e) {
     }
-  };
+  }, [toggleFavorite]);
 
-  const renderItem = ({ item }) => (
+  const recycleKeyExtractor = useCallback((item) => item._id?.$oid || item._id, []);
+
+  const renderItem = useCallback(({ item }) => (
     <View style={styles.cardContainer}>
       <RecentItemCard
         item={item}
@@ -51,7 +53,9 @@ export default function RecentRecyclesScreen({ navigation }) {
         onPress={() => setSelectedOutfit(item)}
       />
     </View>
-  );
+  ), [styles.cardContainer, isFavorite, handleToggleFavorite, setSelectedOutfit]);
+
+  const onCloseModal = useCallback(() => setSelectedOutfit(null), []);
 
   if (loading) {
     return (
@@ -85,17 +89,20 @@ export default function RecentRecyclesScreen({ navigation }) {
         <FlatList
           data={recycles}
           numColumns={2}
-          keyExtractor={(item) => item._id?.$oid || item._id}
+          keyExtractor={recycleKeyExtractor}
           renderItem={renderItem}
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews
+          maxToRenderPerBatch={4}
+          windowSize={5}
         />
       )}
 
       <OutfitViewModal
         visible={!!selectedOutfit}
-        onClose={() => setSelectedOutfit(null)}
+        onClose={onCloseModal}
         imageUri={selectedOutfit?.imageUrl || selectedOutfit?.image}
         isFavorite={selectedOutfit ? isFavorite(selectedOutfit._id) : false}
         onToggleFavorite={async () => {

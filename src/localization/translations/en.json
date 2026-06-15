@@ -306,7 +306,8 @@
       "itemSelected": "{{count}} item selected",
       "itemsSelected": "{{count}} items selected",
       "itemFromWardrobe": "Item selected from your wardrobe",
-      "itemFromCamera": "Item captured from camera or gallery",
+      "itemFromCamera": "Item captured from camera",
+      "itemFromGallery": "Item selected from gallery",
       "virtualTryOnFailed": "Virtual try-on failed"
     },
     "results": {
@@ -432,7 +433,8 @@
     "selectedItemsOne": "1 item selected",
     "noItemsSelected": "No items selected yet",
     "itemFromWardrobe": "Item selected from your wardrobe",
-    "itemFromCamera": "Item captured from camera or gallery",
+    "itemFromCamera": "Item captured from camera",
+    "itemFromGallery": "Item selected from gallery",
     "selectItemHint": "Select an item to see matching suggestions",
     "details": {
       "scoreMatch": "% match",

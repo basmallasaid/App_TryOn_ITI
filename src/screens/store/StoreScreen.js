@@ -112,7 +112,7 @@ export default function StoreScreen() {
         return () => clearTimeout(timer);
     }, [searchText]);
 
-    const handleTryOn = (item) => {
+    const handleTryOn = useCallback((item) => {
         navigation.navigate(ROUTES.TRY_ON, {
             screen: ROUTES.SELECT_MODEL,
             params: { 
@@ -123,12 +123,12 @@ export default function StoreScreen() {
                 productName: item.name 
             }
         });
-    };
+    }, [navigation]);
 
-    const handleFilterApply = (values) => {
+    const handleFilterApply = useCallback((values) => {
         setFilterValues(values);
         setFilterVisible(false);
-    };
+    }, []);
 
     useEffect(() => {
         let cancelled = false;
@@ -226,6 +226,28 @@ export default function StoreScreen() {
         </View>
     ), [searchText, filterVisible, filterValues, categories, selectedCategory, handleSearchSubmit, allProducts]);
 
+    const renderProductItem = useCallback(({ item }) => (
+        <ProductCard
+            {...item}
+            isFavorite={isFavorite(item.id)}
+            onToggleFavorite={async () => {
+                try {
+                    await toggleFavorite(item.id, "PRODUCT");
+                } catch (e) {
+                    refetchFavorites();
+                }
+            }}
+            onPress={() => navigation.navigate(ROUTES.PRODUCT_DETAIL, { productId: item.id })}
+            onTryOnPress={() => handleTryOn(item)}
+        />
+    ), [isFavorite, toggleFavorite, refetchFavorites, navigation, handleTryOn]);
+
+    const listEmpty = useCallback(() => (
+        <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>{t('store.noProducts')}</Text>
+        </View>
+    ), [t]);
+
     if (loading) {
         return (
             <View style={[styles.screenWrapper, styles.center]}>
@@ -249,21 +271,7 @@ export default function StoreScreen() {
                 numColumns={2}
                 columnWrapperStyle={styles.row}
                 ListHeaderComponent={listHeader}
-                renderItem={({ item }) => (
-                    <ProductCard
-                        {...item}
-                        isFavorite={isFavorite(item.id)}
-                        onToggleFavorite={async () => {
-                            try {
-                                await toggleFavorite(item.id, "PRODUCT");
-                            } catch (e) {
-                                refetchFavorites();
-                            }
-                        }}
-                        onPress={() => navigation.navigate(ROUTES.PRODUCT_DETAIL, { productId: item.id })}
-                        onTryOnPress={() => handleTryOn(item)}
-                    />
-                )}
+                renderItem={renderProductItem}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ paddingBottom: 20 }}
                 removeClippedSubviews={true}
@@ -271,11 +279,7 @@ export default function StoreScreen() {
                 updateCellsBatchingPeriod={50}
                 windowSize={7}
                 initialNumToRender={6}
-                ListEmptyComponent={() => (
-                    <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyTitle}>{t('store.noProducts')}</Text>
-                    </View>
-                )}
+                ListEmptyComponent={listEmpty}
             />
         </View>
     );

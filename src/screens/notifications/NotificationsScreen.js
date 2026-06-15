@@ -129,6 +129,8 @@ export default function NotificationsScreen({ navigation }) {
 
   const handleMarkAll = useCallback(() => markAllAsRead(), [markAllAsRead]);
 
+  const notifKeyExtractor = useCallback((item) => item._id, []);
+
   const hasUnread = recentNotifications.some((n) => !n.read);
 
   const renderItem = useCallback(
@@ -424,7 +426,7 @@ export default function NotificationsScreen({ navigation }) {
         <FlatList
           data={recentNotifications}
           renderItem={renderItem}
-          keyExtractor={(item) => item._id}
+          keyExtractor={notifKeyExtractor}
           ListHeaderComponent={renderHeader}
           ListEmptyComponent={renderEmpty}
           contentContainerStyle={
@@ -440,6 +442,11 @@ export default function NotificationsScreen({ navigation }) {
           }
           showsVerticalScrollIndicator={false}
           extraData={expandedIds}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          updateCellsBatchingPeriod={50}
+          windowSize={5}
+          initialNumToRender={8}
         />
       )}
     </View>

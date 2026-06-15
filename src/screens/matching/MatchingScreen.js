@@ -97,6 +97,26 @@ export default function MatchingScreen({ navigation }) {
     setGalleryItemType(null);
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setShowResults(false);
+    setWardrobeMatches([]);
+    setStoreMatches([]);
+    setTranslatedWardrobeMatches([]);
+    setTranslatedStoreMatches([]);
+    if (tab !== "My Wardrobe") {
+      setSelectedWardrobeId(null);
+    }
+    if (tab !== "Camera") {
+      setCameraImage(null);
+      setCameraItemType(null);
+    }
+    if (tab !== "Gallery") {
+      setGalleryImage(null);
+      setGalleryItemType(null);
+    }
+  };
+
   const toggleItem = (id) => {
     setShowResults(false);
     setWardrobeMatches([]);
@@ -122,7 +142,9 @@ export default function MatchingScreen({ navigation }) {
   const selectedSubtitle = hasItem
     ? hasWardrobeItem
       ? t("matching.itemFromWardrobe")
-      : t("matching.itemFromCamera")
+      : hasCameraItem
+        ? t("matching.itemFromCamera")
+        : t("matching.itemFromGallery")
     : t("matching.selectItemHint");
 
   const processMatches = async (raw) => {
@@ -148,46 +170,54 @@ export default function MatchingScreen({ navigation }) {
     setTranslatedStoreMatches(translatedS);
   };
 
-  const handleSeeMatching = async () => {
-    setGenerating(true);
-    try {
-      if (hasWardrobeItem) {
-        const res = await getWardrobeMatches(selectedWardrobeId);
-        processMatches(res);
-      } else if (hasCameraItem) {
-        const analysisRes = await analyzeImage(cameraImage);
-        const analysisId =
-          analysisRes?.analysis_id ||
-          analysisRes?.id ||
-          analysisRes?.data?.analysis_id;
-        if (analysisId) {
-          const matchRes = await getMatchesByAnalysis(
-            analysisId,
-            30.0444,
-            31.2357,
-          );
-          processMatches(matchRes);
-        }
-      } else if (hasGalleryItem) {
-        const analysisRes = await analyzeImage(galleryImage);
-        const analysisId =
-          analysisRes?.analysis_id ||
-          analysisRes?.id ||
-          analysisRes?.data?.analysis_id;
-        if (analysisId) {
-          const matchRes = await getMatchesByAnalysis(
-            analysisId,
-            30.0444,
-            31.2357,
-          );
-          processMatches(matchRes);
-        }
-      }
-    } catch (e) {
+  const analyzeAndMatch = async (imageUri) => {
+    const analysisRes = await analyzeImage(imageUri);
+    const analysisId =
+      analysisRes?.analysis_id ||
+      analysisRes?._id ||
+      analysisRes?.id ||
+      analysisRes?.data?.analysis_id ||
+      analysisRes?.data?._id;
+    if (!analysisId) {
+      const serverMsg = analysisRes?.error || analysisRes?.message || JSON.stringify(analysisRes);
       showFeedback({
         type: "error",
         title: t("matching.matchError"),
-        message: getUserFriendlyErrorMessage(e, t),
+        message: serverMsg,
+      });
+      return false;
+    }
+    const matchRes = await getMatchesByAnalysis(analysisId, 30.0444, 31.2357);
+    processMatches(matchRes);
+    return true;
+  };
+
+  const handleSeeMatching = async () => {
+    setGenerating(true);
+    try {
+      let success = false;
+      if (activeTab === "My Wardrobe" && hasWardrobeItem) {
+        const res = await getWardrobeMatches(selectedWardrobeId);
+        processMatches(res);
+        success = true;
+      } else if (activeTab === "Camera" && hasCameraItem) {
+        success = await analyzeAndMatch(cameraImage);
+      } else if (activeTab === "Gallery" && hasGalleryItem) {
+        success = await analyzeAndMatch(galleryImage);
+      }
+      if (success) {
+        setShowResults(true);
+      }
+    } catch (e) {
+      const status = e?.response?.status;
+      const serverDetail = e?.response?.data?.message || e?.response?.data?.error || e?.response?.data?.detail;
+      console.error("Matching error:", status, serverDetail || e?.message);
+      showFeedback({
+        type: "error",
+        title: t("matching.matchError"),
+        message: status === 500 && serverDetail
+          ? serverDetail
+          : getUserFriendlyErrorMessage(e, t),
       });
       setWardrobeMatches([]);
       setStoreMatches([]);
@@ -196,7 +226,6 @@ export default function MatchingScreen({ navigation }) {
     } finally {
       setGenerating(false);
     }
-    setShowResults(true);
   };
 
   const getImageSource = (item) => {
@@ -273,19 +302,19 @@ export default function MatchingScreen({ navigation }) {
             label={t("tryOn.virtualTryOn.myWardrobe")}
             iconName="shirt-outline"
             isActive={activeTab === "My Wardrobe"}
-            onPress={() => setActiveTab("My Wardrobe")}
+            onPress={() => handleTabChange("My Wardrobe")}
           />
           <ActionTab
             label={t("tryOn.virtualTryOn.camera")}
             iconName="camera-outline"
             isActive={activeTab === "Camera"}
-            onPress={() => setActiveTab("Camera")}
+            onPress={() => handleTabChange("Camera")}
           />
           <ActionTab
             label={t("tryOn.virtualTryOn.gallery")}
             iconName="images-outline"
             isActive={activeTab === "Gallery"}
-            onPress={() => setActiveTab("Gallery")}
+            onPress={() => handleTabChange("Gallery")}
           />
         </View>
 

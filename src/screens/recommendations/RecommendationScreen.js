@@ -23,14 +23,19 @@ import { ROUTES } from "../../navigation/routes";
 import { getGreeting } from "../../utils/greeting";
 import i18n from "../../localization/i18n";
 
-function formatDateLabel(dateStr) {
-  const d = new Date(dateStr);
-  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
-  return d.toLocaleDateString(locale, { month: "short", day: "numeric" });
+function locale() {
+  return i18n.language === 'ar' ? 'ar-EG' : 'en-US';
 }
 
-function getShortDay(dayName) {
-  return dayName.slice(0, 3);
+function formatDateLabel(dateStr) {
+  const parts = dateStr.split('-');
+  const d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+  return d.toLocaleDateString(locale(), { month: "short", day: "numeric" });
+}
+
+function getShortDay(dayIndex) {
+  const d = new Date(2026, 0, 3 + dayIndex);
+  return d.toLocaleDateString(locale(), { weekday: "short" });
 }
 
 const DAY_CARD_WIDTH = 155;
@@ -40,12 +45,12 @@ export default function RecommendationScreen({ navigation }) {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { profile } = useProfileContext();
-  const { weeklyOutfits, todaysOutfit, todaysWeather, history, loading } = useRecommendation();
+  const { weeklyOutfits, todaysOutfit, fallbackOutfit, todaysWeather, history, loading } = useRecommendation();
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
 
   const weather = todaysWeather || weeklyOutfits.find(d => d.isToday)?.entry?.weather || history[0]?.weather || null;
   const todayEntry = weeklyOutfits.find(d => d.isToday);
-  const todayOutfit = todaysOutfit || todayEntry?.entry || history[0] || null;
+  const todayOutfit = todaysOutfit || fallbackOutfit || todayEntry?.entry || null;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -100,10 +105,10 @@ export default function RecommendationScreen({ navigation }) {
               contentContainerStyle={styles.horizontalScrollContent}
             >
               {weeklyOutfits.map((day) => (
-                <View key={day.dayName} style={styles.dayCard}>
+                <View key={day.date} style={styles.dayCard}>
                   <View style={[styles.dayHeader, { flexDirection: "row" }]}>
                     <Text style={[styles.dayName, day.isToday && styles.dayNameToday]}>
-                      {getShortDay(day.dayName)}
+                      {getShortDay(day.dayIndex)}
                     </Text>
                     {day.isToday && (
                       <View style={styles.todayBadge}>

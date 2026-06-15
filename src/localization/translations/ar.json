@@ -306,7 +306,8 @@
       "itemSelected": "{{count}} عنصر محدد",
       "itemsSelected": "{{count}} عناصر محددة",
       "itemFromWardrobe": "عنصر محدد من خزانة ملابسك",
-      "itemFromCamera": "عنصر ملتقط من الكاميرا أو المعرض",
+      "itemFromCamera": "عنصر ملتقط من الكاميرا",
+      "itemFromGallery": "عنصر محدد من المعرض",
       "virtualTryOnFailed": "فشلت التجربة الافتراضية"
     },
     "results": {
@@ -431,7 +432,8 @@
     "selectedItemsOne": "تم تحديد عنصر واحد",
     "noItemsSelected": "لم يتم تحديد أي عنصر بعد",
     "itemFromWardrobe": "عنصر محدد من خزانة ملابسك",
-    "itemFromCamera": "عنصر ملتقط من الكاميرا أو المعرض",
+    "itemFromCamera": "عنصر ملتقط من الكاميرا",
+    "itemFromGallery": "عنصر محدد من المعرض",
     "selectItemHint": "اختر عنصراً لرؤية اقتراحات المطابقة",
     "details": {
       "scoreMatch": "% تطابق",

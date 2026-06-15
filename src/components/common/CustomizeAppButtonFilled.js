@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
-const CustomizeAppButtonFilled = ({
+const CustomizeAppButtonFilled = React.memo(({
   label,
   onPress,
   backgroundColor,
@@ -86,7 +86,6 @@ const styles = React.useMemo(() => StyleSheet.create({
       )}
     </TouchableOpacity>
   );
-};
-
+});
 
 export default CustomizeAppButtonFilled;

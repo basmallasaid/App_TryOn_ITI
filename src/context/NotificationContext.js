@@ -5,6 +5,7 @@ import React, {
   useState,
   useCallback,
   useRef,
+  useMemo,
 } from "react";
 import { useAuth } from "./AuthContext";
 import {
@@ -150,19 +151,13 @@ export const NotificationProvider = ({ children }) => {
     }
   }, []);
 
+  const value = useMemo(() => ({
+    notifications, unreadCount, loading, expoPushToken,
+    fetchNotifications, markAsRead, deleteNotification, markAllAsRead,
+  }), [notifications, unreadCount, loading, expoPushToken, fetchNotifications, markAsRead, deleteNotification, markAllAsRead]);
+
   return (
-    <NotificationContext.Provider
-      value={{
-        notifications,
-        unreadCount,
-        loading,
-        expoPushToken,
-        fetchNotifications,
-        markAsRead,
-        deleteNotification,
-        markAllAsRead,
-      }}
-    >
+    <NotificationContext.Provider value={value}>
       {children}
     </NotificationContext.Provider>
   );

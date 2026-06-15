@@ -1,11 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
-export default function TryOnCard({ imageUri, isFavorite, onToggleFavorite, onViewOutfit }) {
+
+const blurhash = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
+const TryOnCard = React.memo(function TryOnCard({ imageUri, isFavorite, onToggleFavorite, onViewOutfit }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
 
@@ -70,7 +73,10 @@ const styles = React.useMemo(() => StyleSheet.create({
       <Image
         source={imageUri ? { uri: imageUri } : IMAGES.TRY_ON}
         style={styles.image}
-        resizeMode="contain"
+        contentFit="contain"
+        placeholder={blurhash}
+        transition={300}
+        cachePolicy="disk"
       />
 
       <TouchableOpacity style={[styles.button, { flexDirection: 'row' }]} activeOpacity={0.8} onPress={onViewOutfit}>
@@ -78,4 +84,6 @@ const styles = React.useMemo(() => StyleSheet.create({
       </TouchableOpacity>
     </View>
   );
-}
+});
+
+export default TryOnCard;

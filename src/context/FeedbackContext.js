@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
 import { Platform, Alert } from "react-native";
 import FeedbackModal from "../components/common/FeedbackModal";
 
@@ -25,8 +25,10 @@ export const FeedbackProvider = ({ children }) => {
     setVisible(false);
   }, []);
 
+  const value = useMemo(() => ({ showFeedback }), [showFeedback]);
+
   return (
-    <FeedbackContext.Provider value={{ showFeedback }}>
+    <FeedbackContext.Provider value={value}>
       {children}
       <FeedbackModal
         visible={visible}

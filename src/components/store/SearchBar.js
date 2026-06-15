@@ -5,7 +5,7 @@ import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from 'react-i18next';
 
-export const SearchBar = ({
+export const SearchBar = React.memo(({
   value,
   onChangeText,
   onSearch,
@@ -49,4 +49,4 @@ export const SearchBar = ({
       />
     </View>
   );
-};
+});

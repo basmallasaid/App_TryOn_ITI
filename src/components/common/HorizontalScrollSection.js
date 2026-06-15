@@ -4,7 +4,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
-export default function HorizontalScrollSection({
+const HorizontalScrollSection = React.memo(function HorizontalScrollSection({
   title,
   items,
   onViewAll,
@@ -14,11 +14,7 @@ export default function HorizontalScrollSection({
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
 
-  if (!items || items.length === 0) return null;
-
-  const displayed = items.slice(0, 5);
-
-const styles = React.useMemo(() => StyleSheet.create({
+  const styles = React.useMemo(() => StyleSheet.create({
   sectionHeader: {
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -64,6 +60,10 @@ const styles = React.useMemo(() => StyleSheet.create({
   },
 }), [themeVersion]);
 
+  if (!items || items.length === 0) return null;
+
+  const displayed = items.slice(0, 5);
+
   return (
     <>
       <View style={[styles.sectionHeader, { flexDirection: 'row' }]}>
@@ -87,5 +87,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       </ScrollView>
     </>
   );
-}
+});
+
+export default HorizontalScrollSection;
 

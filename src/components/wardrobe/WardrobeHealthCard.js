@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
-const WardrobeHealthCard = ({ itemCount = 0, subtitle }) => {
+const WardrobeHealthCard = React.memo(({ itemCount = 0, subtitle }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const defaultSubtitle = t("wardrobe.health.subtitle", { count: itemCount });
@@ -65,7 +65,6 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
     </View>
   );
-};
-
+});
 
 export default WardrobeHealthCard;

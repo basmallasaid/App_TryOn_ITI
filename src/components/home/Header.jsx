@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -10,7 +11,7 @@ import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 
 
-export default function Header() {
+const Header = React.memo(function Header() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigation = useNavigation();
@@ -110,4 +111,6 @@ export default function Header() {
       </TouchableOpacity>
     </View>
   );
-}
+});
+
+export default Header;

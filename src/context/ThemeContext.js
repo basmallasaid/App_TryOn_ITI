@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import { Appearance } from "react-native";
 import { setTheme as applyTheme, getTheme } from "../constants/theme/colors";
-import { saveTheme as storeTheme, getTheme as loadTheme } from "../storage/TokenStorage";
+import { saveTheme as storeTheme, getTheme as loadTheme, clearTheme } from "../storage/TokenStorage";
 
 const ThemeContext = createContext();
 
@@ -9,14 +10,42 @@ export const ThemeProvider = ({ children }) => {
   const [themeVersion, setThemeVersion] = useState(0);
   const [ready, setReady] = useState(false);
 
+  const applySystemTheme = useCallback(() => {
+    const systemColorScheme = Appearance.getColorScheme();
+    const dark = systemColorScheme === "dark";
+    setIsDarkMode(dark);
+    applyTheme(dark ? "dark" : "light");
+    setThemeVersion((v) => v + 1);
+  }, []);
+
   useEffect(() => {
     loadTheme().then((saved) => {
-      const dark = saved === "dark";
+      let dark;
+      if (saved === "dark" || saved === "light") {
+        dark = saved === "dark";
+      } else {
+        const systemColorScheme = Appearance.getColorScheme();
+        dark = systemColorScheme === "dark";
+      }
       setIsDarkMode(dark);
       applyTheme(dark ? "dark" : "light");
       setThemeVersion((v) => v + 1);
       setReady(true);
     });
+  }, []);
+
+  useEffect(() => {
+    const listener = Appearance.addChangeListener(({ colorScheme }) => {
+      loadTheme().then((saved) => {
+        if (!saved) {
+          const dark = colorScheme === "dark";
+          setIsDarkMode(dark);
+          applyTheme(dark ? "dark" : "light");
+          setThemeVersion((v) => v + 1);
+        }
+      });
+    });
+    return () => listener.remove();
   }, []);
 
   const toggleTheme = useCallback(async () => {
@@ -36,8 +65,15 @@ export const ThemeProvider = ({ children }) => {
     setThemeVersion((v) => v + 1);
   }, []);
 
+  const resetTheme = useCallback(async () => {
+    await clearTheme();
+    applySystemTheme();
+  }, [applySystemTheme]);
+
+  const value = useMemo(() => ({ isDarkMode, themeVersion, toggleTheme, setDarkMode, resetTheme, ready }), [isDarkMode, themeVersion, toggleTheme, setDarkMode, resetTheme, ready]);
+
   return (
-    <ThemeContext.Provider value={{ isDarkMode, themeVersion, toggleTheme, setDarkMode, ready }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );

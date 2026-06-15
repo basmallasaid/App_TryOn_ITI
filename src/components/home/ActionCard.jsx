@@ -4,7 +4,7 @@ import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; 
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
-export default function ActionCard({ 
+const ActionCard = React.memo(function ActionCard({ 
   title, sub, mainIconName, innerIconName, 
   titleColor, iconBgColor, iconColor,
   useIonicons, onPress
@@ -66,4 +66,6 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
     </TouchableOpacity>
   );
-}
+});
+
+export default ActionCard;

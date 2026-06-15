@@ -2,16 +2,21 @@ import { Platform } from "react-native";
 import apiClient from "../auth_services/apiClient";
 import { ENDPOINTS } from "../../config/endpoints";
 
+const matchingTimeoutConfig = { timeout: 60000 };
+
 export const getWardrobeMatches = async (wardrobeItemId) => {
-  const response = await apiClient.post(ENDPOINTS.MATCHES, {
-    wardrobe_item_id: wardrobeItemId,
-  });
+  const response = await apiClient.post(
+    ENDPOINTS.MATCHES,
+    { wardrobe_item_id: wardrobeItemId },
+    matchingTimeoutConfig,
+  );
   return response.data;
 };
 
 const formDataConfig = {
+  headers: { 'Content-Type': 'multipart/form-data' },
   transformRequest: (data) => data,
-  timeout: 60000,
+  timeout: 120000,
 };
 
 export const analyzeImage = async (imageUri) => {
@@ -29,8 +34,15 @@ export const analyzeImage = async (imageUri) => {
   return data;
 };
 
-export const getMatchesByAnalysis = async (productId) => {
-  const { data } = await apiClient.post(`${ENDPOINTS.MATCHES_ANALYSIS}/${productId}`);
+export const getMatchesByAnalysis = async (productId, latitude, longitude) => {
+  const body = {};
+  if (latitude != null) body.latitude = latitude;
+  if (longitude != null) body.longitude = longitude;
+  const { data } = await apiClient.post(
+    `${ENDPOINTS.MATCHES_ANALYSIS}/${productId}`,
+    body,
+    matchingTimeoutConfig,
+  );
   return data;
 };
 

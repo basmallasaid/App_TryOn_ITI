@@ -114,7 +114,7 @@ const WardrobeScreen = ({ navigation }) => {
     [filteredItems],
   );
 
-  const handleAddItem = () => {
+  const handleAddItem = useCallback(() => {
     if (Platform.OS === 'ios') {
       Alert.alert(t("wardrobe.addItem"), t("wardrobe.chooseSource"), [
         { text: t("wardrobe.camera"), onPress: () => pickImage('camera') },
@@ -124,9 +124,9 @@ const WardrobeScreen = ({ navigation }) => {
     } else {
       setIsModalVisible(true);
     }
-  };
+  }, [t]);
 
-  const pickImage = async source => {
+  const pickImage = useCallback(async source => {
     if (Platform.OS === 'android') setIsModalVisible(false);
     try {
       const result =
@@ -136,9 +136,9 @@ const WardrobeScreen = ({ navigation }) => {
     } catch (err) {
       showFeedback({ type: "error", title: t("wardrobe.error"), message: t("wardrobe.errorOccurred") });
     }
-  };
+  }, []);
 
-  const handleAnalyze = async asset => {
+  const handleAnalyze = useCallback(async asset => {
     try {
       setAnalyzing(true);
       const compressed = await ImageManipulator.manipulateAsync(
@@ -171,9 +171,43 @@ const WardrobeScreen = ({ navigation }) => {
     } finally {
       setAnalyzing(false);
     }
-  };
+  }, [navigation, showFeedback, t]);
 
-  const renderHeader = () => (
+  const onCategoryPress = useCallback((item) => () => setSelectedCategory(item), []);
+
+  const keyExtractor = useCallback(item => item._id, []);
+
+  const renderWardrobeItem = useCallback(({ item }) =>
+    item.type === 'add' ? (
+      <AddItemCard onPress={handleAddItem} />
+    ) : (
+      <WardrobeItemCard
+        item={item}
+        isFavorite={isFavorite(item._id)}
+        onPress={() =>
+          navigation.navigate(ROUTES.ITEM_DETAILS, {
+            itemId: item._id,
+            analysisId: item.analysis_id,
+          })
+        }
+        onLongPress={() =>
+          navigation.navigate(ROUTES.EDIT_WARDROBE, {
+            initialSelectedId: item._id,
+          })
+        }
+        onToggleFavorite={async () => {
+          try {
+            await toggleFavorite(item._id, 'WARDROBE', item);
+          } catch (e) {
+            showFeedback({ type: "error", title: t("wardrobe.error"), message: getUserFriendlyErrorMessage(e, t) });
+            refetchFavorites();
+          }
+        }}
+      />
+    )
+  , [handleAddItem, isFavorite, toggleFavorite, refetchFavorites, navigation, showFeedback, t]);
+
+  const renderHeader = useCallback(() => (
     <View style={styles.headerContainer}>
       <View style={styles.section}>
         <WardrobeHealthCard itemCount={items.length} />
@@ -189,7 +223,7 @@ const WardrobeScreen = ({ navigation }) => {
             <CategoryChip
               label={categoryLabelMap[item] || item}
               selected={selectedCategory === item}
-              onPress={() => setSelectedCategory(item)}
+              onPress={onCategoryPress(item)}
             />
           )}
           style={{ alignSelf: 'center' }}
@@ -202,7 +236,7 @@ const WardrobeScreen = ({ navigation }) => {
         </View>
       )}
     </View>
-  );
+  ), [items.length, categories, selectedCategory, categoryLabelMap, analyzing, t]);
 
   return (
     <View style={styles.root}>
@@ -229,38 +263,10 @@ const WardrobeScreen = ({ navigation }) => {
         /* Render Grid if items exist */
         <FlatList
           data={listData}
-          keyExtractor={item => item._id}
+          keyExtractor={keyExtractor}
           numColumns={2}
           ListHeaderComponent={renderHeader}
-          renderItem={({ item }) =>
-            item.type === 'add' ? (
-              <AddItemCard onPress={handleAddItem} />
-            ) : (
-              <WardrobeItemCard
-                item={item}
-                isFavorite={isFavorite(item._id)}
-                onPress={() =>
-                  navigation.navigate(ROUTES.ITEM_DETAILS, {
-                    itemId: item._id,
-                    analysisId: item.analysis_id,
-                  })
-                }
-                onLongPress={() =>
-                  navigation.navigate(ROUTES.EDIT_WARDROBE, {
-                    initialSelectedId: item._id,
-                  })
-                }
-                onToggleFavorite={async () => {
-                  try {
-                    await toggleFavorite(item._id, 'WARDROBE', item);
-                  } catch (e) {
-                    showFeedback({ type: "error", title: t("wardrobe.error"), message: getUserFriendlyErrorMessage(e, t) });
-                    refetchFavorites();
-                  }
-                }}
-              />
-            )
-          }
+          renderItem={renderWardrobeItem}
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}

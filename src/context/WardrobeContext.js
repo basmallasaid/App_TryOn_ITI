@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { getWardrobeItems,deleteWardrobeItem } from '../api/wardrobe_services/wardrobeService';
 import { useAuth } from './AuthContext';
 import { getUserFriendlyErrorMessage } from '../utils/errorMessages';
@@ -46,16 +46,10 @@ export const WardrobeProvider = ({ children }) => {
     );
   };
 
+  const value = useMemo(() => ({ items, loading, error, refetch: fetchItems, addItem, removeItem, updateItem }), [items, loading, error, fetchItems, addItem, removeItem, updateItem]);
+
   return (
-    <WardrobeContext.Provider value={{
-      items,
-      loading,
-      error,
-      refetch: fetchItems,
-      addItem,
-      removeItem,
-      updateItem,
-    }}>
+    <WardrobeContext.Provider value={value}>
       {children}
     </WardrobeContext.Provider>
   );

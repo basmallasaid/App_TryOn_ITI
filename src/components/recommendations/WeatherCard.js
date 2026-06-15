@@ -5,7 +5,7 @@ import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { getWeatherIcon } from "../../constants/weatherIcons";
 
-export default function WeatherCard({ weather }) {
+const WeatherCard = React.memo(function WeatherCard({ weather }) {
   const conditionIcon = getWeatherIcon(weather.condition);
   const { themeVersion } = useTheme();
 
@@ -86,5 +86,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
     </View>
   );
-}
+});
+
+export default WeatherCard;
 

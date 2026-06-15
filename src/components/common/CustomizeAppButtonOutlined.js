@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
-const CustomizeAppButtonOutlined = ({
+const CustomizeAppButtonOutlined = React.memo(({
   label,
   onPress,
   borderColor,
@@ -71,7 +71,6 @@ const styles = React.useMemo(() => StyleSheet.create({
       )}
     </TouchableOpacity>
   );
-};
-
+});
 
 export default CustomizeAppButtonOutlined;

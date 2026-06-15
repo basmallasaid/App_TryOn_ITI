@@ -4,7 +4,7 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 
-const CategoryChip = ({ label, selected, onPress }) => {
+const CategoryChip = React.memo(({ label, selected, onPress }) => {
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => StyleSheet.create({
     chip: {
@@ -45,6 +45,6 @@ const CategoryChip = ({ label, selected, onPress }) => {
       </Text>
     </TouchableOpacity>
   );
-};
+});
 
 export default CategoryChip;

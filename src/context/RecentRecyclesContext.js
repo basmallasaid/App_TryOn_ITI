@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { getUserProfile } from '../api/user_services/userService';
 
@@ -34,8 +34,10 @@ export const RecentRecyclesProvider = ({ children }) => {
     refresh();
   }, [refresh]);
 
+  const value = useMemo(() => ({ recycles, loading, refresh }), [recycles, loading, refresh]);
+
   return (
-    <RecentRecyclesContext.Provider value={{ recycles, loading, refresh }}>
+    <RecentRecyclesContext.Provider value={value}>
       {children}
     </RecentRecyclesContext.Provider>
   );

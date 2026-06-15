@@ -1,8 +1,9 @@
+import React from 'react';
 import { View, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 
-const ProfileAvatar = ({ firstName, lastName, imageUri }) => {
+const ProfileAvatar = React.memo(({ firstName, lastName, imageUri }) => {
   const first = (firstName || '')[0] || '';
   const last = (lastName || '')[0] || '';
   const initials = (first + last).toUpperCase();
@@ -25,6 +26,6 @@ const ProfileAvatar = ({ firstName, lastName, imageUri }) => {
       </View>
     </View>
   );
-};
+});
 
 export default ProfileAvatar;

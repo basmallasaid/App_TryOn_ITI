@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
-const PrefRow = ({ icon, title, right, onPress, borderBottom = true }) => {
+const PrefRow = React.memo(({ icon, title, right, onPress, borderBottom = true }) => {
   const { themeVersion } = useTheme();
 const styles = React.useMemo(() => StyleSheet.create({
   row: {
@@ -49,7 +49,6 @@ const styles = React.useMemo(() => StyleSheet.create({
       <View style={[styles.right, { alignItems: 'flex-end' }]}>{right}</View>
     </TouchableOpacity>
   );
-};
-
+});
 
 export default PrefRow;

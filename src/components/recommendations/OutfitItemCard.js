@@ -1,10 +1,13 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { getItemImage } from "../../utils/getItemImage";
 
-export default function OutfitItemCard({ item }) {
+const blurhash = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
+
+const OutfitItemCard = React.memo(function OutfitItemCard({ item }) {
   const imageUri = getItemImage(item);
   const itemName = item?.name || item?.title || item?.label || "";
   const { themeVersion } = useTheme();
@@ -48,7 +51,10 @@ const styles = React.useMemo(() => StyleSheet.create({
         <Image
           source={{ uri: imageUri }}
           style={styles.image}
-          resizeMode="contain"
+          contentFit="contain"
+          placeholder={blurhash}
+          transition={300}
+          cachePolicy="disk"
         />
       ) : (
         <View style={styles.imagePlaceholder} />
@@ -56,5 +62,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       <Text style={styles.name} numberOfLines={2}>{itemName || "—"}</Text>
     </View>
   );
-}
+});
+
+export default OutfitItemCard;
 

@@ -7,6 +7,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getProductById } from '../../api/user_services/userService'; 
 import { useNavigation } from '@react-navigation/native';
 import { useWardrobe } from '../../context/WardrobeContext';
+import { useStore } from '../../context/StoreContext';
 import { getMatchesByAnalysis } from '../../api/matching_services/matchingService';
 import { useFavorites } from '../../context/FavoritesContext';
 import { ROUTES, SOURCE } from '../../navigation/routes';
@@ -17,8 +18,10 @@ import { useTheme } from "../../context/ThemeContext";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import { translateProduct, translateMatch } from "../../utils/dynamicTranslator";
+import { getItemImage } from "../../utils/getItemImage";
 import i18n from "../../localization/i18n";
 
+const LOG_TAG = "[ProductDetailScreen]";
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
@@ -38,12 +41,25 @@ export default function ProductDetailScreen({ route }) {
 
   const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
   const { items: wardrobeItems } = useWardrobe();
+  const { getProductById: getProductFromCache } = useStore();
   const [wardrobeMatches, setWardrobeMatches] = useState([]);
   const [matchingLoading, setMatchingLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        const cached = getProductFromCache(productId);
+        if (cached) {
+          let data = cached;
+          if (i18n.language === 'ar') {
+            data = await translateProduct(data, 'ar');
+          }
+          setProduct(data);
+          if (data.color_tags?.length > 0) setSelectedColor(data.color_tags[0]);
+          setLoading(false);
+          return;
+        }
+
         let data = await getProductById(productId);
         if (i18n.language === 'ar') {
           data = await translateProduct(data, 'ar');
@@ -56,7 +72,7 @@ export default function ProductDetailScreen({ route }) {
       }
     };
     fetchProduct();
-  }, [productId]);
+  }, [productId, getProductFromCache]);
 
   useEffect(() => {
     if (!productId) {
@@ -66,14 +82,27 @@ export default function ProductDetailScreen({ route }) {
     setMatchingLoading(true);
     const fetchMatches = async () => {
       try {
+        console.log(LOG_TAG, "fetchMatches called for productId:", productId);
         const matchRes = await getMatchesByAnalysis(productId);
+        console.log(LOG_TAG, "fetchMatches response keys:", Object.keys(matchRes || {}));
+        console.log(LOG_TAG, "fetchMatches matches count:", matchRes?.matches?.length);
+        console.log(LOG_TAG, "fetchMatches has analyzedProduct:", !!matchRes?.analyzedProduct);
         let list = matchRes?.matches || matchRes?.data?.matches || (Array.isArray(matchRes) ? matchRes : []);
+        console.log(LOG_TAG, "fetchMatches raw list length:", list.length);
         list = list.filter((m) => m.item?.source === "wardrobe");
+        console.log(LOG_TAG, "fetchMatches wardrobe filtered list length:", list.length);
+        if (list[0]) {
+          console.log(LOG_TAG, "fetchMatches first match item:", JSON.stringify(list[0].item).slice(0, 300));
+          console.log(LOG_TAG, "fetchMatches first match item.image:", list[0].item?.image);
+          console.log(LOG_TAG, "fetchMatches first match score:", list[0].score);
+        }
         if (i18n.language === 'ar') {
           list = await Promise.all(list.map(m => translateMatch(m, 'ar')));
         }
         setWardrobeMatches(list);
+        console.log(LOG_TAG, "fetchMatches final wardrobeMatches count:", list.length);
       } catch (e) {
+        console.log(LOG_TAG, "fetchMatches error:", e.message, "status:", e.response?.status);
         showFeedback({ type: "error", title: t("store.productDetail.matchError"), message: getUserFriendlyErrorMessage(e, t) });
         setWardrobeMatches([]);
       } finally {
@@ -90,14 +119,19 @@ export default function ProductDetailScreen({ route }) {
   };
 
   const getMatchImage = (match) => {
-    if (!match?.item) return null;
-    if (match.item.image) {
-      const uri = typeof match.item.image === "string" ? match.item.image : match.item.image?.uri;
-      if (uri) return { uri };
+    if (!match?.item) {
+      console.log(LOG_TAG, "getMatchImage: no match.item");
+      return null;
     }
+    const directUri = getItemImage(match.item);
+    console.log(LOG_TAG, "getMatchImage directUri:", directUri, "for item:", match.item?.id, "image field:", match.item?.image);
+    if (directUri) return { uri: directUri };
     const wardrobeItem = wardrobeItems.find((wi) => wi._id === match.item.id || wi.id === match.item.id);
+    console.log(LOG_TAG, "getMatchImage wardrobe lookup:", wardrobeItem ? "found" : "not found", "for id:", match.item.id, "wardrobeItems count:", wardrobeItems.length);
     if (wardrobeItem) {
-      const uri = typeof wardrobeItem.image === "string" ? wardrobeItem.image : wardrobeItem.image?.uri;
+      const uri = getItemImage(wardrobeItem) ||
+        (typeof wardrobeItem.image === "string" ? wardrobeItem.image : wardrobeItem.image?.uri);
+      console.log(LOG_TAG, "getMatchImage wardrobe image resolved:", uri);
       if (uri) return { uri };
     }
     return null;

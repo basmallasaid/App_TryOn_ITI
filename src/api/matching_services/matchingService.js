@@ -16,8 +16,18 @@ export const getWardrobeMatches = async (wardrobeItemId) => {
       { wardrobe_item_id: wardrobeItemId },
       matchConfig,
     );
-    console.log(LOG_TAG, "getWardrobeMatches success:", JSON.stringify(response.data).slice(0, 300));
-    return response.data;
+    const data = response.data;
+    console.log(LOG_TAG, "getWardrobeMatches response keys:", Object.keys(data || {}));
+    console.log(LOG_TAG, "getWardrobeMatches matches count:", data?.matches?.length);
+    console.log(LOG_TAG, "getWardrobeMatches has weather:", !!data?.weather);
+    if (data?.matches?.[0]) {
+      console.log(LOG_TAG, "getWardrobeMatches first match item keys:", Object.keys(data.matches[0].item || {}));
+      console.log(LOG_TAG, "getWardrobeMatches first match item.image:", data.matches[0].item?.image);
+      console.log(LOG_TAG, "getWardrobeMatches first match source:", data.matches[0].item?.source);
+      console.log(LOG_TAG, "getWardrobeMatches first match id:", data.matches[0].item?.id);
+      console.log(LOG_TAG, "getWardrobeMatches first match score:", data.matches[0].score);
+    }
+    return data;
   } catch (e) {
     console.log(LOG_TAG, "getWardrobeMatches failed:", e.message, e.response?.status, JSON.stringify(e.response?.data).slice(0, 200));
     throw e;
@@ -64,7 +74,15 @@ export const getMatchesByAnalysis = async (analysisId, latitude, longitude) => {
       { latitude, longitude },
       matchConfig,
     );
-    console.log(LOG_TAG, "getMatchesByAnalysis success:", JSON.stringify(data).slice(0, 500));
+    console.log(LOG_TAG, "getMatchesByAnalysis response keys:", Object.keys(data || {}));
+    console.log(LOG_TAG, "getMatchesByAnalysis matches count:", data?.matches?.length);
+    console.log(LOG_TAG, "getMatchesByAnalysis has analyzedProduct:", !!data?.analyzedProduct);
+    if (data?.matches?.[0]) {
+      console.log(LOG_TAG, "getMatchesByAnalysis first match item keys:", Object.keys(data.matches[0].item || {}));
+      console.log(LOG_TAG, "getMatchesByAnalysis first match item.image:", data.matches[0].item?.image);
+      console.log(LOG_TAG, "getMatchesByAnalysis first match source:", data.matches[0].item?.source);
+      console.log(LOG_TAG, "getMatchesByAnalysis first match id:", data.matches[0].item?.id);
+    }
     return data;
   } catch (e) {
     console.log(LOG_TAG, "getMatchesByAnalysis failed:", e.message, e.response?.status, JSON.stringify(e.response?.data).slice(0, 200));
@@ -82,7 +100,16 @@ export const getMatchesByAnalysisId = async (analysisId, latitude, longitude) =>
       { latitude, longitude },
       matchConfig,
     );
-    console.log(LOG_TAG, "getMatchesByAnalysisId success:", JSON.stringify(data).slice(0, 500));
+    console.log(LOG_TAG, "getMatchesByAnalysisId response keys:", Object.keys(data || {}));
+    console.log(LOG_TAG, "getMatchesByAnalysisId matches count:", data?.matches?.length);
+    console.log(LOG_TAG, "getMatchesByAnalysisId has weather:", !!data?.weather);
+    if (data?.matches?.[0]) {
+      console.log(LOG_TAG, "getMatchesByAnalysisId first match item keys:", Object.keys(data.matches[0].item || {}));
+      console.log(LOG_TAG, "getMatchesByAnalysisId first match item.image:", data.matches[0].item?.image);
+      console.log(LOG_TAG, "getMatchesByAnalysisId first match source:", data.matches[0].item?.source);
+      console.log(LOG_TAG, "getMatchesByAnalysisId first match id:", data.matches[0].item?.id);
+      console.log(LOG_TAG, "getMatchesByAnalysisId first match score:", data.matches[0].score);
+    }
     return data;
   } catch (e) {
     console.log(LOG_TAG, "getMatchesByAnalysisId failed:", e.message, e.response?.status, JSON.stringify(e.response?.data).slice(0, 200));

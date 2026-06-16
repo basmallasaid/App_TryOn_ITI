@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../../config/env";
-import { getToken, clearToken } from "../../storage/TokenStorage";
+import { getToken, clearToken, clearUserId } from "../../storage/TokenStorage";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -20,6 +20,7 @@ apiClient.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       await clearToken();
+      await clearUserId();
     }
     return Promise.reject(error);
   },

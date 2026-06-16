@@ -18,6 +18,7 @@ import OutfitOverviewCard from "../../components/recommendations/OutfitOverviewC
 import OutfitItemCard from "../../components/recommendations/OutfitItemCard";
 import { getItemsList } from "../../utils/getItemImage";
 import { useRecommendation } from "../../context/RecommendationContext";
+import { useWardrobe } from "../../context/WardrobeContext";
 import { translateRecommendation } from "../../utils/dynamicTranslator";
 import i18n from "../../localization/i18n";
 
@@ -39,9 +40,10 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { todaysOutfit } = useRecommendation();
+  const { items: wardrobeItems } = useWardrobe();
   const outfit = route.params?.outfit || todaysOutfit;
   const [translatedOutfit, setTranslatedOutfit] = useState(null);
-  const items = getItemsList(translatedOutfit || outfit);
+  const items = getItemsList(translatedOutfit || outfit, wardrobeItems);
   const hasData = outfit && items.length > 0;
   const recommendedDate = formatRecommendationDate(outfit?.created_at);
 

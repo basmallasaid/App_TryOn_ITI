@@ -1,5 +1,5 @@
 import apiClient from "./apiClient";
-import { saveToken, clearToken,saveUserId } from '../../storage/TokenStorage';
+import { saveToken, clearToken, clearUserId, saveUserId } from '../../storage/TokenStorage';
 import {ENDPOINTS} from "../../config/endpoints";
 
 export const loginWithGoogleMobile = async (idToken) => {
@@ -66,4 +66,5 @@ export const resetPassword = async (email, password, confirmPassword) => {
 
 export const logout = async () => {
   await clearToken();
+  await clearUserId();
 };

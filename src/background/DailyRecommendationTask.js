@@ -1,15 +1,10 @@
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
-import * as SecureStore from 'expo-secure-store';
 import { getAllRecommendations, requestRecommendations } from '../api/recommendations_services/recommendationsServices';
-import { getToken, getUserId } from '../storage/TokenStorage';
+import { getToken, getUserId, setDailyOutfitDate, setDailyOutfitData } from '../storage/TokenStorage';
 
 const LOG_TAG = "[BG-Recommendation]";
 const TASK_NAME = 'daily-recommendation-fetch';
-const DAILY_OUTFIT_DATE_KEY = 'daily_outfit_date';
-const DAILY_OUTFIT_DATA_KEY = 'daily_outfit_data';
-
-const dailyKey = (key, userId) => userId ? `${key}_${userId}` : key;
 
 function toLocalDateKey(date) {
   const y = date.getFullYear();
@@ -71,9 +66,8 @@ TaskManager.defineTask(TASK_NAME, async () => {
 
     if (todayEntry) {
       console.log(LOG_TAG, `Today (${todayKey}) found in history — no POST needed`);
-      // Cache locally for offline fallback
-      await SecureStore.setItemAsync(dailyKey(DAILY_OUTFIT_DATE_KEY, userId), todayKey);
-      await SecureStore.setItemAsync(dailyKey(DAILY_OUTFIT_DATA_KEY, userId), JSON.stringify(todayEntry));
+      await setDailyOutfitDate(todayKey, userId);
+      await setDailyOutfitData(todayEntry, userId);
       return BackgroundTask.BackgroundTaskResult.Success;
     }
 
@@ -81,8 +75,8 @@ TaskManager.defineTask(TASK_NAME, async () => {
     console.log(LOG_TAG, `No match for ${todayKey} — POSTing new recommendation`);
     const result = await requestRecommendations();
 
-    await SecureStore.setItemAsync(dailyKey(DAILY_OUTFIT_DATE_KEY, userId), todayKey);
-    await SecureStore.setItemAsync(dailyKey(DAILY_OUTFIT_DATA_KEY, userId), JSON.stringify(result));
+    await setDailyOutfitDate(todayKey, userId);
+    await setDailyOutfitData(result, userId);
 
     console.log(LOG_TAG, "POST complete, cached locally");
     return BackgroundTask.BackgroundTaskResult.Success;

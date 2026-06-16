@@ -18,8 +18,12 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useFavorites } from "../../context/FavoritesContext";
+import { useWardrobe } from "../../context/WardrobeContext";
+import { getItemImage } from "../../utils/getItemImage";
 import { translateToArabic } from "../../utils/dynamicTranslator";
 import i18n from "../../localization/i18n";
+
+const LOG_TAG = "[MatchingResultDetails]";
 
 const { width } = Dimensions.get("window");
 
@@ -48,13 +52,42 @@ const colorMap = {
 
 export default function MatchingResultDetailsScreen({ navigation, route }) {
   const { t } = useTranslation();
-  const { match, imageUri } = route.params || {};
+  const { match, imageUri: passedImageUri } = route.params || {};
   const item = match?.item || {};
   const score = match?.score || 0;
   const explanation = match?.explanation || "";
   const { themeVersion } = useTheme();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { items: wardrobeItems } = useWardrobe();
   const itemId = item?.id?.replace("store_", "");
+
+  // Resolve image from context if not passed
+  const imageUri = useMemo(() => {
+    if (passedImageUri) {
+      console.log(LOG_TAG, "Using passed imageUri:", passedImageUri);
+      return passedImageUri;
+    }
+    // Try to resolve from item directly
+    const directUri = getItemImage(item);
+    if (directUri) {
+      console.log(LOG_TAG, "Resolved image from item directly:", directUri);
+      return directUri;
+    }
+    // Try wardrobe context
+    if (item.source === "wardrobe" && item.id) {
+      const wardrobeItem = wardrobeItems.find(
+        (wi) => wi._id === item.id || wi.id === item.id,
+      );
+      if (wardrobeItem) {
+        const uri = getItemImage(wardrobeItem) ||
+          (typeof wardrobeItem.image === "string" ? wardrobeItem.image : wardrobeItem.image?.uri);
+        console.log(LOG_TAG, "Resolved image from wardrobe context:", uri);
+        if (uri) return uri;
+      }
+    }
+    console.log(LOG_TAG, "No image found for item:", item?.id);
+    return null;
+  }, [passedImageUri, item, wardrobeItems]);
 
   const [selectedSize, setSelectedSize] = useState("m");
   const [selectedColor, setSelectedColor] = useState(item?.color || "black");
@@ -62,6 +95,13 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
   const [translatedExplanation, setTranslatedExplanation] = useState(explanation);
 
   useEffect(() => {
+    console.log(LOG_TAG, "match received:", JSON.stringify(match).slice(0, 300));
+    console.log(LOG_TAG, "item keys:", Object.keys(item || {}));
+    console.log(LOG_TAG, "item.image:", item?.image);
+    console.log(LOG_TAG, "item.source:", item?.source);
+    console.log(LOG_TAG, "item.id:", item?.id);
+    console.log(LOG_TAG, "passed imageUri:", passedImageUri);
+    console.log(LOG_TAG, "resolved imageUri:", imageUri);
     const translateData = async () => {
       if (i18n.language !== 'ar') return;
       try {

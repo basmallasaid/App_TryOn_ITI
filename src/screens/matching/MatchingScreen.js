@@ -22,13 +22,13 @@ import UploadBox from "../../components/tryOn/UploadBox";
 import ItemSelector from "../../components/tryOn/ItemSelector";
 import { openCamera, openGallery } from "../../utils/cameraAccess";
 import { useWardrobe } from "../../context/WardrobeContext";
+import { useStore } from "../../context/StoreContext";
 import GradientBorder from "../../components/recycle/GradientBorder";
 import {
   getWardrobeMatches,
   analyzeImage,
   getMatchesByAnalysisId,
 } from "../../api/matching_services/matchingService";
-import { getAllProducts } from "../../api/user_services/userService";
 import { useFavorites } from "../../context/FavoritesContext";
 import { ROUTES } from "../../navigation/routes";
 import { translateMatch } from "../../utils/dynamicTranslator";
@@ -41,6 +41,7 @@ export default function MatchingScreen({ navigation }) {
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
   const { items: wardrobeItems } = useWardrobe();
+  const { products: allProducts } = useStore();
   const { isFavorite, toggleFavorite } = useFavorites();
 
   const [activeTab, setActiveTab] = useState("My Wardrobe");
@@ -53,19 +54,12 @@ export default function MatchingScreen({ navigation }) {
   const [showResults, setShowResults] = useState(false);
   const [wardrobeMatches, setWardrobeMatches] = useState([]);
   const [storeMatches, setStoreMatches] = useState([]);
-  const [allProducts, setAllProducts] = useState([]);
 
   // Dynamic translation state for match results
   const [translatedWardrobeMatches, setTranslatedWardrobeMatches] = useState(
     [],
   );
   const [translatedStoreMatches, setTranslatedStoreMatches] = useState([]);
-
-  useEffect(() => {
-    getAllProducts()
-      .then((data) => setAllProducts(Array.isArray(data) ? data : []))
-      .catch(() => {});
-  }, []);
 
   const handleCameraCapture = async () => {
     const result = await openCamera();
@@ -152,10 +146,13 @@ export default function MatchingScreen({ navigation }) {
     : t("matching.selectItemHint");
 
   const processMatches = async (raw) => {
+    console.log(LOG_TAG, "processMatches called with raw keys:", Object.keys(raw || {}));
     const list =
       raw?.matches || raw?.data?.matches || (Array.isArray(raw) ? raw : []);
+    console.log(LOG_TAG, "processMatches list length:", list.length);
     const wMatches = list.filter((m) => m.item?.source === "wardrobe");
     const sMatches = list.filter((m) => m.item?.source === "store");
+    console.log(LOG_TAG, "processMatches wardrobe matches:", wMatches.length, "store matches:", sMatches.length);
     setWardrobeMatches(wMatches);
     setStoreMatches(sMatches);
 
@@ -178,12 +175,20 @@ export default function MatchingScreen({ navigation }) {
 
   const handleSeeMatching = async () => {
     console.log(LOG_TAG, "handleSeeMatching called", { activeTab, hasWardrobeItem, hasCameraItem, hasGalleryItem });
+    console.log(LOG_TAG, "wardrobeItems count:", wardrobeItems.length, "allProducts count:", allProducts.length);
     setGenerating(true);
     try {
       if (activeTab === "My Wardrobe" && hasWardrobeItem) {
         console.log(LOG_TAG, "Flow: Wardrobe match, selectedWardrobeId:", selectedWardrobeId);
         const res = await getWardrobeMatches(selectedWardrobeId);
-        console.log(LOG_TAG, "Wardrobe matches received:", JSON.stringify(res).slice(0, 300));
+        console.log(LOG_TAG, "Wardrobe matches response keys:", Object.keys(res || {}));
+        console.log(LOG_TAG, "Wardrobe matches count:", res?.matches?.length);
+        console.log(LOG_TAG, "Wardrobe matches weather:", !!res?.weather);
+        if (res?.matches?.[0]) {
+          console.log(LOG_TAG, "First match item:", JSON.stringify(res.matches[0].item).slice(0, 300));
+          console.log(LOG_TAG, "First match item.image:", res.matches[0].item?.image);
+          console.log(LOG_TAG, "First match score:", res.matches[0].score);
+        }
         processMatches(res);
       } else if (activeTab === "Camera" && hasCameraItem) {
         console.log(LOG_TAG, "Flow: Camera match, image:", cameraImage?.slice(0, 60), "type:", cameraItemType);
@@ -202,7 +207,14 @@ export default function MatchingScreen({ navigation }) {
             30.0444,
             31.2357,
           );
-          console.log(LOG_TAG, "Camera match results:", JSON.stringify(matchRes).slice(0, 300));
+          console.log(LOG_TAG, "Camera match response keys:", Object.keys(matchRes || {}));
+          console.log(LOG_TAG, "Camera matches count:", matchRes?.matches?.length);
+          console.log(LOG_TAG, "Camera matches weather:", !!matchRes?.weather);
+          if (matchRes?.matches?.[0]) {
+            console.log(LOG_TAG, "Camera first match item:", JSON.stringify(matchRes.matches[0].item).slice(0, 300));
+            console.log(LOG_TAG, "Camera first match item.image:", matchRes.matches[0].item?.image);
+            console.log(LOG_TAG, "Camera first match source:", matchRes.matches[0].item?.source);
+          }
           processMatches(matchRes);
         } else {
           console.log(LOG_TAG, "Could not extract analysisId from response:", JSON.stringify(analysisRes));
@@ -225,7 +237,14 @@ export default function MatchingScreen({ navigation }) {
             30.0444,
             31.2357,
           );
-          console.log(LOG_TAG, "Gallery match results:", JSON.stringify(matchRes).slice(0, 300));
+          console.log(LOG_TAG, "Gallery match response keys:", Object.keys(matchRes || {}));
+          console.log(LOG_TAG, "Gallery matches count:", matchRes?.matches?.length);
+          console.log(LOG_TAG, "Gallery matches weather:", !!matchRes?.weather);
+          if (matchRes?.matches?.[0]) {
+            console.log(LOG_TAG, "Gallery first match item:", JSON.stringify(matchRes.matches[0].item).slice(0, 300));
+            console.log(LOG_TAG, "Gallery first match item.image:", matchRes.matches[0].item?.image);
+            console.log(LOG_TAG, "Gallery first match source:", matchRes.matches[0].item?.source);
+          }
           processMatches(matchRes);
         } else {
           console.log(LOG_TAG, "Could not extract analysisId from response:", JSON.stringify(analysisRes));
@@ -260,20 +279,26 @@ export default function MatchingScreen({ navigation }) {
   };
 
   const getMatchImage = (match) => {
-    if (!match?.item) return null;
+    if (!match?.item) {
+      console.log(LOG_TAG, "getMatchImage: no match.item");
+      return null;
+    }
     const directUri = getItemImage(match.item);
+    console.log(LOG_TAG, "getMatchImage directUri from getItemImage:", directUri, "for item:", match.item?.id, "image field:", match.item?.image);
     if (directUri) return { uri: directUri };
     const source = match.item.source;
     if (source === "wardrobe") {
       const wardrobeItem = wardrobeItems.find(
         (wi) => wi._id === match.item.id || wi.id === match.item.id,
       );
+      console.log(LOG_TAG, "getMatchImage wardrobe lookup:", wardrobeItem ? "found" : "not found", "for id:", match.item.id, "wardrobeItems count:", wardrobeItems.length);
       if (wardrobeItem) {
         const uri =
           getItemImage(wardrobeItem) ||
           (typeof wardrobeItem.image === "string"
             ? wardrobeItem.image
             : wardrobeItem.image?.uri);
+        console.log(LOG_TAG, "getMatchImage wardrobe image resolved:", uri);
         if (uri) return { uri };
       }
       return null;
@@ -283,11 +308,13 @@ export default function MatchingScreen({ navigation }) {
       const product = allProducts.find(
         (p) => p._id === productId || p.id === productId,
       );
+      console.log(LOG_TAG, "getMatchImage store lookup:", product ? "found" : "not found", "for productId:", productId, "allProducts count:", allProducts.length);
       if (product) {
         const raw = product.images || product.image;
         const first = Array.isArray(raw) ? raw[0] : raw;
         const uri =
           typeof first === "string" ? first : first?.url || first?.uri;
+        console.log(LOG_TAG, "getMatchImage store image resolved:", uri);
         if (uri) return { uri };
       }
       return null;

@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getToken, clearToken,getUserId, clearUserId } from '../storage/TokenStorage';
+import { getToken, clearToken, getUserId, clearUserId, clearAllUserCache } from '../storage/TokenStorage';
 import * as authService from "../api/auth_services/authServices";
 import { useLanguage } from './LanguageContext';
 const AuthContext = createContext();
@@ -35,8 +35,11 @@ const updateProfile=async(token,firstName,lastName,dateOfBirth,gender)=>{
   await authService.updateProfile(token,firstName,lastName,dateOfBirth,gender);
 }
 const deleteAccount=async(token)=>{
+  const userId = user?._id;
   await authService.deleteAccount(token);
   await clearToken();
+  await clearUserId();
+  if (userId) await clearAllUserCache(userId);
 }
 const loginWithGoogle = async (idToken) => {
   const data = await authService.loginWithGoogleMobile(idToken);
@@ -44,8 +47,11 @@ const loginWithGoogle = async (idToken) => {
   return data;
 };
   const logout = async () => {
+    const userId = user?._id;
     await authService.logout();
+    await clearToken();
     await clearUserId();
+    if (userId) await clearAllUserCache(userId);
     setUser(null);
     setRole(null);
   };

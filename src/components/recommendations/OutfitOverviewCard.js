@@ -4,13 +4,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { useWardrobe } from "../../context/WardrobeContext";
 import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
 
 export default function OutfitOverviewCard({ outfit, onPress, width, height, borderRadius, borderColor, labelFontSize }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const { items: wardrobeItems } = useWardrobe();
   const [imageError, setImageError] = useState(false);
-  const items = getItemsList(outfit);
+  const items = getItemsList(outfit, wardrobeItems);
   const compositeImage = getCompositeImage(outfit);
   const validImages = items.filter(i => i._image);
   const isComposite = !!compositeImage;

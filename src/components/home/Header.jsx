@@ -106,6 +106,7 @@ export default function Header() {
           name="notifications"
           size={26}
           color={settings?.notifications ? Colors.error : Colors.disabled}
+          style={{marginTop:-15}}
         />
       </TouchableOpacity>
     </View>

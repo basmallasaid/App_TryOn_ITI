@@ -1,50 +1,113 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getWardrobeItems,deleteWardrobeItem } from '../api/wardrobe_services/wardrobeService';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { AppState } from 'react-native';
+import { getWardrobeItems, deleteWardrobeItem } from '../api/wardrobe_services/wardrobeService';
+import { setWardrobeCache, getWardrobeCache } from '../storage/TokenStorage';
 import { useAuth } from './AuthContext';
 import { getUserFriendlyErrorMessage } from '../utils/errorMessages';
 import i18n from '../localization/i18n';
 
 const WardrobeContext = createContext();
+const COOLDOWN_MS = 5 * 60 * 1000;
 
 export const WardrobeProvider = ({ children }) => {
-  const { user }              = useAuth();
-  const [items, setItems]     = useState([]);
+  const { user } = useAuth();
+  const userId = user?._id;
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const [error, setError] = useState(null);
+  const appStateRef = useRef(AppState.currentState);
+  const lastFetchTimeRef = useRef(0);
+  const mountedRef = useRef(true);
 
-  const fetchItems = useCallback(async () => {
+  const fetchItems = useCallback(async ({ showLoading = true, useCache = true } = {}) => {
     if (!user?.token) return;
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       setError(null);
+
+      if (useCache) {
+        const cached = await getWardrobeCache(userId);
+        if (cached) {
+          setItems(cached);
+          setLoading(false);
+          if (!mountedRef.current) return;
+        }
+      }
+
+      const now = Date.now();
+      if (now - lastFetchTimeRef.current < COOLDOWN_MS && !showLoading) {
+        setLoading(false);
+        return;
+      }
+      lastFetchTimeRef.current = now;
+
       const data = await getWardrobeItems();
-      setItems(data ?? []);
+      if (!mountedRef.current) return;
+      const fresh = data ?? [];
+      setItems(fresh);
+      setWardrobeCache(fresh, userId).catch(() => {});
     } catch (e) {
+      if (!mountedRef.current) return;
       setError(getUserFriendlyErrorMessage(e, i18n.t.bind(i18n)));
     } finally {
-      setLoading(false);
+      if (mountedRef.current) setLoading(false);
     }
-  }, [user?.token]);
+  }, [user?.token, userId]);
 
-  // Fetch on login
   useEffect(() => {
-    fetchItems();
+    mountedRef.current = true;
+    fetchItems({ showLoading: true, useCache: true });
+    return () => { mountedRef.current = false; };
   }, [fetchItems]);
 
-  // Call this after adding an item to sync the list
-  const addItem = (newItem) => {
-    setItems((prev) => [...prev, newItem]);
-  };
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (appStateRef.current.match(/inactive|background/) && nextState === 'active') {
+        fetchItems({ showLoading: false, useCache: false });
+      }
+      appStateRef.current = nextState;
+    });
+    return () => subscription.remove();
+  }, [fetchItems]);
 
-  const removeItem = (itemId) => {
-    setItems((prev) => prev.filter((i) => i._id !== itemId));
-  };
+  const addItem = useCallback((newItem) => {
+    setItems((prev) => {
+      const next = [...prev, newItem];
+      setWardrobeCache(next, userId).catch(() => {});
+      return next;
+    });
+  }, [userId]);
 
-  const updateItem = (itemId, updates) => {
-    setItems((prev) =>
-      prev.map((i) => (i._id === itemId ? { ...i, ...updates } : i)),
-    );
-  };
+  const removeItem = useCallback(async (itemId) => {
+    let removed = null;
+    setItems((prev) => {
+      const idx = prev.find((i) => i._id === itemId);
+      removed = idx;
+      const next = prev.filter((i) => i._id !== itemId);
+      setWardrobeCache(next, userId).catch(() => {});
+      return next;
+    });
+    try {
+      await deleteWardrobeItem(itemId);
+    } catch (e) {
+      if (removed) {
+        setItems((prev) => {
+          const next = [...prev, removed];
+          setWardrobeCache(next, userId).catch(() => {});
+          return next;
+        });
+      }
+      throw e;
+    }
+  }, [userId]);
+
+  const updateItem = useCallback((itemId, updates) => {
+    setItems((prev) => {
+      const next = prev.map((i) => (i._id === itemId ? { ...i, ...updates } : i));
+      setWardrobeCache(next, userId).catch(() => {});
+      return next;
+    });
+  }, [userId]);
 
   return (
     <WardrobeContext.Provider value={{

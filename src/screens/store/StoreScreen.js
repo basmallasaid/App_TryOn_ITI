@@ -7,13 +7,12 @@ import { PromoBanner } from '../../components/store/PromoBanner';
 import { CategoryTabs } from '../../components/store/CategoryTabs';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
-import { getAllProducts } from '../../api/user_services/userService';
+import { useStore } from '../../context/StoreContext';
 import { FilterModal } from './FilterModal';
 import { useFavorites } from '../../context/FavoritesContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES, SOURCE } from '../../navigation/routes';
-import { translateProduct } from '../../utils/dynamicTranslator';
 import i18n from '../../localization/i18n';
 
 export default function StoreScreen() {
@@ -84,9 +83,7 @@ export default function StoreScreen() {
         return categories;
     };
     const { isFavorite, toggleFavorite, refetch: refetchFavorites } = useFavorites();
-    const [allProducts, setAllProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { products: allProducts, loading, error } = useStore();
     const [searchText, setSearchText] = useState('');
     const searchTextRef = useRef(searchText);
     searchTextRef.current = searchText;
@@ -129,33 +126,6 @@ export default function StoreScreen() {
         setFilterValues(values);
         setFilterVisible(false);
     };
-
-    useEffect(() => {
-        let cancelled = false;
-        const fetchProducts = async () => {
-            setLoading(true);
-            setError(null);
-
-            try {
-                const data = await getAllProducts();
-                if (cancelled) return;
-                let products = Array.isArray(data) ? data : [];
-                
-                if (i18n.language === 'ar') {
-                    products = await Promise.all(products.map(p => translateProduct(p, 'ar')));
-                }
-                
-                if (!cancelled) setAllProducts(products);
-            } catch (err) {
-                if (!cancelled) setError(t('store.loadError'));
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
-        };
-
-        fetchProducts();
-        return () => { cancelled = true; };
-    }, [i18n.language]);
 
     const categories = useMemo(() => buildCategoriesFromProducts(allProducts), [allProducts]);
 

@@ -140,7 +140,7 @@ const ProductCardComponent = ({
             <Ionicons
               name={isFavorite ? 'heart' : 'heart-outline'}
               size={20}
-              color={isFavorite ? Colors.accentOrange : Colors.textPrimary}
+              color={isFavorite ? Colors.accentOrange : Colors.iconGray}
             />
           </TouchableOpacity>
         </View>

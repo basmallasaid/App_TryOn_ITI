@@ -6,8 +6,11 @@ import { useTheme } from "../../context/ThemeContext";
 import { getWeatherIcon } from "../../constants/weatherIcons";
 
 export default function WeatherCard({ weather }) {
-  const conditionIcon = getWeatherIcon(weather.condition);
   const { themeVersion } = useTheme();
+
+  if (!weather) return null;
+
+  const conditionIcon = getWeatherIcon(weather.condition);
 
 const styles = React.useMemo(() => StyleSheet.create({
   card: {

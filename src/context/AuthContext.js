@@ -40,12 +40,7 @@ const deleteAccount=async(token)=>{
 }
 const loginWithGoogle = async (idToken) => {
   const data = await authService.loginWithGoogleMobile(idToken);
-
-  setUser({
-    token: data.token,
-    email: data.email,
-  });
-
+  setUser(data);
   return data;
 };
   const logout = async () => {

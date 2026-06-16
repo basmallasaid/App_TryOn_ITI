@@ -14,14 +14,17 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.basmalla_said.ReDolapy"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.basmalla_said.ReDolapy",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -39,6 +42,12 @@
         "projectId": "f230f9f4-bc47-42d1-a245-df8407bd6bff"
       }
     },
-    "owner": "basmalla_said"
+    "owner": "basmalla_said",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f230f9f4-bc47-42d1-a245-df8407bd6bff"
+    }
   }
 }

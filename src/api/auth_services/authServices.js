@@ -5,7 +5,7 @@ import {ENDPOINTS} from "../../config/endpoints";
 export const loginWithGoogleMobile = async (idToken) => {
   const { data } = await apiClient.post(ENDPOINTS.LOGIN_WITH_GOOGLE_MOBILE, { idToken });
   await saveToken(data.token);
-  return { email: data.email, token: data.token };
+  return data;
 };
 
 export const login = async (

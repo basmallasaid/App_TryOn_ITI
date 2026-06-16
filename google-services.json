@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "633519297450",
+    "project_id": "basic-eon-497407-i8",
+    "storage_bucket": "basic-eon-497407-i8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633519297450:android:386dc5a7f0fa7c268311d3",
+        "android_client_info": {
+          "package_name": "com.basmalla_said.ReDolapy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "633519297450-q6d73si7qh57slp3f7216n2040jhlhn7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0TqtsQjAlE5f-hmbI1xQ0xhhGCj4uo90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "633519297450-q6d73si7qh57slp3f7216n2040jhlhn7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "633519297450-hockhdv2ebbabirki9nfk0359k4rfgkp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.basmalla_said.ReDolapy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,55 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, View, Text, StyleSheet, Dimensions } from "react-native";
 import LottieView from "lottie-react-native";
+import { useTranslation } from "react-i18next";
 import { ANIMATIONS } from "../../constants/images/animations";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
 
-const FUNNY_TEXTS = {
-  tryOn: [
-    "Our AI stylist is picking the perfect look… and arguing about accessories",
-    "Dressing up your avatar… they're very picky today",
-    "Almost there! The virtual mirror is polishing its pixels",
-    "Teaching the AI what 'fashionable' means… it's a work in progress",
-    "Your outfit is being assembled with love (and a hint of jealousy)",
-    "The digital tailor is taking measurements… stop fidgeting",
-    "Rendering fabulousness… please hold",
-    "AI says: 'This outfit is fire!'… but let me double-check",
-    "Your avatar is striking a pose for the camera",
-    "Mixing and matching like a pro… or at least an AI trying its best",
-  ],
-  recycle: [
-    "Turning your old clothes into something fabulous… give us a sec",
-    "The recycling fairy is working her magic on your wardrobe",
-    "One person's trash is another's treasure… and we're making treasure",
-    "Your clothes are getting a second chance at life (and maybe a promotion)",
-    "Upcycling in progress… please don't give up on your clothes yet",
-    "Transforming threads into dreams… standby",
-    "The fashion alchemist is brewing something great",
-    "Your old tee is about to become the next big thing",
-    "Saving the planet one outfit at a time… processing…",
-    "Eco-friendly fashion coming right up!",
-  ],
-  general: [
-    "Good things come to those who wait… like really good outfits",
-    "Our fashion bots are working overtime (they don't need coffee)",
-    "Pixels are aligning… please hold your applause",
-    "Your fashion future is being generated… it's looking bright",
-    "The style algorithm is consulting the fashion gods",
-    "Hold still… the AI is learning what 'fashionable' means",
-    "We're making magic happen behind the scenes… literally",
-    "If you hear beeping, that's just the AI getting excited",
-  ],
-};
-
 const LoadingOverlay = ({ visible, type = "general" }) => {
+  const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const [textIndex, setTextIndex] = useState(0);
   const intervalRef = useRef(null);
 
-  const texts = FUNNY_TEXTS[type] || FUNNY_TEXTS.general;
+  const texts = t(`loading.${type}`, { returnObjects: true });
 
   useEffect(() => {
     if (visible) {
@@ -122,10 +87,10 @@ const LoadingOverlay = ({ visible, type = "general" }) => {
           />
           <Text style={styles.title}>
             {type === "tryOn"
-              ? "Virtual Try-On in Progress"
+              ? t("loading.tryOnTitle")
               : type === "recycle"
-              ? "Generating Your Design"
-              : "Just a moment..."}
+              ? t("loading.recycleTitle")
+              : t("loading.generalTitle")}
           </Text>
           <Text style={styles.subtitle}>{texts[textIndex]}</Text>
         </View>

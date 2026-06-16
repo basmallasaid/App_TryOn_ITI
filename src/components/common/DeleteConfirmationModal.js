@@ -47,7 +47,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       <View style={styles.overlay}>
         <View style={styles.container}>
           <View style={styles.iconContainer}>
-            <Ionicons name="trash" size={24} color="#FF8A3D" />
+            <Ionicons name="trash" size={24} color={Colors.accentOrange} />
           </View>
           
           <View style={styles.textContainer}>

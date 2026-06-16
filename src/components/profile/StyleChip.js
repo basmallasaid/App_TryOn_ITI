@@ -14,12 +14,12 @@ const styles = React.useMemo(() => StyleSheet.create({
     height: 36,
     borderRadius: 8,
     paddingHorizontal: 16,
-    backgroundColor: '#F4F4F5',
+    backgroundColor: Colors.surfaceElevated,
     borderWidth: 1,
     borderColor: Colors.borderDefault,
   },
   chipSelected: {
-    backgroundColor: '#E5F2FF',
+    backgroundColor: Colors.surfaceElevated,
     borderColor: Colors.primary,
   },
   chipDisabled: {

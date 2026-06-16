@@ -2,19 +2,35 @@ import { Platform } from "react-native";
 import apiClient from "../auth_services/apiClient";
 import { ENDPOINTS } from "../../config/endpoints";
 
+const LOG_TAG = "[MatchingService]";
+
+const matchConfig = {
+  timeout: 60000,
+};
+
 export const getWardrobeMatches = async (wardrobeItemId) => {
-  const response = await apiClient.post(ENDPOINTS.MATCHES, {
-    wardrobe_item_id: wardrobeItemId,
-  });
-  return response.data;
+  console.log(LOG_TAG, "getWardrobeMatches called with:", wardrobeItemId);
+  try {
+    const response = await apiClient.post(
+      ENDPOINTS.MATCHES,
+      { wardrobe_item_id: wardrobeItemId },
+      matchConfig,
+    );
+    console.log(LOG_TAG, "getWardrobeMatches success:", JSON.stringify(response.data).slice(0, 300));
+    return response.data;
+  } catch (e) {
+    console.log(LOG_TAG, "getWardrobeMatches failed:", e.message, e.response?.status, JSON.stringify(e.response?.data).slice(0, 200));
+    throw e;
+  }
 };
 
 const formDataConfig = {
   transformRequest: (data) => data,
-  timeout: 60000,
+  timeout: 120000,
 };
 
 export const analyzeImage = async (imageUri) => {
+  console.log(LOG_TAG, "analyzeImage called with:", imageUri?.slice(0, 80));
   const formData = new FormData();
   const filename = imageUri.split("/").pop() || "image.jpg";
   const match = /\.(\w+)$/.exec(filename);
@@ -25,13 +41,34 @@ export const analyzeImage = async (imageUri) => {
     name: filename,
     type,
   });
-  const { data } = await apiClient.post(ENDPOINTS.ANALYZE, formData, formDataConfig);
-  return data;
+
+  console.log(LOG_TAG, "analyzeImage FormData prepared, sending to:", ENDPOINTS.ANALYZE);
+  try {
+    const { data } = await apiClient.post(ENDPOINTS.ANALYZE, formData, formDataConfig);
+    console.log(LOG_TAG, "analyzeImage success:", JSON.stringify(data).slice(0, 500));
+    return data;
+  } catch (e) {
+    console.log(LOG_TAG, "analyzeImage failed:", e.message, e.response?.status, JSON.stringify(e.response?.data).slice(0, 200));
+    throw e;
+  }
 };
 
-export const getMatchesByAnalysis = async (productId) => {
-  const { data } = await apiClient.post(`${ENDPOINTS.MATCHES_ANALYSIS}/${productId}`);
-  return data;
+export const getMatchesByAnalysis = async (analysisId, latitude, longitude) => {
+  console.log(LOG_TAG, "getMatchesByAnalysis called with:", { analysisId, latitude, longitude });
+  const url = `${ENDPOINTS.MATCHES_ANALYSIS}/${analysisId}`;
+  console.log(LOG_TAG, "getMatchesByAnalysis URL:", url);
+  try {
+    const { data } = await apiClient.post(
+      url,
+      { latitude, longitude },
+      matchConfig,
+    );
+    console.log(LOG_TAG, "getMatchesByAnalysis success:", JSON.stringify(data).slice(0, 500));
+    return data;
+  } catch (e) {
+    console.log(LOG_TAG, "getMatchesByAnalysis failed:", e.message, e.response?.status, JSON.stringify(e.response?.data).slice(0, 200));
+    throw e;
+  }
 };
 
 export const checkProductMatches = async (productId) => {

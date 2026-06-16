@@ -37,7 +37,7 @@ export default function ItemSelector({ label, selectedType, onSelectType, disabl
     },
     subtitle: {
       fontSize: 14,
-      color: "#90a4ae",
+      color: Colors.textMuted,
       marginBottom: 25,
     },
     optionsContainer: {
@@ -56,11 +56,11 @@ export default function ItemSelector({ label, selectedType, onSelectType, disabl
     },
     activeOption: {
       backgroundColor: Colors.white,
-      borderColor: "#40B9FF",
+      borderColor: Colors.primary,
     },
     inactiveOption: {
       backgroundColor: Colors.white,
-      borderColor: "#eceff1",
+      borderColor: Colors.borderDefault,
     },
     iconStyle: {
       marginRight: 8,
@@ -73,7 +73,7 @@ export default function ItemSelector({ label, selectedType, onSelectType, disabl
   }), [themeVersion]);
 
   return (
-    <View style={[styles.mainCard, { borderColor: selectedType ? "#40B9FF" : "#A0AEC0", opacity: disabled ? 0.5 : 1 }]}>
+    <View style={[styles.mainCard, { borderColor: selectedType ? Colors.primary : Colors.borderStrong, opacity: disabled ? 0.5 : 1 }]}>
       <Text style={styles.title}>{label}</Text>
       <Text style={styles.subtitle}>{t("itemSelector.subtitle")}</Text>
 
@@ -99,13 +99,13 @@ export default function ItemSelector({ label, selectedType, onSelectType, disabl
               <MaterialCommunityIcons
                 name={item.icon}
                 size={22}
-                color={isItemDisabled ? "#ccc" : isActive ? "#40B9FF" : "#78909c"}
+                color={isItemDisabled ? Colors.disabled : isActive ? Colors.primary : Colors.iconGray}
                 style={styles.iconStyle}
               />
               <Text
                 style={[
                   styles.optionText,
-                  { color: isItemDisabled ? "#ccc" : isActive ? "#37474f" : "#78909c" },
+                  { color: isItemDisabled ? Colors.disabled : isActive ? Colors.textPrimary : Colors.textMuted },
                 ]}
               >
                 {item.label}

@@ -309,7 +309,7 @@ export default function RecycleScreen({ navigation }) {
     <View>
       {wardrobeItems.length === 0 ? (
         <View style={styles.emptyWrap}>
-          <MaterialCommunityIcons name="hanger" size={48} color={Colors.borderDefault} />
+          <MaterialCommunityIcons name="hanger" size={48} color={Colors.iconGray} />
           <Text style={styles.emptyText}>{t("recycle.wardrobeEmpty")}</Text>
         </View>
       ) : (
@@ -343,7 +343,7 @@ export default function RecycleScreen({ navigation }) {
                         resizeMode="cover"
                       />
                       <View style={styles.wardrobeCheck}>
-                        <Ionicons name="checkmark" size={14} color={Colors.white} />
+                        <Ionicons name="checkmark" size={14} color={Colors.textInverse} />
                       </View>
                     </GradientBorder>
                   ) : (
@@ -387,7 +387,7 @@ export default function RecycleScreen({ navigation }) {
                 style={styles.galleryRemoveBtn}
                 onPress={() => removeCapturedImage(index)}
               >
-                <Ionicons name="close" size={14} color={Colors.white} />
+                <Ionicons name="close" size={14} color={Colors.textInverse} />
               </TouchableOpacity>
             </View>
           ))}
@@ -430,7 +430,7 @@ export default function RecycleScreen({ navigation }) {
                 style={styles.galleryRemoveBtn}
                 onPress={() => removeUploadedImage(index)}
               >
-                <Ionicons name="close" size={14} color={Colors.white} />
+                <Ionicons name="close" size={14} color={Colors.textInverse} />
               </TouchableOpacity>
             </View>
           ))}
@@ -558,7 +558,7 @@ export default function RecycleScreen({ navigation }) {
             disabled={!canAnalyze}
             loading={analyzing}
             backgroundColor={Colors.primary}
-            icon={!analyzing ? <SparkleIcon size={18} color={Colors.white} /> : null}
+            icon={!analyzing ? <SparkleIcon size={18} color={Colors.textInverse} /> : null}
           />
         </View>
 
@@ -592,7 +592,7 @@ export default function RecycleScreen({ navigation }) {
               disabled={!canGenerate}
               loading={generating}
               backgroundColor={Colors.success}
-              icon={!generating ? <SparkleIcon size={18} color={Colors.white} /> : null}
+              icon={!generating ? <SparkleIcon size={18} color={Colors.textInverse} /> : null}
             />
           </View>
         )}

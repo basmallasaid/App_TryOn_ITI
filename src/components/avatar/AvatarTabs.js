@@ -39,7 +39,7 @@ const styles = React.useMemo(() => StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 16,
-    backgroundColor: '#F4F4F5',
+    backgroundColor: Colors.surfaceElevated,
     borderWidth: 1,
     borderColor: Colors.borderDefault,
   },

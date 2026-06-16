@@ -27,7 +27,7 @@ export default function StoreScreen() {
         return {
             id: product._id,
             name: product.name,
-            brand: product.store_id?.name || 'Store',
+            brand: product.store_id?.name || t("store.title"),
             price: `${product.price} ${product.currency || t("store.currency")}`,
             image: product.images?.[0],
             badge: hasMatches ? t('store.badge') : '',

@@ -35,7 +35,7 @@ const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
 const STYLES = ["Casual", "Basic", "Formal","Mart-Casual"];
 
 const ItemDetailsScreen = ({ route, navigation }) => {
-  const { themeVersion } = useTheme();
+  const { themeVersion, isDarkMode } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { itemId, analysisId, source } = route.params;
@@ -109,7 +109,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.backgroundColor} />
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={Colors.backgroundColor} />
 
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
@@ -132,7 +132,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
                 <Ionicons
                   name={checkIsFavorite(itemId) ? "heart" : "heart-outline"}
                   size={18}
-                  color={checkIsFavorite(itemId) ? Colors.error : Colors.white}
+                  color={checkIsFavorite(itemId) ? Colors.error : Colors.textInverse}
                 />
               </View>
             </TouchableOpacity>
@@ -144,17 +144,17 @@ const ItemDetailsScreen = ({ route, navigation }) => {
                   itemId,
                   itemType: garment.category || garment.specificType,
                   productImage: itemData?.image,
-                  productName: garment.specificType || garment.category || "Garment",
+                  productName: garment.specificType || garment.category || t("wardrobe.details.garment"),
                 },
               })
             }>
               <View style={styles.iconCircle}>
-                <Ionicons name="sparkles" size={18} color={Colors.white} />
+                <Ionicons name="sparkles" size={18} color={Colors.textInverse} />
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setShowDeleteModal(true)}>
               <View style={styles.iconCircle}>
-                <Ionicons name="trash-outline" size={18} color={Colors.white} />
+                <Ionicons name="trash-outline" size={18} color={Colors.textInverse} />
               </View>
             </TouchableOpacity>
           </View>

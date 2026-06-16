@@ -70,7 +70,7 @@ export const FilterModal = ({
     <View style={styles.section}>
       <View style={[styles.sectionHeader, { flexDirection: "row" }]}>
         <Text style={styles.sectionTitle}>{title}</Text>
-          <Ionicons name="chevron-down" size={20} color={Colors.disabled} />
+          <Ionicons name="chevron-down" size={20} color={Colors.iconGray} />
       </View>
       <View style={styles.sectionBody}>{children}</View>
     </View>
@@ -201,7 +201,7 @@ export const FilterModal = ({
         {/* زرار Apply (اختياري بس مهم) */}
         <TouchableOpacity style={styles.applyBtn} onPress={handleApplyFilters} disabled={loading}>
           {loading ? (
-            <ActivityIndicator color={Colors.white} />
+            <ActivityIndicator color={Colors.textInverse} />
           ) : (
             <Text style={styles.applyBtnText}>{t("store.filters.apply")}</Text>
           )}

@@ -90,7 +90,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
           <Ionicons
             name="trash-outline"
             size={24}
-            color={selectedIds.length > 0 ? Colors.error : Colors.borderDefault}
+            color={selectedIds.length > 0 ? Colors.error : Colors.iconGray}
           />
         </TouchableOpacity>
       </View>

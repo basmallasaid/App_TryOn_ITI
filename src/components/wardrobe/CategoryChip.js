@@ -25,7 +25,7 @@ const CategoryChip = ({ label, selected, onPress }) => {
       fontFamily: 'Roboto_400Regular',
       fontSize: 16,
       lineHeight: 16,
-      color: '#475569',
+      color: Colors.textSecondary,
       textAlign: 'center',
     },
     labelSelected: {

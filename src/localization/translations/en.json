@@ -306,7 +306,8 @@
       "itemSelected": "{{count}} item selected",
       "itemsSelected": "{{count}} items selected",
       "itemFromWardrobe": "Item selected from your wardrobe",
-      "itemFromCamera": "Item captured from camera or gallery",
+      "itemFromCamera": "Item captured from camera",
+      "itemFromGallery": "Item uploaded from gallery",
       "virtualTryOnFailed": "Virtual try-on failed"
     },
     "results": {
@@ -432,7 +433,8 @@
     "selectedItemsOne": "1 item selected",
     "noItemsSelected": "No items selected yet",
     "itemFromWardrobe": "Item selected from your wardrobe",
-    "itemFromCamera": "Item captured from camera or gallery",
+    "itemFromCamera": "Item captured from camera",
+    "itemFromGallery": "Item uploaded from gallery",
     "selectItemHint": "Select an item to see matching suggestions",
     "details": {
       "scoreMatch": "% match",
@@ -718,5 +720,52 @@
     "saved": "Saved",
     "savedMessage": "Try-on result saved successfully.",
     "error": "Error"
+  },
+  "loading": {
+    "tryOnTitle": "Virtual Try-On in Progress",
+    "recycleTitle": "Generating Your Design",
+    "generalTitle": "Just a moment...",
+    "tryOn": [
+      "Our AI stylist is picking the perfect look… and arguing about accessories",
+      "Dressing up your avatar… they're very picky today",
+      "Almost there! The virtual mirror is polishing its pixels",
+      "Teaching the AI what 'fashionable' means… it's a work in progress",
+      "Your outfit is being assembled with love (and a hint of jealousy)",
+      "The digital tailor is taking measurements… stop fidgeting",
+      "Rendering fabulousness… please hold",
+      "AI says: 'This outfit is fire!'… but let me double-check",
+      "Your avatar is striking a pose for the camera",
+      "Mixing and matching like a pro… or at least an AI trying its best"
+    ],
+    "recycle": [
+      "Turning your old clothes into something fabulous… give us a sec",
+      "The recycling fairy is working her magic on your wardrobe",
+      "One person's trash is another's treasure… and we're making treasure",
+      "Your clothes are getting a second chance at life (and maybe a promotion)",
+      "Upcycling in progress… please don't give up on your clothes yet",
+      "Transforming threads into dreams… standby",
+      "The fashion alchemist is brewing something great",
+      "Your old tee is about to become the next big thing",
+      "Saving the planet one outfit at a time… processing…",
+      "Eco-friendly fashion coming right up!"
+    ],
+    "general": [
+      "Good things come to those who wait… like really good outfits",
+      "Our fashion bots are working overtime (they don't need coffee)",
+      "Pixels are aligning… please hold your applause",
+      "Your fashion future is being generated… it's looking bright",
+      "The style algorithm is consulting the fashion gods",
+      "Hold still… the AI is learning what 'fashionable' means",
+      "We're making magic happen behind the scenes… literally",
+      "If you hear beeping, that's just the AI getting excited"
+    ]
+  },
+  "subscriptionPrices": {
+    "proMonthly": "$16.19",
+    "proYearly": "$12.19",
+    "essentialPrice": "$0",
+    "essentialPerUnit": "/mo",
+    "legacyMonthly": "$9.99",
+    "legacyYearly": "$79.99"
   }
 }

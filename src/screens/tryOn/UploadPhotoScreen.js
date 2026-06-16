@@ -23,40 +23,40 @@ import PhotoInstructionCard from "../../components/tryOn/PhotoInstructionCard";
 import { openGallery } from "../../utils/cameraAccess";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 
-const instructions = [
-  {
-    key: "fullBody",
-    mainIconName: "human",
-    iconBgColor: Colors.primaryLight,
-    titleKey: "tryOn.uploadPhoto.instructions.fullBody.title",
-    descKey: "tryOn.uploadPhoto.instructions.fullBody.description",
-  },
-  {
-    key: "goodLighting",
-    mainIconName: "weather-sunny",
-    iconBgColor: Colors.accentLight,
-    titleKey: "tryOn.uploadPhoto.instructions.goodLighting.title",
-    descKey: "tryOn.uploadPhoto.instructions.goodLighting.description",
-  },
-  {
-    key: "faceCamera",
-    mainIconName: "camera",
-    iconBgColor: Colors.primaryLight,
-    titleKey: "tryOn.uploadPhoto.instructions.faceCamera.title",
-    descKey: "tryOn.uploadPhoto.instructions.faceCamera.description",
-  },
-  {
-    key: "cleanWall",
-    mainIconName: "image-outline",
-    iconBgColor: Colors.accentLight,
-    titleKey: "tryOn.uploadPhoto.instructions.cleanWall.title",
-    descKey: "tryOn.uploadPhoto.instructions.cleanWall.description",
-  },
-];
-
 const UploadPhotoScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+
+  const instructions = [
+    {
+      key: "fullBody",
+      mainIconName: "human",
+      iconBgColor: Colors.primaryLight,
+      titleKey: "tryOn.uploadPhoto.instructions.fullBody.title",
+      descKey: "tryOn.uploadPhoto.instructions.fullBody.description",
+    },
+    {
+      key: "goodLighting",
+      mainIconName: "weather-sunny",
+      iconBgColor: Colors.accentLight,
+      titleKey: "tryOn.uploadPhoto.instructions.goodLighting.title",
+      descKey: "tryOn.uploadPhoto.instructions.goodLighting.description",
+    },
+    {
+      key: "faceCamera",
+      mainIconName: "camera",
+      iconBgColor: Colors.primaryLight,
+      titleKey: "tryOn.uploadPhoto.instructions.faceCamera.title",
+      descKey: "tryOn.uploadPhoto.instructions.faceCamera.description",
+    },
+    {
+      key: "cleanWall",
+      mainIconName: "image-outline",
+      iconBgColor: Colors.accentLight,
+      titleKey: "tryOn.uploadPhoto.instructions.cleanWall.title",
+      descKey: "tryOn.uploadPhoto.instructions.cleanWall.description",
+    },
+  ];
   const [layout, setLayout] = useState({ width: 0, height: 0 });
   const [selectedImage, setSelectedImage] = useState(null);
   const productImage = route?.params?.productImage;
@@ -131,7 +131,7 @@ const UploadPhotoScreen = ({ navigation, route }) => {
               <View style={styles.selectedImageWrapper}>
                 <Image source={{ uri: selectedImage }} style={styles.selectedImage} resizeMode="contain" />
                 <TouchableOpacity style={styles.removeBtn} onPress={handleRemovePhoto}>
-                  <Ionicons name="close" size={14} color={Colors.white} />
+                  <Ionicons name="close" size={14} color={Colors.textInverse} />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -195,6 +195,7 @@ const createStyles = () => StyleSheet.create({
   },
   title: {
     ...Typography.screenTitleLarge,
+    color: Colors.textPrimary,
     textAlign: "center",
     marginBottom: 8,
     marginTop:12,

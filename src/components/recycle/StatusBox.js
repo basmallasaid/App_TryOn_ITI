@@ -12,7 +12,7 @@ export default function StatusBox({ mode, garmentAnalysis }) {
 
   const styles = React.useMemo(() => StyleSheet.create({
     container: {
-      backgroundColor: "#F0FFF0",
+      backgroundColor: Colors.surfaceElevated,
       borderRadius: 12,
       padding: 14,
       marginTop: 12,

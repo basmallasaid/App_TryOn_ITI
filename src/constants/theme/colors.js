@@ -18,6 +18,7 @@ const LightColors = {
   textDark: "#161B22",
 
   white: "#FFFFFF",
+  surfaceElevated: "#F2F3FF",
   borderStrong: "#D5D9DE",
   iconGray: "#6B7280",
   borderDefault: "#E9EBEE",
@@ -26,7 +27,7 @@ const LightColors = {
   success: "#8ED321",
   disabled: "#A0A6B2",
 
-  divider: "#40B9FF",
+  divider: "#E9EBEE",
 
   textInverse: "#FFFFFF",
 };
@@ -51,6 +52,7 @@ const DarkColors = {
   textDark: "#F1F5F9",
 
   white: "#161B22",
+  surfaceElevated: "#1E2630",
   borderStrong: "#2A313C",
   iconGray: "#A1A7B3",
   borderDefault: "#2A313C",
@@ -59,7 +61,7 @@ const DarkColors = {
   success: "#A6E22E",
   disabled: "#A0A6B2",
 
-  divider: "#4FC3FF",
+  divider: "#2A313C",
 
   textInverse: "#FFFFFF",
 };

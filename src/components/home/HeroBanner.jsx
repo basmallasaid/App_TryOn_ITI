@@ -65,7 +65,7 @@ const styles = React.useMemo(() => StyleSheet.create({
         backgroundColor: Colors.primarybrand,
         alignItems: "center",
         paddingVertical: 10,
-        paddingHorizontal: 9,
+        paddingHorizontal: 18,
         borderRadius: 12,
     },
 
@@ -109,8 +109,8 @@ const styles = React.useMemo(() => StyleSheet.create({
                 </Text>
 
                 <TouchableOpacity style={[styles.generateButton, { flexDirection: isRTL ? "row-reverse" : "row", alignSelf: isRTL ? "flex-end" : "flex-start" }]} onPress={onPress}>
-                    <Ionicons name="sparkles" size={24} color="white" />
-                    <Text style={[styles.generateButtonText, { marginHorizontal: 6 }]}>
+                    <Ionicons name="sparkles" size={16} color="white" />
+                    <Text style={styles.generateButtonText}>
                         {t('home.actions.generateOutfit')}
                     </Text>
 

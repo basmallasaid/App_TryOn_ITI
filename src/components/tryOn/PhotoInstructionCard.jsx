@@ -16,7 +16,7 @@ export default function PhotoInstructionCard({
   const styles = React.useMemo(() => StyleSheet.create({
     card: {
       width: "48%",
-      backgroundColor: "#F2F3FF",
+      backgroundColor: Colors.surfaceElevated,
       borderRadius: 16,
       padding: 14,
       marginBottom: 12,

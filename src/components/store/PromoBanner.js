@@ -136,14 +136,14 @@ export const PromoBanner = () => {
       width: 6,
       height: 6,
       borderRadius: 3,
-      backgroundColor: '#D1D5DB',
+      backgroundColor: Colors.borderDefault,
       marginHorizontal: 3,
     },
     dotActive: {
       width: 14,
       height: 6,
       borderRadius: 3,
-      backgroundColor: '#1A1C24',
+      backgroundColor: Colors.textPrimary,
     },
   }), [themeVersion]);
 

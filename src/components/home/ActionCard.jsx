@@ -61,7 +61,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
 
       <View style={styles.textContainer}>
-        <Text style={[styles.cardTitle, { color: titleColor }]}>{title}</Text>
+        <Text style={[styles.cardTitle, { color: titleColor }]} numberOfLines={1}>{title}</Text>
         <Text style={styles.cardSub} numberOfLines={2}>{sub}</Text>
       </View>
     </TouchableOpacity>

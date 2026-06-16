@@ -18,6 +18,7 @@ const styles = React.useMemo(() => StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "transparent",
+    marginBottom:16,
   },
 }), [themeVersion]);
 

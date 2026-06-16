@@ -414,7 +414,7 @@ export default function TryOnScreen({ navigation, route }) {
                               <Ionicons
                                 name="close"
                   size={14}
-                  color={Colors.white}
+                  color={Colors.textInverse}
                 />
               </TouchableOpacity>
             </View>
@@ -503,7 +503,7 @@ export default function TryOnScreen({ navigation, route }) {
                               <Ionicons
                                 name="close"
                                 size={14}
-                                color={Colors.white}
+                                color={Colors.textInverse}
                               />
                             </TouchableOpacity>
                           </View>
@@ -648,7 +648,7 @@ export default function TryOnScreen({ navigation, route }) {
             <View style={styles.iconCircle}>
               <MaterialCommunityIcons name="hanger" size={24} color={Colors.textPrimary} />
             </View>
-            <View>
+            <View style={{ flex: 1 }}>
               <Text style={styles.noItemsTitle}>
                 {selectedItems.length > 0
                   ? t("tryOn.virtualTryOn.itemSelected", { count: selectedItems.length })

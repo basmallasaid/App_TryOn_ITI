@@ -13,7 +13,6 @@ import {
   requestRecommendations,
 } from "../api/recommendations_services/recommendationsServices";
 import {
-  getDailyOutfitDate,
   setDailyOutfitDate,
   setDailyOutfitData,
   getDailyOutfitData,
@@ -22,6 +21,9 @@ import { useAuth } from "./AuthContext";
 import { translateToArabic } from "../utils/dynamicTranslator";
 import i18n from "../localization/i18n";
 
+const LOG_TAG = "[Recommendation]";
+const COOLDOWN_MS = 5 * 60 * 1000;
+
 function toLocalDateKey(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -29,21 +31,30 @@ function toLocalDateKey(date) {
   return `${y}-${m}-${d}`;
 }
 
+function getEntryDate(entry) {
+  return entry?.created_at || entry?.createdAt || null;
+}
+
 function deduplicateByDate(entries) {
   const map = {};
   entries.forEach((entry) => {
-    const dateKey = entry.created_at
-      ? toLocalDateKey(new Date(entry.created_at))
-      : null;
+    const rawDate = getEntryDate(entry);
+    const dateKey = rawDate ? toLocalDateKey(new Date(rawDate)) : null;
     if (
       dateKey &&
       (!map[dateKey] ||
-        new Date(entry.created_at) > new Date(map[dateKey].created_at))
+        new Date(rawDate) > new Date(getEntryDate(map[dateKey])))
     ) {
       map[dateKey] = entry;
     }
   });
   return map;
+}
+
+function findTodayInHistory(history) {
+  const todayKey = toLocalDateKey(new Date());
+  const byDate = deduplicateByDate(history);
+  return byDate[todayKey] || null;
 }
 
 function buildWeekFromSaturday() {
@@ -75,7 +86,7 @@ const DAY_NAMES = [
 const RecommendationContext = createContext();
 
 async function translateOutfitItems(outfit) {
-  if (!outfit || i18n.language !== 'ar') return outfit;
+  if (!outfit || i18n.language !== "ar") return outfit;
   const items = outfit.items || outfit.outfits?.[0]?.items || [];
   const translatedItems = await Promise.all(
     items.map(async (item) => {
@@ -84,9 +95,36 @@ async function translateOutfitItems(outfit) {
     })
   );
   if (outfit.outfits?.[0]) {
-    return { ...outfit, outfits: [{ ...outfit.outfits[0], items: translatedItems }] };
+    return {
+      ...outfit,
+      outfits: [{ ...outfit.outfits[0], items: translatedItems }],
+    };
   }
   return { ...outfit, items: translatedItems };
+}
+
+function mergeCompositeImage(entry, outfit) {
+  if (!outfit) return outfit;
+  return {
+    ...outfit,
+    composite_image:
+      outfit.composite_image ||
+      outfit.compositeImage ||
+      entry?.composite_image ||
+      entry?.compositeImage ||
+      null,
+    created_at:
+      outfit.created_at || entry?.created_at || entry?.createdAt || null,
+  };
+}
+
+async function translateHistory(entries) {
+  return Promise.all(
+    entries.map(async (entry) => {
+      const translated = await translateOutfitItems(entry);
+      return { ...entry, ...translated };
+    })
+  );
 }
 
 export const RecommendationProvider = ({ children }) => {
@@ -98,65 +136,156 @@ export const RecommendationProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const appStateRef = useRef(AppState.currentState);
-
-  const logOutfitItems = (label, outfit) => {
-    if (!outfit) return;
-  };
-
-  const fetchHistory = useCallback(async () => {
-    try {
-      const result = await getAllRecommendations();
-      if (result.history) {
-        const translated = await Promise.all(
-          result.history.map(async (entry) => {
-            const translatedEntry = await translateOutfitItems(entry);
-            return { ...entry, ...translatedEntry };
-          })
-        );
-        setHistory(translated);
-      }
-    } catch (e) {
-    }
-  }, []);
+  const lastFetchTimeRef = useRef(0);
 
   const checkAndFetchDaily = useCallback(async () => {
     try {
-      const today = toLocalDateKey(new Date());
-      const currentHour = new Date().getHours();
-      const lastDate = await getDailyOutfitDate(userId);
+      const now = Date.now();
+      if (now - lastFetchTimeRef.current < COOLDOWN_MS) {
+        console.log(LOG_TAG, "Cooldown active, skipping fetch");
+        return;
+      }
+      lastFetchTimeRef.current = now;
 
-      if (lastDate === today) {
-        const cached = await getDailyOutfitData(userId);
-        if (cached?.outfits?.[0]) {
-          const translatedOutfit = await translateOutfitItems(cached.outfits[0]);
-          setTodaysOutfit(translatedOutfit);
-          setTodaysWeather(cached.weather || cached.outfits[0]?.weather || null);
-        }
-        await fetchHistory();
+      const todayKey = toLocalDateKey(new Date());
+      const currentHour = new Date().getHours();
+      console.log(
+        LOG_TAG,
+        `checkAndFetchDaily — today=${todayKey}, hour=${currentHour}, userId=${userId}`
+      );
+
+      if (!userId) {
+        console.log(LOG_TAG, "No userId, aborting");
+        setLoading(false);
         return;
       }
 
-      if (currentHour >= 6) {
-        setLoading(true);
-        try {
-          const result = await requestRecommendations();
-          await setDailyOutfitDate(today, userId);
-          await setDailyOutfitData(result, userId);
-          if (result?.outfits?.[0]) {
-            const translatedOutfit = await translateOutfitItems(result.outfits[0]);
-            setTodaysOutfit(translatedOutfit);
-            setTodaysWeather(result.weather || result.outfits[0]?.weather || null);
-          }
-        } catch (e) {
-        }
+      // ── Step 1: Fetch history from server ──
+      let serverHistory = [];
+      try {
+        const result = await getAllRecommendations();
+        serverHistory = result.history || [];
+        console.log(
+          LOG_TAG,
+          `Server history entries: ${serverHistory.length}`
+        );
+        serverHistory.forEach((e) => {
+          const rawDate = getEntryDate(e);
+          const dk = rawDate ? toLocalDateKey(new Date(rawDate)) : "null";
+          console.log(
+            LOG_TAG,
+            `  [History] _id=${e._id} created_at=${rawDate} dateKey=${dk}`
+          );
+        });
+      } catch (e) {
+        console.log(LOG_TAG, "GET history failed:", e.message);
       }
 
-      await fetchHistory();
+      // ── Step 2: Check if today exists in server history ──
+      const todayEntry = findTodayInHistory(serverHistory);
+
+      if (todayEntry) {
+        console.log(
+          LOG_TAG,
+          `Match found in history for ${todayKey} — POST not called, using history entry`
+        );
+        const outfit = todayEntry.outfits?.[0] || null;
+        if (outfit) {
+          const merged = mergeCompositeImage(todayEntry, outfit);
+          const translated = await translateOutfitItems(merged);
+          setTodaysOutfit(translated);
+          setTodaysWeather(
+            todayEntry.weather || merged.weather || null
+          );
+          await setDailyOutfitDate(todayKey, userId);
+          await setDailyOutfitData(todayEntry, userId);
+        }
+        const translatedHistory = await translateHistory(serverHistory);
+        setHistory(translatedHistory);
+        console.log(
+          LOG_TAG,
+          `History set: ${translatedHistory.length} entries`
+        );
+        return;
+      }
+
+      console.log(LOG_TAG, `No match for ${todayKey} in history`);
+
+      // ── Step 3: No today entry — check hour ──
+      if (currentHour < 6) {
+        console.log(LOG_TAG, "Before 6AM — no outfit for today yet, leaving empty");
+        const translatedHistory = await translateHistory(serverHistory);
+        setHistory(translatedHistory);
+        return;
+      }
+
+      // ── Step 4: After 6AM — POST new recommendation ──
+      console.log(LOG_TAG, "POST /recommendations — requesting new outfit");
+      setLoading(true);
+      try {
+        const result = await requestRecommendations();
+        console.log(
+          LOG_TAG,
+          "POST success:",
+          JSON.stringify(result).slice(0, 200)
+        );
+        await setDailyOutfitDate(todayKey, userId);
+        await setDailyOutfitData(result, userId);
+
+        if (result?.outfits?.[0]) {
+          const merged = mergeCompositeImage(result, result.outfits[0]);
+          const translated = await translateOutfitItems(merged);
+          setTodaysOutfit(translated);
+          setTodaysWeather(result.weather || merged.weather || null);
+        }
+
+        // Append synthetic entry to history for immediate UI update
+        const syntheticEntry = {
+          _id: `today_${todayKey}`,
+          outfits: result.outfits || [],
+          weather: result.weather || null,
+          created_at: new Date().toISOString(),
+        };
+        const updatedHistory = [...serverHistory, syntheticEntry];
+        const translatedHistory = await translateHistory(updatedHistory);
+        setHistory(translatedHistory);
+        console.log(
+          LOG_TAG,
+          `POST complete, history now: ${translatedHistory.length} entries`
+        );
+      } catch (e) {
+        console.log(LOG_TAG, "POST failed:", e.message);
+        // Fallback to local cache
+        const cached = await getDailyOutfitData(userId);
+        if (cached?.outfits?.[0]) {
+          const merged = mergeCompositeImage(cached, cached.outfits[0]);
+          const translated = await translateOutfitItems(merged);
+          setTodaysOutfit(translated);
+          setTodaysWeather(cached.weather || merged.weather || null);
+        }
+        const translatedHistory = await translateHistory(serverHistory);
+        setHistory(translatedHistory);
+        setError(e.message);
+      }
     } catch (e) {
+      console.log(LOG_TAG, "checkAndFetchDaily error:", e.message);
+      setError(e.message);
+      // Fallback to local cache
+      try {
+        const cached = await getDailyOutfitData(userId);
+        if (cached?.outfits?.[0]) {
+          const merged = mergeCompositeImage(cached, cached.outfits[0]);
+          const translated = await translateOutfitItems(merged);
+          setTodaysOutfit(translated);
+          setTodaysWeather(cached.weather || merged.weather || null);
+        }
+      } catch (cacheErr) {
+        console.log(LOG_TAG, "Cache fallback failed:", cacheErr.message);
+      }
     } finally {
       setLoading(false);
     }
-  }, [fetchHistory, userId]);
+  }, [userId]);
 
   useEffect(() => {
     checkAndFetchDaily();

@@ -8,15 +8,17 @@ import Colors from "../../constants/theme/colors";
 import { getWeatherIcon } from "../../constants/weatherIcons";
 import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
 import { useTheme } from "../../context/ThemeContext";
+import { useWardrobe } from "../../context/WardrobeContext";
 
 const FALLBACK_IMAGE = IMAGES.PICK;
 
 export default function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const { items: wardrobeItems } = useWardrobe();
 
   const compositeImage = getCompositeImage(todaysOutfit);
-  const items = getItemsList(todaysOutfit);
+  const items = getItemsList(todaysOutfit, wardrobeItems);
   const validImages = items.filter(i => i._image);
   const hasOutfit = !!compositeImage || validImages.length > 0;
   const weatherIcon = getWeatherIcon(todaysWeather?.condition).material;

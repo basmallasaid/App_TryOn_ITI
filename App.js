@@ -26,6 +26,7 @@ const PlusJakartaSans_700Bold = require("@expo-google-fonts/plus-jakarta-sans/70
 import { resetOnboardingAndLanguage } from "./src/utils/devReset";
 import { ProfileProvider } from "./src/context/ProfileContext";
 import { WardrobeProvider } from './src/context/WardrobeContext';
+import { StoreProvider } from './src/context/StoreContext';
 import { NotificationProvider } from "./src/context/NotificationContext";
 import { FavoritesProvider } from './src/context/FavoritesContext';
 import { RecommendationProvider } from './src/context/RecommendationContext';
@@ -119,19 +120,21 @@ export default function App() {
         <AuthProvider>
           <ProfileProvider>
             <WardrobeProvider>
-              <NotificationProvider>
-                <FavoritesProvider>
-                  <RecentTryOnsProvider>
-                    <RecentRecyclesProvider>
-                      <RecommendationProviderWithAuthKey>
-                        <FeedbackProvider>
-                          <ThemedApp />
-                        </FeedbackProvider>
-                      </RecommendationProviderWithAuthKey>
-                    </RecentRecyclesProvider>
-                  </RecentTryOnsProvider>
-                </FavoritesProvider>
-              </NotificationProvider>
+              <StoreProvider>
+                <NotificationProvider>
+                  <FavoritesProvider>
+                    <RecentTryOnsProvider>
+                      <RecentRecyclesProvider>
+                        <RecommendationProviderWithAuthKey>
+                          <FeedbackProvider>
+                            <ThemedApp />
+                          </FeedbackProvider>
+                        </RecommendationProviderWithAuthKey>
+                      </RecentRecyclesProvider>
+                    </RecentTryOnsProvider>
+                  </FavoritesProvider>
+                </NotificationProvider>
+              </StoreProvider>
             </WardrobeProvider>
           </ProfileProvider>
         </AuthProvider>

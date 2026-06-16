@@ -62,3 +62,45 @@ export const saveTheme = (mode) =>
 
 export const getTheme = () =>
   SecureStore.getItemAsync(THEME_KEY);
+
+const WARDROBE_CACHE_KEY = 'wardrobe_cache';
+const WARDROBE_TS_KEY = 'wardrobe_cache_ts';
+const PRODUCTS_CACHE_KEY = 'products_cache';
+const PRODUCTS_TS_KEY = 'products_cache_ts';
+const CACHE_TTL = 30 * 60 * 1000;
+
+const userKey = (key, userId) => userId ? `${key}_${userId}` : key;
+
+export const setWardrobeCache = async (items, userId) => {
+  await SecureStore.setItemAsync(userKey(WARDROBE_CACHE_KEY, userId), JSON.stringify(items));
+  await SecureStore.setItemAsync(userKey(WARDROBE_TS_KEY, userId), String(Date.now()));
+};
+
+export const getWardrobeCache = async (userId) => {
+  const raw = await SecureStore.getItemAsync(userKey(WARDROBE_CACHE_KEY, userId));
+  const ts = await SecureStore.getItemAsync(userKey(WARDROBE_TS_KEY, userId));
+  if (!raw || !ts) return null;
+  if (Date.now() - Number(ts) > CACHE_TTL) return null;
+  return JSON.parse(raw);
+};
+
+export const clearWardrobeCache = (userId) =>
+  SecureStore.deleteItemAsync(userKey(WARDROBE_CACHE_KEY, userId))
+    .then(() => SecureStore.deleteItemAsync(userKey(WARDROBE_TS_KEY, userId)));
+
+export const setProductsCache = async (products, userId) => {
+  await SecureStore.setItemAsync(userKey(PRODUCTS_CACHE_KEY, userId), JSON.stringify(products));
+  await SecureStore.setItemAsync(userKey(PRODUCTS_TS_KEY, userId), String(Date.now()));
+};
+
+export const getProductsCache = async (userId) => {
+  const raw = await SecureStore.getItemAsync(userKey(PRODUCTS_CACHE_KEY, userId));
+  const ts = await SecureStore.getItemAsync(userKey(PRODUCTS_TS_KEY, userId));
+  if (!raw || !ts) return null;
+  if (Date.now() - Number(ts) > CACHE_TTL) return null;
+  return JSON.parse(raw);
+};
+
+export const clearProductsCache = (userId) =>
+  SecureStore.deleteItemAsync(userKey(PRODUCTS_CACHE_KEY, userId))
+    .then(() => SecureStore.deleteItemAsync(userKey(PRODUCTS_TS_KEY, userId)));

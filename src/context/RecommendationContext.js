@@ -24,6 +24,29 @@ import i18n from "../localization/i18n";
 const LOG_TAG = "[Recommendation]";
 const COOLDOWN_MS = 5 * 60 * 1000;
 
+const DEFAULT_WEATHER = {
+  temperature: 0,
+  feelsLike: 0,
+  condition: "clear",
+  humidity: 0,
+  windSpeed: 0,
+  isDay: true,
+  weatherCode: 0,
+};
+
+function normalizeWeather(weather) {
+  if (!weather) return { ...DEFAULT_WEATHER };
+  return {
+    temperature: weather.temperature ?? 0,
+    feelsLike: weather.feelsLike ?? 0,
+    condition: weather.condition ?? "clear",
+    humidity: weather.humidity ?? 0,
+    windSpeed: weather.windSpeed ?? 0,
+    isDay: weather.isDay ?? true,
+    weatherCode: weather.weatherCode ?? 0,
+  };
+}
+
 function toLocalDateKey(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -195,7 +218,7 @@ export const RecommendationProvider = ({ children }) => {
           const translated = await translateOutfitItems(merged);
           setTodaysOutfit(translated);
           setTodaysWeather(
-            todayEntry.weather || merged.weather || null
+            normalizeWeather(todayEntry.weather || merged.weather)
           );
           await setDailyOutfitDate(todayKey, userId);
           await setDailyOutfitData(todayEntry, userId);
@@ -236,14 +259,14 @@ export const RecommendationProvider = ({ children }) => {
           const merged = mergeCompositeImage(result, result.outfits[0]);
           const translated = await translateOutfitItems(merged);
           setTodaysOutfit(translated);
-          setTodaysWeather(result.weather || merged.weather || null);
+          setTodaysWeather(normalizeWeather(result.weather || merged.weather));
         }
 
         // Append synthetic entry to history for immediate UI update
         const syntheticEntry = {
           _id: `today_${todayKey}`,
           outfits: result.outfits || [],
-          weather: result.weather || null,
+          weather: normalizeWeather(result.weather),
           created_at: new Date().toISOString(),
         };
         const updatedHistory = [...serverHistory, syntheticEntry];
@@ -261,7 +284,7 @@ export const RecommendationProvider = ({ children }) => {
           const merged = mergeCompositeImage(cached, cached.outfits[0]);
           const translated = await translateOutfitItems(merged);
           setTodaysOutfit(translated);
-          setTodaysWeather(cached.weather || merged.weather || null);
+          setTodaysWeather(normalizeWeather(cached.weather || merged.weather));
         }
         const translatedHistory = await translateHistory(serverHistory);
         setHistory(translatedHistory);
@@ -277,7 +300,7 @@ export const RecommendationProvider = ({ children }) => {
           const merged = mergeCompositeImage(cached, cached.outfits[0]);
           const translated = await translateOutfitItems(merged);
           setTodaysOutfit(translated);
-          setTodaysWeather(cached.weather || merged.weather || null);
+          setTodaysWeather(normalizeWeather(cached.weather || merged.weather));
         }
       } catch (cacheErr) {
         console.log(LOG_TAG, "Cache fallback failed:", cacheErr.message);

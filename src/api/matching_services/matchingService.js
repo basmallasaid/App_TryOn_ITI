@@ -25,6 +25,7 @@ export const getWardrobeMatches = async (wardrobeItemId) => {
 };
 
 const formDataConfig = {
+  headers: { 'Content-Type': 'multipart/form-data' },
   transformRequest: (data) => data,
   timeout: 120000,
 };
@@ -67,6 +68,24 @@ export const getMatchesByAnalysis = async (analysisId, latitude, longitude) => {
     return data;
   } catch (e) {
     console.log(LOG_TAG, "getMatchesByAnalysis failed:", e.message, e.response?.status, JSON.stringify(e.response?.data).slice(0, 200));
+    throw e;
+  }
+};
+
+export const getMatchesByAnalysisId = async (analysisId, latitude, longitude) => {
+  console.log(LOG_TAG, "getMatchesByAnalysisId called with:", { analysisId, latitude, longitude });
+  const url = `${ENDPOINTS.MATCHES_ANALYSIS_ID}/${analysisId}`;
+  console.log(LOG_TAG, "getMatchesByAnalysisId URL:", url);
+  try {
+    const { data } = await apiClient.post(
+      url,
+      { latitude, longitude },
+      matchConfig,
+    );
+    console.log(LOG_TAG, "getMatchesByAnalysisId success:", JSON.stringify(data).slice(0, 500));
+    return data;
+  } catch (e) {
+    console.log(LOG_TAG, "getMatchesByAnalysisId failed:", e.message, e.response?.status, JSON.stringify(e.response?.data).slice(0, 200));
     throw e;
   }
 };

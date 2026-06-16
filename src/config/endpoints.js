@@ -25,6 +25,7 @@ export const ENDPOINTS = {
   GET_PRODUCT: '/products/${id}',
   MATCHES: '/matches',
   MATCHES_ANALYSIS: '/matches/product',
+  MATCHES_ANALYSIS_ID: '/matches/analysis',
   REGISTER_PUSH_TOKEN: '/notifications/register',
   GET_NOTIFICATIONS: '/notifications',
   MARK_NOTIFICATION_READ: '/notifications/${id}/read',

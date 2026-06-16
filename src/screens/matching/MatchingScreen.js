@@ -26,7 +26,7 @@ import GradientBorder from "../../components/recycle/GradientBorder";
 import {
   getWardrobeMatches,
   analyzeImage,
-  getMatchesByAnalysis,
+  getMatchesByAnalysisId,
 } from "../../api/matching_services/matchingService";
 import { getAllProducts } from "../../api/user_services/userService";
 import { useFavorites } from "../../context/FavoritesContext";
@@ -197,7 +197,7 @@ export default function MatchingScreen({ navigation }) {
           analysisRes?.data?._id;
         console.log(LOG_TAG, "Extracted analysisId:", analysisId);
         if (analysisId) {
-          const matchRes = await getMatchesByAnalysis(
+          const matchRes = await getMatchesByAnalysisId(
             analysisId,
             30.0444,
             31.2357,
@@ -220,7 +220,7 @@ export default function MatchingScreen({ navigation }) {
           analysisRes?.data?._id;
         console.log(LOG_TAG, "Extracted analysisId:", analysisId);
         if (analysisId) {
-          const matchRes = await getMatchesByAnalysis(
+          const matchRes = await getMatchesByAnalysisId(
             analysisId,
             30.0444,
             31.2357,

@@ -126,7 +126,7 @@ const TryOnResult = ({ navigation, route }) => {
           <CustomBackButton onPress={() => navigation.goBack()} />
           <Text style={styles.headerTitle}>{t("tryOn.results.title")}</Text>
           <TouchableOpacity>
-            <Icon name="help-circle-outline" size={28} color={Colors.iconGray} />
+            <Icon name="help-circle-outline" size={28} color={Colors.iconGray} style={{marginTop:-12}}/>
           </TouchableOpacity>
         </View>
 

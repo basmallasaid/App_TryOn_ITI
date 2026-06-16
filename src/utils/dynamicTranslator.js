@@ -5,15 +5,53 @@ const MYMEMORY_ENDPOINT = "https://api.mymemory.translated.net/get";
 const MAX_CHUNK_CHARS = 500;
 const REQUEST_TIMEOUT_MS = 10000;
 const CACHE_KEY = '@translation_cache';
+const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
+const MAX_CACHE_ENTRIES = 500;
 
-// Load cache from storage
 let translationCache = {};
-AsyncStorage.getItem(CACHE_KEY).then(data => {
-  if (data) translationCache = JSON.parse(data);
+let cacheLoaded = false;
+let cacheLoadPromise = AsyncStorage.getItem(CACHE_KEY).then(data => {
+  if (data) {
+    try {
+      const parsed = JSON.parse(data);
+      const now = Date.now();
+      const filtered = {};
+      for (const [key, value] of Object.entries(parsed)) {
+        if (value.ts && now - value.ts < CACHE_TTL) {
+          filtered[key] = value;
+        }
+      }
+      translationCache = filtered;
+    } catch (e) {
+      translationCache = {};
+    }
+  }
+  cacheLoaded = true;
+}).catch(() => {
+  cacheLoaded = true;
 });
 
+async function waitForCache() {
+  if (cacheLoaded) return;
+  await cacheLoadPromise;
+}
+
 async function saveCache() {
-  await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(translationCache));
+  try {
+    const entries = Object.entries(translationCache);
+    if (entries.length > MAX_CACHE_ENTRIES) {
+      const sorted = entries.sort((a, b) => (b[1].ts || 0) - (a[1].ts || 0));
+      const kept = sorted.slice(0, MAX_CACHE_ENTRIES);
+      translationCache = Object.fromEntries(kept);
+    }
+    const toSave = {};
+    for (const [key, value] of Object.entries(translationCache)) {
+      toSave[key] = { text: value.text, ts: value.ts || Date.now() };
+    }
+    await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(toSave));
+  } catch (e) {
+    console.log('dynamicTranslator: saveCache failed', e.message);
+  }
 }
 
 // ... rest of the functions
@@ -83,11 +121,13 @@ async function translateChunk(chunk, targetLang) {
  */
 export async function translateToArabic(text, targetLang = i18n.language) {
   if (!text || typeof text !== "string" || !text.trim()) return text;
-  if (targetLang !== "ar") return text; // If not translating to Arabic, return original
+  if (targetLang !== "ar") return text;
+
+  await waitForCache();
 
   const cacheKey = `${targetLang}:${text}`;
   if (translationCache[cacheKey]) {
-    return translationCache[cacheKey];
+    return translationCache[cacheKey].text;
   }
 
   try {
@@ -99,8 +139,8 @@ export async function translateToArabic(text, targetLang = i18n.language) {
     }
 
     const translated = translatedChunks.join(" ");
-    translationCache[cacheKey] = translated;
-    saveCache(); // Persist cache
+    translationCache[cacheKey] = { text: translated, ts: Date.now() };
+    saveCache();
     return translated;
   } catch (error) {
     return text;

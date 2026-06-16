@@ -16,7 +16,7 @@ const AddItemCard = ({ onPress }) => {
       height: 237,
       borderRadius: 16,
       borderWidth: 2,
-      borderColor: '#6B7280',
+      borderColor: Colors.iconGray,
       borderStyle: 'dashed',
       paddingHorizontal: 16,
       paddingVertical: 24,
@@ -30,7 +30,7 @@ const AddItemCard = ({ onPress }) => {
       width: 48,
       height: 48,
       borderRadius: 9999,
-      backgroundColor: '#E9EDFF',
+      backgroundColor: Colors.surfaceElevated,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -46,7 +46,7 @@ const AddItemCard = ({ onPress }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
       <View style={styles.iconCircle}>
-        <Ionicons name="add" size={20} color="#6B7280" />
+        <Ionicons name="add" size={20} color={Colors.iconGray} />
       </View>
       <Text style={styles.label}>{t('wardrobe.addNewItem')}</Text>
     </TouchableOpacity>

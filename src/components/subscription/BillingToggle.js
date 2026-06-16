@@ -12,7 +12,7 @@ export default function BillingToggle({ selected, onSelect }) {
   const styles = React.useMemo(() => StyleSheet.create({
     container: {
       flexDirection: "row",
-      backgroundColor: "#E9EBEE",
+      backgroundColor: Colors.borderDefault,
       borderRadius: 999,
       padding: 3,
       alignSelf: "center",

@@ -24,7 +24,7 @@ const CustomizeAppButtonFilled = ({
 
   const resolvedText = outlined
     ? (textColor ?? Colors.textPrimary)
-    : (textColor ?? Colors.white);
+    : (textColor ?? Colors.textInverse);
 
 const styles = React.useMemo(() => StyleSheet.create({
   button: {

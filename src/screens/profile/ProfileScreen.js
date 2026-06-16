@@ -221,7 +221,11 @@ const ProfileScreen = ({ navigation }) => {
               icon="card-outline"
               title={t("profile.plan")}
               subtitle={profile?.subscriptionStatus === "active" ? t("profile.premium") : t("profile.free")}
-              onPress={() => navigation.navigate(ROUTES.SUBSCRIPTION)}
+              onPress={() => navigation.navigate(
+                profile?.subscriptionStatus === "active"
+                  ? ROUTES.MANAGE_SUBSCRIPTION
+                  : ROUTES.SUBSCRIPTION
+              )}
             />
             <StatCard
               icon="heart-outline"
@@ -253,7 +257,7 @@ const ProfileScreen = ({ navigation }) => {
                 value={settings.notifications}
                 onValueChange={updateNotifications}
                 trackColor={{ false: Colors.disabled, true: Colors.primary }}
-                thumbColor={Colors.white}
+                thumbColor="#FFFFFF"
                 style={styles.switch}
               />
             }
@@ -269,7 +273,7 @@ const ProfileScreen = ({ navigation }) => {
                   setDarkMode(val);
                 }}
                 trackColor={{ false: Colors.disabled, true: Colors.primary }}
-                thumbColor={Colors.white}
+                thumbColor="#FFFFFF"
                 style={styles.switch}
               />
             }
@@ -304,10 +308,10 @@ const ProfileScreen = ({ navigation }) => {
             label={t("profile.logout")}
             onPress={logout}
             backgroundColor={Colors.error}
-            textColor={Colors.white}
+            textColor={Colors.textInverse}
             iconPosition="right"
             icon={
-              <Ionicons name="log-out-outline" size={18} color={Colors.white} />
+              <Ionicons name="log-out-outline" size={18} color={Colors.textInverse} />
             }
           />
           <CustomizeAppButtonOutlined
@@ -414,6 +418,7 @@ const createStyles = () => StyleSheet.create({
     backgroundColor: Colors.borderDefault,
     justifyContent: "center",
     alignItems: "center",
+    marginTop:-2
   },
   editText: {
     fontFamily: "Roboto_500Medium",

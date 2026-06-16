@@ -20,7 +20,7 @@ const AvatarPreview = ({ image, children }) => {
       width: 100,
       height: 100,
       borderRadius: 50,
-      backgroundColor: '#F4F4F5',
+      backgroundColor: Colors.surfaceElevated,
       justifyContent: 'center',
       alignItems: 'center',
       borderWidth: 2,

@@ -13,10 +13,10 @@ export default function ActionTab({ label, iconName, isActive, onPress }) {
       paddingVertical: 12,
       marginHorizontal: 5,
       borderRadius: 15,
-      backgroundColor: "#F0F2F5",
+      backgroundColor: Colors.backgroundColor,
     },
     activeTab: {
-      backgroundColor: "#E6F2FF",
+      backgroundColor: Colors.surfaceElevated,
     },
     tabText: {
       fontSize: 12,
@@ -24,7 +24,7 @@ export default function ActionTab({ label, iconName, isActive, onPress }) {
       marginTop: 4,
     },
     activeTabText: {
-      color: "#008BFF",
+      color: Colors.primary,
       fontWeight: "600",
     },
   }), [themeVersion]);
@@ -37,7 +37,7 @@ export default function ActionTab({ label, iconName, isActive, onPress }) {
       <Ionicons
         name={iconName}
         size={24}
-        color={isActive ? "#008BFF" : Colors.textMuted}
+        color={isActive ? Colors.primary : Colors.textMuted}
       />
       <Text style={[styles.tabText, isActive && styles.activeTabText]}>
         {label}

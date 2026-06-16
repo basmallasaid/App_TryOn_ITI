@@ -23,7 +23,7 @@ const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const { themeVersion } = useTheme();
+  const { themeVersion, isDarkMode } = useTheme();
   const { showFeedback } = useFeedback();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { productId, source } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
@@ -111,7 +111,7 @@ export default function ProductDetailScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" transparent backgroundColor="transparent" translucent />
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} transparent backgroundColor="transparent" translucent />
       <View style={styles.headerFixed}>
         <SafeAreaView>
           <View style={[styles.headerContent, { flexDirection: "row" }]}>
@@ -146,7 +146,7 @@ export default function ProductDetailScreen({ route }) {
             <View style={{flex: 1}}>
               <Text style={[styles.productTitle, { textAlign: "left" }]}>{product?.name}</Text>
               <TouchableOpacity onPress={() => openUrl(product?.purchase_url)}>
-                <Text style={styles.brandName}>{product?.store_id?.name || t("store.productDetail.officialStore")} <Ionicons name="open-outline" size={12} /></Text>
+                <Text style={styles.brandName}>{product?.store_id?.name || t("store.productDetail.officialStore")} <Ionicons name="open-outline" size={12} color={Colors.primary} /></Text>
               </TouchableOpacity>
             </View>
             <View style={[styles.priceContainer, { alignItems: "flex-end" }]}>

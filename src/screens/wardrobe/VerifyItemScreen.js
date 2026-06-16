@@ -60,7 +60,7 @@ const matchToOptions = (values, options) =>
   values.filter((v) => options.includes(v));
 
 const VerifyItemScreen = ({ route, navigation }) => {
-  const { themeVersion } = useTheme();
+  const { themeVersion, isDarkMode } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { imageUri, analysisResult } = route.params;
   const garment = analysisResult?.garments?.[0] ?? {};
@@ -203,7 +203,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
   return (
     <View style={styles.root}>
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
         translucent
         backgroundColor="transparent"
       />

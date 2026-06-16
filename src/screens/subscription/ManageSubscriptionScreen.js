@@ -111,7 +111,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
         activeBadgeText: {
           fontFamily: "Roboto_600SemiBold",
           fontSize: 10,
-          color: Colors.white,
+          color: Colors.textInverse,
           letterSpacing: 0.5,
         },
         planWrap: {
@@ -218,7 +218,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
       const num = parseFloat(amount);
       return `$${num.toFixed(2)}${perUnit}`;
     }
-    const price = interval === "year" ? "$12.19" : "$16.19";
+    const price = interval === "year" ? t("subscriptionPrices.proYearly") : t("subscriptionPrices.proMonthly");
     return `${price}${perUnit}`;
   };
 

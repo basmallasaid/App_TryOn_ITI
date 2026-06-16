@@ -19,19 +19,12 @@ import { useTheme } from "../../context/ThemeContext";
 import { translateNotification } from "../../utils/dynamicTranslator";
 import i18n from "../../localization/i18n";
 
-const NOTIF_ICONS = {
-  tryon: { name: "tshirt-outline", color: Colors.primary, bg: Colors.primaryLight },
-  recycle: { name: "recycle", color: Colors.secondary, bg: Colors.secondaryLight },
-  outfit: { name: "sparkles", color: Colors.accent, bg: Colors.accentLight },
-  matching: { name: "shuffle", color: Colors.accentOrange, bg: Colors.accentLight },
-};
-
 function getNotifMeta(title = "") {
   const lower = title.toLowerCase();
-  if (lower.includes("try") || lower.includes("tryon")) return NOTIF_ICONS.tryon;
-  if (lower.includes("recycle")) return NOTIF_ICONS.recycle;
-  if (lower.includes("outfit") || lower.includes("recommend")) return NOTIF_ICONS.outfit;
-  if (lower.includes("match")) return NOTIF_ICONS.matching;
+  if (lower.includes("try") || lower.includes("tryon")) return { name: "tshirt-outline", color: Colors.primary, bg: Colors.primaryLight };
+  if (lower.includes("recycle")) return { name: "recycle", color: Colors.secondary, bg: Colors.secondaryLight };
+  if (lower.includes("outfit") || lower.includes("recommend")) return { name: "sparkles", color: Colors.accent, bg: Colors.accentLight };
+  if (lower.includes("match")) return { name: "shuffle", color: Colors.accentOrange, bg: Colors.accentLight };
   return { name: "notifications-outline", color: Colors.iconGray, bg: Colors.backgroundColor };
 }
 
@@ -168,7 +161,7 @@ export default function NotificationsScreen({ navigation }) {
 
             {hasBody ? (
               <Text style={styles.expandToggle}>
-                {isExpanded ? t("notifications.showLess") || "Show less" : t("notifications.showMore") || "See more"}
+                {isExpanded ? t("notifications.showLess") : t("notifications.showMore")}
               </Text>
             ) : null}
 
@@ -189,7 +182,7 @@ export default function NotificationsScreen({ navigation }) {
             onPress={() => handleDelete(item._id)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="trash-outline" size={16} color={Colors.borderDefault} />
+            <Ionicons name="trash-outline" size={16} color={Colors.iconGray} />
           </TouchableOpacity>
         </View>
       );
@@ -209,7 +202,7 @@ export default function NotificationsScreen({ navigation }) {
           <TouchableOpacity style={styles.markAllChip} onPress={handleMarkAll}>
             <Ionicons name="checkmark-done" size={14} color={Colors.primary} />
             <Text style={styles.markAllText}>
-              {t("notifications.markAllRead") || t("notifications.markAllRead")}
+              {t("notifications.markAllRead")}
             </Text>
           </TouchableOpacity>
         ) : null}
@@ -225,14 +218,14 @@ export default function NotificationsScreen({ navigation }) {
           <Ionicons
             name="notifications-off-outline"
             size={36}
-            color={Colors.white}
+            color={Colors.textInverse}
           />
         </View>
         <Text style={styles.emptyTitle}>
-          {t("notifications.emptyTitle") || t("notifications.emptyTitle")}
+          {t("notifications.emptyTitle")}
         </Text>
         <Text style={styles.emptySub}>
-          {t("notifications.emptySubtitle") || t("notifications.emptySubtitle")}
+          {t("notifications.emptySubtitle")}
         </Text>
       </View>
     );
@@ -411,7 +404,7 @@ export default function NotificationsScreen({ navigation }) {
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>
-          {t("notifications.title") || t("notifications.title")}
+          {t("notifications.title")}
         </Text>
         <View style={{ width: 56 }} />
       </View>

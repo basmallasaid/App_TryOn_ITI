@@ -26,7 +26,7 @@ import GradientBorder from "../../components/recycle/GradientBorder";
 import {
   getWardrobeMatches,
   analyzeImage,
-  getMatchesByAnalysis,
+  getMatchesByAnalysisId,
 } from "../../api/matching_services/matchingService";
 import { getAllProducts } from "../../api/user_services/userService";
 import { useFavorites } from "../../context/FavoritesContext";
@@ -97,6 +97,30 @@ export default function MatchingScreen({ navigation }) {
     setGalleryItemType(null);
   };
 
+  const handleTabChange = (newTab) => {
+    if (newTab === activeTab) return;
+    setShowResults(false);
+    setWardrobeMatches([]);
+    setStoreMatches([]);
+    setTranslatedWardrobeMatches([]);
+    setTranslatedStoreMatches([]);
+    if (newTab === "My Wardrobe") {
+      setCameraImage(null);
+      setCameraItemType(null);
+      setGalleryImage(null);
+      setGalleryItemType(null);
+    } else if (newTab === "Camera") {
+      setSelectedWardrobeId(null);
+      setGalleryImage(null);
+      setGalleryItemType(null);
+    } else if (newTab === "Gallery") {
+      setSelectedWardrobeId(null);
+      setCameraImage(null);
+      setCameraItemType(null);
+    }
+    setActiveTab(newTab);
+  };
+
   const toggleItem = (id) => {
     setShowResults(false);
     setWardrobeMatches([]);
@@ -122,7 +146,9 @@ export default function MatchingScreen({ navigation }) {
   const selectedSubtitle = hasItem
     ? hasWardrobeItem
       ? t("matching.itemFromWardrobe")
-      : t("matching.itemFromCamera")
+      : hasCameraItem
+        ? t("matching.itemFromCamera")
+        : t("matching.itemFromGallery")
     : t("matching.selectItemHint");
 
   const processMatches = async (raw) => {
@@ -148,42 +174,68 @@ export default function MatchingScreen({ navigation }) {
     setTranslatedStoreMatches(translatedS);
   };
 
+  const LOG_TAG = "[MatchingScreen]";
+
   const handleSeeMatching = async () => {
+    console.log(LOG_TAG, "handleSeeMatching called", { activeTab, hasWardrobeItem, hasCameraItem, hasGalleryItem });
     setGenerating(true);
     try {
-      if (hasWardrobeItem) {
+      if (activeTab === "My Wardrobe" && hasWardrobeItem) {
+        console.log(LOG_TAG, "Flow: Wardrobe match, selectedWardrobeId:", selectedWardrobeId);
         const res = await getWardrobeMatches(selectedWardrobeId);
+        console.log(LOG_TAG, "Wardrobe matches received:", JSON.stringify(res).slice(0, 300));
         processMatches(res);
-      } else if (hasCameraItem) {
+      } else if (activeTab === "Camera" && hasCameraItem) {
+        console.log(LOG_TAG, "Flow: Camera match, image:", cameraImage?.slice(0, 60), "type:", cameraItemType);
         const analysisRes = await analyzeImage(cameraImage);
+        console.log(LOG_TAG, "Camera analysis response:", JSON.stringify(analysisRes).slice(0, 500));
         const analysisId =
           analysisRes?.analysis_id ||
+          analysisRes?._id ||
           analysisRes?.id ||
-          analysisRes?.data?.analysis_id;
+          analysisRes?.data?.analysis_id ||
+          analysisRes?.data?._id;
+        console.log(LOG_TAG, "Extracted analysisId:", analysisId);
         if (analysisId) {
-          const matchRes = await getMatchesByAnalysis(
+          const matchRes = await getMatchesByAnalysisId(
             analysisId,
             30.0444,
             31.2357,
           );
+          console.log(LOG_TAG, "Camera match results:", JSON.stringify(matchRes).slice(0, 300));
           processMatches(matchRes);
+        } else {
+          console.log(LOG_TAG, "Could not extract analysisId from response:", JSON.stringify(analysisRes));
+          throw new Error("Could not extract analysis ID from response");
         }
-      } else if (hasGalleryItem) {
+      } else if (activeTab === "Gallery" && hasGalleryItem) {
+        console.log(LOG_TAG, "Flow: Gallery match, image:", galleryImage?.slice(0, 60), "type:", galleryItemType);
         const analysisRes = await analyzeImage(galleryImage);
+        console.log(LOG_TAG, "Gallery analysis response:", JSON.stringify(analysisRes).slice(0, 500));
         const analysisId =
           analysisRes?.analysis_id ||
+          analysisRes?._id ||
           analysisRes?.id ||
-          analysisRes?.data?.analysis_id;
+          analysisRes?.data?.analysis_id ||
+          analysisRes?.data?._id;
+        console.log(LOG_TAG, "Extracted analysisId:", analysisId);
         if (analysisId) {
-          const matchRes = await getMatchesByAnalysis(
+          const matchRes = await getMatchesByAnalysisId(
             analysisId,
             30.0444,
             31.2357,
           );
+          console.log(LOG_TAG, "Gallery match results:", JSON.stringify(matchRes).slice(0, 300));
           processMatches(matchRes);
+        } else {
+          console.log(LOG_TAG, "Could not extract analysisId from response:", JSON.stringify(analysisRes));
+          throw new Error("Could not extract analysis ID from response");
         }
+      } else {
+        console.log(LOG_TAG, "No matching flow triggered", { activeTab, hasWardrobeItem, hasCameraItem, hasGalleryItem });
       }
     } catch (e) {
+      console.log(LOG_TAG, "handleSeeMatching error:", e.message, "status:", e.response?.status, "data:", JSON.stringify(e.response?.data).slice(0, 300));
       showFeedback({
         type: "error",
         title: t("matching.matchError"),
@@ -273,19 +325,19 @@ export default function MatchingScreen({ navigation }) {
             label={t("tryOn.virtualTryOn.myWardrobe")}
             iconName="shirt-outline"
             isActive={activeTab === "My Wardrobe"}
-            onPress={() => setActiveTab("My Wardrobe")}
+            onPress={() => handleTabChange("My Wardrobe")}
           />
           <ActionTab
             label={t("tryOn.virtualTryOn.camera")}
             iconName="camera-outline"
             isActive={activeTab === "Camera"}
-            onPress={() => setActiveTab("Camera")}
+            onPress={() => handleTabChange("Camera")}
           />
           <ActionTab
             label={t("tryOn.virtualTryOn.gallery")}
             iconName="images-outline"
             isActive={activeTab === "Gallery"}
-            onPress={() => setActiveTab("Gallery")}
+            onPress={() => handleTabChange("Gallery")}
           />
         </View>
 
@@ -635,7 +687,7 @@ export default function MatchingScreen({ navigation }) {
           onPress={handleSeeMatching}
           disabled={!isButtonReady || generating}
         >
-          <MaterialCommunityIcons name="auto-fix" size={20} color={Colors.white} />
+          <MaterialCommunityIcons name="auto-fix" size={20} color={Colors.textInverse} />
           <Text style={styles.buttonText}>{t("matching.seeMatching")}</Text>
         </TouchableOpacity>
       </View>

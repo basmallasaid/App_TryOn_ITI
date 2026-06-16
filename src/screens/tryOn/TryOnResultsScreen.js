@@ -157,7 +157,7 @@ const TryOnResult = ({ navigation, route }) => {
             disabled={saving}
           >
             {saving ? (
-              <ActivityIndicator size="small" color={Colors.white} />
+              <ActivityIndicator size="small" color={Colors.textInverse} />
             ) : (
               <Text style={styles.saveButtonText}>{t("tryOn.results.save")}</Text>
             )}

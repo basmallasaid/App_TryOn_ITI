@@ -38,7 +38,7 @@ export default function SubscriptionScreen({ navigation }) {
   const FEATURES_PRO = t("subscription.featuresPro", { returnObjects: true });
 
   const isYearly = billing === "Yearly";
-  const proPrice = isYearly ? "$12.19" : "$16.19";
+  const proPrice = isYearly ? t("subscriptionPrices.proYearly") : t("subscriptionPrices.proMonthly");
   const proPerUnit = isYearly
     ? t("subscription.perYear")
     : t("subscription.perMonth");
@@ -172,8 +172,8 @@ export default function SubscriptionScreen({ navigation }) {
 
         <PlanCard
           name={t("subscription.essential")}
-          price="$0"
-          perUnit="/mo"
+          price={t("subscriptionPrices.essentialPrice")}
+          perUnit={t("subscriptionPrices.essentialPerUnit")}
           features={FEATURES_ESSENTIAL}
           buttonLabel={t("subscription.currentPlan")}
           buttonDisabled

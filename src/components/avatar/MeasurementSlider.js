@@ -67,7 +67,7 @@ const MeasurementSlider = ({ label, value, min, max, step = 1, unit, onChange })
       width: TRACK_WIDTH,
       height: 6,
       borderRadius: 3,
-      backgroundColor: "#E9EBEE",
+      backgroundColor: Colors.borderDefault,
       position: "relative",
       justifyContent: "center",
       alignSelf: "center",

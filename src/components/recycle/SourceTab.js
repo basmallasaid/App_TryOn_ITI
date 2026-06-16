@@ -13,10 +13,10 @@ export default function SourceTab({ label, iconName, isActive, onPress, useMater
       paddingVertical: 12,
       marginHorizontal: 4,
       borderRadius: 12,
-      backgroundColor: "#F0F2F5",
+      backgroundColor: Colors.backgroundColor,
     },
     activeTab: {
-      backgroundColor: "#E6F2FF",
+      backgroundColor: Colors.surfaceElevated,
     },
     label: {
       fontFamily: "Roboto_500Medium",

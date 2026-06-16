@@ -58,7 +58,7 @@ export default function PlanCard({
     badgeText: {
       fontFamily: "Roboto_600SemiBold",
       fontSize: 11,
-      color: Colors.white,
+      color: Colors.textInverse,
       letterSpacing: 1,
     },
     namePriceWrap: {
@@ -161,7 +161,7 @@ export default function PlanCard({
           label={buttonLabel}
           onPress={onButtonPress}
           backgroundColor={highlighted ? Colors.error : Colors.primary}
-          textColor={Colors.white}
+          textColor={Colors.textInverse}
           disabled={buttonDisabled}
           loading={buttonLoading}
         />

@@ -5,6 +5,7 @@ import { IMAGES } from "../../constants/images/images";
 import LottieView from "lottie-react-native";
 import { ANIMATIONS } from "../../constants/images/animations";
 import Typography from "../../constants/theme/typography";
+import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 
 const VerificationSucessComponent = () => {
@@ -39,6 +40,7 @@ const VerificationSucessComponent = () => {
     },
     subtitle: {
       ...Typography.subtitleBase,
+      color: Colors.textSecondary,
       textAlign: "center",
     },
   }), [themeVersion]);

@@ -42,7 +42,7 @@ const styles = React.useMemo(() => StyleSheet.create({
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.24,
-    color: "#434654",
+    color: Colors.textSecondary,
   },
   rightRow: {
     gap: 16,
@@ -71,15 +71,15 @@ const styles = React.useMemo(() => StyleSheet.create({
 
         <View style={[styles.rightRow, { flexDirection: "row" }]}>
           <View style={styles.detailItem}>
-            <Ionicons name="thermometer-outline" size={20} color="#1550D3" />
+            <Ionicons name="thermometer-outline" size={20} color={Colors.primary} />
             <Text style={styles.detailText}>{weather.feelsLike}°C</Text>
           </View>
           <View style={styles.detailItem}>
-            <MaterialCommunityIcons name="water-percent" size={20} color="#1550D3" />
+            <MaterialCommunityIcons name="water-percent" size={20} color={Colors.primary} />
             <Text style={styles.detailText}>{weather.humidity}%</Text>
           </View>
           <View style={styles.detailItem}>
-            <MaterialCommunityIcons name="weather-windy" size={20} color="#1550D3" />
+            <MaterialCommunityIcons name="weather-windy" size={20} color={Colors.primary} />
             <Text style={styles.detailText}>{weather.windSpeed} km/hr</Text>
           </View>
         </View>

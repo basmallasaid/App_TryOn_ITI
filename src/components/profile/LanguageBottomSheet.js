@@ -52,7 +52,7 @@ const styles = React.useMemo(() => StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 20,
-    backgroundColor: "#D5D9DE",
+    backgroundColor: Colors.borderStrong,
     alignSelf: "center",
     marginBottom: 20,
   },

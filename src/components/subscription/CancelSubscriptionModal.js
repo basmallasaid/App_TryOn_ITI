@@ -5,6 +5,7 @@ import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import CustomizeAppButtonFilled from "../common/CustomizeAppButtonFilled";
 import CustomizeAppButtonOutlined from "../common/CustomizeAppButtonOutlined";
+import i18n from "../../localization/i18n";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -69,7 +70,7 @@ export default function CancelSubscriptionModal({
     },
   }), [themeVersion]);
   const formattedEndDate = endDate
-    ? new Date(endDate).toLocaleDateString("en-US", {
+    ? new Date(endDate).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
         month: "short",
         day: "numeric",
         year: "numeric",

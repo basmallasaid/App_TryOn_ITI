@@ -34,7 +34,7 @@ const SelectionChip = ({ label, isSelected, onPress }) => {
     >
       <Text style={[
         styles.chipText, 
-        { color: isSelected ? Colors.primary : "#475569" }
+        { color: isSelected ? Colors.primary : Colors.textSecondary }
       ]}>
         {label}
       </Text>

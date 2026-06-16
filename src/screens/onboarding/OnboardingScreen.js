@@ -16,7 +16,7 @@ const { width: W, height: H } = Dimensions.get('window');
 
 const OnboardingScreen = ({ navigation }) => {
   const { t } = useTranslation();
-  const { themeVersion } = useTheme();
+  const { themeVersion, isDarkMode } = useTheme();
 
   const SLIDES = [
     {
@@ -186,7 +186,7 @@ const OnboardingScreen = ({ navigation }) => {
 
   return (
     <View style={styles.root} {...panResponder.panHandlers}>
-      <StatusBar backgroundColor={Colors.backgroundColor} barStyle="dark-content" />
+      <StatusBar backgroundColor={Colors.backgroundColor} barStyle={isDarkMode ? "light-content" : "dark-content"} />
 
       {/* Stacked slides — image + text per slide, all in same position */}
       <View style={styles.slidesArea}>

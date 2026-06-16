@@ -35,7 +35,7 @@ const ProductCardComponent = ({
       shadowRadius: 10,
       elevation: 3,
       borderWidth: 1,
-      borderColor: '#F5F5F5',
+      borderColor: Colors.borderDefault,
     },
     imageWrapper: {
       height: 180,
@@ -102,20 +102,20 @@ const ProductCardComponent = ({
       flex: 1,
     },
     tryOnLink: {
-      color: '#5CC1FF',
+      color: Colors.primary,
       fontWeight: 'bold',
       fontSize: 12,
     },
     tryOnBtn: {
       borderWidth: 1,
-      borderColor: '#5CC1FF',
+      borderColor: Colors.primary,
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 4,
-      backgroundColor: '#F0F9FF',
+      backgroundColor: Colors.surfaceElevated,
     },
     tryOnText: {
-      color: '#5CC1FF',
+      color: Colors.primary,
       fontSize: 11,
       fontWeight: 'bold',
     },
@@ -128,7 +128,7 @@ const ProductCardComponent = ({
         <View style={[styles.overlayHeader, { flexDirection: 'row' }]}>
           {badge ? (
             <View
-              style={[styles.badge, { backgroundColor: badgeColor || '#5CC1FF' }]}
+              style={[styles.badge, { backgroundColor: badgeColor || Colors.primary }]}
             >
               <Text style={styles.badgeText}>{badge}</Text>
             </View>
@@ -140,7 +140,7 @@ const ProductCardComponent = ({
             <Ionicons
               name={isFavorite ? 'heart' : 'heart-outline'}
               size={20}
-              color={isFavorite ? '#FF8A3D' : Colors.textPrimary}
+              color={isFavorite ? Colors.accentOrange : Colors.textPrimary}
             />
           </TouchableOpacity>
         </View>

@@ -62,7 +62,7 @@ export default function CancellationSuccessModal({ visible, onClose }) {
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: "#E8F5D0",
+        backgroundColor: Colors.surfaceElevated,
         justifyContent: "center",
         alignItems: "center",
       },

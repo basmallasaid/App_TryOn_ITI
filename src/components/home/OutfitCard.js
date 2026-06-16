@@ -124,20 +124,20 @@ const styles = React.useMemo(() => StyleSheet.create({
 
         <View style={[styles.infoRow, { flexDirection: 'row' }]}>
           <View style={[styles.infoItem, { flexDirection: 'row' }]}>
-            <MaterialCommunityIcons name={weatherIcon} size={22} color="#FF8A3D" />
+            <MaterialCommunityIcons name={weatherIcon} size={22} color={Colors.accentOrange} />
             <Text style={[styles.infoText, { marginLeft: 5, marginRight: 0 }]}>
               {temp != null ? t('home.outfitCard.temperature', { temp }) : t('home.outfitCard.temperatureFallback')}
             </Text>
           </View>
 
           <View style={[styles.infoItem, { flexDirection: 'row' }]}>
-            <Ionicons name="location-sharp" size={18} color="#A3C639" />
+            <Ionicons name="location-sharp" size={18} color={Colors.secondary} />
             <Text style={[styles.infoText, { marginLeft: 5, marginRight: 0 }]}>{t('home.outfitCard.location')}</Text>
           </View>
         </View>
 
         <TouchableOpacity style={[styles.button, { flexDirection: 'row' }]} activeOpacity={0.8} onPress={onPress}>
-          <Text style={styles.buttonText}>{t('home.outfitCard.viewOutfit')}</Text>
+          <Text style={styles.buttonText} numberOfLines={1}>{t('home.outfitCard.viewOutfit')}</Text>
         </TouchableOpacity>
       </View>
     </View>

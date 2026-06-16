@@ -106,7 +106,7 @@ const SuccessModal = ({ visible, onAnimationComplete, children }) => {
       shadowRadius: 20,
       elevation: 12,
       borderWidth: 1,
-      borderColor: "#D9D9D9B2",
+      borderColor: Colors.borderDefault,
     },
   }), [themeVersion]);
 

@@ -27,7 +27,7 @@ const styles = React.useMemo(() => StyleSheet.create({
   },
   cardSelected: {
     borderColor: Colors.primary,
-    backgroundColor: '#E6F6FFCC',
+    backgroundColor: Colors.surfaceElevated,
   },
   leftContent: {
     flex: 1,

@@ -58,13 +58,13 @@ export default function WardrobeCard({ item, isSelected, onToggle, disabled }) {
         <GradientBorder width={CARD_W} height={CARD_H} borderRadius={12} borderWidth={2}>
           <View style={styles.selectedContent}>
             <Image source={imageSource} style={styles.itemImage} resizeMode="contain" />
-            <Ionicons name="checkmark-circle" size={20} color="#A5E142" style={styles.checkIcon} />
+            <Ionicons name="checkmark-circle" size={20} color={Colors.secondary} style={styles.checkIcon} />
           </View>
         </GradientBorder>
       ) : (
         <View style={styles.imageWrapper}>
           <Image source={imageSource} style={styles.itemImage} resizeMode="contain" />
-          <Ionicons name="checkmark-circle" size={20} color="#9BA5B7" style={styles.checkIcon} />
+          <Ionicons name="checkmark-circle" size={20} color={Colors.iconGray} style={styles.checkIcon} />
         </View>
       )}
     </TouchableOpacity>

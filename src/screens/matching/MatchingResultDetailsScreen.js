@@ -223,7 +223,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
 
       <View style={styles.bottomFixedContainer}>
         <TouchableOpacity style={styles.generateButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="auto-fix" size={20} color={Colors.white} />
+          <MaterialCommunityIcons name="auto-fix" size={20} color={Colors.textInverse} />
           <Text style={styles.generateButtonText}>{t("matching.details.tryOnThisItem")}</Text>
         </TouchableOpacity>
       </View>

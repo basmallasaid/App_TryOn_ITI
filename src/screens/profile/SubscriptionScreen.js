@@ -6,8 +6,8 @@ import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 
 const PLANS = [
-  { id: 'monthly', price: '$9.99', period: 'month' },
-  { id: 'yearly', price: '$79.99', period: 'year', badge: 'Best Value' },
+  { id: 'monthly', priceKey: 'subscriptionPrices.legacyMonthly', period: 'month' },
+  { id: 'yearly', priceKey: 'subscriptionPrices.legacyYearly', period: 'year', badge: 'Best Value' },
 ];
 
 export default function SubscriptionScreen() {
@@ -17,11 +17,12 @@ export default function SubscriptionScreen() {
 
   const getPlans = () => PLANS.map(p => ({
     ...p,
+    price: t(p.priceKey),
     badge: p.badge ? t("subscription.bestValue") : undefined,
   }));
 
   const handleSubscribe = (plan) => {
-    Alert.alert("Demo", t("subscription.selectedPlan", { plan: plan.id }));
+    Alert.alert(t("subscription.title"), t("subscription.selectedPlan", { plan: plan.id }));
   };
 
   return (
@@ -51,7 +52,7 @@ export default function SubscriptionScreen() {
             <Text style={styles.planPrice}>{plan.price}<Text style={styles.planPeriod}>{plan.period === 'month' ? t("subscription.perMonth") : t("subscription.perYear")}</Text></Text>
             <View style={[styles.subscribeBtn, { flexDirection: "row" }]}>
               <Text style={styles.subscribeText}>{t('subscription.subscribe')}</Text>
-              <Ionicons name="arrow-forward" size={18} color={Colors.white} />
+              <Ionicons name="arrow-forward" size={18} color={Colors.textInverse} />
             </View>
           </TouchableOpacity>
         ))}

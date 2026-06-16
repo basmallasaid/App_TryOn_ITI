@@ -22,17 +22,17 @@ const GenderOptionCard = ({
 
   const backgroundColor =
     !selected
-      ? '#E9EBEE'
+      ? Colors.borderDefault
       : isMale
-      ? '#E5F2FF'
-      : '#FDEDF5';
+      ? Colors.surfaceElevated
+      : Colors.accentLight;
 
   const iconColor =
     !selected
       ? Colors.textMuted
       : isMale
       ? Colors.textPrimary
-      : '#FF6B8A';
+      : Colors.accent;
 
 const styles = React.useMemo(() => StyleSheet.create({
 

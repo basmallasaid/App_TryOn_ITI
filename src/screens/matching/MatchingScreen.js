@@ -305,7 +305,7 @@ export default function MatchingScreen({ navigation }) {
         />
         <Text style={styles.headerTitle}>{t("matching.title")}</Text>
         <TouchableOpacity>
-          <Feather name="help-circle" size={24} color={Colors.iconGray} />
+          <Feather name="help-circle" size={24} color={Colors.iconGray} style={{marginTop:-12}}/>
         </TouchableOpacity>
       </View>
 

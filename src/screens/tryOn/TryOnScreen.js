@@ -364,6 +364,7 @@ export default function TryOnScreen({ navigation, route }) {
           name="help-circle-outline"
           size={24}
           color={Colors.iconGray}
+          style={{marginTop:-12}}
         />
       </View>
       <ScrollView

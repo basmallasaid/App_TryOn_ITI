@@ -47,7 +47,7 @@ const styles = React.useMemo(() => StyleSheet.create({
   favoriteBtnContainer: {
     position: 'absolute',
     top: 10,
-    right: 10,
+    end: 10,
     zIndex: 1,
   },
   blurCircle: {

@@ -12,7 +12,6 @@ export const analyzeGarment = async (formData) => {
       transformRequest: (data, headers) => {
         return data; // Required for Axios to handle FormData correctly in some environments
       },
-      timeout: 60000,
     },
   );
   return data;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import SafeScreen from '../../components/common/SafeScreen';
 import { ActivityIndicator, Modal, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import CustomBackButton from '../../components/common/CustomBackButton';
@@ -96,8 +96,7 @@ export const FilterModal = ({
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false}>
-      <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
+      <SafeScreen>
         <View style={[styles.header, { flexDirection: "row" }]}>
           <CustomBackButton onPress={onClose} />
           <Text style={styles.headerTitle}>{t("store.filters.title")}</Text>
@@ -208,8 +207,7 @@ export const FilterModal = ({
             <Text style={styles.applyBtnText}>{t("store.filters.apply")}</Text>
           )}
         </TouchableOpacity>
-      </SafeAreaView>
-      </SafeAreaProvider>
+      </SafeScreen>
     </Modal>
   );
 };
@@ -228,7 +226,7 @@ const createStyles = () => StyleSheet.create({
   checkboxLabel: { fontSize: 16, color: Colors.textMuted },
   checkboxLabelSelected: { color: Colors.textPrimary, fontWeight: '700' },
   pillsContainer: { flexDirection: 'row', flexWrap: 'wrap' },
-  pill: { borderWidth: 1, borderColor: Colors.borderDefault, borderRadius: 20, paddingHorizontal: 20, paddingVertical: 8, marginRight: 10, marginBottom: 10 },
+  pill: { borderWidth: 1, borderColor: Colors.borderDefault, borderRadius: 20, paddingHorizontal: 20, paddingVertical: 8, marginEnd: 10, marginBottom: 10 },
   pillSelected: { backgroundColor: Colors.primary, borderColor: Colors.primary },
   pillText: { color: Colors.textMuted },
   pillTextSelected: { color: Colors.textInverse },

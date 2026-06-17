@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -455,7 +455,7 @@ export default function RecycleScreen({ navigation }) {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>{t("recycle.title")}</Text>
@@ -599,7 +599,7 @@ export default function RecycleScreen({ navigation }) {
 
         <LoadingOverlay visible={analyzing || generating} type="recycle" />
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
 
@@ -607,7 +607,6 @@ const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: "row",
@@ -684,7 +683,7 @@ const createStyles = () => StyleSheet.create({
   wardrobeCheck: {
     position: "absolute",
     top: 6,
-    right: 6,
+    end: 6,
     width: 22,
     height: 22,
     borderRadius: 11,
@@ -745,7 +744,7 @@ const createStyles = () => StyleSheet.create({
   galleryRemoveBtn: {
     position: "absolute",
     top: 6,
-    right: 6,
+    end: 6,
     width: 22,
     height: 22,
     borderRadius: 11,
@@ -767,7 +766,7 @@ const createStyles = () => StyleSheet.create({
   removeBtn: {
     position: "absolute",
     top: 6,
-    right: 6,
+    end: 6,
     width: 22,
     height: 22,
     borderRadius: 11,
@@ -878,7 +877,7 @@ const createStyles = () => StyleSheet.create({
     marginBottom: 16,
   },
   ideasList: {
-    paddingRight: 20,
+    paddingEnd: 20,
   },
   generateSection: {
     marginTop: 20,

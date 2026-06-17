@@ -355,18 +355,18 @@ export const RecommendationProvider = ({ children }) => {
     });
   }, [history, todaysOutfit, todaysWeather]);
 
+  const value = useMemo(() => ({
+    todaysOutfit,
+    todaysWeather,
+    weeklyOutfits,
+    history,
+    loading,
+    error,
+    refresh: checkAndFetchDaily,
+  }), [todaysOutfit, todaysWeather, weeklyOutfits, history, loading, error, checkAndFetchDaily]);
+
   return (
-    <RecommendationContext.Provider
-      value={{
-        todaysOutfit,
-        todaysWeather,
-        weeklyOutfits,
-        history,
-        loading,
-        error,
-        refresh: checkAndFetchDaily,
-      }}
-    >
+    <RecommendationContext.Provider value={value}>
       {children}
     </RecommendationContext.Provider>
   );

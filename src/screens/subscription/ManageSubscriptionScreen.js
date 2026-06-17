@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  Platform,
-  StatusBar,
   ActivityIndicator,
 } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -22,6 +20,7 @@ import CancellationSuccessModal from "../../components/subscription/Cancellation
 import * as paymentService from "../../api/payment_services/paymentService";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
+import { useProfileContext } from "../../context/ProfileContext";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
@@ -30,6 +29,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
   const { user } = useAuth();
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
+  const { refreshProfile } = useProfileContext();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
@@ -46,7 +46,6 @@ export default function ManageSubscriptionScreen({ navigation }) {
         safeArea: {
           flex: 1,
           backgroundColor: Colors.backgroundColor,
-          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         },
         container: {
           flex: 1,
@@ -127,14 +126,14 @@ export default function ManageSubscriptionScreen({ navigation }) {
           fontSize: 24,
           lineHeight: 38.4,
           color: Colors.textPrimary,
-          textAlign: "left",
+          textAlign: 'left',
         },
         planSubtitle: {
           fontFamily: "Roboto_400Regular",
           fontSize: 12,
           lineHeight: 12,
           color: Colors.iconGray,
-          textAlign: "left",
+          textAlign: 'left',
         },
         infoRow: {
           flexDirection: "row",
@@ -151,9 +150,9 @@ export default function ManageSubscriptionScreen({ navigation }) {
           borderWidth: 1,
           borderColor: Colors.borderStrong,
           paddingTop: 8,
-          paddingRight: 16,
+          paddingEnd: 16,
           paddingBottom: 8,
-          paddingLeft: 16,
+          paddingStart: 16,
           gap: 8,
         },
         infoLabel: {
@@ -229,6 +228,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
     setCancelling(true);
     try {
       await paymentService.cancelSubscription(user._id);
+      await refreshProfile();
       setModalVisible(false);
       setSuccessVisible(true);
     } catch (err) {
@@ -241,18 +241,18 @@ export default function ManageSubscriptionScreen({ navigation }) {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeScreen style={styles.safeArea}>
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={Colors.error} />
         </View>
-      </SafeAreaView>
+      </SafeScreen>
     );
   }
 
   if (!subscription) return null;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -342,6 +342,6 @@ export default function ManageSubscriptionScreen({ navigation }) {
           navigation.navigate(ROUTES.SUBSCRIPTION);
         }}
       />
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

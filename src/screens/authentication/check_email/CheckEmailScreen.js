@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from '../../../components/common/SafeScreen';
 import {
   Linking,
   View,
@@ -35,7 +35,6 @@ const CheckEmailScreen = ({ route, navigation }) => {
       flex: 1,
       backgroundColor: Colors.backgroundColor,
       paddingHorizontal: 24,
-      paddingTop: Platform.OS === 'ios' ? 80 : 124,
       paddingBottom: 36,
     },
 
@@ -153,7 +152,7 @@ const CheckEmailScreen = ({ route, navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeScreen>
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContainer}
@@ -221,7 +220,7 @@ const CheckEmailScreen = ({ route, navigation }) => {
 
       </View>
     </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 };
 

@@ -54,7 +54,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       onPress={onPress}
       activeOpacity={0.8}
     >
-      <Text style={[styles.flag, { marginRight: 14, marginLeft: 0 }]}>{FLAG[language]}</Text>
+      <Text style={[styles.flag, { marginEnd: 14 }]}>{FLAG[language]}</Text>
       <Text style={[styles.label, selected && styles.labelSelected]}>
         {LABEL[language]}
       </Text>

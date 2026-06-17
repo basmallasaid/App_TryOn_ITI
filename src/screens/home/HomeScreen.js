@@ -1,12 +1,10 @@
-import React, { useCallback, useState } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useCallback, useState, useMemo } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   ScrollView,
   View,
   Text,
   StyleSheet,
-  Platform,
-  StatusBar,
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +25,17 @@ import OutfitViewModal from "../../components/common/OutfitViewModal";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 
+const filterLast30Days = (items) => {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  return items.filter((item) => {
+    const raw = item.created_at || item.createdAt;
+    if (!raw) return true;
+    const itemDate = new Date(raw);
+    return !isNaN(itemDate.getTime()) && itemDate >= thirtyDaysAgo;
+  });
+};
+
 export default function HomeScreen({ navigation }) {
   const { themeVersion, isDarkMode } = useTheme();
   const { showFeedback } = useFeedback();
@@ -35,7 +44,7 @@ export default function HomeScreen({ navigation }) {
   const { profile, refreshProfile } = useProfileContext();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { todaysOutfit, todaysWeather, history } = useRecommendation();
-  const activeOutfit = todaysOutfit || history?.[0] || null;
+  const activeOutfit = useMemo(() => todaysOutfit || history?.[0] || null, [todaysOutfit, history]);
   useFocusEffect(
     useCallback(() => {
       refreshProfile();
@@ -44,32 +53,51 @@ export default function HomeScreen({ navigation }) {
 
   const [selectedOutfit, setSelectedOutfit] = useState(null);
 
-  const filterLast30Days = (items) => {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    return items.filter((item) => {
-      const raw = item.created_at || item.createdAt;
-      if (!raw) return true;
-      const itemDate = new Date(raw);
-      return !isNaN(itemDate.getTime()) && itemDate >= thirtyDaysAgo;
-    });
-  };
+  const latestTryOn = useMemo(() => filterLast30Days(profile?.latestTryOn || []), [profile?.latestTryOn]);
+  const latestRecycle = useMemo(() => filterLast30Days(profile?.latestRecycle || []), [profile?.latestRecycle]);
 
-  const latestTryOn = filterLast30Days(profile?.latestTryOn || []);
-  const latestRecycle = filterLast30Days(profile?.latestRecycle || []);
+  const goToHistory = useCallback(() =>
+    navigation.navigate(ROUTES.RECOMMENDATION, { screen: ROUTES.RECOMMENDATIONS_HISTORY }), [navigation]);
 
-  const goToHistory = () =>
-    navigation.navigate(ROUTES.RECOMMENDATION, { screen: ROUTES.RECOMMENDATIONS_HISTORY });
-
-  const goToDetail = () => {
+  const goToDetail = useCallback(() => {
     navigation.navigate(ROUTES.RECOMMENDATION, {
       screen: ROUTES.RECOMMENDATION_DETAIL,
       params: { outfit: activeOutfit },
     });
-  };
+  }, [navigation, activeOutfit]);
+
+  const renderTryOnItem = useCallback((item) => (
+    <TryOnCard
+      imageUri={item.imageUrl}
+      isFavorite={isFavorite(item._id)}
+      onToggleFavorite={async () => {
+        try {
+          await toggleFavorite(item._id, 'TRYON');
+        } catch (e) {
+          showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
+        }
+      }}
+      onViewOutfit={() => setSelectedOutfit(item)}
+    />
+  ), [isFavorite, toggleFavorite, showFeedback, t]);
+
+  const renderRecycleItem = useCallback((item) => (
+    <TryOnCard
+      imageUri={item.imageUrl}
+      isFavorite={isFavorite(item._id)}
+      onToggleFavorite={async () => {
+        try {
+          await toggleFavorite(item._id, 'TRYON');
+        } catch (e) {
+          showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
+        }
+      }}
+      onViewOutfit={() => setSelectedOutfit(item)}
+    />
+  ), [isFavorite, toggleFavorite, showFeedback, t]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <View style={styles.screenWrapper}>
       <ScrollView
         style={styles.container}
@@ -137,42 +165,16 @@ export default function HomeScreen({ navigation }) {
           title={t('home.recentTryOns')}
           items={latestTryOn}
           onViewAll={() => navigation.navigate(ROUTES.RECENT_TRYONS)}
-          renderItem={(item) => (
-            <TryOnCard
-              imageUri={item.imageUrl}
-              isFavorite={isFavorite(item._id)}
-              onToggleFavorite={async () => {
-                try {
-                  await toggleFavorite(item._id, 'TRYON');
-                } catch (e) {
-                  showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
-                }
-              }}
-              onViewOutfit={() => setSelectedOutfit(item)}
-            />
-          )}
-          seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginRight: 15 }}
+          renderItem={renderTryOnItem}
+          seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginEnd: 15 }}
         />
 
         <HorizontalScrollSection
           title={t('home.recentRecycles')}
           items={latestRecycle}
           onViewAll={() => navigation.navigate(ROUTES.RECENT_RECYCLES)}
-          renderItem={(item) => (
-            <TryOnCard
-              imageUri={item.imageUrl}
-              isFavorite={isFavorite(item._id)}
-              onToggleFavorite={async () => {
-                try {
-                  await toggleFavorite(item._id, 'TRYON');
-                } catch (e) {
-                  showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(e, t) });
-                }
-              }}
-              onViewOutfit={() => setSelectedOutfit(item)}
-            />
-          )}
-          seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginRight: 15 }}
+          renderItem={renderRecycleItem}
+          seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginEnd: 15 }}
         />
       </ScrollView>
       </View>
@@ -191,7 +193,7 @@ export default function HomeScreen({ navigation }) {
           }
         }}
       />
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
 
@@ -199,8 +201,6 @@ const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    // Android status bar padding
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   screenWrapper: {
     flex: 1,

@@ -1,12 +1,11 @@
 import { Platform } from "react-native";
+import * as ImageManipulator from "expo-image-manipulator";
 import apiClient from "../auth_services/apiClient";
 import { ENDPOINTS } from "../../config/endpoints";
 
 const LOG_TAG = "[MatchingService]";
 
-const matchConfig = {
-  timeout: 60000,
-};
+const matchConfig = {};
 
 export const getWardrobeMatches = async (wardrobeItemId) => {
   console.log(LOG_TAG, "getWardrobeMatches called with:", wardrobeItemId);
@@ -37,18 +36,30 @@ export const getWardrobeMatches = async (wardrobeItemId) => {
 const formDataConfig = {
   headers: { 'Content-Type': 'multipart/form-data' },
   transformRequest: (data) => data,
-  timeout: 120000,
 };
 
 export const analyzeImage = async (imageUri) => {
   console.log(LOG_TAG, "analyzeImage called with:", imageUri?.slice(0, 80));
+
+  let finalUri = imageUri;
+  try {
+    const manipulated = await ImageManipulator.manipulateAsync(
+      imageUri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    finalUri = manipulated.uri;
+  } catch {
+    finalUri = imageUri;
+  }
+
   const formData = new FormData();
-  const filename = imageUri.split("/").pop() || "image.jpg";
+  const filename = finalUri.split("/").pop() || "image.jpg";
   const match = /\.(\w+)$/.exec(filename);
   const type = match ? `image/${match[1]}` : "image/jpeg";
 
   formData.append("image", {
-    uri: Platform.OS === "android" ? imageUri : imageUri.replace("file://", ""),
+    uri: Platform.OS === "android" ? finalUri : finalUri.replace("file://", ""),
     name: filename,
     type,
   });

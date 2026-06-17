@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MYMEMORY_ENDPOINT = "https://api.mymemory.translated.net/get";
 const MAX_CHUNK_CHARS = 500;
-const REQUEST_TIMEOUT_MS = 10000;
 const CACHE_KEY = '@translation_cache';
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
 const MAX_CACHE_ENTRIES = 500;
@@ -83,9 +82,6 @@ function splitIntoChunks(text) {
  * Translate a single chunk (≤500 chars) to Arabic via MyMemory.
  */
 async function translateChunk(chunk, targetLang) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
   try {
     const params = new URLSearchParams({
       q: chunk,
@@ -95,10 +91,7 @@ async function translateChunk(chunk, targetLang) {
 
     const res = await fetch(`${MYMEMORY_ENDPOINT}?${params}`, {
       method: "GET",
-      signal: controller.signal,
     });
-
-    clearTimeout(timeout);
 
     if (!res.ok) {
       return chunk;
@@ -111,7 +104,6 @@ async function translateChunk(chunk, targetLang) {
 
     return chunk;
   } catch (err) {
-    clearTimeout(timeout);
     return chunk;
   }
 }

@@ -23,18 +23,21 @@ const styles = React.useMemo(() => StyleSheet.create({
   },
   texts: {
     gap: 4,
+    alignItems: 'center',
   },
   title: {
     fontFamily: 'Roboto_500Medium',
     fontSize: 14,
     lineHeight: 16.38,
     color: Colors.textPrimary,
+    textAlign: 'center',
   },
   subtitle: {
     fontFamily: 'Roboto_500Medium',
     fontSize: 10,
     lineHeight: 10,
     color: Colors.textPrimary,
+    textAlign: 'center',
   },
 }), [themeVersion]);
 

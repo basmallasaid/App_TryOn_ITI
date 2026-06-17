@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { AppState } from 'react-native';
 import { getAllProducts } from '../api/user_services/userService';
 import { setProductsCache, getProductsCache } from '../storage/TokenStorage';
@@ -74,14 +74,16 @@ export const StoreProvider = ({ children }) => {
     return products.find((p) => p._id === id || p.id === id) || null;
   }, [products]);
 
+  const value = useMemo(() => ({
+    products,
+    loading,
+    error,
+    refetch: fetchProducts,
+    getProductById,
+  }), [products, loading, error, fetchProducts, getProductById]);
+
   return (
-    <StoreContext.Provider value={{
-      products,
-      loading,
-      error,
-      refetch: fetchProducts,
-      getProductById,
-    }}>
+    <StoreContext.Provider value={value}>
       {children}
     </StoreContext.Provider>
   );

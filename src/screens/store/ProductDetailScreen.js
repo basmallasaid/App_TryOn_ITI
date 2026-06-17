@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import { 
-  StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, 
+  StyleSheet, View, Text, ScrollView, TouchableOpacity, 
   ActivityIndicator, Dimensions, StatusBar, Linking, Platform 
 } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { getProductById } from '../../api/user_services/userService'; 
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +15,7 @@ import { useFavorites } from '../../context/FavoritesContext';
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../context/LanguageContext';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useFeedback } from "../../context/FeedbackContext";
@@ -23,12 +25,14 @@ import { getItemImage } from "../../utils/getItemImage";
 import i18n from "../../localization/i18n";
 
 const LOG_TAG = "[ProductDetailScreen]";
+const blurhash = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 const { width } = Dimensions.get('window');
 export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { themeVersion, isDarkMode } = useTheme();
   const { showFeedback } = useFeedback();
+  const { isRTL } = useLanguage();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { productId, source } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
   
@@ -145,14 +149,14 @@ export default function ProductDetailScreen({ route }) {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeScreen style={styles.container}>
       <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} transparent backgroundColor="transparent" translucent />
       <View style={styles.headerFixed}>
-        <SafeAreaView>
+        <SafeScreen>
           <View style={[styles.headerContent, { flexDirection: "row" }]}>
             <CustomBackButton onPress={() => navigation.goBack()} borderColor={Colors.borderDefault} />
             <View style={[styles.headerRight, { flexDirection: "row" }]}>
-              <TouchableOpacity style={[styles.iconCircle, { marginLeft: 12, marginRight: 0 }]} onPress={async () => {
+              <TouchableOpacity style={[styles.iconCircle, { marginStart: 12 }]} onPress={async () => {
                   try {
                     await toggleFavorite(productId, "PRODUCT");
                   } catch {
@@ -163,7 +167,7 @@ export default function ProductDetailScreen({ route }) {
               </TouchableOpacity>
             </View>
           </View>
-        </SafeAreaView>
+        </SafeScreen>
       </View>
 
       <ScrollView 
@@ -171,7 +175,7 @@ export default function ProductDetailScreen({ route }) {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.imageWrapper}>
-          <Image source={{ uri: product?.images?.[0] }} style={styles.mainImage} resizeMode="contain" />
+          <Image source={{ uri: product?.images?.[0] }} style={styles.mainImage} resizeMode="contain" placeholder={blurhash} transition={300} />
         </View>
 
         <View style={styles.contentBody}>
@@ -179,12 +183,12 @@ export default function ProductDetailScreen({ route }) {
           
           <View style={[styles.rowBetween, { flexDirection: "row" }]}>
             <View style={{flex: 1}}>
-              <Text style={[styles.productTitle, { textAlign: "left" }]}>{product?.name}</Text>
+              <Text style={styles.productTitle}>{product?.name}</Text>
               <TouchableOpacity onPress={() => openUrl(product?.purchase_url)}>
                 <Text style={styles.brandName}>{product?.store_id?.name || t("store.productDetail.officialStore")} <Ionicons name="open-outline" size={12} color={Colors.primary} /></Text>
               </TouchableOpacity>
             </View>
-            <View style={[styles.priceContainer, { alignItems: "flex-end" }]}>
+            <View style={[styles.priceContainer, { alignItems: isRTL ? "flex-start" : "flex-end" }]}>
               <Text style={styles.priceText}>{product?.price}</Text>
               <Text style={styles.currency}>{product?.currency || t("store.currency")}</Text>
             </View>
@@ -197,7 +201,7 @@ export default function ProductDetailScreen({ route }) {
             </Text>
             <TouchableOpacity style={[styles.moreBtn, { flexDirection: "row" }]} onPress={() => setShowFullDescription(!showFullDescription)}>
               <Text style={styles.moreText}>{showFullDescription ? t("store.productDetail.showLess") : t("store.productDetail.seeMore")}</Text>
-              <Ionicons name={showFullDescription ? "chevron-up" : "chevron-down"} size={14} color={Colors.primary} style={{ marginLeft: 4, marginRight: 0 }} />
+              <Ionicons name={showFullDescription ? "chevron-up" : "chevron-down"} size={14} color={Colors.primary} style={{ marginStart: 4 }} />
             </TouchableOpacity>
           </View>
 
@@ -261,7 +265,7 @@ export default function ProductDetailScreen({ route }) {
                           <Text style={styles.scoreText}>{String(match.score ?? 0)}%</Text>
                         </View>
                         {imgSrc ? (
-                          <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" />
+                          <Image source={imgSrc} style={styles.matchImg} resizeMode="contain" placeholder={blurhash} transition={300} />
                         ) : (
                           <MaterialCommunityIcons name="tshirt-crew-outline" size={40} color={Colors.disabled} />
                         )}
@@ -277,13 +281,13 @@ export default function ProductDetailScreen({ route }) {
           <View style={[styles.actionRow, { flexDirection: "row" }]}>
             <TouchableOpacity style={[styles.mainBtn, { flexDirection: "row" }]} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.TRY_ON, { screen: ROUTES.SELECT_MODEL, params: { source: SOURCE.STORE, itemId: productId, itemType: product?.category, productImage: product?.images?.[0], productName: product?.name } })}>
               <Ionicons name="sparkles" size={20} color={Colors.textInverse} />
-              <Text style={[styles.mainBtnText, { marginLeft: 10, marginRight: 0 }]}>{t("store.productDetail.generateTryOn")}</Text>
+              <Text style={[styles.mainBtnText, { marginStart: 10 }]}>{t("store.productDetail.generateTryOn")}</Text>
             </TouchableOpacity>
           </View>
 
         </View>
       </ScrollView>
-    </View>
+    </SafeScreen>
   );
 }
 
@@ -296,7 +300,6 @@ const createStyles = () => StyleSheet.create({
     left: 0, 
     right: 0, 
     zIndex: 100,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 
   },
   headerContent: { justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10 },
   headerRight: { },
@@ -308,11 +311,11 @@ const createStyles = () => StyleSheet.create({
   imageWrapper: { width: width, height: 420, backgroundColor: Colors.backgroundColor, justifyContent: 'center', alignItems: 'center' },
   mainImage: { width: '80%', height: '80%' },
 
-  contentBody: { flex: 1, backgroundColor: Colors.white, borderTopLeftRadius: 35, borderTopRightRadius: 35, marginTop: -35, padding: 25 },
+  contentBody: { flex: 1, backgroundColor: Colors.white, borderTopLeftRadius: 35, borderTopRightRadius: 35, marginTop: -35, paddingHorizontal: 20, paddingBottom: 25, paddingTop: 20 },
   indicator: { width: 40, height: 4, backgroundColor: Colors.borderDefault, borderRadius: 2, alignSelf: 'center', marginBottom: 25 },
   
   rowBetween: { justifyContent: 'space-between', alignItems: 'flex-start' },
-  productTitle: { fontSize: 24, fontWeight: '800', color: Colors.textPrimary, letterSpacing: -0.5 },
+  productTitle: { fontSize: 24, fontWeight: '800', color: Colors.textPrimary, letterSpacing: -0.5, textAlign: 'left' },
   brandName: { color: Colors.primary, fontSize: 13, fontWeight: '700', marginTop: 4 },
   
   priceContainer: { },
@@ -327,20 +330,20 @@ const createStyles = () => StyleSheet.create({
   moreText: { color: Colors.primary, fontWeight: 'bold', fontSize: 13 },
 
   optionsRow: { alignItems: 'center' },
-  colorRing: { width: 38, height: 38, borderRadius: 19, borderWidth: 2, borderColor: 'transparent', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  colorRing: { width: 38, height: 38, borderRadius: 19, borderWidth: 2, borderColor: 'transparent', justifyContent: 'center', alignItems: 'center', marginEnd: 12 },
   colorInside: { width: 28, height: 28, borderRadius: 14, elevation: 1 },
   
-  sizeBox: { width: 50, height: 48, borderRadius: 12, backgroundColor: Colors.backgroundColor, justifyContent: 'center', alignItems: 'center', marginRight: 10, borderWidth: 1, borderColor: Colors.borderDefault },
+  sizeBox: { width: 50, height: 48, borderRadius: 12, backgroundColor: Colors.backgroundColor, justifyContent: 'center', alignItems: 'center', marginEnd: 10, borderWidth: 1, borderColor: Colors.borderDefault },
   activeSizeBox: { backgroundColor: Colors.primary },
   sizeLabel: { fontSize: 15, fontWeight: 'bold', color: Colors.textPrimary },
   activeSizeLabel: { color: Colors.textInverse },
 
   // Matching
   matchScroll: { marginTop: 5 },
-  matchCard: { width: 150, height: 180, backgroundColor: Colors.white, borderRadius: 15, marginRight: 15, justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: Colors.secondaryLight, position: 'relative' },
+  matchCard: { width: 150, height: 180, backgroundColor: Colors.white, borderRadius: 15, marginEnd: 15, justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: Colors.secondaryLight, position: 'relative' },
   matchImg: { width: 100, height: 110 },
   matchItemName: { fontSize: 11, fontWeight: '600', color: Colors.textPrimary, textAlign: 'center', marginTop: 6, paddingHorizontal: 8, textTransform: 'capitalize' },
-  scoreBadge: { position: 'absolute', top: 10, right: 10, backgroundColor: Colors.secondary, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, zIndex: 1 },
+  scoreBadge: { position: 'absolute', top: 10, end: 10, backgroundColor: Colors.secondary, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, zIndex: 1 },
   scoreText: { color: Colors.textInverse, fontSize: 11, fontWeight: 'bold' },
   noMatchText: { color: Colors.textMuted, fontSize: 14, marginVertical: 10 },
 

@@ -1,12 +1,10 @@
 import React, { useState, useCallback } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  Platform,
-  StatusBar,
   Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -22,6 +20,7 @@ import CustomBackButton from "../../components/common/CustomBackButton";
 import LoadingOverlay from "../../components/common/LoadingOverlay";
 import { IMAGES } from "../../constants/images/images";
 import { generateAvatar } from "../../api/avatar_services/avatarService";
+import { CommonActions } from "@react-navigation/native";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 import { useFeedback } from "../../context/FeedbackContext";
 import { useProfileContext } from "../../context/ProfileContext";
@@ -167,7 +166,7 @@ const CreateAvatarScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
-  const { refreshProfile } = useProfileContext();
+  const { refreshProfile, setAvatarImage } = useProfileContext();
   const source = route?.params?.source;
   const productImage = route?.params?.productImage;
   const tabList = tabs(t);
@@ -214,13 +213,19 @@ const CreateAvatarScreen = ({ navigation, route }) => {
       const imageUrl = response?.avatar?.image_url || response?.image_url || response?.imageUrl || null;
       const avatarId = response?.avatar?._id || response?.avatar?.id || response?._id || response?.id || null;
       setGeneratedImage(imageUrl ? { uri: imageUrl } : null);
+      setAvatarImage(imageUrl);
       await refreshProfile();
 
       if (source === SOURCE.AVATAR_DETAIL) {
-        navigation.navigate(ROUTES.MAIN, {
-          screen: ROUTES.PROFILE,
-          params: { screen: ROUTES.AVATAR_DETAIL },
-        });
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: ROUTES.MAIN,
+            params: {
+              screen: ROUTES.PROFILE,
+              params: { screen: ROUTES.AVATAR_DETAIL, params: { avatarUri: imageUrl } },
+            },
+          })
+        );
       } else {
         navigation.replace(ROUTES.TRY_ON_SCREEN, {
           avatarId,
@@ -233,7 +238,7 @@ const CreateAvatarScreen = ({ navigation, route }) => {
     } finally {
       setLoading(false);
     }
-  }, [avatarProfile, t, buildPayload, refreshProfile, navigation, showFeedback, source, productImage]);
+  }, [avatarProfile, t, buildPayload, refreshProfile, setAvatarImage, navigation, showFeedback, source, productImage]);
 
   const tabKeys = tabList.map((t) => t.key);
   const activeTab = tabList[currentStep];
@@ -282,7 +287,6 @@ const CreateAvatarScreen = ({ navigation, route }) => {
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
@@ -335,7 +339,7 @@ const CreateAvatarScreen = ({ navigation, route }) => {
 }), [themeVersion]);
 
   return (
-  <SafeAreaView style={styles.safeArea}>
+  <SafeScreen style={styles.safeArea}>
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContainer}
@@ -343,10 +347,15 @@ const CreateAvatarScreen = ({ navigation, route }) => {
       <View style={styles.container}>
         <CustomBackButton onPress={() => {
           if (source === SOURCE.AVATAR_DETAIL) {
-            navigation.navigate(ROUTES.MAIN, {
-              screen: ROUTES.PROFILE,
-              params: { screen: ROUTES.AVATAR_DETAIL },
-            });
+            navigation.dispatch(
+              CommonActions.navigate({
+                name: ROUTES.MAIN,
+                params: {
+                  screen: ROUTES.PROFILE,
+                  params: { screen: ROUTES.AVATAR_DETAIL },
+                },
+              })
+            );
           } else {
             navigation.goBack();
           }
@@ -390,7 +399,7 @@ const CreateAvatarScreen = ({ navigation, route }) => {
       </View>
     </ScrollView>
     <LoadingOverlay visible={loading} type="general" />
-  </SafeAreaView>
+  </SafeScreen>
 );
 };
 

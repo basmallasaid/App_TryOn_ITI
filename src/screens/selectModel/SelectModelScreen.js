@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
   StyleSheet,
-  Platform,
-  StatusBar,
   Alert,
   ScrollView
 } from "react-native";
@@ -18,8 +16,7 @@ import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButton
 import CustomBackButton from "../../components/common/CustomBackButton";
 import { IMAGES } from "../../constants/images/images";
 import { useAuth } from "../../context/AuthContext";
-import { getUserProfile } from "../../api/user_services/userService";
-import { getAvatarById } from "../../api/avatar_services/avatarService";
+import { useProfileContext } from "../../context/ProfileContext";
 import { ROUTES, SOURCE } from "../../navigation/routes";
 
 
@@ -40,8 +37,8 @@ const SelectModelScreen = ({ navigation, route }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
   const { user } = useAuth();
+  const { profile, avatarImage } = useProfileContext();
   const [selected, setSelected] = useState(null);
-  const [loading, setLoading] = useState(false);
   const productImage = route?.params?.productImage;
   const isStoreFlow = !!productImage;
 
@@ -49,7 +46,6 @@ const SelectModelScreen = ({ navigation, route }) => {
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
@@ -124,38 +120,22 @@ const SelectModelScreen = ({ navigation, route }) => {
     },
   ];
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (selected === "avatar") {
-      setLoading(true);
-      try {
-        const profile = await getUserProfile(user._id);
-        const avatars = profile?.avatars;
-        if (avatars && avatars.length > 0) {
-          const avatarInfo = avatars[avatars.length - 1];
-          const avatarId = avatarInfo._id || avatarInfo;
-          if (isStoreFlow) {
-            const avatarData = await getAvatarById(avatarId);
-            const avatarObj = avatarData?.avatar || avatarData;
-            const avatarImg = typeof avatarObj === "string"
-              ? avatarObj
-              : avatarObj?.image_url || avatarObj?.image || avatarObj?.imageUrl || avatarObj?.url || null;
-            navigation.navigate(ROUTES.TRY_ON_RESULT, { productImage, avatarImage: avatarImg || avatarId, source: SOURCE.STORE });
-          } else {
-            navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarId, source: SOURCE.HOME });
-          }
+      const avatars = profile?.avatars;
+      if (avatars && avatars.length > 0) {
+        const avatarInfo = avatars[avatars.length - 1];
+        const avatarId = avatarInfo._id || avatarInfo;
+        if (isStoreFlow) {
+          navigation.navigate(ROUTES.TRY_ON_RESULT, { productImage, avatarImage: avatarImage || avatarId, source: SOURCE.STORE });
         } else {
-          navigation.navigate(ROUTES.CREATE_AVATAR, {
-            source: SOURCE.SELECT_MODEL,
-            ...(isStoreFlow && { productImage }),
-          });
+          navigation.navigate(ROUTES.TRY_ON_SCREEN, { avatarId, avatarImage, source: SOURCE.HOME });
         }
-      } catch {
+      } else {
         navigation.navigate(ROUTES.CREATE_AVATAR, {
           source: SOURCE.SELECT_MODEL,
           ...(isStoreFlow && { productImage }),
         });
-      } finally {
-        setLoading(false);
       }
     } else if (selected === "photo") {
       navigation.navigate(ROUTES.UPLOAD_PHOTO, isStoreFlow ? { productImage, source: SOURCE.STORE } : { source: SOURCE.HOME });
@@ -164,7 +144,7 @@ const SelectModelScreen = ({ navigation, route }) => {
 
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
   <ScrollView
     contentContainerStyle={styles.scrollContent}
     showsVerticalScrollIndicator={false}
@@ -200,13 +180,12 @@ const SelectModelScreen = ({ navigation, route }) => {
           label={isStoreFlow ? t('tryOn.virtualTryOn.generate') : t('tryOn.selectModel.next')}
           onPress={handleNext}
           disabled={!selected}
-          loading={loading}
           backgroundColor={Colors.primary}
         />
       </View>
     </View>
   </ScrollView>
-</SafeAreaView>
+</SafeScreen>
   );
 };
 

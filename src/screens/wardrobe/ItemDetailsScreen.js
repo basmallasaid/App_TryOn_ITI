@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -108,7 +108,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   const style = garment.style ? normalize(garment.style) : "";
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeScreen style={styles.root}>
       <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={Colors.backgroundColor} />
 
       <View style={styles.header}>
@@ -243,7 +243,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDelete}
       />
-    </SafeAreaView>
+    </SafeScreen>
   );
 };
 
@@ -253,7 +253,6 @@ const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   center: {
     flex: 1,
@@ -313,7 +312,7 @@ const createStyles = () => StyleSheet.create({
   imageActions: {
     position: "absolute",
     top: 12,
-    right: 12,
+    end: 12,
     alignItems: "center",
     gap: 8,
   },

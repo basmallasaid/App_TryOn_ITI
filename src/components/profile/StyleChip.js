@@ -54,7 +54,7 @@ const styles = React.useMemo(() => StyleSheet.create({
           name="close"
           size={12}
           color={Colors.textPrimary}
-          style={{ marginRight: 4 }}
+          style={{ marginEnd: 4 }}
         />
       )}
       <Text style={[

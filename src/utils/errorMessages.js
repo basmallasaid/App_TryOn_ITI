@@ -12,7 +12,6 @@ export function extractErrorMessage(error, fallback) {
 
 const NETWORK_PATTERNS = [
   "network",
-  "timeout",
   "econnrefused",
   "econnreset",
   "enotfound",

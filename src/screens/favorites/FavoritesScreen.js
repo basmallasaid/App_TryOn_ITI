@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -9,8 +9,6 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
-  Platform,
-  StatusBar,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -68,7 +66,6 @@ const FavoritesScreen = ({ navigation }) => {
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     paddingBottom: 12,
     backgroundColor: Colors.backgroundColor,
   },
@@ -204,7 +201,7 @@ const FavoritesScreen = ({ navigation }) => {
   heartBtn: {
     position: "absolute",
     top: 8,
-    right: 8,
+    end: 8,
     zIndex: 1,
   },
   heartCircle: {
@@ -219,7 +216,7 @@ const FavoritesScreen = ({ navigation }) => {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeScreen style={{ flex: 1 }}>
         <View style={styles.screen}>
           <View style={styles.header}>
             <CustomBackButton onPress={() => navigation.goBack()} />
@@ -230,13 +227,13 @@ const FavoritesScreen = ({ navigation }) => {
             <ActivityIndicator size="large" color={Colors.primary} />
           </View>
         </View>
-      </SafeAreaView>
+      </SafeScreen>
     );
   }
 
   if (!loading && items.length === 0) {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeScreen style={{ flex: 1 }}>
         <View style={styles.screen}>
         <View style={styles.header}>
           <CustomBackButton onPress={() => navigation.goBack()} />
@@ -251,12 +248,12 @@ const FavoritesScreen = ({ navigation }) => {
           <Text style={styles.emptySubtitle}>{t('favorites.emptySubtitle')}</Text>
         </View>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeScreen>
       <View style={styles.screen}>
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
@@ -349,7 +346,7 @@ const FavoritesScreen = ({ navigation }) => {
         />
       )}
       </View>
-    </SafeAreaView>
+    </SafeScreen>
     );
   };
 

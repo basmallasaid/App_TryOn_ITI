@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -32,7 +32,6 @@ import { useTheme } from "../../context/ThemeContext";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { deleteAccount } from "../../api/user_services/userService";
-import { getAvatarById } from "../../api/avatar_services/avatarService";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
@@ -53,13 +52,13 @@ const ProfileScreen = ({ navigation }) => {
     updateDarkMode,
     updateLanguage,
     updateUserImage,
+    avatarImage,
   } = useProfileContext();
   const { items: favorites } = useFavorites();
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [tempLang, setTempLang] = useState(language);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [avatarImage, setAvatarImage] = useState(null);
   const [imageModalVisible, setImageModalVisible] = useState(false);
 
   useEffect(() => {
@@ -67,18 +66,6 @@ const ProfileScreen = ({ navigation }) => {
       updateDarkMode(isDarkMode);
     }
   }, [settingsLoaded, settings.darkMode]);
-
-  useEffect(() => {
-    if (profile?.avatars?.length) {
-      const lastId = profile.avatars[profile.avatars.length - 1];
-      getAvatarById(lastId)
-        .then((res) => {
-          const uri = res?.avatar?.image_url || res?.image || res?.imageUrl || res?.url || null;
-          setAvatarImage(uri);
-        })
-        .catch(() => {});
-    }
-  }, [profile?.avatars]);
 
   const completionScore = () => {
     if (!profile) return 0;
@@ -169,7 +156,7 @@ const ProfileScreen = ({ navigation }) => {
   const firstName = profile?.profile?.first_name || t("profile.guestFallback");
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeScreen style={{ flex: 1 }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
@@ -360,7 +347,7 @@ const ProfileScreen = ({ navigation }) => {
           cancelLabel={t("common.cancel")}
         />
       )}
-    </SafeAreaView>
+    </SafeScreen>
   );
 };
 
@@ -373,7 +360,6 @@ const createStyles = () => StyleSheet.create({
   },
   scroll: {
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     paddingBottom: 40,
     gap: 16,
   },

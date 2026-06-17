@@ -1,5 +1,6 @@
 import React from "react";
-import { StyleSheet, View, Image, Platform, Dimensions } from "react-native";
+import { StyleSheet, View, Image, Dimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
@@ -7,11 +8,11 @@ import { useTheme } from "../../context/ThemeContext";
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const HeroImage = () => {
   const { themeVersion } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const styles = React.useMemo(() => StyleSheet.create({
     imageContainer: {
-      paddingTop: Platform.OS === "ios" ? 40 : 25,
-      height: Platform.OS === "ios" ? SCREEN_HEIGHT * 0.35 : SCREEN_HEIGHT * 0.25,
+      height: SCREEN_HEIGHT * 0.3,
       width: "100%",
       backgroundColor: Colors.backgroundColor,
     },

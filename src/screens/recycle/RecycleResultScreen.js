@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -7,8 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Platform,
-  StatusBar,
   ActivityIndicator,
 } from "react-native";
 import { Svg, Path, Defs, ClipPath, Rect } from "react-native-svg";
@@ -87,7 +85,7 @@ export default function RecycleResultScreen({ route, navigation }) {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <View style={styles.header}>
         <CustomBackButton onPress={handleTryAgain} />
         <Text style={styles.headerTitle}>{t("recycleResult.title")}</Text>
@@ -144,7 +142,7 @@ export default function RecycleResultScreen({ route, navigation }) {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
 
@@ -152,7 +150,6 @@ const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.white,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: "row",

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   FlatList,
@@ -205,7 +205,7 @@ const WardrobeScreen = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeScreen style={{ flex: 1 }}>
     <View style={styles.root}>
       {/* SelectionModal must be available for Android users on this screen */}
       {Platform.OS === 'android' && (
@@ -274,7 +274,7 @@ const WardrobeScreen = ({ navigation }) => {
         />
       )}
     </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 };
 
@@ -284,7 +284,6 @@ const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   centered: {
     flex: 1,

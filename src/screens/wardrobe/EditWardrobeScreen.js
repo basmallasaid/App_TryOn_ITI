@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -7,8 +7,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Platform,
-  StatusBar,
   Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -79,7 +77,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeScreen style={styles.root}>
       {/* Header */}
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
@@ -149,7 +147,7 @@ const EditWardrobeScreen = ({ navigation, route }) => {
         onClose={() => setModalVisible(false)}
         onConfirm={handleDelete}
       />
-    </SafeAreaView>
+    </SafeScreen>
   );
 };
 
@@ -159,7 +157,6 @@ const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: "row",
@@ -195,7 +192,7 @@ const createStyles = () => StyleSheet.create({
     width: 15,
     height: 15,
     top: 5,
-    right: 5, // Adjusted to fit card
+    end: 5,
     backgroundColor: Colors.secondary,
     borderRadius: 999,
     justifyContent: "center",

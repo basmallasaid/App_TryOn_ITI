@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -9,6 +10,8 @@ import { getWeatherIcon } from "../../constants/weatherIcons";
 import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
 import { useTheme } from "../../context/ThemeContext";
 import { useWardrobe } from "../../context/WardrobeContext";
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 const FALLBACK_IMAGE = IMAGES.PICK;
 
@@ -27,12 +30,12 @@ export default function OutfitCard({ onPress, todaysOutfit, todaysWeather }) {
 
   const renderImages = () => {
     if (compositeImage) {
-      return <Image source={{ uri: compositeImage }} style={styles.fitImage} resizeMode="contain" />;
+      return <Image source={{ uri: compositeImage }} style={styles.fitImage} contentFit="contain" placeholder={BLURHASH_PLACEHOLDER} transition={300} />;
     }
     if (validImages.length === 0) {
-      return <Image source={FALLBACK_IMAGE} style={styles.fitImage} resizeMode="contain" />;
+      return <Image source={FALLBACK_IMAGE} style={styles.fitImage} contentFit="contain" />;
     }
-    return <Image source={{ uri: validImages[0]._image }} style={styles.fitImage} resizeMode="contain" />;
+    return <Image source={{ uri: validImages[0]._image }} style={styles.fitImage} contentFit="contain" placeholder={BLURHASH_PLACEHOLDER} transition={300} />;
   };
 
 const styles = React.useMemo(() => StyleSheet.create({
@@ -116,7 +119,7 @@ const styles = React.useMemo(() => StyleSheet.create({
         {renderImages()}
       </View>
 
-      <View style={[styles.contentSection, { paddingLeft: 10, paddingRight: 0 }]}>
+      <View style={[styles.contentSection, { paddingStart: 10 }]}>
         <View style={{ width: '100%', flexDirection: 'row' }}>
           <Text style={styles.title} numberOfLines={1}>
             {label || t('home.outfitCard.title')}
@@ -133,14 +136,14 @@ const styles = React.useMemo(() => StyleSheet.create({
         <View style={[styles.infoRow, { flexDirection: 'row' }]}>
           <View style={[styles.infoItem, { flexDirection: 'row' }]}>
             <MaterialCommunityIcons name={weatherIcon} size={22} color={Colors.accentOrange} />
-            <Text style={[styles.infoText, { marginLeft: 5, marginRight: 0 }]}>
+<Text style={[styles.infoText, { marginStart: 5 }]}>
               {temp != null ? t('home.outfitCard.temperature', { temp }) : t('home.outfitCard.temperatureFallback')}
             </Text>
           </View>
 
           <View style={[styles.infoItem, { flexDirection: 'row' }]}>
             <Ionicons name="location-sharp" size={18} color={Colors.secondary} />
-            <Text style={[styles.infoText, { marginLeft: 5, marginRight: 0 }]}>{t('home.outfitCard.location')}</Text>
+            <Text style={[styles.infoText, { marginStart: 5 }]}>{t('home.outfitCard.location')}</Text>
           </View>
         </View>
 

@@ -13,7 +13,7 @@ export default function SourceTab({ label, iconName, isActive, onPress, useMater
       paddingVertical: 12,
       marginHorizontal: 4,
       borderRadius: 12,
-      backgroundColor: Colors.backgroundColor,
+      backgroundColor: Colors.tabInactive,
     },
     activeTab: {
       backgroundColor: Colors.surfaceElevated,

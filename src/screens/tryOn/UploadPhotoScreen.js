@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -7,8 +7,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Platform,
-  StatusBar,
 } from "react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -83,7 +81,7 @@ const UploadPhotoScreen = ({ navigation, route }) => {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <View style={styles.container}>
         <CustomBackButton onPress={() => navigation.goBack()} />
 
@@ -175,7 +173,7 @@ const UploadPhotoScreen = ({ navigation, route }) => {
           />
         </View>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 };
 
@@ -183,7 +181,6 @@ const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
@@ -231,7 +228,7 @@ const createStyles = () => StyleSheet.create({
   removeBtn: {
     position: "absolute",
     top: 8,
-    right: 12,
+    end: 12,
     width: 22,
     height: 22,
     borderRadius: 11,

@@ -7,16 +7,19 @@ import {
   Platform,
   StyleSheet,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import HeroImage from "./HeroImage";
 
 const BottomSheetLayout = ({ title, subtitle, children }) => {
   const { themeVersion } = useTheme();
+  const insets = useSafeAreaInsets();
   const styles = React.useMemo(() => StyleSheet.create({
     root: {
       flex: 1,
       backgroundColor: Colors.backgroundColor,
+      paddingTop: insets.top,
     },
 
     sheetWrapper: {

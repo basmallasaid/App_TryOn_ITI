@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import { 
   View, 
   Text, 
@@ -117,7 +117,7 @@ const TryOnResult = ({ navigation, route }) => {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeScreen style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -176,7 +176,7 @@ const TryOnResult = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 };
 
@@ -184,7 +184,6 @@ const createStyles = () => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   scrollContent: {
     flexGrow: 1,
@@ -217,7 +216,7 @@ const createStyles = () => StyleSheet.create({
   },
   footer: {
     justifyContent: 'space-between',
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     paddingBottom: 30,
     paddingTop: 10,
   },
@@ -255,7 +254,7 @@ const createStyles = () => StyleSheet.create({
   saveButton: {
     backgroundColor: Colors.primary,
     flex: 1,
-    marginRight: 10,
+    marginEnd: 10,
     height: 55,
     borderRadius: 12,
     justifyContent: 'center',
@@ -274,7 +273,7 @@ const createStyles = () => StyleSheet.create({
   tryAgainButton: {
     backgroundColor: Colors.backgroundColor,
     flex: 1,
-    marginLeft: 10,
+    marginStart: 10,
     height: 55,
     borderRadius: 12,
     borderWidth: 1.5,

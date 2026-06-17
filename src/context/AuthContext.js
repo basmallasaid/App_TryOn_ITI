@@ -1,7 +1,8 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { getToken, clearToken, getUserId, clearUserId, clearAllUserCache } from '../storage/TokenStorage';
 import * as authService from "../api/auth_services/authServices";
+import { setCachedToken, clearCachedToken } from '../api/auth_services/apiClient';
 import { useLanguage } from './LanguageContext';
 const AuthContext = createContext();
 
@@ -14,50 +15,64 @@ export const AuthProvider = ({ children }) => {
   Promise.all([getToken(), getUserId()]).then(([token, _id]) => {
     if (token && _id) {
       setUser({ token, _id });
+      setCachedToken(token);
     }
   }).finally(() => setLoading(false));
 }, []);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     const data = await authService.login(email, password);
     setUser(data);
+    setCachedToken(data.token);
      syncLanguage(); 
-  };
+  }, [syncLanguage]);
 
-  const register = async (email, password, confirmPassword) => {
+  const register = useCallback(async (email, password, confirmPassword) => {
   const data = await authService.register(email, password, confirmPassword);
   await authService.sendVerification(data.token);
   await clearToken();
+  clearCachedToken();
   syncLanguage(); // background sync
   return { email, token: data.token };
-};
-const updateProfile=async(token,firstName,lastName,dateOfBirth,gender)=>{
-  await authService.updateProfile(token,firstName,lastName,dateOfBirth,gender);
-}
-const deleteAccount=async(token)=>{
+}, [syncLanguage]);
+
+const updateProfile = useCallback(async (token, firstName, lastName, dateOfBirth, gender) => {
+  await authService.updateProfile(token, firstName, lastName, dateOfBirth, gender);
+}, []);
+
+const deleteAccount = useCallback(async (token) => {
   const userId = user?._id;
   await authService.deleteAccount(token);
   await clearToken();
   await clearUserId();
+  clearCachedToken();
   if (userId) await clearAllUserCache(userId);
-}
-const loginWithGoogle = async (idToken) => {
+}, [user?._id]);
+
+const loginWithGoogle = useCallback(async (idToken) => {
   const data = await authService.loginWithGoogleMobile(idToken);
   setUser(data);
+  setCachedToken(data.token);
   return data;
-};
-  const logout = async () => {
+}, []);
+
+  const logout = useCallback(async () => {
     const userId = user?._id;
     await authService.logout();
     await clearToken();
     await clearUserId();
+    clearCachedToken();
     if (userId) await clearAllUserCache(userId);
     setUser(null);
     setRole(null);
-  };
+  }, [user?._id]);
+
+  const value = useMemo(() => ({
+    user, role, loading, login, register, updateProfile, deleteAccount, loginWithGoogle, logout
+  }), [user, role, loading, login, register, updateProfile, deleteAccount, loginWithGoogle, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, login, register, updateProfile, deleteAccount,loginWithGoogle, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

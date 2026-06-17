@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, View } from 'react-native';
+import SafeScreen from '../../components/common/SafeScreen';
+import { StyleSheet } from 'react-native';
 
 import Animated, {
   useSharedValue,
@@ -80,9 +80,8 @@ const SplashScreen = () => {
       width: 140,
       height: 140,
       position: 'absolute',
-      left: '50%',
+      alignSelf: 'center',
       top: '50%',
-      marginLeft: -70,
       marginTop: -70,
     },
     fullLogo: {
@@ -93,7 +92,7 @@ const SplashScreen = () => {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeScreen style={styles.container}>
 
       <Animated.Image
         source={IMAGES.REDOLAPY_R_SHAPE_LOGO}
@@ -107,7 +106,7 @@ const SplashScreen = () => {
         resizeMode="contain"
       />
 
-    </SafeAreaView>
+    </SafeScreen>
   );
 };
 

@@ -13,7 +13,7 @@ export default function ActionTab({ label, iconName, isActive, onPress }) {
       paddingVertical: 12,
       marginHorizontal: 5,
       borderRadius: 15,
-      backgroundColor: Colors.backgroundColor,
+      backgroundColor: Colors.tabInactive,
     },
     activeTab: {
       backgroundColor: Colors.surfaceElevated,

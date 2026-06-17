@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { getItemsList, getCompositeImage } from "../../utils/getItemImage";
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 export default function OutfitOverviewCard({ outfit, onPress, width, height, borderRadius, borderColor, labelFontSize }) {
   const { t } = useTranslation();
@@ -28,7 +31,9 @@ export default function OutfitOverviewCard({ outfit, onPress, width, height, bor
       <Image
         source={{ uri: imageUri }}
         style={styles.image}
-        resizeMode="contain"
+        contentFit="contain"
+        placeholder={BLURHASH_PLACEHOLDER}
+        transition={300}
         onError={(e) => {
           if (isComposite) {
             setImageError(true);

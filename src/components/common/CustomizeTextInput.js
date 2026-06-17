@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../context/LanguageContext";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import Typography from "../../constants/theme/typography";
@@ -29,8 +29,7 @@ const CustomizeTextInput = ({
   editable = true,
 }) => {
   const { themeVersion } = useTheme();
-  const { i18n } = useTranslation();
-  const isRTL = i18n.dir() === "rtl";
+  const { isRTL } = useLanguage();
   const [hidden, setHidden] = useState(secureTextEntry);
 
   const borderColor =
@@ -79,7 +78,7 @@ const styles = React.useMemo(() => StyleSheet.create({
   },
 
   eyeWrap: {
-    paddingLeft: 8,
+    paddingStart: 8,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -90,7 +89,7 @@ const styles = React.useMemo(() => StyleSheet.create({
     fontSize: 11,
     color: Colors.error,
     marginTop: 4,
-    marginLeft: 2,
+    marginStart: 2,
   },
   rightSection: {
   flexDirection: 'row',

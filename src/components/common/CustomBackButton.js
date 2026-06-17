@@ -1,13 +1,12 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../context/LanguageContext";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 const CustomBackButton = ({ onPress, iconColor, borderColor,backgroundColor }) => {
   const { themeVersion } = useTheme();
-  const { i18n } = useTranslation();
-  const isRTL = i18n.dir() === "rtl";
+  const { isRTL } = useLanguage();
 const styles = React.useMemo(() => StyleSheet.create({
   container: {
     width: 56,

@@ -4,10 +4,12 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  useMemo,
 } from "react";
 
 import { useAuth } from "./AuthContext";
 import { getUserProfile, getUserSettings, updateLanguage, updateNotifications, updateDarkMode, updateUserImage } from "../api/user_services/userService";
+import { getAvatarById } from "../api/avatar_services/avatarService";
 
 const ProfileContext = createContext();
 
@@ -17,6 +19,7 @@ export const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [avatarImage, setAvatarImage] = useState(null);
 
   const [settings, setSettings] = useState({
     language: 'en',
@@ -39,6 +42,20 @@ export const ProfileProvider = ({ children }) => {
       const data = await getUserProfile(user._id);
       setProfile(data);
 
+      if (data?.avatars?.length) {
+        const lastId = data.avatars[data.avatars.length - 1];
+        const id = lastId?._id || lastId;
+        try {
+          const avatarData = await getAvatarById(id);
+          const uri = avatarData?.avatar?.image_url || avatarData?.image || avatarData?.imageUrl || avatarData?.url || null;
+          setAvatarImage(uri);
+        } catch {
+          setAvatarImage(null);
+        }
+      } else {
+        setAvatarImage(null);
+      }
+
       const settingsData = await getUserSettings(data.email);
       setSettings(prev => ({
         ...prev,
@@ -58,31 +75,31 @@ export const ProfileProvider = ({ children }) => {
     }
   }, [user?._id]);
 
-  const handleUpdateLanguage = async (language) => {
+  const handleUpdateLanguage = useCallback(async (language) => {
     try {
       await updateLanguage(language);
       setSettings(prev => ({ ...prev, language }));
     } catch (err) {
     }
-  };
+  }, []);
 
-  const handleUpdateNotifications = async (enabled) => {
+  const handleUpdateNotifications = useCallback(async (enabled) => {
     try {
       await updateNotifications(enabled);
       setSettings(prev => ({ ...prev, notifications: enabled }));
     } catch (err) {
     }
-  };
+  }, []);
 
-  const handleUpdateDarkMode = async (darkMode) => {
+  const handleUpdateDarkMode = useCallback(async (darkMode) => {
     try {
       await updateDarkMode(darkMode);
       setSettings(prev => ({ ...prev, darkMode }));
     } catch (err) {
     }
-  };
+  }, []);
 
-  const handleUpdateUserImage = async (userImage) => {
+  const handleUpdateUserImage = useCallback(async (userImage) => {
     try {
       const result = await updateUserImage(userImage);
       setProfile(prev => prev ? { ...prev, userImage: result.userImage } : prev);
@@ -90,28 +107,30 @@ export const ProfileProvider = ({ children }) => {
     } catch (err) {
       throw err;
     }
-  };
+  }, []);
 
   useEffect(() => {
     refreshProfile();
   }, [refreshProfile]);
 
+  const value = useMemo(() => ({
+    profile,
+    loading,
+    error,
+    refreshProfile,
+    setProfile,
+    settings,
+    settingsLoaded,
+    avatarImage,
+    setAvatarImage,
+    updateLanguage: handleUpdateLanguage,
+    updateNotifications: handleUpdateNotifications,
+    updateDarkMode: handleUpdateDarkMode,
+    updateUserImage: handleUpdateUserImage,
+  }), [profile, loading, error, refreshProfile, setProfile, settings, settingsLoaded, avatarImage, handleUpdateLanguage, handleUpdateNotifications, handleUpdateDarkMode, handleUpdateUserImage]);
+
   return (
-    <ProfileContext.Provider
-      value={{
-        profile,
-        loading,
-        error,
-        refreshProfile,
-        setProfile,
-        settings,
-        settingsLoaded,
-        updateLanguage: handleUpdateLanguage,
-        updateNotifications: handleUpdateNotifications,
-        updateDarkMode: handleUpdateDarkMode,
-        updateUserImage: handleUpdateUserImage,
-      }}
-    >
+    <ProfileContext.Provider value={value}>
       {children}
     </ProfileContext.Provider>
   );

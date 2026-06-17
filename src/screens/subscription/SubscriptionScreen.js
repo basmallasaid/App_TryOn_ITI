@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  Platform,
-  StatusBar,
   Alert,
   Linking,
 } from "react-native";
@@ -20,6 +18,7 @@ import BillingToggle from "../../components/subscription/BillingToggle";
 import PlanCard from "../../components/subscription/PlanCard";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
+import { useProfileContext } from "../../context/ProfileContext";
 import * as paymentService from "../../api/payment_services/paymentService";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
@@ -29,6 +28,7 @@ export default function SubscriptionScreen({ navigation }) {
   const { user } = useAuth();
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
+  const { refreshProfile } = useProfileContext();
   const [billing, setBilling] = useState("Monthly");
   const [loading, setLoading] = useState(false);
 
@@ -86,6 +86,7 @@ export default function SubscriptionScreen({ navigation }) {
       }
 
       await paymentService.syncSubscription(user._id);
+      await refreshProfile();
       navigation.navigate(ROUTES.MANAGE_SUBSCRIPTION);
     } catch (err) {
       const message = getUserFriendlyErrorMessage(err, t);
@@ -101,7 +102,6 @@ export default function SubscriptionScreen({ navigation }) {
       safeArea: {
         flex: 1,
         backgroundColor: Colors.backgroundColor,
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
       },
       container: {
         flex: 1,
@@ -155,7 +155,7 @@ export default function SubscriptionScreen({ navigation }) {
 
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -280,6 +280,6 @@ export default function SubscriptionScreen({ navigation }) {
         <Text style={styles.disclaimer}>{t("subscription.disclaimer")}</Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

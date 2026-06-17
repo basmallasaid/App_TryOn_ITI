@@ -41,7 +41,7 @@ export const CategoryTabs = ({ categories: categoriesProp, activeCategory = 'all
 
 const styles = React.useMemo(() => StyleSheet.create({
   container: { marginBottom: 20, marginTop: 25 },
-  tab: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, marginRight: 10, backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.borderDefault, alignItems: 'center' },
+  tab: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12, marginEnd: 10, backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.borderDefault, alignItems: 'center' },
   activeTab: { backgroundColor: Colors.primary, borderColor: Colors.primary },
   tabText: { fontWeight: '600', color: Colors.textSecondary },
   activeTabText: { color: Colors.textInverse },
@@ -61,7 +61,7 @@ const styles = React.useMemo(() => StyleSheet.create({
             }}
             style={[styles.tab, active === cat.id && styles.activeTab, { flexDirection: 'row' }]}
           >
-            {iconName && <MaterialCommunityIcons name={iconName} size={20} color={active === cat.id ? Colors.textInverse : Colors.iconGray} style={{ marginRight: 8 }} />}
+            {iconName && <MaterialCommunityIcons name={iconName} size={20} color={active === cat.id ? Colors.textInverse : Colors.iconGray} style={{ marginEnd: 8 }} />}
             <Text style={[styles.tabText, active === cat.id && styles.activeTabText]}>{cat.name}</Text>
           </TouchableOpacity>
         );

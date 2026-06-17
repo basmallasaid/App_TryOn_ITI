@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -8,6 +9,8 @@ import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 
 export default function Header() {
@@ -56,7 +59,7 @@ export default function Header() {
       fontWeight: "700",
     },
     headerText: {
-      marginLeft: 12,
+      marginStart: 12,
     },
     helloRow: {
       flexDirection: "row",
@@ -68,7 +71,7 @@ export default function Header() {
     },
     wave: {
       fontSize: 16,
-      marginLeft: 5,
+      marginStart: 5,
     },
     userName: {
       fontSize: 22,
@@ -84,6 +87,9 @@ export default function Header() {
           <Image
             source={{ uri: rawImage }}
             style={styles.profileImage}
+            contentFit="cover"
+            placeholder={BLURHASH_PLACEHOLDER}
+            transition={300}
             onError={() => setImgErr(true)}
           />
         ) : (

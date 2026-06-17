@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   FlatList,
   StyleSheet,
   Text,
-  Platform,
-  StatusBar,
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
@@ -55,7 +53,7 @@ export default function RecentTryOnsScreen({ navigation }) {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeScreen style={styles.safeArea}>
         <View style={[styles.header, { flexDirection: "row" }]}>
           <CustomBackButton onPress={() => navigation.goBack()} />
           <Text style={styles.title}>{t('home.recentTryOns')}</Text>
@@ -64,12 +62,12 @@ export default function RecentTryOnsScreen({ navigation }) {
         <View style={styles.center}>
           <ActivityIndicator size="large" color={Colors.primarybrand} />
         </View>
-      </SafeAreaView>
+      </SafeScreen>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <View style={[styles.header, { flexDirection: "row" }]}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.title}>{t('home.recentTryOns')}</Text>
@@ -106,7 +104,7 @@ export default function RecentTryOnsScreen({ navigation }) {
           }
         }}
       />
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
 
@@ -114,7 +112,6 @@ const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     justifyContent: 'space-between',

@@ -41,12 +41,12 @@ export default function DesignIdeaCard({ idea, index, isSelected, onSelect }) {
       backgroundColor: Colors.white,
       padding: 14,
       width: CARD_WIDTH,
-      marginRight: 12,
+      marginEnd: 12,
       overflow: "hidden",
     },
     gradientBorderWrap: {
       width: CARD_WIDTH,
-      marginRight: 12,
+      marginEnd: 12,
     },
     inner: {
       position: "absolute",

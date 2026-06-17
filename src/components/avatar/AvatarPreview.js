@@ -1,7 +1,10 @@
 import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 const AvatarPreview = ({ image, children }) => {
   const { themeVersion } = useTheme();
@@ -31,7 +34,7 @@ const AvatarPreview = ({ image, children }) => {
   return (
     <View style={styles.container}>
       {image ? (
-        <Image source={image} style={styles.image} resizeMode="contain" />
+        <Image source={image} style={styles.image} contentFit="contain" placeholder={BLURHASH_PLACEHOLDER} transition={300} />
       ) : (
         <View style={styles.placeholder}>{children}</View>
       )}

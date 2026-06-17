@@ -82,7 +82,7 @@ const styles = React.useMemo(() => StyleSheet.create({
 
     return (
         <View style={[styles.banner, { flexDirection: "row" }]}>
-            <View style={[styles.bannerContent, { paddingRight: 10, paddingLeft: 0 }]}>
+            <View style={[styles.bannerContent, { paddingEnd: 10 }]}>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' }}>
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.bannerTitle}>{t('home.hero.title1')}</Text>

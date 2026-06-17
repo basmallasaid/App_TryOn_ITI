@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  SafeAreaView,
   ScrollView,
   View,
   Text,
@@ -70,6 +70,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <View style={styles.screenWrapper}>
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -78,7 +79,9 @@ export default function HomeScreen({ navigation }) {
         <Header />
         <HeroBanner onPress={goToHistory} />
 
-        <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('home.whatToDo')}</Text>
+        <View style={{ flexDirection: 'row', width: '100%' }}>
+          <Text style={styles.sectionTitle}>{t('home.whatToDo')}</Text>
+        </View>
         <View style={styles.grid}>
           <ActionCard
             title={t('home.actions.tryOn')}
@@ -121,7 +124,9 @@ export default function HomeScreen({ navigation }) {
           />
         </View>
 
-        <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('home.todaysPicks')}</Text>
+        <View style={{ flexDirection: 'row', width: '100%' }}>
+          <Text style={styles.sectionTitle}>{t('home.todaysPicks')}</Text>
+        </View>
         <OutfitCard
           onPress={goToDetail}
           todaysOutfit={activeOutfit}
@@ -170,6 +175,7 @@ export default function HomeScreen({ navigation }) {
           seeMoreCardStyle={{ width: 180, height: 290, borderRadius: 20, marginRight: 15 }}
         />
       </ScrollView>
+      </View>
 
       <OutfitViewModal
         visible={!!selectedOutfit}
@@ -196,9 +202,12 @@ const createStyles = () => StyleSheet.create({
     // Android status bar padding
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
-  container: {
+  screenWrapper: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  container: {
+    flex: 1,
   },
   // Bottom padding so content clears the bottom tab bar
   scrollContent: {

@@ -14,14 +14,14 @@ import { useTheme } from '../../context/ThemeContext';
 
 const blurhash = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
-const WardrobeItemCardComponent = ({ item, onPress, onLongPress, isFavorite, onToggleFavorite }) => {
+const WardrobeItemCardComponent = ({ cardWidth = 150, item, onPress, onLongPress, isFavorite, onToggleFavorite }) => {
   const imageSource = item.image ? { uri: item.image } : null;
   const { themeVersion } = useTheme();
 
 const styles = React.useMemo(() => StyleSheet.create({
   card: {
-    width: 150,
-    height: 237,
+    width: cardWidth,
+    height: cardWidth * 1.58,
     borderRadius: 20,
     backgroundColor: Colors.white,
     marginTop: 20,

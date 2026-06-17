@@ -8,18 +8,18 @@ import {
     useWindowDimensions,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
-import i18n from "../../localization/i18n";
 import { IMAGES } from "../../constants/images/images";
 import { Ionicons } from '@expo/vector-icons';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { useLanguage } from "../../context/LanguageContext";
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 export default function HeroBanner({ onPress }) {
     const { t } = useTranslation();
     const { width } = useWindowDimensions();
     const { themeVersion } = useTheme();
-    const isRTL = i18n.dir() === 'rtl';
+    const { isRTL } = useLanguage();
 
 const styles = React.useMemo(() => StyleSheet.create({
     banner: {
@@ -59,6 +59,7 @@ const styles = React.useMemo(() => StyleSheet.create({
         color: Colors.textSecondary,
         marginVertical: 12,
         lineHeight: 18,
+        textAlign: 'left',
     },
 
     generateButton: {
@@ -82,13 +83,17 @@ const styles = React.useMemo(() => StyleSheet.create({
     return (
         <View style={[styles.banner, { flexDirection: "row" }]}>
             <View style={[styles.bannerContent, { paddingRight: 10, paddingLeft: 0 }]}>
-                <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', flexWrap: 'wrap', alignItems: 'baseline' }}>
-                    <Text style={styles.bannerTitle}>{t('home.hero.title1')}</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' }}>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.bannerTitle}>{t('home.hero.title1')}</Text>
+                    </View>
                     <MaskedView
                         maskElement={
-                            <Text style={styles.bannerTitle}>
-                                {t('home.hero.titleHighlight')}
-                            </Text>
+                            <View style={{ flexDirection: 'row' }}>
+                                <Text style={styles.bannerTitle}>
+                                    {t('home.hero.titleHighlight')}
+                                </Text>
+                            </View>
                         }
                     >
                         <LinearGradient
@@ -96,19 +101,25 @@ const styles = React.useMemo(() => StyleSheet.create({
                             end={isRTL ? { x: 0, y: 0 } : { x: 1, y: 0 }}
                             colors={[Colors.primary, Colors.error, Colors.success]}
                         >
-                            <Text style={[styles.bannerTitle, { opacity: 0 }]}>
-                                {t('home.hero.titleHighlight')}
-                            </Text>
+                            <View style={{ flexDirection: 'row' }}>
+                                <Text style={[styles.bannerTitle, { opacity: 0 }]}>
+                                    {t('home.hero.titleHighlight')}
+                                </Text>
+                            </View>
                         </LinearGradient>
                     </MaskedView>
-                    <Text style={styles.bannerTitle}>{t('home.hero.title2')}</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.bannerTitle}>{t('home.hero.title2')}</Text>
+                    </View>
                 </View>
 
-                <Text style={[styles.bannerSubTitle, { textAlign: isRTL ? "right" : "left" }]}>
-                    {t('home.hero.subtitle')}
-                </Text>
+                <View style={{ width: '100%', flexDirection: 'row' }}>
+                    <Text style={styles.bannerSubTitle}>
+                        {t('home.hero.subtitle')}
+                    </Text>
+                </View>
 
-                <TouchableOpacity style={[styles.generateButton, { flexDirection: isRTL ? "row-reverse" : "row", alignSelf: isRTL ? "flex-end" : "flex-start" }]} onPress={onPress}>
+                <TouchableOpacity style={[styles.generateButton, { flexDirection: 'row', alignSelf: 'flex-start' }]} onPress={onPress}>
                     <Ionicons name="sparkles" size={16} color="white" />
                     <Text style={styles.generateButtonText}>
                         {t('home.actions.generateOutfit')}

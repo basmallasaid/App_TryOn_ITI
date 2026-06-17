@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, 
-  ActivityIndicator, SafeAreaView, Dimensions, StatusBar, Linking, Platform 
+  ActivityIndicator, Dimensions, StatusBar, Linking, Platform 
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { getProductById } from '../../api/user_services/userService'; 

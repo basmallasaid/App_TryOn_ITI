@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -85,11 +86,12 @@ const SelectLanguageScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.root}>
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        showsVerticalScrollIndicator={false}
-      >
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.root}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+        >
         {/* Logo */}
         <Image
           source={isDarkMode ? IMAGES.REDOLAPY_LOGO_Dark : IMAGES.REDOLAPY_LOGO}
@@ -125,9 +127,10 @@ const SelectLanguageScreen = ({ navigation }) => {
         <EnrichTextComponent
           baseText={t('language.footer')}
         ></EnrichTextComponent>
-      </ScrollView>
-    </View>
-  );
-};
+        </ScrollView>
+      </View>
+    </SafeAreaView>
+    );
+  };
 
 export default SelectLanguageScreen;

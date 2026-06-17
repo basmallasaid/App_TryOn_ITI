@@ -16,8 +16,10 @@ export const StoreHeader = ({ onFilterPress }) => {
       marginBottom: 20,
     },
     textContainer: { flex: 1 },
-    title: { fontSize: 28, fontWeight: 'bold', color: Colors.textPrimary },
-    subtitle: { color: Colors.textMuted, fontSize: 13, marginTop: 12 },
+    titleWrap: { flexDirection: 'row' },
+    title: { fontSize: 28, fontWeight: 'bold', color: Colors.textPrimary, textAlign: 'left' },
+    subtitleWrap: { flexDirection: 'row' },
+    subtitle: { color: Colors.textMuted, fontSize: 13, marginTop: 12, textAlign: 'left' },
     filterBtn: {
       borderWidth: 1,
       borderColor: Colors.borderDefault,
@@ -28,8 +30,8 @@ export const StoreHeader = ({ onFilterPress }) => {
   return (
     <View style={styles.headerContainer}>
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{t('store.title')}</Text>
-        <Text style={styles.subtitle}>{t('store.subtitle')}</Text>
+        <View style={styles.titleWrap}><Text style={styles.title}>{t('store.title')}</Text></View>
+        <View style={styles.subtitleWrap}><Text style={styles.subtitle}>{t('store.subtitle')}</Text></View>
       </View>
       <TouchableOpacity style={styles.filterBtn} onPress={onFilterPress}>
         <Ionicons name="options-outline" size={22} color={Colors.textPrimary} />

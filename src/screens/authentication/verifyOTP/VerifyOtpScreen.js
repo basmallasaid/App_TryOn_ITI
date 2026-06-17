@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -161,6 +162,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>{t('auth.verifyOtp.title')}</Text>
@@ -211,6 +213,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
         <VerificationSucessComponent />
       </SuccessModal>
     </View>
+    </SafeAreaView>
   );
 };
 

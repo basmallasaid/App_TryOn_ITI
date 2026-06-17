@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -168,7 +169,7 @@ const ProfileScreen = ({ navigation }) => {
   const firstName = profile?.profile?.first_name || t("profile.guestFallback");
 
   return (
-    <View style={styles.root}>
+    <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
@@ -247,7 +248,7 @@ const ProfileScreen = ({ navigation }) => {
 
         {/* ── Card 3: Preferences & Privacy ── */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>{t("profile.preferences")}</Text>
+          <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>{t("profile.preferences")}</Text></View>
 
           <PrefRow
             icon="notifications-outline"
@@ -359,7 +360,7 @@ const ProfileScreen = ({ navigation }) => {
           cancelLabel={t("common.cancel")}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -456,11 +457,15 @@ const createStyles = () => StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  sectionTitleWrap: {
+    flexDirection: 'row',
+  },
   sectionTitle: {
     fontFamily: "Roboto_600SemiBold",
     fontSize: 16,
     lineHeight: 16,
     color: Colors.textPrimary,
+    textAlign: 'left',
   },
   customizeText: {
     fontFamily: "Roboto_500Medium",

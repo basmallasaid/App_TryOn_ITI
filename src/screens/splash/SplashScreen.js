@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, View } from 'react-native';
 
 import Animated, {
@@ -92,7 +93,7 @@ const SplashScreen = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
 
       <Animated.Image
         source={IMAGES.REDOLAPY_R_SHAPE_LOGO}
@@ -106,7 +107,7 @@ const SplashScreen = () => {
         resizeMode="contain"
       />
 
-    </View>
+    </SafeAreaView>
   );
 };
 

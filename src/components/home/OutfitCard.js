@@ -70,11 +70,13 @@ const styles = React.useMemo(() => StyleSheet.create({
     fontSize: 22,
     color: Colors.textPrimary,
     marginBottom: 5,
+    textAlign: 'left',
   },
   subtitle: {
     fontFamily: 'Roboto',
     fontSize: 13,
     color: Colors.textSecondary,
+    textAlign: 'left',
     lineHeight: 18,
     marginBottom: 15,
   },
@@ -115,14 +117,18 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
 
       <View style={[styles.contentSection, { paddingLeft: 10, paddingRight: 0 }]}>
-        <Text style={[styles.title, { textAlign: 'left' }]} numberOfLines={1}>
-          {label || t('home.outfitCard.title')}
-        </Text>
-        <Text style={[styles.subtitle, { textAlign: 'left' }]}>
-          {todaysOutfit?.score != null
-            ? `${t('home.outfitCard.score')} ${todaysOutfit.score.toFixed(1)}`
-            : t('home.outfitCard.subtitle')}
-        </Text>
+        <View style={{ width: '100%', flexDirection: 'row' }}>
+          <Text style={styles.title} numberOfLines={1}>
+            {label || t('home.outfitCard.title')}
+          </Text>
+        </View>
+        <View style={{ width: '100%', flexDirection: 'row' }}>
+          <Text style={styles.subtitle}>
+            {todaysOutfit?.score != null
+              ? `${t('home.outfitCard.score')} ${todaysOutfit.score.toFixed(1)}`
+              : t('home.outfitCard.subtitle')}
+          </Text>
+        </View>
 
         <View style={[styles.infoRow, { flexDirection: 'row' }]}>
           <View style={[styles.infoItem, { flexDirection: 'row' }]}>

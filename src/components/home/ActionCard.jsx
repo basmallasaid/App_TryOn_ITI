@@ -36,7 +36,7 @@ const styles = React.useMemo(() => StyleSheet.create({
   innerIcon: { position: 'absolute' },
   textContainer: { flex: 1 },
   cardTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 4 },
-  cardSub: { fontSize: 13, color: Colors.disabled, lineHeight: 18 },
+  cardSub: { fontSize: 13, color: Colors.disabled, lineHeight: 18, textAlign: 'left' },
 }), [themeVersion]);
 
   return (
@@ -61,8 +61,12 @@ const styles = React.useMemo(() => StyleSheet.create({
       </View>
 
       <View style={styles.textContainer}>
-        <Text style={[styles.cardTitle, { color: titleColor }]} numberOfLines={1}>{title}</Text>
-        <Text style={styles.cardSub} numberOfLines={2}>{sub}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={[styles.cardTitle, { color: titleColor }]} numberOfLines={1}>{title}</Text>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={styles.cardSub} numberOfLines={2}>{sub}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );

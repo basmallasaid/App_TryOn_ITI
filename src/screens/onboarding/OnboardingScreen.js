@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View, Text, Animated,
   StyleSheet, Dimensions, StatusBar, PanResponder, Platform,
@@ -185,6 +186,7 @@ const OnboardingScreen = ({ navigation }) => {
 }), [themeVersion]);
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.root} {...panResponder.panHandlers}>
       <StatusBar backgroundColor={Colors.backgroundColor} barStyle={isDarkMode ? "light-content" : "dark-content"} />
 
@@ -251,6 +253,7 @@ const OnboardingScreen = ({ navigation }) => {
         )}
       </View>
     </View>
+    </SafeAreaView>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import { ActivityIndicator, Modal, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import Slider from '@react-native-community/slider';
@@ -95,6 +96,7 @@ export const FilterModal = ({
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false}>
+      <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <View style={[styles.header, { flexDirection: "row" }]}>
           <CustomBackButton onPress={onClose} />
@@ -207,6 +209,7 @@ export const FilterModal = ({
           )}
         </TouchableOpacity>
       </SafeAreaView>
+      </SafeAreaProvider>
     </Modal>
   );
 };

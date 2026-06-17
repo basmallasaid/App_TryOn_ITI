@@ -4,8 +4,10 @@ import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 const StatCard = ({ icon, title, subtitle, onPress }) => {
   const { themeVersion } = useTheme();
+  const { isRTL } = useLanguage();
 const styles = React.useMemo(() => StyleSheet.create({
   card: {
     flex: 1,
@@ -37,7 +39,7 @@ const styles = React.useMemo(() => StyleSheet.create({
 }), [themeVersion]);
 
   return (
-    <TouchableOpacity style={[styles.card, { flexDirection: 'row' }]} onPress={onPress} activeOpacity={0.8}>
+    <TouchableOpacity style={[styles.card, { flexDirection: isRTL ? 'row-reverse' : 'row' }]} onPress={onPress} activeOpacity={0.8}>
       <Ionicons name={icon} size={22} color={Colors.textPrimary} />
       <View style={styles.texts}>
         <Text style={styles.title}>{title}</Text>

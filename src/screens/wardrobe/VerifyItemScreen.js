@@ -1,4 +1,5 @@
 import React, {  useState, useRef, useCallback  } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -201,6 +202,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.root}>
       <StatusBar
         barStyle={isDarkMode ? "light-content" : "dark-content"}
@@ -329,6 +331,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
         )}
       </Animated.View>
     </View>
+    </SafeAreaView>
   );
 };
 

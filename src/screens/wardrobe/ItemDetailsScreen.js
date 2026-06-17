@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -9,7 +10,6 @@ import {
   TouchableOpacity,
   StatusBar,
   Platform,
-  SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {

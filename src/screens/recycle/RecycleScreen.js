@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -6,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   FlatList,
   Platform,
   StatusBar,

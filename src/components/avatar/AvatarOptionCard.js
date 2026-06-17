@@ -93,9 +93,11 @@ const styles = React.useMemo(() => StyleSheet.create({
       activeOpacity={0.85}
     >
       <View style={styles.leftContent}>
-        <Text style={[styles.title, selected && styles.titleSelected]}>
-          {title}
-        </Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={[styles.title, selected && styles.titleSelected, { textAlign: 'left' }]}>
+            {title}
+          </Text>
+        </View>
 
         {badge ? (
           <View style={styles.badge}>
@@ -103,11 +105,13 @@ const styles = React.useMemo(() => StyleSheet.create({
           </View>
         ) : null}
 
-        <Text
-          style={[styles.description, selected && styles.descriptionSelected]}
-        >
-          {description}
-        </Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text
+            style={[styles.description, selected && styles.descriptionSelected, { textAlign: 'left' }]}
+          >
+            {description}
+          </Text>
+        </View>
       </View>
 
       {rightContent ? (

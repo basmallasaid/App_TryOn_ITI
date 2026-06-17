@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Platform,
@@ -82,12 +82,12 @@ const GeneralInfoTab = ({ age, gender, onUpdate }) => {
       <Text style={subStyles.genderLabel}>{t("avatar.create.gender")}</Text>
       <View style={subStyles.genderRow}>
         <GenderOptionCard
-          gender={t("avatar.create.male")}
+          gender="Male"
           selected={gender === "Male"}
           onPress={() => onUpdate("gender", "Male")}
         />
         <GenderOptionCard
-          gender={t("avatar.create.female")}
+          gender="Female"
           selected={gender === "Female"}
           onPress={() => onUpdate("gender", "Female")}
         />

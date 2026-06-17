@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.basmalla_said.ReDolapy"
+      "bundleIdentifier": "com.basmalla.said.ReDolapy"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,7 +35,8 @@
       "expo-web-browser",
       "expo-notifications",
       "@react-native-community/datetimepicker",
-      "expo-background-task"
+      "expo-background-task",
+      "expo-asset"
     ],
     "extra": {
       "eas": {

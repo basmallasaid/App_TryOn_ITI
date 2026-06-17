@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -6,7 +7,6 @@ import {
   StyleSheet,
   Platform,
   StatusBar,
-  SafeAreaView,
   Alert,
   Linking,
 } from "react-native";
@@ -105,10 +105,12 @@ export default function SubscriptionScreen({ navigation }) {
       },
       container: {
         flex: 1,
-        paddingHorizontal: 20,
       },
       scrollContent: {
         paddingBottom: 50,
+      },
+      scrollInner: {
+        paddingHorizontal: 20,
       },
       header: {
         alignItems: "center",
@@ -127,6 +129,9 @@ export default function SubscriptionScreen({ navigation }) {
         fontSize: 12,
         color: Colors.iconGray,
         textAlign: "center",
+      },
+      planCardWrap: {
+        alignItems: 'center',
       },
       plansGap: {
         height: 16,
@@ -156,6 +161,7 @@ export default function SubscriptionScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        <View style={styles.scrollInner}>
         <CustomBackButton
           onPress={() => navigation.navigate(ROUTES.PROFILE_MAIN)}
           iconColor={Colors.iconGray}
@@ -170,6 +176,7 @@ export default function SubscriptionScreen({ navigation }) {
 
         <View style={styles.plansGap} />
 
+        <View style={styles.planCardWrap}>
         <PlanCard
           name={t("subscription.essential")}
           price={t("subscriptionPrices.essentialPrice")}
@@ -190,8 +197,11 @@ export default function SubscriptionScreen({ navigation }) {
           buttonTextColor={Colors.iconGray}
         />
 
+        </View>
+
         <View style={styles.plansGap} />
 
+        <View style={styles.planCardWrap}>
         <PlanCard
           badge={t("subscription.popular")}
           name={t("subscription.proStylist")}
@@ -263,9 +273,12 @@ export default function SubscriptionScreen({ navigation }) {
           }
         />
 
+        </View>
+
         <View style={styles.divider} />
 
         <Text style={styles.disclaimer}>{t("subscription.disclaimer")}</Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

@@ -114,6 +114,17 @@ export default function AppStack() {
       <Tab.Screen
         name={ROUTES.PROFILE}
         component={ProfileStack}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            const state = navigation.getState();
+            const profileRoute = state?.routes?.find(r => r.name === ROUTES.PROFILE);
+            const stackState = profileRoute?.state;
+            if (stackState?.index > 0) {
+              e.preventDefault();
+              navigation.navigate(ROUTES.PROFILE, { screen: ROUTES.PROFILE_MAIN });
+            }
+          },
+        })}
         options={{
           tabBarIcon: ({ color, focused }) => (
             <Ionicons

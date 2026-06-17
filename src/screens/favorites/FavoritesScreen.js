@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -218,22 +219,25 @@ const FavoritesScreen = ({ navigation }) => {
 
   if (loading) {
     return (
-      <View style={styles.screen}>
-        <View style={styles.header}>
-          <CustomBackButton onPress={() => navigation.goBack()} />
-          <Text style={styles.headerTitle}>{t('favorites.title')}</Text>
-          <View style={styles.headerSpacer} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.screen}>
+          <View style={styles.header}>
+            <CustomBackButton onPress={() => navigation.goBack()} />
+            <Text style={styles.headerTitle}>{t('favorites.title')}</Text>
+            <View style={styles.headerSpacer} />
+          </View>
+          <View style={styles.centerContainer}>
+            <ActivityIndicator size="large" color={Colors.primary} />
+          </View>
         </View>
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-        </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (!loading && items.length === 0) {
     return (
-      <View style={styles.screen}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.screen}>
         <View style={styles.header}>
           <CustomBackButton onPress={() => navigation.goBack()} />
           <Text style={styles.headerTitle}>{t('favorites.title')}</Text>
@@ -247,11 +251,13 @@ const FavoritesScreen = ({ navigation }) => {
           <Text style={styles.emptySubtitle}>{t('favorites.emptySubtitle')}</Text>
         </View>
       </View>
+    </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.screen}>
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>{t('favorites.title')}</Text>
@@ -342,8 +348,9 @@ const FavoritesScreen = ({ navigation }) => {
           }}
         />
       )}
-    </View>
-  );
-};
+      </View>
+    </SafeAreaView>
+    );
+  };
 
 export default FavoritesScreen;

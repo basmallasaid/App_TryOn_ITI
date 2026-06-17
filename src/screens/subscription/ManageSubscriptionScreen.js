@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -6,7 +7,6 @@ import {
   StyleSheet,
   Platform,
   StatusBar,
-  SafeAreaView,
   ActivityIndicator,
 } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -50,10 +50,12 @@ export default function ManageSubscriptionScreen({ navigation }) {
         },
         container: {
           flex: 1,
-          paddingHorizontal: 20,
         },
         scrollContent: {
           paddingBottom: 50,
+        },
+        scrollInner: {
+          paddingHorizontal: 20,
         },
         centered: {
           flex: 1,
@@ -256,6 +258,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        <View style={styles.scrollInner}>
         <CustomBackButton
           onPress={() => navigation.navigate(ROUTES.PROFILE_MAIN)}
           iconColor={Colors.iconGray}
@@ -318,6 +321,7 @@ export default function ManageSubscriptionScreen({ navigation }) {
             onPress={() => setModalVisible(true)}
             backgroundColor={Colors.error}
           />
+        </View>
         </View>
       </ScrollView>
 

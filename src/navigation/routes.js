@@ -67,7 +67,7 @@ export const ROUTES = {
   RECENT_RECYCLES: 'RecentRecycles',
 
   // Profile stack
-  PROFILE_MAIN: 'Profile',
+  PROFILE_MAIN: 'ProfileMain',
   EDIT_PROFILE: 'EditProfile',
   FAVORITES: 'Favorites',
   AVATAR_DETAIL: 'AvatarDetail',

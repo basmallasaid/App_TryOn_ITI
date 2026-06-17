@@ -1,6 +1,9 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 const ProfileAvatar = ({ firstName, lastName, imageUri }) => {
   const first = (firstName || '')[0] || '';
@@ -15,12 +18,14 @@ const ProfileAvatar = ({ firstName, lastName, imageUri }) => {
         <Image
           source={{ uri: imageUri }}
           style={{ width: 52, height: 52, borderRadius: 26, overflow: 'hidden' }}
-          resizeMode="cover"
+          contentFit="cover"
+          placeholder={BLURHASH_PLACEHOLDER}
+          transition={300}
         />
       ) : (
         <Text style={{ color: Colors.textInverse, fontSize: 20, fontWeight: '700' }}>{initials || '?'}</Text>
       )}
-      <View style={{ position: 'absolute', bottom: -2, right: -2, width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.white, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: Colors.primary }}>
+      <View style={{ position: 'absolute', bottom: -2, end: -2, width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.white, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: Colors.primary }}>
         <Ionicons name="camera" size={11} color={Colors.primary} />
       </View>
     </View>

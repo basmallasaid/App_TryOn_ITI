@@ -6,8 +6,10 @@ const userKey = (key, userId) => userId ? `${key}_${userId}` : key;
 
 export const setWardrobeCache = async (items, userId) => {
   try {
-    await AsyncStorage.setItem(userKey('wardrobe_cache', userId), JSON.stringify(items));
-    await AsyncStorage.setItem(userKey('wardrobe_cache_ts', userId), String(Date.now()));
+    await AsyncStorage.multiSet([
+      [userKey('wardrobe_cache', userId), JSON.stringify(items)],
+      [userKey('wardrobe_cache_ts', userId), String(Date.now())],
+    ]);
   } catch (e) {
     console.log('AsyncStorageCache: setWardrobeCache failed', e.message);
   }
@@ -15,8 +17,12 @@ export const setWardrobeCache = async (items, userId) => {
 
 export const getWardrobeCache = async (userId) => {
   try {
-    const raw = await AsyncStorage.getItem(userKey('wardrobe_cache', userId));
-    const ts = await AsyncStorage.getItem(userKey('wardrobe_cache_ts', userId));
+    const pairs = await AsyncStorage.multiGet([
+      userKey('wardrobe_cache', userId),
+      userKey('wardrobe_cache_ts', userId),
+    ]);
+    const raw = pairs[0]?.[1];
+    const ts = pairs[1]?.[1];
     if (!raw || !ts) return null;
     if (Date.now() - Number(ts) > CACHE_TTL) return null;
     return JSON.parse(raw);
@@ -28,8 +34,10 @@ export const getWardrobeCache = async (userId) => {
 
 export const clearWardrobeCache = async (userId) => {
   try {
-    await AsyncStorage.removeItem(userKey('wardrobe_cache', userId));
-    await AsyncStorage.removeItem(userKey('wardrobe_cache_ts', userId));
+    await AsyncStorage.multiRemove([
+      userKey('wardrobe_cache', userId),
+      userKey('wardrobe_cache_ts', userId),
+    ]);
   } catch (e) {
     console.log('AsyncStorageCache: clearWardrobeCache failed', e.message);
   }
@@ -37,8 +45,10 @@ export const clearWardrobeCache = async (userId) => {
 
 export const setProductsCache = async (products, userId) => {
   try {
-    await AsyncStorage.setItem(userKey('products_cache', userId), JSON.stringify(products));
-    await AsyncStorage.setItem(userKey('products_cache_ts', userId), String(Date.now()));
+    await AsyncStorage.multiSet([
+      [userKey('products_cache', userId), JSON.stringify(products)],
+      [userKey('products_cache_ts', userId), String(Date.now())],
+    ]);
   } catch (e) {
     console.log('AsyncStorageCache: setProductsCache failed', e.message);
   }
@@ -46,8 +56,12 @@ export const setProductsCache = async (products, userId) => {
 
 export const getProductsCache = async (userId) => {
   try {
-    const raw = await AsyncStorage.getItem(userKey('products_cache', userId));
-    const ts = await AsyncStorage.getItem(userKey('products_cache_ts', userId));
+    const pairs = await AsyncStorage.multiGet([
+      userKey('products_cache', userId),
+      userKey('products_cache_ts', userId),
+    ]);
+    const raw = pairs[0]?.[1];
+    const ts = pairs[1]?.[1];
     if (!raw || !ts) return null;
     if (Date.now() - Number(ts) > CACHE_TTL) return null;
     return JSON.parse(raw);
@@ -59,8 +73,10 @@ export const getProductsCache = async (userId) => {
 
 export const clearProductsCache = async (userId) => {
   try {
-    await AsyncStorage.removeItem(userKey('products_cache', userId));
-    await AsyncStorage.removeItem(userKey('products_cache_ts', userId));
+    await AsyncStorage.multiRemove([
+      userKey('products_cache', userId),
+      userKey('products_cache_ts', userId),
+    ]);
   } catch (e) {
     console.log('AsyncStorageCache: clearProductsCache failed', e.message);
   }
@@ -97,8 +113,10 @@ export const getDailyOutfitData = async (userId) => {
 
 export const clearDailyOutfit = async (userId) => {
   try {
-    await AsyncStorage.removeItem(dailyKey(DAILY_OUTFIT_DATE_KEY, userId));
-    await AsyncStorage.removeItem(dailyKey(DAILY_OUTFIT_DATA_KEY, userId));
+    await AsyncStorage.multiRemove([
+      dailyKey(DAILY_OUTFIT_DATE_KEY, userId),
+      dailyKey(DAILY_OUTFIT_DATA_KEY, userId),
+    ]);
   } catch (e) {
     console.log('AsyncStorageCache: clearDailyOutfit failed', e.message);
   }

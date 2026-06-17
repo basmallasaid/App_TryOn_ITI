@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   FlatList,
@@ -8,7 +9,7 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useProfileContext } from '../../context/ProfileContext';
@@ -32,13 +33,12 @@ import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import { ROUTES } from '../../navigation/routes';
 import { translateWardrobeItem } from '../../utils/dynamicTranslator';
 import i18n from '../../localization/i18n';
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = 175; // Based on your WardrobeItemCard width
+const PADDING = 16;
 const GAP = 15;
-const TOTAL_GRID_WIDTH = CARD_WIDTH * 2 + GAP;
-const HORIZONTAL_PADDING = (SCREEN_WIDTH - TOTAL_GRID_WIDTH) / 2;
 const WardrobeScreen = ({ navigation }) => {
   const { themeVersion } = useTheme();
+  const { width: screenWidth } = useWindowDimensions();
+  const cardWidth = useMemo(() => (screenWidth - PADDING * 2 - GAP) / 2, [screenWidth]);
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { showFeedback } = useFeedback();
@@ -205,6 +205,7 @@ const WardrobeScreen = ({ navigation }) => {
   );
 
   return (
+    <SafeScreen style={{ flex: 1 }}>
     <View style={styles.root}>
       {/* SelectionModal must be available for Android users on this screen */}
       {Platform.OS === 'android' && (
@@ -234,9 +235,10 @@ const WardrobeScreen = ({ navigation }) => {
           ListHeaderComponent={renderHeader}
           renderItem={({ item }) =>
             item.type === 'add' ? (
-              <AddItemCard onPress={handleAddItem} />
+              <AddItemCard cardWidth={cardWidth} onPress={handleAddItem} />
             ) : (
               <WardrobeItemCard
+                cardWidth={cardWidth}
                 item={item}
                 isFavorite={isFavorite(item._id)}
                 onPress={() =>
@@ -272,6 +274,7 @@ const WardrobeScreen = ({ navigation }) => {
         />
       )}
     </View>
+    </SafeScreen>
   );
 };
 
@@ -281,7 +284,6 @@ const createStyles = () => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   centered: {
     flex: 1,
@@ -307,8 +309,8 @@ const createStyles = () => StyleSheet.create({
     gap: 8,
   },
   row: {
-    paddingHorizontal: Math.max(16, HORIZONTAL_PADDING),
-    gap: 15,
+    paddingHorizontal: PADDING,
+    gap: GAP,
   },
   analyzingWrap: {
     alignItems: 'center',

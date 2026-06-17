@@ -4,7 +4,6 @@ import { ENDPOINTS } from '../../config/endpoints';
 const formDataConfig = {
   headers: { 'Content-Type': 'multipart/form-data' },
   transformRequest: (data) => data,
-  timeout: 120000,
 };
 
 export const virtualTryOn = async (formData) => {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -111,6 +112,7 @@ const EditProfileScreen = ({ navigation }) => {
   }
 
   return (
+    <SafeScreen style={{ flex: 1 }}>
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
@@ -201,6 +203,7 @@ const EditProfileScreen = ({ navigation }) => {
         />
       </ScrollView>
     </KeyboardAvoidingView>
+    </SafeScreen>
   );
 };
 

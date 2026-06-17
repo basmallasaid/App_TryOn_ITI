@@ -1,9 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View, Text, Animated,
   StyleSheet, Dimensions, StatusBar, PanResponder, Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../context/LanguageContext';
 import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
 import CustomizeAppButtonOutlined from '../../components/common/CustomizeAppButtonOutlined';
 import Colors from '../../constants/theme/colors';
@@ -17,6 +19,7 @@ const { width: W, height: H } = Dimensions.get('window');
 const OnboardingScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { themeVersion, isDarkMode } = useTheme();
+  const { isRTL } = useLanguage();
 
   const SLIDES = [
     {
@@ -95,9 +98,11 @@ const OnboardingScreen = ({ navigation }) => {
       onMoveShouldSetPanResponder: (_, g) =>
         Math.abs(g.dx) > 12 && Math.abs(g.dy) < 40,
       onPanResponderRelease: (_, g) => {
-        if (g.dx < -50)
+        const swipeThreshold = 50;
+        const dx = isRTL ? -g.dx : g.dx;
+        if (dx < -swipeThreshold)
           transitionTo(Math.min(activeIndexRef.current + 1, SLIDES.length - 1));
-        else if (g.dx > 50)
+        else if (dx > swipeThreshold)
           transitionTo(Math.max(activeIndexRef.current - 1, 0));
       },
     })
@@ -108,7 +113,6 @@ const OnboardingScreen = ({ navigation }) => {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
     alignItems: 'center',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     paddingBottom: 40,
     marginTop: 40,
   },
@@ -185,6 +189,7 @@ const OnboardingScreen = ({ navigation }) => {
 }), [themeVersion]);
 
   return (
+    <SafeScreen style={{ flex: 1 }}>
     <View style={styles.root} {...panResponder.panHandlers}>
       <StatusBar backgroundColor={Colors.backgroundColor} barStyle={isDarkMode ? "light-content" : "dark-content"} />
 
@@ -251,6 +256,7 @@ const OnboardingScreen = ({ navigation }) => {
         )}
       </View>
     </View>
+    </SafeScreen>
   );
 };
 

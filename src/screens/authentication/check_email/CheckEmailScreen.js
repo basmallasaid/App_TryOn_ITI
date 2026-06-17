@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SafeScreen from '../../../components/common/SafeScreen';
 import {
   Linking,
   View,
@@ -34,7 +35,6 @@ const CheckEmailScreen = ({ route, navigation }) => {
       flex: 1,
       backgroundColor: Colors.backgroundColor,
       paddingHorizontal: 24,
-      paddingTop: Platform.OS === 'ios' ? 80 : 124,
       paddingBottom: 36,
     },
 
@@ -152,9 +152,11 @@ const CheckEmailScreen = ({ route, navigation }) => {
   };
 
   return (
+    <SafeScreen>
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContainer}
+      style={{ flex: 1 }}
     >
       <View style={styles.container}>
 
@@ -218,6 +220,7 @@ const CheckEmailScreen = ({ route, navigation }) => {
 
       </View>
     </ScrollView>
+    </SafeScreen>
   );
 };
 

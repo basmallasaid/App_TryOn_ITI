@@ -42,7 +42,7 @@ const styles = React.useMemo(() => StyleSheet.create({
           name={icon}
           size={20}
           color={Colors.textPrimary}
-          style={[styles.icon, { marginRight: 10, marginLeft: 0 }]}
+          style={[styles.icon, { marginEnd: 10 }]}
         />
         <Text style={styles.title}>{title}</Text>
       </View>

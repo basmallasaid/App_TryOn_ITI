@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -6,8 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  Platform,
-  StatusBar,
   I18nManager,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
@@ -21,6 +20,7 @@ import { setLanguageSeen, saveLanguage } from "../../storage/TokenStorage";
 import EnrichTextComponent from "../../components/common/EnrichTextComponent";
 import { ROUTES } from "../../navigation/routes";
 import i18n from "../../localization/i18n";
+import * as Updates from "expo-updates";
 const { height: H } = Dimensions.get("window");
 
 const LANGUAGES = ["en", "ar"];
@@ -39,7 +39,6 @@ const SelectLanguageScreen = ({ navigation }) => {
     scroll: {
       flexGrow: 1,
       paddingHorizontal: 24,
-      paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 60,
       paddingBottom: 40,
       alignItems: "center",
     },
@@ -81,15 +80,16 @@ const SelectLanguageScreen = ({ navigation }) => {
     await saveLanguage(selected);
     i18n.changeLanguage(selected);
     I18nManager.forceRTL(selected === "ar");
-    navigation.replace(ROUTES.ONBOARDING);
+    await Updates.reloadAsync();
   };
 
   return (
-    <View style={styles.root}>
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        showsVerticalScrollIndicator={false}
-      >
+    <SafeScreen style={{ flex: 1 }}>
+      <View style={styles.root}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+        >
         {/* Logo */}
         <Image
           source={isDarkMode ? IMAGES.REDOLAPY_LOGO_Dark : IMAGES.REDOLAPY_LOGO}
@@ -125,9 +125,10 @@ const SelectLanguageScreen = ({ navigation }) => {
         <EnrichTextComponent
           baseText={t('language.footer')}
         ></EnrichTextComponent>
-      </ScrollView>
-    </View>
-  );
-};
+        </ScrollView>
+      </View>
+    </SafeScreen>
+    );
+  };
 
 export default SelectLanguageScreen;

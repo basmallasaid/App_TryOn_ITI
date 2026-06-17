@@ -11,7 +11,6 @@ export const analyzeRecycle = async (formData) => {
       transformRequest: (data, headers) => {
         return data;
       },
-      timeout: 120000,
     }
   );
   return data;
@@ -21,7 +20,7 @@ export const generateRecycleIdea = async (sessionId, ideaId, model) => {
   const { data } = await apiClient.post(
     `/recycle/${sessionId}/generate/${ideaId}`,
     { model },
-    { timeout: 120000 }
+    {}
   );
   return data;
 };

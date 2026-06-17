@@ -1,4 +1,6 @@
 import React, {  useState, useRef, useCallback  } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -67,6 +69,8 @@ const VerifyItemScreen = ({ route, navigation }) => {
   const { refetch, updateItem } = useWardrobe();
   const { t } = useTranslation();
   const { showFeedback } = useFeedback();
+
+  const insets = useSafeAreaInsets();
 
   const categoryLabels = {
     Bottom: t("wardrobe.categories.bottom"),
@@ -201,6 +205,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
   };
 
   return (
+    <SafeScreen style={{ flex: 1 }}>
     <View style={styles.root}>
       <StatusBar
         barStyle={isDarkMode ? "light-content" : "dark-content"}
@@ -209,7 +214,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
       />
 
       {/* ── Header: stacked layout ── */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <View style={styles.headerText}>
           <Text style={styles.title}>{t("wardrobe.verify.title")}</Text>
@@ -329,6 +334,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
         )}
       </Animated.View>
     </View>
+    </SafeScreen>
   );
 };
 
@@ -338,8 +344,6 @@ const createStyles = () => StyleSheet.create({
     backgroundColor: Colors.backgroundColor,
   },
   header: {
-    paddingTop:
-      Platform.OS === "ios" ? 60 : (StatusBar.currentHeight ?? 32) + 12,
     paddingHorizontal: 16,
     paddingBottom: 12,
   },

@@ -28,6 +28,7 @@ const LightColors = {
   disabled: "#A0A6B2",
 
   divider: "#E9EBEE",
+  tabInactive: "#E9EBEE",
 
   textInverse: "#FFFFFF",
 };
@@ -62,6 +63,7 @@ const DarkColors = {
   disabled: "#A0A6B2",
 
   divider: "#2A313C",
+  tabInactive: "#161B22",
 
   textInverse: "#FFFFFF",
 };

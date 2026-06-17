@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Platform, ScrollView } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import SafeScreen from '../../components/common/SafeScreen';
 import { useProfileContext } from '../../context/ProfileContext';
-import { getAvatarById } from '../../api/avatar_services/avatarService';
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import CustomizeAppButtonFilled from '../../components/common/CustomizeAppButtonFilled';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 const { width } = Dimensions.get('window');
 const IMAGE_SIZE = width - 80;
@@ -21,25 +23,17 @@ export default function AvatarDetailScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const route = useRoute();
-  const insets = useSafeAreaInsets();
-  const { profile } = useProfileContext();
-  const [avatarUri, setAvatarUri] = useState(route?.params?.avatarUri || null);
+  const { profile, avatarImage } = useProfileContext();
+  const [avatarUri, setAvatarUri] = useState(route?.params?.avatarUri || avatarImage || null);
 
   const isSubscribed = profile?.subscriptionStatus === "active";
   const hasAvatar = profile?.avatars?.length > 0;
 
   useEffect(() => {
-    if (hasAvatar) {
-      const lastId = profile.avatars[profile.avatars.length - 1];
-      const id = lastId?._id || lastId;
-      getAvatarById(id)
-        .then((res) => {
-          const uri = res?.avatar?.image_url || res?.image || res?.imageUrl || res?.url || null;
-          if (uri) setAvatarUri(uri);
-        })
-        .catch(() => {});
+    if (avatarImage) {
+      setAvatarUri(avatarImage);
     }
-  }, [profile?.avatars]);
+  }, [avatarImage]);
 
   const handleCustomize = () => {
     if (!hasAvatar || isSubscribed) {
@@ -53,7 +47,7 @@ export default function AvatarDetailScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <SafeScreen>
       <View style={[styles.header, { flexDirection: "row" }]}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={[styles.headerTitle, { textAlign: "center" }]}>{t('profile.avatarTitle')}</Text>
@@ -63,7 +57,7 @@ export default function AvatarDetailScreen() {
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <View style={styles.imageCard}>
           {avatarUri ? (
-            <Image source={{ uri: avatarUri }} style={styles.avatarImage} resizeMode="contain" />
+            <Image source={{ uri: avatarUri }} style={styles.avatarImage} contentFit="contain" placeholder={BLURHASH_PLACEHOLDER} transition={300} />
           ) : (
             <View style={styles.placeholder}>
               <Ionicons name="person-circle-outline" size={60} color={Colors.borderDefault} />
@@ -96,7 +90,7 @@ export default function AvatarDetailScreen() {
           iconPosition="right"
         />
       </ScrollView>
-    </View>
+    </SafeScreen>
   );
 }
 
@@ -107,7 +101,7 @@ const createStyles = () => StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 12,
   },
   headerTitle: {

@@ -1,9 +1,12 @@
 import React from 'react';
-import { TouchableOpacity, View, Text, ImageBackground, StyleSheet, Platform } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet, Platform } from 'react-native';
+import { ImageBackground } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 const RecentItemCard = ({ item, isFavorite, onToggleFavorite, onPress }) => {
   const imageUri = item.imageUrl || item.image || null;
@@ -39,7 +42,7 @@ const styles = React.useMemo(() => StyleSheet.create({
   favoriteBtnContainer: {
     position: 'absolute',
     top: 10,
-    right: 10,
+    end: 10,
     zIndex: 1,
   },
   blurCircle: {
@@ -74,7 +77,9 @@ const styles = React.useMemo(() => StyleSheet.create({
         source={imageUri ? { uri: imageUri } : null}
         style={styles.image}
         imageStyle={styles.imageStyle}
-        resizeMode="cover"
+        contentFit="cover"
+        placeholder={BLURHASH_PLACEHOLDER}
+        transition={300}
       >
         <TouchableOpacity
           style={styles.favoriteBtnContainer}

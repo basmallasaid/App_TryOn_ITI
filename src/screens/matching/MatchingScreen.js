@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -6,10 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   FlatList,
-  Platform,
-  StatusBar,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -324,7 +322,7 @@ export default function MatchingScreen({ navigation }) {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <View style={styles.header}>
         <CustomBackButton
           onPress={() => navigation.goBack()}
@@ -476,7 +474,7 @@ export default function MatchingScreen({ navigation }) {
                     activeOpacity={0.7}
                   >
                     {isSelected ? (
-                      <View style={{ marginRight: 12 }}>
+                      <View style={{ marginEnd: 12 }}>
                         <GradientBorder
                           width={90}
                           height={110}
@@ -720,7 +718,7 @@ export default function MatchingScreen({ navigation }) {
       </View>
 
       <LoadingOverlay visible={generating} type="general" />
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
 
@@ -729,7 +727,6 @@ const createStyles = () =>
     safeArea: {
       flex: 1,
       backgroundColor: Colors.backgroundColor,
-      paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
     header: {
       flexDirection: "row",
@@ -762,7 +759,7 @@ const createStyles = () =>
     },
     uploadOptions: {
       flexDirection: "row",
-      paddingHorizontal: 15,
+      paddingHorizontal: 20,
       marginTop: 25,
     },
     rowBetween: {
@@ -784,7 +781,7 @@ const createStyles = () =>
       color: Colors.textPrimary,
     },
     wardrobeList: {
-      paddingLeft: 20,
+      paddingStart: 20,
       marginTop: 5,
     },
     wardrobeItemCard: {
@@ -792,7 +789,7 @@ const createStyles = () =>
       height: 110,
       backgroundColor: Colors.white,
       borderRadius: 12,
-      marginRight: 12,
+      marginEnd: 12,
       justifyContent: "center",
       alignItems: "center",
       borderWidth: 1,
@@ -805,7 +802,7 @@ const createStyles = () =>
     checkIcon: {
       position: "absolute",
       top: 5,
-      right: 5,
+      end: 5,
     },
     selectedContent: {
       flex: 1,
@@ -813,7 +810,7 @@ const createStyles = () =>
       alignItems: "center",
     },
     matchList: {
-      paddingLeft: 20,
+      paddingStart: 20,
       marginTop: 5,
     },
     matchCard: {
@@ -821,7 +818,7 @@ const createStyles = () =>
       height: 180,
       backgroundColor: Colors.white,
       borderRadius: 15,
-      marginRight: 15,
+      marginEnd: 15,
       justifyContent: "center",
       alignItems: "center",
       borderWidth: 1.5,
@@ -850,7 +847,7 @@ const createStyles = () =>
     scoreBadge: {
       position: "absolute",
       top: 10,
-      left: 10,
+      start: 10,
       backgroundColor: Colors.secondary,
       paddingHorizontal: 8,
       paddingVertical: 4,
@@ -865,7 +862,7 @@ const createStyles = () =>
     heartIcon: {
       position: "absolute",
       top: 12,
-      right: 10,
+      end: 10,
       zIndex: 1,
     },
     selectedSection: {
@@ -941,7 +938,7 @@ const createStyles = () =>
     removeBtn: {
       position: "absolute",
       top: 12,
-      right: 12,
+      end: 12,
       width: 28,
       height: 28,
       borderRadius: 14,

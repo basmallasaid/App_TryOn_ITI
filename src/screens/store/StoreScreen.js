@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View, Text, Platform, StatusBar } from 'react-native';
+import SafeScreen from '../../components/common/SafeScreen';
+import { ActivityIndicator, FlatList, StyleSheet, View, Text } from 'react-native';
 import { StoreHeader } from '../../components/store/StoreHeader';
 import { ProductCard } from '../../components/store/ProductCard';
 import { SearchBar } from '../../components/store/SearchBar';
@@ -198,56 +199,62 @@ export default function StoreScreen() {
 
     if (loading) {
         return (
-            <View style={[styles.screenWrapper, styles.center]}>
-                <ActivityIndicator size="large" color={Colors.primarybrand} />
-            </View>
+            <SafeScreen style={{ flex: 1 }}>
+                <View style={[styles.screenWrapper, styles.center]}>
+                    <ActivityIndicator size="large" color={Colors.primarybrand} />
+                </View>
+            </SafeScreen>
         );
     }
 
     if (error) {
         return (
-            <View style={[styles.screenWrapper, styles.center]}>
-                <Text style={styles.errorText}>{error}</Text>
-            </View>
+            <SafeScreen style={{ flex: 1 }}>
+                <View style={[styles.screenWrapper, styles.center]}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            </SafeScreen>
         );
     }
 
     return (
-        <View style={styles.screenWrapper}>
-            <FlatList
-                data={filteredProducts}
-                numColumns={2}
-                columnWrapperStyle={styles.row}
-                ListHeaderComponent={listHeader}
-                renderItem={({ item }) => (
-                    <ProductCard
-                        {...item}
-                        isFavorite={isFavorite(item.id)}
-                        onToggleFavorite={async () => {
-                            try {
-                                await toggleFavorite(item.id, "PRODUCT");
-                            } catch (e) {
-                                refetchFavorites();
-                            }
-                        }}
-                        onPress={() => navigation.navigate(ROUTES.PRODUCT_DETAIL, { productId: item.id })}
-                        onTryOnPress={() => handleTryOn(item)}
-                    />
-                )}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={{ paddingBottom: 20 }}
-                removeClippedSubviews={true}
-                maxToRenderPerBatch={8}
-                updateCellsBatchingPeriod={50}
-                windowSize={7}
-                initialNumToRender={6}
-                ListEmptyComponent={() => (
-                    <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyTitle}>{t('store.noProducts')}</Text>
-                    </View>
-                )}
-            />
-        </View>
+        <SafeScreen style={{ flex: 1 }}>
+            <View style={styles.screenWrapper}>
+                <FlatList
+                    data={filteredProducts}
+                    numColumns={2}
+                    columnWrapperStyle={styles.row}
+                    ListHeaderComponent={listHeader}
+                    renderItem={({ item }) => (
+                        <ProductCard
+                            {...item}
+                            isFavorite={isFavorite(item.id)}
+                            onToggleFavorite={async () => {
+                                try {
+                                    await toggleFavorite(item.id, "PRODUCT");
+                                } catch (e) {
+                                    refetchFavorites();
+                                }
+                            }}
+                            onPress={() => navigation.navigate(ROUTES.PRODUCT_DETAIL, { productId: item.id })}
+                            onTryOnPress={() => handleTryOn(item)}
+                        />
+                    )}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                    removeClippedSubviews={true}
+                    maxToRenderPerBatch={8}
+                    updateCellsBatchingPeriod={50}
+                    windowSize={7}
+                    initialNumToRender={6}
+                    ListEmptyComponent={() => (
+                        <View style={styles.emptyContainer}>
+                            <Text style={styles.emptyTitle}>{t('store.noProducts')}</Text>
+                        </View>
+                    )}
+                />
+            </View>
+        </SafeScreen>
     );
 }
 
@@ -255,7 +262,6 @@ const createStyles = () => StyleSheet.create({
      screenWrapper: {
         flex: 1,
         backgroundColor: Colors.backgroundColor,
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
     listContent: {
         paddingHorizontal: 12, 

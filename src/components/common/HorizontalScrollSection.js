@@ -38,11 +38,11 @@ export default function HorizontalScrollSection({
     marginTop: 3,
   },
   scrollContent: {
-    paddingRight: 20,
+    paddingEnd: 20,
     paddingBottom: 10,
   },
   itemWrapper: {
-    marginRight: 12,
+    marginEnd: 12,
   },
   seeMoreCard: {
     justifyContent: 'center',
@@ -88,4 +88,3 @@ export default function HorizontalScrollSection({
     </>
   );
 }
-

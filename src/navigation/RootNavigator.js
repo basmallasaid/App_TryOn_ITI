@@ -21,7 +21,7 @@ const screenOptions = { headerShown: false };
 
 export default function RootNavigator() {
   const { user, loading: authLoading } = useAuth();
-  const { loading: langLoading } = useLanguage();
+  const { loading: langLoading, isRTL } = useLanguage();
   const [showSplash, setShowSplash] = useState(true);
   const [onboardingSeen, setOnboardingSeen] = useState(null);
   const [languageSeen, setLanguageSeen] = useState(null);
@@ -78,17 +78,17 @@ export default function RootNavigator() {
           <Stack.Screen
             name={ROUTES.RECENT_TRYONS}
             component={RecentTryOnsScreen}
-            options={{ animation: 'slide_from_right' }}
+            options={{ animation: isRTL ? 'slide_from_left' : 'slide_from_right' }}
           />
           <Stack.Screen
             name={ROUTES.RECENT_RECYCLES}
             component={RecentRecyclesScreen}
-            options={{ animation: 'slide_from_right' }}
+            options={{ animation: isRTL ? 'slide_from_left' : 'slide_from_right' }}
           />
           <Stack.Screen
             name={ROUTES.NOTIFICATIONS}
             component={NotificationsScreen}
-            options={{ animation: 'slide_from_right' }}
+            options={{ animation: isRTL ? 'slide_from_left' : 'slide_from_right' }}
           />
         </>
       ) : (

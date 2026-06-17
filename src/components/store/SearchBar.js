@@ -29,8 +29,7 @@ export const SearchBar = ({
       flex: 1,
       fontSize: 16,
       color: Colors.textPrimary,
-      marginLeft: 10,
-      marginRight: 0,
+      marginStart: 10,
     },
   }), [themeVersion]);
 

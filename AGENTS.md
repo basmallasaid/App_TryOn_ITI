@@ -80,3 +80,17 @@ Move `const styles = StyleSheet.create({...})` from module scope into component 
 #### Notes
 - SplashScreen remains excluded because its styles use a hardcoded background color (`#f6f6f6`) rather than importing `Colors`.
 - `StyleSheet.create` at module scope resolves `Colors` at import time; wrapping it in `React.useMemo` inside the component ensures it picks up the current theme values on each mount.
+
+## Home Screen RTL Text Alignment Fix
+
+### Root Cause
+`I18nManager.isRTL` returns `false` in Expo SDK 54 even after `forceRTL(true)` + `reloadAsync()` (known Expo 54 bug). This breaks any JS-level `textAlign: isRTL ? 'right' : 'left'` checks and also affects RN's internal `textAlign` left/right auto-swap for `swapLeftAndRightInRTL`.
+
+However, `I18nManager.forceRTL(true)` DOES work at the native level for flexbox (`flexDirection: 'row'` auto-flips to RTL).
+
+### Solution
+- **Wrap each Text in `<View style={{ flexDirection: 'row' }}>`** — Native RTL auto-flip correctly positions the Text at the right edge in RTL mode, at the left edge in LTR.
+- **Use plain `textAlign: 'left'`** in StyleSheet definitions (no `isRTL` ternary) — RN's internal auto-swap handles text alignment within the Text component.
+- **Do NOT depend on `useLanguage().isRTL` or `i18n.dir()`** for text alignment — these may report incorrect values in Expo 54.
+- **Applied to:** `ActionCard`, `HeroBanner`, `OutfitCard`, `HomeScreen` section titles.
+- **Padding on native ScrollView:** Move `paddingHorizontal: 20` from `ScrollView`'s `style` to a wrapper `<View>` to fix RTL centering (native ScrollView handles RTL padding inconsistently).

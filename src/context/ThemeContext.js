@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { setTheme as applyTheme, getTheme } from "../constants/theme/colors";
 import { saveTheme as storeTheme, getTheme as loadTheme } from "../storage/TokenStorage";
 
@@ -36,8 +36,10 @@ export const ThemeProvider = ({ children }) => {
     setThemeVersion((v) => v + 1);
   }, []);
 
+  const value = useMemo(() => ({ isDarkMode, themeVersion, toggleTheme, setDarkMode, ready }), [isDarkMode, themeVersion, toggleTheme, setDarkMode, ready]);
+
   return (
-    <ThemeContext.Provider value={{ isDarkMode, themeVersion, toggleTheme, setDarkMode, ready }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );

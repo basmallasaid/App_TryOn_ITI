@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -8,8 +9,6 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
-  Platform,
-  StatusBar,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -67,7 +66,6 @@ const FavoritesScreen = ({ navigation }) => {
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     paddingBottom: 12,
     backgroundColor: Colors.backgroundColor,
   },
@@ -203,7 +201,7 @@ const FavoritesScreen = ({ navigation }) => {
   heartBtn: {
     position: "absolute",
     top: 8,
-    right: 8,
+    end: 8,
     zIndex: 1,
   },
   heartCircle: {
@@ -218,22 +216,25 @@ const FavoritesScreen = ({ navigation }) => {
 
   if (loading) {
     return (
-      <View style={styles.screen}>
-        <View style={styles.header}>
-          <CustomBackButton onPress={() => navigation.goBack()} />
-          <Text style={styles.headerTitle}>{t('favorites.title')}</Text>
-          <View style={styles.headerSpacer} />
+      <SafeScreen style={{ flex: 1 }}>
+        <View style={styles.screen}>
+          <View style={styles.header}>
+            <CustomBackButton onPress={() => navigation.goBack()} />
+            <Text style={styles.headerTitle}>{t('favorites.title')}</Text>
+            <View style={styles.headerSpacer} />
+          </View>
+          <View style={styles.centerContainer}>
+            <ActivityIndicator size="large" color={Colors.primary} />
+          </View>
         </View>
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-        </View>
-      </View>
+      </SafeScreen>
     );
   }
 
   if (!loading && items.length === 0) {
     return (
-      <View style={styles.screen}>
+      <SafeScreen style={{ flex: 1 }}>
+        <View style={styles.screen}>
         <View style={styles.header}>
           <CustomBackButton onPress={() => navigation.goBack()} />
           <Text style={styles.headerTitle}>{t('favorites.title')}</Text>
@@ -247,11 +248,13 @@ const FavoritesScreen = ({ navigation }) => {
           <Text style={styles.emptySubtitle}>{t('favorites.emptySubtitle')}</Text>
         </View>
       </View>
+    </SafeScreen>
     );
   }
 
   return (
-    <View style={styles.screen}>
+    <SafeScreen>
+      <View style={styles.screen}>
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>{t('favorites.title')}</Text>
@@ -342,8 +345,9 @@ const FavoritesScreen = ({ navigation }) => {
           }}
         />
       )}
-    </View>
-  );
-};
+      </View>
+    </SafeScreen>
+    );
+  };
 
 export default FavoritesScreen;

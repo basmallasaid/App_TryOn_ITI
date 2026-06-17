@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   StyleSheet,
   View,
@@ -7,9 +8,6 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
-  SafeAreaView,
-  Platform,
-  StatusBar,
   Dimensions,
 } from "react-native";
 import { Ionicons, AntDesign, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
@@ -148,7 +146,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
   const styles = useMemo(() => createStyles(), [themeVersion]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeScreen style={styles.container}>
       <View style={styles.searchContainer}>
         <View style={styles.searchRow}>
           <CustomBackButton onPress={() => navigation.goBack()} iconColor={Colors.iconGray} />
@@ -174,7 +172,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
                 {item?.rating || "4.7"}
               </Text>
             )}
-            {isStore && <AntDesign name="star" size={16} color={Colors.accentOrange} style={{ marginLeft: 5 }} />}
+            {isStore && <AntDesign name="star" size={16} color={Colors.accentOrange} style={{ marginStart: 5 }} />}
           </View>
           <TouchableOpacity onPress={async () => {
             if (!itemId) return;
@@ -267,7 +265,7 @@ export default function MatchingResultDetailsScreen({ navigation, route }) {
           <Text style={styles.generateButtonText}>{t("matching.details.tryOnThisItem")}</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
 
@@ -275,10 +273,9 @@ const createStyles = () => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   searchContainer: {
-    padding: 15,
+    padding: 20,
     backgroundColor: Colors.backgroundColor,
   },
   searchRow: {
@@ -317,7 +314,7 @@ const createStyles = () => StyleSheet.create({
   ratingRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 25,
+    paddingHorizontal: 20,
     marginTop: 15,
     alignItems: "center",
   },
@@ -331,7 +328,7 @@ const createStyles = () => StyleSheet.create({
   },
   scoreText: { color: Colors.textInverse, fontSize: 12, fontWeight: "bold" },
 
-  infoSection: { paddingHorizontal: 25, marginTop: 15 },
+  infoSection: { paddingHorizontal: 20, marginTop: 15 },
   titlePriceRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -344,7 +341,7 @@ const createStyles = () => StyleSheet.create({
     flex: 1,
     textTransform: "capitalize",
   },
-  productPrice: { fontSize: 18, fontWeight: "bold", color: Colors.textPrimary, marginLeft: 12 },
+  productPrice: { fontSize: 18, fontWeight: "bold", color: Colors.textPrimary, marginStart: 12 },
   description: {
     color: Colors.textMuted,
     fontSize: 13,
@@ -352,7 +349,7 @@ const createStyles = () => StyleSheet.create({
     lineHeight: 18,
   },
 
-  selectionSection: { paddingHorizontal: 25, marginTop: 20 },
+  selectionSection: { paddingHorizontal: 20, marginTop: 20 },
   selectionTitle: { fontSize: 16, fontWeight: "bold", color: Colors.textPrimary },
   selectionSub: { color: Colors.textMuted, fontWeight: "normal", fontSize: 12 },
   colorRow: { flexDirection: "row", marginTop: 12 },
@@ -360,7 +357,7 @@ const createStyles = () => StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    marginRight: 15,
+    marginEnd: 15,
     borderWidth: 1,
     borderColor: Colors.borderDefault,
   },
@@ -388,7 +385,7 @@ const createStyles = () => StyleSheet.create({
   sizeText: { color: Colors.textMuted, textTransform: "uppercase", fontWeight: "600" },
   selectedSizeText: { color: Colors.textPrimary },
 
-  matchSection: { marginTop: 30, paddingLeft: 25 },
+  matchSection: { marginTop: 30, paddingStart: 20 },
   matchTitle: { fontSize: 16, fontWeight: "bold", color: Colors.textPrimary },
   matchList: { marginTop: 15 },
   matchCard: {
@@ -396,7 +393,7 @@ const createStyles = () => StyleSheet.create({
     height: 120,
     backgroundColor: Colors.white,
     borderRadius: 12,
-    marginRight: 15,
+    marginEnd: 15,
     borderWidth: 1,
     borderColor: Colors.secondaryLight,
     justifyContent: "center",
@@ -407,7 +404,7 @@ const createStyles = () => StyleSheet.create({
   percentBadge: {
     position: "absolute",
     top: 5,
-    right: 5,
+    end: 5,
     backgroundColor: Colors.secondary,
     paddingHorizontal: 5,
     paddingVertical: 2,

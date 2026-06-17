@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  Platform,
-  StatusBar,
-  SafeAreaView,
   Alert,
   Linking,
 } from "react-native";
@@ -20,6 +18,7 @@ import BillingToggle from "../../components/subscription/BillingToggle";
 import PlanCard from "../../components/subscription/PlanCard";
 import { ROUTES } from "../../navigation/routes";
 import { useAuth } from "../../context/AuthContext";
+import { useProfileContext } from "../../context/ProfileContext";
 import * as paymentService from "../../api/payment_services/paymentService";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
@@ -29,6 +28,7 @@ export default function SubscriptionScreen({ navigation }) {
   const { user } = useAuth();
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
+  const { refreshProfile } = useProfileContext();
   const [billing, setBilling] = useState("Monthly");
   const [loading, setLoading] = useState(false);
 
@@ -86,6 +86,7 @@ export default function SubscriptionScreen({ navigation }) {
       }
 
       await paymentService.syncSubscription(user._id);
+      await refreshProfile();
       navigation.navigate(ROUTES.MANAGE_SUBSCRIPTION);
     } catch (err) {
       const message = getUserFriendlyErrorMessage(err, t);
@@ -101,14 +102,15 @@ export default function SubscriptionScreen({ navigation }) {
       safeArea: {
         flex: 1,
         backgroundColor: Colors.backgroundColor,
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
       },
       container: {
         flex: 1,
-        paddingHorizontal: 20,
       },
       scrollContent: {
         paddingBottom: 50,
+      },
+      scrollInner: {
+        paddingHorizontal: 20,
       },
       header: {
         alignItems: "center",
@@ -127,6 +129,9 @@ export default function SubscriptionScreen({ navigation }) {
         fontSize: 12,
         color: Colors.iconGray,
         textAlign: "center",
+      },
+      planCardWrap: {
+        alignItems: 'center',
       },
       plansGap: {
         height: 16,
@@ -150,12 +155,13 @@ export default function SubscriptionScreen({ navigation }) {
 
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        <View style={styles.scrollInner}>
         <CustomBackButton
           onPress={() => navigation.navigate(ROUTES.PROFILE_MAIN)}
           iconColor={Colors.iconGray}
@@ -170,6 +176,7 @@ export default function SubscriptionScreen({ navigation }) {
 
         <View style={styles.plansGap} />
 
+        <View style={styles.planCardWrap}>
         <PlanCard
           name={t("subscription.essential")}
           price={t("subscriptionPrices.essentialPrice")}
@@ -190,8 +197,11 @@ export default function SubscriptionScreen({ navigation }) {
           buttonTextColor={Colors.iconGray}
         />
 
+        </View>
+
         <View style={styles.plansGap} />
 
+        <View style={styles.planCardWrap}>
         <PlanCard
           badge={t("subscription.popular")}
           name={t("subscription.proStylist")}
@@ -263,10 +273,13 @@ export default function SubscriptionScreen({ navigation }) {
           }
         />
 
+        </View>
+
         <View style={styles.divider} />
 
         <Text style={styles.disclaimer}>{t("subscription.disclaimer")}</Text>
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

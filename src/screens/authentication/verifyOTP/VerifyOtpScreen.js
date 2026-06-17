@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
+import SafeScreen from "../../../components/common/SafeScreen";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Platform,
-  StatusBar,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import {
@@ -37,7 +36,6 @@ const VerifyOtpScreen = ({ route, navigation }) => {
       flex: 1,
       backgroundColor: Colors.backgroundColor,
       paddingHorizontal: 24,
-      paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
       paddingBottom: 40,
     },
     title: {
@@ -161,6 +159,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
   };
 
   return (
+    <SafeScreen style={{ flex: 1 }}>
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>{t('auth.verifyOtp.title')}</Text>
@@ -211,6 +210,7 @@ const VerifyOtpScreen = ({ route, navigation }) => {
         <VerificationSucessComponent />
       </SuccessModal>
     </View>
+    </SafeScreen>
   );
 };
 

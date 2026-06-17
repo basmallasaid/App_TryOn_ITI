@@ -1,9 +1,12 @@
 import React from 'react';
-import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 import { IMAGES } from '../../constants/images/images';
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 const AvatarOptionCard = ({
   title,
   description,
@@ -93,9 +96,11 @@ const styles = React.useMemo(() => StyleSheet.create({
       activeOpacity={0.85}
     >
       <View style={styles.leftContent}>
-        <Text style={[styles.title, selected && styles.titleSelected]}>
-          {title}
-        </Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={[styles.title, selected && styles.titleSelected, { textAlign: 'left' }]}>
+            {title}
+          </Text>
+        </View>
 
         {badge ? (
           <View style={styles.badge}>
@@ -103,23 +108,25 @@ const styles = React.useMemo(() => StyleSheet.create({
           </View>
         ) : null}
 
-        <Text
-          style={[styles.description, selected && styles.descriptionSelected]}
-        >
-          {description}
-        </Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text
+            style={[styles.description, selected && styles.descriptionSelected, { textAlign: 'left' }]}
+          >
+            {description}
+          </Text>
+        </View>
       </View>
 
       {rightContent ? (
-        <View style={[styles.rightContainer, { marginLeft: 12, marginRight: 0 }]}>{rightContent}</View>
+        <View style={[styles.rightContainer, { marginStart: 12 }]}>{rightContent}</View>
       ) : image ? (
-        <View style={[styles.imageWrap, { marginLeft: 12, marginRight: 0 }]}>
-          <Image source={image} style={styles.image} resizeMode="cover" />
+        <View style={[styles.imageWrap, { marginStart: 12 }]}>
+          <Image source={image} style={styles.image} contentFit="cover" placeholder={BLURHASH_PLACEHOLDER} transition={300} />
         </View>
       ) : null}
 
       {selected && (
-        <View style={[styles.checkmark, { right: 12, left: undefined }]}>
+        <View style={[styles.checkmark, { end: 12 }]}>
           <Ionicons name="checkmark-circle" size={24} color={Colors.primary} />
         </View>
       )}

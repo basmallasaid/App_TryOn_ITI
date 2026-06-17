@@ -1,9 +1,12 @@
 import React from "react";
-import { TouchableOpacity, View, Image, StyleSheet } from "react-native";
+import { TouchableOpacity, View, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import GradientBorder from "../recycle/GradientBorder";
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 const CARD_W = 90;
 const CARD_H = 110;
@@ -14,7 +17,7 @@ export default function WardrobeCard({ item, isSelected, onToggle, disabled }) {
 
   const styles = React.useMemo(() => StyleSheet.create({
     cardContainer: {
-      marginRight: 12,
+      marginEnd: 12,
     },
     imageWrapper: {
       width: CARD_W,
@@ -57,13 +60,13 @@ export default function WardrobeCard({ item, isSelected, onToggle, disabled }) {
       {isSelected ? (
         <GradientBorder width={CARD_W} height={CARD_H} borderRadius={12} borderWidth={2}>
           <View style={styles.selectedContent}>
-            <Image source={imageSource} style={styles.itemImage} resizeMode="contain" />
+            <Image source={imageSource} style={styles.itemImage} contentFit="contain" placeholder={BLURHASH_PLACEHOLDER} transition={300} />
             <Ionicons name="checkmark-circle" size={20} color={Colors.secondary} style={styles.checkIcon} />
           </View>
         </GradientBorder>
       ) : (
         <View style={styles.imageWrapper}>
-          <Image source={imageSource} style={styles.itemImage} resizeMode="contain" />
+          <Image source={imageSource} style={styles.itemImage} contentFit="contain" placeholder={BLURHASH_PLACEHOLDER} transition={300} />
           <Ionicons name="checkmark-circle" size={20} color={Colors.iconGray} style={styles.checkIcon} />
         </View>
       )}

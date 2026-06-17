@@ -6,14 +6,14 @@ import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 
-const AddItemCard = ({ onPress }) => {
+const AddItemCard = ({ cardWidth = 150, onPress }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
 
   const styles = React.useMemo(() => StyleSheet.create({
     card: {
-      width: 150,
-      height: 237,
+      width: cardWidth,
+      height: cardWidth * 1.58,
       borderRadius: 16,
       borderWidth: 2,
       borderColor: Colors.iconGray,

@@ -1,5 +1,4 @@
 const BASE64_RE = /^[A-Za-z0-9+/=]+$/;
-const MAX_COMPOSITE_BASE64_LEN = 500000;
 
 function ensureImageUri(val) {
   if (!val || typeof val !== "string") return val;
@@ -25,15 +24,18 @@ export function enrichItemsWithWardrobeImages(items, wardrobeItems) {
   if (!items || !Array.isArray(items) || !wardrobeItems || !Array.isArray(wardrobeItems)) {
     return items || [];
   }
+  const wardrobeMap = new Map();
+  wardrobeItems.forEach((w) => {
+    const analysisId = w.analysis_id || w.analysisId;
+    if (analysisId && w.image) wardrobeMap.set(analysisId, w.image);
+  });
   return items.map((item) => {
     if (item.image) return item;
     const analysisId = item.analysis_id || item.analysisId;
     if (!analysisId) return item;
-    const wardrobeItem = wardrobeItems.find(
-      (w) => w.analysis_id === analysisId || w.analysisId === analysisId
-    );
-    if (wardrobeItem?.image) {
-      return { ...item, image: wardrobeItem.image };
+    const wardrobeImage = wardrobeMap.get(analysisId);
+    if (wardrobeImage) {
+      return { ...item, image: wardrobeImage };
     }
     return item;
   });
@@ -63,8 +65,5 @@ export function getCompositeImage(outfit) {
     outfit.composite_image ||
     null;
   if (!raw) return null;
-  if (typeof raw === "string" && !raw.startsWith("http") && raw.length > MAX_COMPOSITE_BASE64_LEN) {
-    return null;
-  }
   return ensureImageUri(raw);
 }

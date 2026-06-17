@@ -1,41 +1,36 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useAuth } from './AuthContext';
-import { getUserProfile } from '../api/user_services/userService';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { useProfileContext } from './ProfileContext';
 
 const RecentTryOnsContext = createContext();
 
-export const RecentTryOnsProvider = ({ children }) => {
-  const { user } = useAuth();
-  const [tryOns, setTryOns] = useState([]);
-  const [loading, setLoading] = useState(false);
+const filterLast30Days = (items) => {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  return items.filter((item) => {
+    const raw = item.created_at || item.createdAt;
+    if (!raw) return true;
+    const itemDate = new Date(raw);
+    return !isNaN(itemDate.getTime()) && itemDate >= thirtyDaysAgo;
+  });
+};
 
-  const refresh = useCallback(async () => {
-    if (!user?._id) return;
-    try {
-      setLoading(true);
-      const data = await getUserProfile(user._id);
-      const allTryOns = data?.latestTryOn ?? [];
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const filtered = allTryOns.filter((item) => {
-        const raw = item.created_at || item.createdAt;
-        if (!raw) return true;
-        const itemDate = new Date(raw);
-        return !isNaN(itemDate.getTime()) && itemDate >= thirtyDaysAgo;
-      });
-      setTryOns(filtered);
-    } catch (e) {
-    } finally {
-      setLoading(false);
-    }
-  }, [user?._id]);
+export const RecentTryOnsProvider = ({ children }) => {
+  const { profile, loading: profileLoading } = useProfileContext();
+  const [tryOns, setTryOns] = useState([]);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    const allTryOns = profile?.latestTryOn ?? [];
+    setTryOns(filterLast30Days(allTryOns));
+  }, [profile?.latestTryOn]);
+
+  const refresh = useCallback(async () => {
+    // Data comes from ProfileContext — no independent API call needed
+  }, []);
+
+  const value = useMemo(() => ({ tryOns, loading: profileLoading, refresh }), [tryOns, profileLoading, refresh]);
 
   return (
-    <RecentTryOnsContext.Provider value={{ tryOns, loading, refresh }}>
+    <RecentTryOnsContext.Provider value={value}>
       {children}
     </RecentTryOnsContext.Provider>
   );

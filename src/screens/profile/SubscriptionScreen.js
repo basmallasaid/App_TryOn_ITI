@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Platform, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../context/LanguageContext';
+import SafeScreen from '../../components/common/SafeScreen';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -14,6 +16,7 @@ export default function SubscriptionScreen() {
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
+  const { isRTL } = useLanguage();
 
   const getPlans = () => PLANS.map(p => ({
     ...p,
@@ -26,7 +29,7 @@ export default function SubscriptionScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeScreen style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -52,12 +55,12 @@ export default function SubscriptionScreen() {
             <Text style={styles.planPrice}>{plan.price}<Text style={styles.planPeriod}>{plan.period === 'month' ? t("subscription.perMonth") : t("subscription.perYear")}</Text></Text>
             <View style={[styles.subscribeBtn, { flexDirection: "row" }]}>
               <Text style={styles.subscribeText}>{t('subscription.subscribe')}</Text>
-              <Ionicons name="arrow-forward" size={18} color={Colors.textInverse} />
+              <Ionicons name={isRTL ? "arrow-back" : "arrow-forward"} size={18} color={Colors.textInverse} />
             </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
-    </View>
+    </SafeScreen>
   );
 }
 
@@ -68,7 +71,6 @@ const createStyles = () => StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     paddingBottom: 40,
   },
   title: {

@@ -1,6 +1,7 @@
 import { I18nManager } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { navigationRef } from "./src/utils/navigationRef";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
@@ -115,7 +116,8 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <ThemeProvider>
+      <SafeAreaProvider>
+      <ThemeProvider>
       <LanguageProvider>
         <AuthProvider>
           <ProfileProvider>
@@ -140,6 +142,7 @@ export default function App() {
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 

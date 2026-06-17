@@ -11,6 +11,6 @@ export const requestRecommendations = async (lat = 30.0444, lon = 31.2357) => {
     limit: 1,
     lat,
     lon,
-  }, { timeout: 30000 });
+  });
   return { outfits: data.outfits || [], weather: data.weather || data.currentWeather || null };
 };

@@ -9,7 +9,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import SafeScreen from "../../components/common/SafeScreen";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { useNotifications } from "../../context/NotificationContext";
@@ -65,7 +65,6 @@ function isRecent(dateString) {
 export default function NotificationsScreen({ navigation }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
-  const insets = useSafeAreaInsets();
   const {
     notifications,
     loading,
@@ -338,7 +337,7 @@ export default function NotificationsScreen({ navigation }) {
     borderRadius: 21,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 12,
+    marginEnd: 12,
   },
   cardBody: {
     flex: 1,
@@ -393,14 +392,14 @@ export default function NotificationsScreen({ navigation }) {
     color: Colors.disabled,
   },
   deleteBtn: {
-    marginLeft: 8,
+    marginStart: 8,
     padding: 6,
     borderRadius: 12,
   },
 }), [themeVersion]);
 
   return (
-    <View style={[styles.safe, { paddingTop: insets.top }]}>
+    <SafeScreen>
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>
@@ -435,6 +434,6 @@ export default function NotificationsScreen({ navigation }) {
           extraData={expandedIds}
         />
       )}
-    </View>
+    </SafeScreen>
   );
 }

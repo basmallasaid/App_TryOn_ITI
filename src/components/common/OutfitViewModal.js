@@ -1,9 +1,12 @@
 import React from 'react';
-import { Modal, View, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Modal, View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 import { IMAGES } from '../../constants/images/images';
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -37,7 +40,7 @@ const OutfitViewModal = ({ visible, onClose, imageUri, isFavorite, onToggleFavor
     closeBtn: {
       position: 'absolute',
       top: 12,
-      left: 12,
+      start: 12,
       width: 36,
       height: 36,
       borderRadius: 18,
@@ -48,7 +51,7 @@ const OutfitViewModal = ({ visible, onClose, imageUri, isFavorite, onToggleFavor
     favoriteBtn: {
       position: 'absolute',
       top: 12,
-      right: 12,
+      end: 12,
       width: 36,
       height: 36,
       borderRadius: 18,
@@ -66,7 +69,9 @@ const OutfitViewModal = ({ visible, onClose, imageUri, isFavorite, onToggleFavor
             <Image
               source={imageUri ? { uri: imageUri } : IMAGES.TRY_ON}
               style={styles.image}
-              resizeMode="contain"
+              contentFit="contain"
+              placeholder={imageUri ? BLURHASH_PLACEHOLDER : undefined}
+              transition={300}
             />
           </View>
 

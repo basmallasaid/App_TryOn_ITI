@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { AppState } from 'react-native';
 import { getWardrobeItems, deleteWardrobeItem } from '../api/wardrobe_services/wardrobeService';
 import { setWardrobeCache, getWardrobeCache } from '../storage/TokenStorage';
@@ -109,16 +109,18 @@ export const WardrobeProvider = ({ children }) => {
     });
   }, [userId]);
 
+  const value = useMemo(() => ({
+    items,
+    loading,
+    error,
+    refetch: fetchItems,
+    addItem,
+    removeItem,
+    updateItem,
+  }), [items, loading, error, fetchItems, addItem, removeItem, updateItem]);
+
   return (
-    <WardrobeContext.Provider value={{
-      items,
-      loading,
-      error,
-      refetch: fetchItems,
-      addItem,
-      removeItem,
-      updateItem,
-    }}>
+    <WardrobeContext.Provider value={value}>
       {children}
     </WardrobeContext.Provider>
   );

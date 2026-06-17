@@ -63,7 +63,7 @@ export default function ItemSelector({ label, selectedType, onSelectType, disabl
       borderColor: Colors.borderDefault,
     },
     iconStyle: {
-      marginRight: 8,
+      marginEnd: 8,
     },
     optionText: {
       fontFamily:"Roboto_Medium",

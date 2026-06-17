@@ -1,10 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGES } from "../../constants/images/images";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+
+const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 export default function TryOnCard({ imageUri, isFavorite, onToggleFavorite, onViewOutfit }) {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
@@ -15,7 +18,7 @@ const styles = React.useMemo(() => StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 20,
     padding: 14,
-    marginRight: 15,
+    marginEnd: 15,
     borderWidth: 1,
     borderColor: Colors.borderDefault,
     alignItems: 'center',
@@ -70,7 +73,9 @@ const styles = React.useMemo(() => StyleSheet.create({
       <Image
         source={imageUri ? { uri: imageUri } : IMAGES.TRY_ON}
         style={styles.image}
-        resizeMode="contain"
+        contentFit="contain"
+        placeholder={imageUri ? BLURHASH_PLACEHOLDER : undefined}
+        transition={300}
       />
 
       <TouchableOpacity style={[styles.button, { flexDirection: 'row' }]} activeOpacity={0.8} onPress={onViewOutfit}>

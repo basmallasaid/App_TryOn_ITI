@@ -1,14 +1,20 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import SafeScreen from '../../components/common/SafeScreen';
+import { StyleSheet } from 'react-native';
+import Colors from "../../constants/theme/colors";
 
 const SettingsScreen = () => {
     return (
-        <View>
-            
-        </View>
+        <SafeScreen style={styles.container}>
+        </SafeScreen>
     );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+  },
+})
 
 export default SettingsScreen;

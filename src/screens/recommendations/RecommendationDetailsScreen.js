@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
-  SafeAreaView,
   ScrollView,
   View,
   Text,
   StyleSheet,
-  Platform,
-  StatusBar,
   ActivityIndicator,
 } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -20,6 +18,7 @@ import { getItemsList } from "../../utils/getItemImage";
 import { useRecommendation } from "../../context/RecommendationContext";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { translateRecommendation } from "../../utils/dynamicTranslator";
+import { useLanguage } from '../../context/LanguageContext';
 import i18n from "../../localization/i18n";
 
 
@@ -39,6 +38,7 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
+  const { isRTL } = useLanguage();
   const { todaysOutfit } = useRecommendation();
   const { items: wardrobeItems } = useWardrobe();
   const outfit = route.params?.outfit || todaysOutfit;
@@ -59,7 +59,7 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
   }, [outfit]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -72,7 +72,7 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
           />
         </View>
 
-        <Text style={[styles.todayTitle, { textAlign: "left" }]}>
+        <Text style={styles.todayTitle}>
           {t("recommendation.todaysRecommendation")}
         </Text>
 
@@ -100,7 +100,7 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
               </View>
             )}
 
-            <Text style={[styles.sectionTitle, { textAlign: "left" }]}>
+            <Text style={styles.sectionTitle}>
               {t("recommendation.outfitDetails")}
             </Text>
 
@@ -131,7 +131,7 @@ export default function RecommendationDetailsScreen({ navigation, route }) {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
 
@@ -140,7 +140,6 @@ const createStyles = () =>
     safeArea: {
       flex: 1,
       backgroundColor: Colors.backgroundColor,
-      paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
     container: {
       flex: 1,
@@ -160,6 +159,7 @@ const createStyles = () =>
       lineHeight: 20,
       color: Colors.textPrimary,
       paddingVertical: 10,
+      textAlign: 'left',
     },
     dateLabel: {
       fontFamily: "Roboto",
@@ -207,6 +207,7 @@ const createStyles = () =>
       color: Colors.textPrimary,
       marginTop: 30,
       marginBottom: 16,
+      textAlign: 'left',
     },
     itemsGrid: {
       flexWrap: "wrap",

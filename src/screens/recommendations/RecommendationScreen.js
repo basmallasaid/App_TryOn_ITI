@@ -1,12 +1,10 @@
 import React from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
-  SafeAreaView,
   ScrollView,
   View,
   Text,
   StyleSheet,
-  Platform,
-  StatusBar,
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
@@ -21,6 +19,7 @@ import { useProfileContext } from "../../context/ProfileContext";
 import { useRecommendation } from "../../context/RecommendationContext";
 import { ROUTES } from "../../navigation/routes";
 import { getGreeting } from "../../utils/greeting";
+import { useLanguage } from '../../context/LanguageContext';
 import i18n from "../../localization/i18n";
 
 function formatDateLabel(dateStr) {
@@ -39,6 +38,7 @@ export default function RecommendationScreen({ navigation }) {
   const { themeVersion } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
+  const { isRTL } = useLanguage();
   const { profile } = useProfileContext();
   const { weeklyOutfits, todaysOutfit, todaysWeather, history, loading } = useRecommendation();
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
@@ -48,7 +48,7 @@ export default function RecommendationScreen({ navigation }) {
   const todayOutfit = todaysOutfit || todayEntry?.entry || history[0] || null;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeScreen style={styles.safeArea}>
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -75,7 +75,7 @@ export default function RecommendationScreen({ navigation }) {
 
             {todayOutfit && (
               <>
-                <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('recommendation.todaysRecommendation')}</Text>
+                <Text style={styles.sectionTitle}>{t('recommendation.todaysRecommendation')}</Text>
                 <OutfitOverviewCard
                   outfit={todayOutfit}
                   width="100%"
@@ -92,7 +92,7 @@ export default function RecommendationScreen({ navigation }) {
               </>
             )}
 
-            <Text style={[styles.sectionTitle, { textAlign: "left" }]}>{t('recommendation.weeklyTitle')}</Text>
+            <Text style={styles.sectionTitle}>{t('recommendation.weeklyTitle')}</Text>
 
             <ScrollView
               horizontal
@@ -145,7 +145,7 @@ export default function RecommendationScreen({ navigation }) {
           </>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
 
@@ -153,7 +153,6 @@ const createStyles = () => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
@@ -198,9 +197,10 @@ const createStyles = () => StyleSheet.create({
     color: Colors.textPrimary,
     marginBottom: 15,
     marginTop: 35,
+    textAlign: 'left',
   },
   horizontalScrollContent: {
-    paddingRight: 20,
+    paddingEnd: 20,
     gap: 12,
   },
   dayCard: {

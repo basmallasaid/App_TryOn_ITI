@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
   Text,
@@ -6,13 +7,13 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   FlatList,
   Platform,
   StatusBar,
   ActivityIndicator,
 } from "react-native";
 import { File, Directory, Paths } from "expo-file-system";
+import * as ImageManipulator from "expo-image-manipulator";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import Colors from "../../constants/theme/colors";
@@ -25,7 +26,7 @@ import ItemSelector from "../../components/tryOn/ItemSelector";
 import { openCamera, openGallery } from "../../utils/cameraAccess";
 import CustomBackButton from "../../components/common/CustomBackButton";
 import { useWardrobe } from "../../context/WardrobeContext";
-import { getAvatarById } from "../../api/avatar_services/avatarService";
+import { useProfileContext } from "../../context/ProfileContext";
 import LoadingOverlay from "../../components/common/LoadingOverlay";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import {
@@ -41,11 +42,10 @@ export default function TryOnScreen({ navigation, route }) {
   const { themeVersion } = useTheme();
   const { showFeedback } = useFeedback();
   const { items: wardrobeItems } = useWardrobe();
+  const { avatarImage: contextAvatarImage } = useProfileContext();
   const photoUri = route?.params?.photoUri;
-  const avatarImage = route?.params?.avatarImage;
+  const avatarImage = route?.params?.avatarImage || contextAvatarImage;
   const avatarId = route?.params?.avatarId;
-  const [avatarFetchedUri, setAvatarFetchedUri] = useState(null);
-  const [avatarLoading, setAvatarLoading] = useState(false);
 
   const avatarUri =
     typeof avatarImage === "string"
@@ -56,28 +56,7 @@ export default function TryOnScreen({ navigation, route }) {
         avatarImage?.url ||
         null;
 
-  useEffect(() => {
-    if (avatarId) {
-      setAvatarLoading(true);
-      getAvatarById(avatarId)
-        .then((res) => {
-          const avatar = res?.avatar || res;
-          const uri =
-            typeof avatar === "string"
-              ? avatar
-              : avatar?.image_url ||
-                avatar?.image ||
-                avatar?.imageUrl ||
-                avatar?.url ||
-                null;
-          setAvatarFetchedUri(uri);
-        })
-        .catch(() => {})
-        .finally(() => setAvatarLoading(false));
-    }
-  }, [avatarId]);
-
-  const displayUri = avatarUri || avatarFetchedUri || photoUri;
+  const displayUri = avatarUri || photoUri;
 
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedItems, setSelectedItems] = useState([]);
@@ -243,7 +222,16 @@ export default function TryOnScreen({ navigation, route }) {
       return file.uri;
     }
 
-    return uri;
+    try {
+      const manipulated = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 800 } }],
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      return manipulated.uri;
+    } catch {
+      return uri;
+    }
   };
 
   const resolveItem = async (itemId) => {
@@ -355,7 +343,7 @@ export default function TryOnScreen({ navigation, route }) {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeScreen style={styles.container}>
       
       <View style={styles.header}>
         <CustomBackButton onPress={() => navigation.goBack()} />
@@ -554,9 +542,7 @@ export default function TryOnScreen({ navigation, route }) {
           </>
         ) : (
           <View style={styles.modelContainer}>
-            {avatarLoading ? (
-              <ActivityIndicator size="large" color={Colors.primary} />
-            ) : displayUri ? (
+            {displayUri ? (
               <Image
                 source={{ uri: displayUri }}
                 style={styles.modelImage}
@@ -618,7 +604,7 @@ export default function TryOnScreen({ navigation, route }) {
               data={wardrobeItems}
               keyExtractor={(item) => item._id}
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingLeft: 20 }}
+              contentContainerStyle={{ paddingStart: 20 }}
               ListEmptyComponent={
                 <View style={styles.emptyWardrobe}>
                   <Text style={styles.emptyWardrobeText}>
@@ -709,7 +695,7 @@ export default function TryOnScreen({ navigation, route }) {
               name="auto-fix"
               size={20}
               color="white"
-              style={{ marginRight: 8 }}
+              style={{ marginEnd: 8 }}
             />
             <Text style={styles.generateBtnText}>
               {generating
@@ -720,7 +706,7 @@ export default function TryOnScreen({ navigation, route }) {
         </View>
       </ScrollView>
         <LoadingOverlay visible={generating} type="tryOn" />
-      </SafeAreaView>
+      </SafeScreen>
     );
   }
 
@@ -728,7 +714,6 @@ export default function TryOnScreen({ navigation, route }) {
   container: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: "row",
@@ -768,7 +753,7 @@ export default function TryOnScreen({ navigation, route }) {
     backgroundColor: Colors.backgroundColor,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 10,
+    marginStart: 10,
   },
   galleryCameraIconCircle: {
     width: 64,
@@ -792,7 +777,7 @@ export default function TryOnScreen({ navigation, route }) {
   galleryRemoveBtn: {
     position: "absolute",
     top: 6,
-    right: 6,
+    end: 6,
     width: 22,
     height: 22,
     borderRadius: 11,
@@ -803,7 +788,7 @@ export default function TryOnScreen({ navigation, route }) {
   galleryCheckIcon: {
     position: "absolute",
     top: 6,
-    left: 6,
+    start: 6,
   },
   gallerySelectedInner: {
     flex: 1,
@@ -868,7 +853,7 @@ export default function TryOnScreen({ navigation, route }) {
   closeBtn: {
     position: "absolute",
     top: 10,
-    left: 10,
+    start: 10,
     width: 36,
     height: 36,
     borderRadius: 18,
@@ -938,7 +923,7 @@ export default function TryOnScreen({ navigation, route }) {
     height: 120,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 20,
+    marginStart: 20,
   },
   emptyWardrobeText: {
     color: Colors.disabled,

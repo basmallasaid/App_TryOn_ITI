@@ -219,9 +219,8 @@ export async function translateWardrobeItem(item, targetLang = i18n.language) {
   if (!item || targetLang !== "ar") return item;
 
   try {
-    const [nameAr, categoryAr, seasonAr, styleAr, colorAr, specificTypeAr] = await Promise.all([
+    const [nameAr, seasonAr, styleAr, colorAr, specificTypeAr] = await Promise.all([
       translateToArabic(item.name, targetLang),
-      translateToArabic(item.category, targetLang),
       translateToArabic(Array.isArray(item.season) ? item.season.join(", ") : item.season, targetLang),
       translateToArabic(item.style, targetLang),
       translateToArabic(item.garments?.[0]?.colors?.[0]?.color, targetLang),
@@ -235,7 +234,7 @@ export async function translateWardrobeItem(item, targetLang = i18n.language) {
     return {
       ...item,
       name: nameAr || item.name,
-      category: categoryAr || item.category,
+      category: item.category,
       season: translatedSeason || item.season,
       style: styleAr || item.style,
       garments: item.garments

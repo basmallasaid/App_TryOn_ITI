@@ -23,14 +23,20 @@ export const LanguageProvider = ({ children }) => {
       .finally(() => setLoading(false));
   }, []);
 
-  // Called from SelectLanguageScreen (no token yet)
+  // Syncs LanguageContext state without triggering a reload.
+  // Used by SelectLanguageScreen during initial onboarding flow.
+  const syncLanguageState = useCallback((lang) => {
+    setLanguage(lang);
+  }, []);
+
+  // Called when user interactively changes language from settings
   const selectLanguage = useCallback(async (lang) => {
     await saveLanguage(lang);
     setLanguage(lang);
     i18n.changeLanguage(lang);
     I18nManager.forceRTL(lang === "ar");
     await Updates.reloadAsync();
-  }, []);
+  }, [language]);
 
   // Called after login/register — syncs to backend in background
   const syncLanguage = useCallback(() => {
@@ -39,7 +45,7 @@ export const LanguageProvider = ({ children }) => {
 
   const isRTL = language === "ar";
 
-  const value = useMemo(() => ({ language, loading, isRTL, selectLanguage, syncLanguage }), [language, loading, isRTL, selectLanguage, syncLanguage]);
+  const value = useMemo(() => ({ language, loading, isRTL, selectLanguage, syncLanguage, syncLanguageState }), [language, loading, isRTL, selectLanguage, syncLanguage, syncLanguageState]);
 
   return (
     <LanguageContext.Provider value={value}>

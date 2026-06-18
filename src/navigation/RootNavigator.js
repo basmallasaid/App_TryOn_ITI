@@ -19,29 +19,31 @@ const Stack = createNativeStackNavigator();
 
 const screenOptions = { headerShown: false };
 
+// Module-level cache so RootNavigator remount (from language change)
+// doesn't flash the splash while re-reading SecureStore.
+let _cachedOnboardingSeen = null;
+let _cachedLanguageSeen = null;
+
 export default function RootNavigator() {
   const { user, loading: authLoading } = useAuth();
   const { loading: langLoading, isRTL } = useLanguage();
-  const [showSplash, setShowSplash] = useState(true);
-  const [onboardingSeen, setOnboardingSeen] = useState(null);
-  const [languageSeen, setLanguageSeen] = useState(null);
+  const [onboardingSeen, setOnboardingSeen] = useState(_cachedOnboardingSeen);
+  const [languageSeen, setLanguageSeen] = useState(_cachedLanguageSeen);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 4000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
+    console.log('[RootNavigator] Mounted. authLoading:', authLoading, 'langLoading:', langLoading, 'user:', !!user);
     Promise.all([getOnboardingSeen(), getLanguageSeen()]).then(
       ([onboarding, language]) => {
-        setOnboardingSeen(onboarding === 'true');
-        setLanguageSeen(language === 'true');
+        _cachedOnboardingSeen = onboarding === 'true';
+        _cachedLanguageSeen = language === 'true';
+        console.log('[RootNavigator] Flags resolved — onboardingSeen:', _cachedOnboardingSeen, 'languageSeen:', _cachedLanguageSeen);
+        setOnboardingSeen(_cachedOnboardingSeen);
+        setLanguageSeen(_cachedLanguageSeen);
       },
     );
   }, []);
 
   if (
-    showSplash ||
     authLoading ||
     langLoading ||
     onboardingSeen === null ||
@@ -92,7 +94,16 @@ export default function RootNavigator() {
           />
         </>
       ) : (
-        <Stack.Screen name={ROUTES.AUTH} component={AuthStack} />
+        <Stack.Screen name={ROUTES.AUTH}>
+          {() => {
+            const initialRoute = !languageSeen
+              ? ROUTES.SELECT_LANGUAGE
+              : !onboardingSeen
+                ? ROUTES.ONBOARDING
+                : ROUTES.LOGIN;
+            return <AuthStack initialRoute={initialRoute} />;
+          }}
+        </Stack.Screen>
       )}
     </Stack.Navigator>
   );

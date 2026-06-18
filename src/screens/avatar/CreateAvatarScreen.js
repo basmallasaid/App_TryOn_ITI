@@ -234,6 +234,7 @@ const CreateAvatarScreen = ({ navigation, route }) => {
         });
       }
     } catch (error) {
+      console.log('[CreateAvatar] Error:', JSON.stringify(error?.response?.data || error?.message || error));
       showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(error, t) });
     } finally {
       setLoading(false);

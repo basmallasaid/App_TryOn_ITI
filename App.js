@@ -48,12 +48,29 @@ Notifications.setNotificationHandler({
   }),
 });
 
-function RecommendationProviderWithAuthKey({ children }) {
+function UserScopedProviders({ children }) {
   const { user } = useAuth();
+  const userId = user?._id || 'guest';
   return (
-    <RecommendationProvider key={user?._id || 'guest'}>
-      {children}
-    </RecommendationProvider>
+    <ProfileProvider key={`profile-${userId}`}>
+      <WardrobeProvider key={`wardrobe-${userId}`}>
+        <StoreProvider key={`store-${userId}`}>
+          <NotificationProvider key={`notif-${userId}`}>
+            <FavoritesProvider key={`fav-${userId}`}>
+              <RecentTryOnsProvider key={`rtry-${userId}`}>
+                <RecentRecyclesProvider key={`rrec-${userId}`}>
+                  <RecommendationProvider key={`rec-${userId}`}>
+                    <FeedbackProvider key={`fb-${userId}`}>
+                      {children}
+                    </FeedbackProvider>
+                  </RecommendationProvider>
+                </RecentRecyclesProvider>
+              </RecentTryOnsProvider>
+            </FavoritesProvider>
+          </NotificationProvider>
+        </StoreProvider>
+      </WardrobeProvider>
+    </ProfileProvider>
   );
 }
 
@@ -120,25 +137,9 @@ export default function App() {
       <ThemeProvider>
       <LanguageProvider>
         <AuthProvider>
-          <ProfileProvider>
-            <WardrobeProvider>
-              <StoreProvider>
-                <NotificationProvider>
-                  <FavoritesProvider>
-                    <RecentTryOnsProvider>
-                      <RecentRecyclesProvider>
-                        <RecommendationProviderWithAuthKey>
-                          <FeedbackProvider>
-                            <ThemedApp />
-                          </FeedbackProvider>
-                        </RecommendationProviderWithAuthKey>
-                      </RecentRecyclesProvider>
-                    </RecentTryOnsProvider>
-                  </FavoritesProvider>
-                </NotificationProvider>
-              </StoreProvider>
-            </WardrobeProvider>
-          </ProfileProvider>
+          <UserScopedProviders>
+            <ThemedApp />
+          </UserScopedProviders>
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>

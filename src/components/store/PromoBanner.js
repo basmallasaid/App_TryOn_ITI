@@ -59,35 +59,36 @@ export const PromoBanner = () => {
     },
   ], [t]);
 
+  const indexDir = isRTL ? -1 : 1;
+
   const snapToIndex = useCallback((index) => {
     const clamped = Math.max(0, Math.min(index, BANNERS.length - 1));
     Animated.spring(scrollX, {
-      toValue: -clamped * SLIDE_WIDTH,
+      toValue: -indexDir * clamped * SLIDE_WIDTH,
       useNativeDriver: true,
       bounciness: 0,
     }).start();
     currentIndex.current = clamped;
     setActiveIndex(clamped);
-  }, [scrollX, BANNERS.length]);
+  }, [scrollX, BANNERS.length, indexDir]);
 
   const panResponder = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_, gesture) =>
       Math.abs(gesture.dx) > 5 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
     onPanResponderMove: (_, gesture) => {
-      scrollX.setValue(-currentIndex.current * SLIDE_WIDTH + gesture.dx);
+      scrollX.setValue(-indexDir * currentIndex.current * SLIDE_WIDTH + gesture.dx * indexDir);
     },
     onPanResponderRelease: (_, gesture) => {
       const threshold = SLIDE_WIDTH * 0.25;
-      const dx = isRTL ? -gesture.dx : gesture.dx;
-      if (dx < -threshold) {
+      if (gesture.dx < -threshold) {
         snapToIndex(currentIndex.current + 1);
-      } else if (dx > threshold) {
+      } else if (gesture.dx > threshold) {
         snapToIndex(currentIndex.current - 1);
       } else {
         snapToIndex(currentIndex.current);
       }
     },
-  }), [scrollX, SLIDE_WIDTH, snapToIndex]);
+  }), [scrollX, SLIDE_WIDTH, snapToIndex, indexDir]);
 
   const styles = useMemo(() => StyleSheet.create({
     mainWrapper: {
@@ -170,7 +171,7 @@ export const PromoBanner = () => {
               width: SLIDE_WIDTH,
               height: 200,
               transform: [{
-                translateX: Animated.add(scrollX, index * SLIDE_WIDTH),
+                translateX: Animated.add(scrollX, indexDir * index * SLIDE_WIDTH),
               }],
             }}
           >

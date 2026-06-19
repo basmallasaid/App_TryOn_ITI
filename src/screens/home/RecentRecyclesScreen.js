@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Dimensions,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useRecentRecycles } from '../../context/RecentRecyclesContext';
 import { useFavorites } from '../../context/FavoritesContext';
@@ -76,7 +76,7 @@ export default function RecentRecyclesScreen({ navigation }) {
 
       {recycles.length === 0 ? (
         <View style={styles.center}>
-          <Ionicons name="recycle" size={64} color={Colors.borderDefault} />
+          <MaterialCommunityIcons name="recycle" size={64} color={Colors.borderDefault} />
           <Text style={styles.emptyText}>{t('home.noRecentRecycles')}</Text>
         </View>
       ) : (

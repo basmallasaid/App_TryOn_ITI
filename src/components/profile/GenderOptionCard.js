@@ -24,8 +24,8 @@ const GenderOptionCard = ({
     !selected
       ? Colors.borderDefault
       : isMale
-      ? Colors.surfaceElevated
-      : Colors.accentLight;
+      ? Colors.genderColorMale
+      : Colors.genderColorFemale;
 
   const iconColor =
     !selected

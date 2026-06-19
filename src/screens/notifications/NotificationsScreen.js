@@ -21,8 +21,8 @@ import i18n from "../../localization/i18n";
 
 function getNotifMeta(title = "") {
   const lower = title.toLowerCase();
-  if (lower.includes("try") || lower.includes("tryon")) return { name: "tshirt-outline", color: Colors.primary, bg: Colors.primaryLight };
-  if (lower.includes("recycle")) return { name: "recycle", color: Colors.secondary, bg: Colors.secondaryLight };
+  if (lower.includes("try") || lower.includes("tryon")) return { name: "shirt-outline", color: Colors.primary, bg: Colors.primaryLight };
+  if (lower.includes("recycle")) return { name: "refresh-outline", color: Colors.secondary, bg: Colors.secondaryLight };
   if (lower.includes("outfit") || lower.includes("recommend")) return { name: "sparkles", color: Colors.accent, bg: Colors.accentLight };
   if (lower.includes("match")) return { name: "shuffle", color: Colors.accentOrange, bg: Colors.accentLight };
   return { name: "notifications-outline", color: Colors.iconGray, bg: Colors.backgroundColor };

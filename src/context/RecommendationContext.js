@@ -12,6 +12,7 @@ import {
   getAllRecommendations,
   requestRecommendations,
 } from "../api/recommendations_services/recommendationsServices";
+import { useWardrobe } from "./WardrobeContext";
 import {
   setDailyOutfitDate,
   setDailyOutfitData,
@@ -153,6 +154,7 @@ async function translateHistory(entries) {
 export const RecommendationProvider = ({ children }) => {
   const { user } = useAuth();
   const userId = user?._id;
+  const { items: wardrobeItems } = useWardrobe();
   const [todaysOutfit, setTodaysOutfit] = useState(null);
   const [todaysWeather, setTodaysWeather] = useState(null);
   const [history, setHistory] = useState([]);
@@ -242,7 +244,15 @@ export const RecommendationProvider = ({ children }) => {
         return;
       }
 
-      // ── Step 4: After 6AM — POST new recommendation ──
+      // ── Step 4: After 6AM — check wardrobe before POST ──
+      if (!wardrobeItems || wardrobeItems.length === 0) {
+        console.log(LOG_TAG, "Wardrobe is empty — skipping POST");
+        const translatedHistory = await translateHistory(serverHistory);
+        setHistory(translatedHistory);
+        setLoading(false);
+        return;
+      }
+
       console.log(LOG_TAG, "POST /recommendations — requesting new outfit");
       setLoading(true);
       try {
@@ -308,7 +318,7 @@ export const RecommendationProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, wardrobeItems]);
 
   useEffect(() => {
     checkAndFetchDaily();

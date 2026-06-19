@@ -4,12 +4,14 @@ import VerifyItemScreen from '../screens/wardrobe/VerifyItemScreen';
 import EditWardrobeScreen from '../screens/wardrobe/EditWardrobeScreen';
 import ItemDetailsScreen from '../screens/wardrobe/ItemDetailsScreen';
 import { ROUTES } from './routes';
+import { useLanguage } from '../context/LanguageContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function WardrobeStack() {
+  const { isRTL } = useLanguage();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: isRTL ? 'slide_from_left' : 'slide_from_right' }}>
       <Stack.Screen name={ROUTES.WARDROBE_MAIN} component={WardrobeScreen} />
       <Stack.Screen name={ROUTES.VERIFY_ITEM} component={VerifyItemScreen} />
       <Stack.Screen 

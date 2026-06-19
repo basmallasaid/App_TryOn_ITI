@@ -2,11 +2,13 @@ import React, { useRef, useCallback } from "react";
 import { View, Text, PanResponder, StyleSheet, Dimensions } from "react-native";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 const TRACK_WIDTH = Dimensions.get("window").width - 80;
 
 const MeasurementSlider = ({ label, value, min, max, step = 1, unit, onChange }) => {
   const { themeVersion } = useTheme();
+  const { isRTL } = useLanguage();
   const trackRef = useRef(null);
   const trackLayoutRef = useRef({ x: 0, width: TRACK_WIDTH });
   const propsRef = useRef({ min, max, step, onChange });
@@ -77,8 +79,8 @@ const MeasurementSlider = ({ label, value, min, max, step = 1, unit, onChange })
       borderRadius: 3,
       backgroundColor: Colors.primary,
       position: "absolute",
-      left: 0,
       top: 0,
+      ...(isRTL ? { right: 0 } : { left: 0 }),
     },
     thumb: {
       width: 24,
@@ -134,7 +136,9 @@ const MeasurementSlider = ({ label, value, min, max, step = 1, unit, onChange })
         <View
           style={[
             styles.thumb,
-            { left: Math.max(fillWidth - 12, 0) },
+            isRTL
+              ? { right: Math.max(fillWidth - 12, 0) }
+              : { left: Math.max(fillWidth - 12, 0) },
           ]}
         />
       </View>

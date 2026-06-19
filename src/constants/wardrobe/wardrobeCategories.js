@@ -6,11 +6,9 @@ export const MALE_CATEGORIES = [
   'Shirt',
   'T-Shirt',
   'Bottom',
-  'Jeans',
-  'Short',
-  'Jacket',
   'Suit',
   'Shoes',
+  'Bag',
   'Accessories',
 ];
 
@@ -18,12 +16,7 @@ export const FEMALE_CATEGORIES = [
   'All',
   'Top',
   'Dress',
-  'Skirt',
   'Bottom',
-  'Jeans',
-  'Short',
-  'Jacket',
-  'Abayas',
   'Shoes',
   'Bag',
   'Accessories',
@@ -33,10 +26,8 @@ export const UNISEX_CATEGORIES = [
   'All',
   'Top',
   'Bottom',
-  'Jeans',
-  'Short',
-  'Jacket',
   'Shoes',
+  'Bag',
   'Accessories',
 ];
 

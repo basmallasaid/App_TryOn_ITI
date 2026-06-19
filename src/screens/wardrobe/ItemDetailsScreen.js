@@ -12,10 +12,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  getWardrobeItem,
-  deleteWardrobeItem,
-} from "../../api/wardrobe_services/wardrobeService";
+import { getWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { useFavorites } from "../../context/FavoritesContext";
 import Colors from "../../constants/theme/colors";
@@ -76,11 +73,12 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   const handleDelete = async () => {
     try {
       setDeleting(true);
-      await deleteWardrobeItem(itemId);
-      removeItem(itemId);
+      await removeItem(itemId);
       setShowDeleteModal(false);
       navigation.goBack();
     } catch (error) {
+      console.error("handleDelete error:", error);
+      setShowDeleteModal(false);
     } finally {
       setDeleting(false);
     }

@@ -6,12 +6,14 @@ import AvatarDetailScreen from '../screens/profile/AvatarDetailScreen';
 import SubscriptionScreen from '../screens/subscription/SubscriptionScreen';
 import ManageSubscriptionScreen from '../screens/subscription/ManageSubscriptionScreen';
 import { ROUTES } from './routes';
+import { useLanguage } from '../context/LanguageContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function ProfileStack() {
+  const { isRTL } = useLanguage();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: isRTL ? 'slide_from_left' : 'slide_from_right' }}>
       <Stack.Screen name={ROUTES.PROFILE_MAIN} component={ProfileScreen} />
       <Stack.Screen name={ROUTES.EDIT_PROFILE} component={EditProfileScreen} />
       <Stack.Screen name={ROUTES.FAVORITES} component={FavoritesScreen} />

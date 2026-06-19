@@ -340,7 +340,7 @@ export default function RecycleScreen({ navigation }) {
                       <Image
                         source={{ uri: item.image }}
                         style={styles.wardrobeItemImage}
-                        resizeMode="cover"
+                        resizeMode="contain"
                       />
                       <View style={styles.wardrobeCheck}>
                         <Ionicons name="checkmark" size={14} color={Colors.textInverse} />
@@ -351,7 +351,7 @@ export default function RecycleScreen({ navigation }) {
                       <Image
                         source={{ uri: item.image }}
                         style={styles.wardrobeItemImage}
-                        resizeMode="cover"
+                        resizeMode="contain"
                       />
                     </View>
                   )}
@@ -382,7 +382,7 @@ export default function RecycleScreen({ navigation }) {
         <View style={styles.galleryRow}>
           {capturedImages.map((item, index) => (
             <View key={index} style={styles.galleryItem}>
-              <Image source={{ uri: item.uri }} style={styles.galleryItemImage} resizeMode="cover" />
+              <Image source={{ uri: item.uri }} style={styles.galleryItemImage} resizeMode="contain" />
               <TouchableOpacity
                 style={styles.galleryRemoveBtn}
                 onPress={() => removeCapturedImage(index)}
@@ -425,7 +425,7 @@ export default function RecycleScreen({ navigation }) {
         <View style={styles.galleryRow}>
           {uploadedImages.map((item, index) => (
             <View key={index} style={styles.galleryItem}>
-              <Image source={{ uri: item.uri }} style={styles.galleryItemImage} resizeMode="cover" />
+              <Image source={{ uri: item.uri }} style={styles.galleryItemImage} resizeMode="contain" />
               <TouchableOpacity
                 style={styles.galleryRemoveBtn}
                 onPress={() => removeUploadedImage(index)}

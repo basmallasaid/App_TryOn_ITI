@@ -15,7 +15,6 @@ import { useFavorites } from '../../context/FavoritesContext';
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import { useTranslation } from 'react-i18next';
-import { useLanguage } from '../../context/LanguageContext';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useFeedback } from "../../context/FeedbackContext";
@@ -32,7 +31,6 @@ export default function ProductDetailScreen({ route }) {
   const { t } = useTranslation();
   const { themeVersion, isDarkMode } = useTheme();
   const { showFeedback } = useFeedback();
-  const { isRTL } = useLanguage();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { productId, source } = route.params || { productId: "6a25cff029dabdceae5bbe12" };
   
@@ -188,7 +186,7 @@ export default function ProductDetailScreen({ route }) {
                 <Text style={styles.brandName}>{product?.store_id?.name || t("store.productDetail.officialStore")} <Ionicons name="open-outline" size={12} color={Colors.primary} /></Text>
               </TouchableOpacity>
             </View>
-            <View style={[styles.priceContainer, { alignItems: isRTL ? "flex-start" : "flex-end" }]}>
+            <View style={[styles.priceContainer, { alignItems: "flex-end" }]}>
               <Text style={styles.priceText}>{product?.price}</Text>
               <Text style={styles.currency}>{product?.currency || t("store.currency")}</Text>
             </View>

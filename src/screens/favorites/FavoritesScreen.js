@@ -323,7 +323,7 @@ const FavoritesScreen = ({ navigation }) => {
                     <Image
                       source={imageSource}
                       style={styles.cardImage}
-                      resizeMode="cover"
+                      resizeMode="contain"
                     />
                   ) : (
                     <View style={styles.cardPlaceholder}>

@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  I18nManager,
 } from "react-native";
 import { useTranslation } from 'react-i18next';
 import { IMAGES } from "../../constants/images/images";
@@ -17,10 +16,8 @@ import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButton
 import LanguageContainer from "../../components/language/languageContainer";
 import Colors from "../../constants/theme/colors";
 
-import { setLanguageSeen, saveLanguage } from "../../storage/TokenStorage";
+import { setLanguageSeen } from "../../storage/TokenStorage";
 import EnrichTextComponent from "../../components/common/EnrichTextComponent";
-import { ROUTES } from "../../navigation/routes";
-import i18n from "../../localization/i18n";
 const { height: H } = Dimensions.get("window");
 
 const LANGUAGES = ["en", "ar"];
@@ -28,7 +25,7 @@ const LANGUAGES = ["en", "ar"];
 const SelectLanguageScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { isDarkMode, themeVersion } = useTheme();
-  const { syncLanguageState } = useLanguage();
+  const { selectLanguage } = useLanguage();
   const [selected, setSelected] = useState(null);
 
   const styles = React.useMemo(() => StyleSheet.create({
@@ -78,11 +75,7 @@ const SelectLanguageScreen = ({ navigation }) => {
   const handleContinue = async () => {
     if (!selected) return;
     await setLanguageSeen();
-    await saveLanguage(selected);
-    syncLanguageState(selected);
-    i18n.changeLanguage(selected);
-    I18nManager.forceRTL(selected === "ar");
-    navigation.replace(ROUTES.ONBOARDING);
+    await selectLanguage(selected);
   };
 
   return (

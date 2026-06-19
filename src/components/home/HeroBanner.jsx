@@ -65,14 +65,15 @@ const styles = React.useMemo(() => StyleSheet.create({
     generateButton: {
         backgroundColor: Colors.primarybrand,
         alignItems: "center",
-        paddingVertical: 10,
-        paddingHorizontal: 18,
+        paddingVertical: 12,
+        paddingHorizontal: 15,
         borderRadius: 12,
     },
 
     generateButtonText: {
+        fontFamily:"Roboto_500Medium",
         color: Colors.textInverse,
-        fontWeight: "600",
+        fontWeight: "500",
     },
 
     bannerImage: {

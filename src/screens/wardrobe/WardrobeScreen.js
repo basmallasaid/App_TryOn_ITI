@@ -85,16 +85,11 @@ const WardrobeScreen = ({ navigation }) => {
     "Shirt": t("wardrobe.shirt"),
     "T-Shirt": t("wardrobe.tShirt"),
     "Bottom": t("wardrobe.categories.bottom"),
-    "Jeans": t("wardrobe.jeans"),
-    "Short": t("wardrobe.short"),
-    "Jacket": t("wardrobe.categories.jacket"),
     "Suit": t("wardrobe.categories.suit"),
     "Shoes": t("wardrobe.categories.shoes"),
     "Accessories": t("wardrobe.categories.accessories"),
     "Dress": t("wardrobe.categories.dress"),
-    "Skirt": t("wardrobe.skirt"),
     "Bag": t("wardrobe.categories.bag"),
-    "Abayas": t("wardrobe.abayas"),
   };
 
   const categories = rawCategories;

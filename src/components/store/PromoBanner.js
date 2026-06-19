@@ -12,6 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { IMAGES } from '../../constants/images/images';
 
 const { width } = Dimensions.get('window');
@@ -19,12 +20,12 @@ const CONTAINER_PADDING = 20;
 const SLIDE_WIDTH = width - (CONTAINER_PADDING * 2);
 const IMG_W = 140;
 
-const Slide = React.memo(({ item, isRTL, styles }) => (
+const Slide = React.memo(({ item, styles }) => (
   <View style={{ width: SLIDE_WIDTH }}>
-    <View style={[styles.banner, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-      <View style={[styles.textContent, isRTL ? { paddingRight: 25, paddingLeft: 10 } : { paddingLeft: 25, paddingRight: 10 }]}>
-        <Text style={[styles.bannerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{item.title}</Text>
-        <Text style={[styles.bannerSub, { textAlign: isRTL ? 'right' : 'left' }]}>{item.subtitle}</Text>
+    <View style={styles.banner}>
+      <View style={styles.textContent}>
+        <Text style={styles.bannerTitle}>{item.title}</Text>
+        <Text style={styles.bannerSub}>{item.subtitle}</Text>
       </View>
       <Image
         source={item.image}
@@ -36,10 +37,10 @@ const Slide = React.memo(({ item, isRTL, styles }) => (
 ));
 
 export const PromoBanner = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const { isRTL } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(0);
-  const isRTL = i18n.dir() === 'rtl';
   const scrollX = useRef(new Animated.Value(0)).current;
   const currentIndex = useRef(0);
 
@@ -77,9 +78,10 @@ export const PromoBanner = () => {
     },
     onPanResponderRelease: (_, gesture) => {
       const threshold = SLIDE_WIDTH * 0.25;
-      if (gesture.dx < -threshold) {
+      const dx = isRTL ? -gesture.dx : gesture.dx;
+      if (dx < -threshold) {
         snapToIndex(currentIndex.current + 1);
-      } else if (gesture.dx > threshold) {
+      } else if (dx > threshold) {
         snapToIndex(currentIndex.current - 1);
       } else {
         snapToIndex(currentIndex.current);
@@ -94,6 +96,7 @@ export const PromoBanner = () => {
       alignItems: 'center',
     },
     banner: {
+      flexDirection: 'row',
       width: SLIDE_WIDTH,
       height: 200,
       backgroundColor: Colors.backgroundColor,
@@ -106,6 +109,8 @@ export const PromoBanner = () => {
       flex: 1,
       justifyContent: 'center',
       paddingVertical: 25,
+      paddingEnd: 10,
+      paddingStart: 25,
     },
     bannerTitle: {
       fontSize: 24,
@@ -113,12 +118,14 @@ export const PromoBanner = () => {
       color: Colors.textPrimary,
       lineHeight: 30,
       letterSpacing: -0.5,
+      textAlign: 'left',
     },
     bannerSub: {
       fontSize: 12,
       color: Colors.textMuted,
       marginTop: 10,
       lineHeight: 18,
+      textAlign: 'left',
     },
     bannerImg: {
       width: IMG_W,
@@ -167,7 +174,7 @@ export const PromoBanner = () => {
               }],
             }}
           >
-            <Slide item={item} isRTL={isRTL} styles={styles} />
+            <Slide item={item} styles={styles} />
           </Animated.View>
         ))}
       </View>

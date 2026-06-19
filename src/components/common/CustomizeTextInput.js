@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { useLanguage } from "../../context/LanguageContext";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import Typography from "../../constants/theme/typography";
@@ -29,7 +28,6 @@ const CustomizeTextInput = ({
   editable = true,
 }) => {
   const { themeVersion } = useTheme();
-  const { isRTL } = useLanguage();
   const [hidden, setHidden] = useState(secureTextEntry);
 
   const borderColor =
@@ -116,7 +114,7 @@ const styles = React.useMemo(() => StyleSheet.create({
       <View
         style={[
           styles.container,
-          { borderColor, flexDirection: isRTL ? "row-reverse" : "row" },
+          { borderColor },
         ]}
       >
         <TextInput
@@ -124,7 +122,6 @@ const styles = React.useMemo(() => StyleSheet.create({
             styles.input,
             {
               color: stateColor,
-              textAlign: isRTL ? "right" : "left",
             },
           ]}
           placeholder={placeholder}

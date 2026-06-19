@@ -1,7 +1,7 @@
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import { getAllRecommendations, requestRecommendations } from '../api/recommendations_services/recommendationsServices';
-import { getToken, getUserId, setDailyOutfitDate, setDailyOutfitData } from '../storage/TokenStorage';
+import { getToken, getUserId, setDailyOutfitDate, setDailyOutfitData, getDailyOutfitDate } from '../storage/TokenStorage';
 
 const LOG_TAG = "[BG-Recommendation]";
 const TASK_NAME = 'daily-recommendation-fetch';
@@ -68,6 +68,13 @@ TaskManager.defineTask(TASK_NAME, async () => {
       console.log(LOG_TAG, `Today (${todayKey}) found in history — no POST needed`);
       await setDailyOutfitDate(todayKey, userId);
       await setDailyOutfitData(todayEntry, userId);
+      return BackgroundTask.BackgroundTaskResult.Success;
+    }
+
+    // ── Step 2.5: Also check local cache (prevents race-condition duplicates) ──
+    const cachedDate = await getDailyOutfitDate(userId);
+    if (cachedDate === todayKey) {
+      console.log(LOG_TAG, `Local cache already has outfit for ${todayKey} — skipping POST`);
       return BackgroundTask.BackgroundTaskResult.Success;
     }
 

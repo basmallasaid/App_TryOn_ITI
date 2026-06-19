@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useWardrobe } from "../../context/WardrobeContext";
-import { deleteWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import CustomBackButton from "../../components/common/CustomBackButton";
@@ -64,13 +63,16 @@ const EditWardrobeScreen = ({ navigation, route }) => {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      // Execute all deletes
-      await Promise.all(selectedIds.map((id) => deleteWardrobeItem(id)));
-      // Update local context
-      selectedIds.forEach((id) => removeItem(id));
+      const results = await Promise.allSettled(selectedIds.map((id) => removeItem(id)));
+      const failed = results.filter((r) => r.status === "rejected");
+      if (failed.length > 0) {
+        console.warn("Failed to delete items:", failed.map((r) => r.reason?.message || r.reason));
+      }
       setModalVisible(false);
       navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (error) {
+      console.error("handleDelete error:", error);
+      setModalVisible(false);
     } finally {
       setIsDeleting(false);
     }

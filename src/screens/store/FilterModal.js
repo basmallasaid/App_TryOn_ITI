@@ -7,6 +7,7 @@ import Slider from '@react-native-community/slider';
 import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 export const FilterModal = ({
   visible,
@@ -21,6 +22,7 @@ export const FilterModal = ({
 }) => {
   const { t } = useTranslation();
   const { themeVersion } = useTheme();
+  const { isRTL } = useLanguage();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const [price, setPrice] = useState(initialPrice);
   const [loading, setLoading] = useState(false);
@@ -182,17 +184,19 @@ export const FilterModal = ({
 
           {/* Price Range */}
           <FilterSection title={t("store.filters.priceRange")}>
-            <Slider
-              style={{ width: '100%', height: 40 }}
-              minimumValue={0}
-              maximumValue={1000}
-              minimumTrackTintColor={Colors.primary}
-              maximumTrackTintColor={Colors.borderStrong}
-              thumbTintColor={Colors.primary}
-              value={price}
-              onValueChange={setPrice}
-            />
-            <View style={styles.priceLabels}>
+            <View style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }}>
+              <Slider
+                style={{ width: '100%', height: 40 }}
+                minimumValue={0}
+                maximumValue={1000}
+                minimumTrackTintColor={Colors.primary}
+                maximumTrackTintColor={Colors.borderStrong}
+                thumbTintColor={Colors.primary}
+                value={price}
+                onValueChange={setPrice}
+              />
+            </View>
+            <View style={[styles.priceLabels, { flexDirection: "row" }]}>
               <Text style={styles.priceText}>0</Text>
               <Text style={styles.priceText}>{Math.round(price)} {t("store.currency")}</Text>
             </View>

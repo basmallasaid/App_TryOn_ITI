@@ -373,7 +373,7 @@ export default function MatchingScreen({ navigation }) {
                 <Image
                   source={{ uri: cameraImage }}
                   style={styles.singleImage}
-                  resizeMode="cover"
+                  resizeMode="contain"
                 />
                 <TouchableOpacity
                   style={styles.removeBtn}
@@ -407,7 +407,7 @@ export default function MatchingScreen({ navigation }) {
                 <Image
                   source={{ uri: galleryImage }}
                   style={styles.singleImage}
-                  resizeMode="cover"
+                  resizeMode="contain"
                 />
                 <TouchableOpacity
                   style={styles.removeBtn}

@@ -20,6 +20,7 @@ import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import { useRecentRecycles } from "../../context/RecentRecyclesContext";
 import { useProfileContext } from "../../context/ProfileContext";
+import { ROUTES, SOURCE } from '../../navigation/routes';
 
 export default function RecycleResultScreen({ route, navigation }) {
   const { t } = useTranslation();
@@ -87,7 +88,7 @@ export default function RecycleResultScreen({ route, navigation }) {
   return (
     <SafeScreen style={styles.safeArea}>
       <View style={styles.header}>
-        <CustomBackButton onPress={handleTryAgain} />
+        <CustomBackButton onPress={() => navigation.navigate(ROUTES.MAIN, { screen: ROUTES.HOME })} />
         <Text style={styles.headerTitle}>{t("recycleResult.title")}</Text>
         <TouchableOpacity style={styles.infoBtn}>
           <Svg width={20} height={20} viewBox="0 0 20 20" fill="none">
@@ -108,7 +109,7 @@ export default function RecycleResultScreen({ route, navigation }) {
           <Image
             source={{ uri: resultImageUri }}
             style={styles.resultImage}
-            resizeMode="cover"
+            resizeMode="contain"
           />
         </View>
 

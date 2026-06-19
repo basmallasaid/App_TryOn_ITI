@@ -4,14 +4,14 @@ import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
-import { useLanguage } from '../../context/LanguageContext';
 const StatCard = ({ icon, title, subtitle, onPress }) => {
   const { themeVersion } = useTheme();
-  const { isRTL } = useLanguage();
 const styles = React.useMemo(() => StyleSheet.create({
   card: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
     borderRadius: 16,
     borderWidth: 1,
@@ -20,6 +20,10 @@ const styles = React.useMemo(() => StyleSheet.create({
     paddingVertical: 8,
     height: 70,
     backgroundColor: Colors.white,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   texts: {
     gap: 4,
@@ -42,8 +46,10 @@ const styles = React.useMemo(() => StyleSheet.create({
 }), [themeVersion]);
 
   return (
-    <TouchableOpacity style={[styles.card, { flexDirection: isRTL ? 'row-reverse' : 'row' }]} onPress={onPress} activeOpacity={0.8}>
-      <Ionicons name={icon} size={22} color={Colors.textPrimary} />
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
+      <View style={styles.iconContainer}>
+        <Ionicons name={icon} size={22} color={Colors.textPrimary} />
+      </View>
       <View style={styles.texts}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.subtitle}>{subtitle}</Text>

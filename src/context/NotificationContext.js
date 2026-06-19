@@ -58,22 +58,30 @@ export const NotificationProvider = ({ children }) => {
     let isMounted = true;
 
     const init = async () => {
+      console.log("[PushContext] Initializing notifications...");
       const token = await requestPermissionsAndGetTokenAsync();
       if (token && isMounted) {
         setExpoPushToken(token);
         try {
-          await notificationApi.registerPushToken(token);
-        } catch {
-          // token registration failed silently
+          console.log(`[PushContext] Registering token on backend: ${token}`);
+          const res = await notificationApi.registerPushToken(token);
+          console.log("[PushContext] Backend registration response:", JSON.stringify(res));
+        } catch (err) {
+          console.error("[PushContext] Backend token registration failed:", err.message || err);
         }
+      } else {
+        console.warn("[PushContext] No token obtained or component unmounted.");
       }
 
       if (isMounted) {
+        console.log("[PushContext] Setting up notification listeners...");
         const cleanup = setupNotificationListeners(
           () => {
+            console.log("[PushContext] Notification received in foreground!");
             if (fetchRef.current) fetchRef.current();
           },
           () => {
+            console.log("[PushContext] Notification response received (user tapped notification)!");
             if (fetchRef.current) fetchRef.current();
             if (navigationRef.isReady()) {
               navigationRef.navigate("Profile", {

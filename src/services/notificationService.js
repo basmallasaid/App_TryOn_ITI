@@ -12,7 +12,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function ensureAndroidChannel() {
+export async function ensureAndroidChannel() {
   if (Platform.OS !== "android") return;
   try {
     await Notifications.setNotificationChannelAsync("default", {
@@ -27,12 +27,13 @@ async function ensureAndroidChannel() {
   }
 }
 
-ensureAndroidChannel();
-
 export async function requestPermissionsAndGetTokenAsync() {
   if (!Device.isDevice) {
+    console.warn("[Push] requestPermissionsAndGetTokenAsync: Not a physical device (emulator/simulator). Token registration skipped.");
     return null;
   }
+
+  await ensureAndroidChannel();
 
   const { status: existingStatus } =
     await Notifications.getPermissionsAsync();
@@ -44,14 +45,17 @@ export async function requestPermissionsAndGetTokenAsync() {
   }
 
   if (finalStatus !== "granted") {
+    console.warn(`[Push] requestPermissionsAndGetTokenAsync: Permission not granted. Status: ${finalStatus}`);
     return null;
   }
 
   const projectId =
     Constants.expoConfig?.extra?.eas?.projectId ??
-    Constants.easConfig?.projectId;
+    Constants.easConfig?.projectId ??
+    "f230f9f4-bc47-42d1-a245-df8407bd6bff"; // Fallback to app.json's projectId
 
   if (!projectId) {
+    console.error("[Push] requestPermissionsAndGetTokenAsync: EAS Project ID not found in Constants config.");
     return null;
   }
 
@@ -60,8 +64,10 @@ export async function requestPermissionsAndGetTokenAsync() {
       await Notifications.getExpoPushTokenAsync({ projectId })
     ).data;
 
+    console.log(`[Push] requestPermissionsAndGetTokenAsync: Successfully obtained token: ${token}`);
     return token;
-  } catch {
+  } catch (error) {
+    console.error("[Push] requestPermissionsAndGetTokenAsync: Error fetching Expo push token:", error.message || error);
     return null;
   }
 }

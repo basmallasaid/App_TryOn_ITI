@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
@@ -18,6 +18,8 @@ import OutfitViewModal from '../../components/common/OutfitViewModal';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
+import { translateToArabic, translateBatch } from '../../utils/dynamicTranslator';
+import i18n from '../../localization/i18n';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = 150;
@@ -32,6 +34,28 @@ export default function RecentRecyclesScreen({ navigation }) {
   const { recycles, loading } = useRecentRecycles();
   const { isFavorite, toggleFavorite } = useFavorites();
   const [selectedOutfit, setSelectedOutfit] = useState(null);
+  const [translatedRecycles, setTranslatedRecycles] = useState([]);
+
+  useEffect(() => {
+    const translateAll = async () => {
+      if (i18n.language === 'ar' && recycles.length > 0) {
+        const translated = await Promise.all(
+          recycles.map(async (item) => {
+            const nameAr = await translateToArabic(item.name || item.designTitle, 'ar');
+            return {
+              ...item,
+              name: nameAr || item.name,
+              designTitle: nameAr || item.designTitle,
+            };
+          })
+        );
+        setTranslatedRecycles(translated);
+      } else {
+        setTranslatedRecycles(recycles);
+      }
+    };
+    translateAll();
+  }, [recycles]);
 
   const handleToggleFavorite = async (item) => {
     try {
@@ -74,14 +98,14 @@ export default function RecentRecyclesScreen({ navigation }) {
         <View style={{ width: 24 }} />
       </View>
 
-      {recycles.length === 0 ? (
+      {translatedRecycles.length === 0 ? (
         <View style={styles.center}>
           <MaterialCommunityIcons name="recycle" size={64} color={Colors.borderDefault} />
           <Text style={styles.emptyText}>{t('home.noRecentRecycles')}</Text>
         </View>
       ) : (
         <FlatList
-          data={recycles}
+          data={translatedRecycles}
           numColumns={2}
           keyExtractor={(item) => item._id?.$oid || item._id}
           renderItem={renderItem}

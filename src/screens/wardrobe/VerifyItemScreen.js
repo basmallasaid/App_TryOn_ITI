@@ -1,4 +1,4 @@
-import React, {  useState, useRef, useCallback  } from "react";
+import React, {  useState, useRef, useCallback, useEffect  } from "react";
 import SafeScreen from "../../components/common/SafeScreen";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -29,6 +29,8 @@ import { ROUTES } from "../../navigation/routes";
 import { saveToWardrobe, editWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
+import { translateToArabic } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
 const { height: SCREEN_H } = Dimensions.get("window");
 
 const SHEET_EXPANDED_H = SCREEN_H * 0.65;
@@ -104,6 +106,18 @@ const VerifyItemScreen = ({ route, navigation }) => {
   });
   const [loading, setLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  useEffect(() => {
+    const translateName = async () => {
+      if (i18n.language === 'ar' && garment.specificType) {
+        const translated = await translateToArabic(garment.specificType, 'ar');
+        if (translated) {
+          setForm((prev) => ({ ...prev, name: translated }));
+        }
+      }
+    };
+    translateName();
+  }, [garment.specificType]);
 
   const sheetAnim = useRef(new Animated.Value(0)).current;
 

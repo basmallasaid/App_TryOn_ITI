@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { translateToArabic } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
 
 export const FilterModal = ({
   visible,
@@ -31,6 +33,7 @@ export const FilterModal = ({
   const [selectedCategories, setSelectedCategories] = useState(initialCategories);
   const [selectedColors, setSelectedColors] = useState(initialColors);
   const [availableColors, setAvailableColors] = useState([]);
+  const [translatedColorLabels, setTranslatedColorLabels] = useState({});
 
   const toggleValue = (value, list, setList) => {
     if (list.includes(value)) {
@@ -61,6 +64,24 @@ export const FilterModal = ({
       setPrice(initialPrice);
     }
   }, [visible]);
+
+  useEffect(() => {
+    const translateColors = async () => {
+      if (i18n.language === 'ar' && availableColors.length > 0) {
+        const labels = {};
+        for (const color of availableColors) {
+          const translated = await translateToArabic(color, 'ar');
+          labels[color] = translated || color;
+        }
+        setTranslatedColorLabels(labels);
+      } else {
+        const labels = {};
+        availableColors.forEach((c) => { labels[c] = c; });
+        setTranslatedColorLabels(labels);
+      }
+    };
+    translateColors();
+  }, [availableColors]);
 
   const CheckboxItem = ({ label, selected, onPress }) => (
     <TouchableOpacity style={[styles.checkboxRow, { flexDirection: "row" }]} onPress={onPress}>
@@ -164,7 +185,8 @@ export const FilterModal = ({
             <View style={[styles.pillsContainer, { justifyContent: 'flex-start' }]}>
               {availableColors.length > 0 ? (
                 availableColors.map((color) => {
-                  const display = color.charAt(0).toUpperCase() + color.slice(1);
+                  const rawLabel = translatedColorLabels[color] || color;
+                  const display = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
                   const selected = selectedColors.includes(color);
                   return (
                     <TouchableOpacity

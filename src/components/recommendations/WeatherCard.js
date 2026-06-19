@@ -1,12 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
 import { getWeatherIcon } from "../../constants/weatherIcons";
+import { translateToArabic } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
 
 export default function WeatherCard({ weather }) {
   const { themeVersion } = useTheme();
+  const [conditionText, setConditionText] = useState(weather?.condition || "");
+
+  useEffect(() => {
+    const translateCondition = async () => {
+      if (i18n.language === 'ar' && weather?.condition) {
+        const translated = await translateToArabic(weather.condition, 'ar');
+        setConditionText(translated || weather.condition);
+      } else {
+        setConditionText(weather?.condition || "");
+      }
+    };
+    translateCondition();
+  }, [weather?.condition]);
 
   if (!weather) return null;
 
@@ -68,7 +83,7 @@ const styles = React.useMemo(() => StyleSheet.create({
           <Ionicons name={conditionIcon.ionicons} size={33} color={conditionIcon.color} />
           <View style={[styles.leftTextCol, { alignItems: "flex-start" }]}>
             <Text style={[styles.tempValue, { textAlign: "left" }]}>{weather.temperature}°C</Text>
-            <Text style={[styles.conditionText, { textAlign: "left" }]}>{weather.condition}</Text>
+            <Text style={[styles.conditionText, { textAlign: "left" }]}>{conditionText}</Text>
           </View>
         </View>
 

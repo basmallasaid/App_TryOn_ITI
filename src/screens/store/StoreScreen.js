@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES, SOURCE } from '../../navigation/routes';
 import i18n from '../../localization/i18n';
+import { translateProduct, translateBatch } from '../../utils/dynamicTranslator';
 
 export default function StoreScreen() {
     const navigation = useNavigation();
@@ -85,6 +86,7 @@ export default function StoreScreen() {
     };
     const { isFavorite, toggleFavorite, refetch: refetchFavorites } = useFavorites();
     const { products: allProducts, loading, error } = useStore();
+    const [translatedProducts, setTranslatedProducts] = useState([]);
     const [searchText, setSearchText] = useState('');
     const searchTextRef = useRef(searchText);
     searchTextRef.current = searchText;
@@ -98,6 +100,18 @@ export default function StoreScreen() {
         colors: [],
         price: 1000,
     });
+
+    useEffect(() => {
+        const translateProducts = async () => {
+            if (i18n.language === 'ar' && allProducts.length > 0) {
+                const translated = await translateBatch(allProducts, translateProduct, 'ar');
+                setTranslatedProducts(translated);
+            } else {
+                setTranslatedProducts(allProducts);
+            }
+        };
+        translateProducts();
+    }, [allProducts]);
 
     const handleSearchSubmit = React.useCallback(() => {
         setSearchQuery(searchTextRef.current.trim());
@@ -128,10 +142,10 @@ export default function StoreScreen() {
         setFilterVisible(false);
     };
 
-    const categories = useMemo(() => buildCategoriesFromProducts(allProducts), [allProducts]);
+    const categories = useMemo(() => buildCategoriesFromProducts(translatedProducts), [translatedProducts]);
 
     const filteredProducts = useMemo(() => {
-        return allProducts
+        return translatedProducts
             .filter((product) => {
                 if (selectedCategory === 'all') return true;
                 return product.category?.toLowerCase() === selectedCategory;
@@ -167,7 +181,7 @@ export default function StoreScreen() {
                 return priceValue <= filterValues.price;
             })
             .map(mapProductToCard);
-    }, [allProducts, searchQuery, selectedCategory, filterValues]);
+    }, [translatedProducts, searchQuery, selectedCategory, filterValues]);
 
     const listHeader = React.useMemo(() => (
         <View style={{ padding: 20 }}>
@@ -195,7 +209,7 @@ export default function StoreScreen() {
                 onCategoryChange={setSelectedCategory}
             />
         </View>
-    ), [searchText, filterVisible, filterValues, categories, selectedCategory, handleSearchSubmit, allProducts]);
+    ), [searchText, filterVisible, filterValues, categories, selectedCategory, handleSearchSubmit, translatedProducts]);
 
     if (loading) {
         return (

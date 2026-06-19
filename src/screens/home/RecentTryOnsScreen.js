@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
@@ -18,6 +18,8 @@ import OutfitViewModal from '../../components/common/OutfitViewModal';
 import CustomBackButton from '../../components/common/CustomBackButton';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
+import { translateToArabic } from '../../utils/dynamicTranslator';
+import i18n from '../../localization/i18n';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = 150;
@@ -32,6 +34,24 @@ export default function RecentTryOnsScreen({ navigation }) {
   const { tryOns, loading } = useRecentTryOns();
   const { isFavorite, toggleFavorite } = useFavorites();
   const [selectedOutfit, setSelectedOutfit] = useState(null);
+  const [translatedTryOns, setTranslatedTryOns] = useState([]);
+
+  useEffect(() => {
+    const translateAll = async () => {
+      if (i18n.language === 'ar' && tryOns.length > 0) {
+        const translated = await Promise.all(
+          tryOns.map(async (item) => {
+            const nameAr = await translateToArabic(item.name, 'ar');
+            return { ...item, name: nameAr || item.name };
+          })
+        );
+        setTranslatedTryOns(translated);
+      } else {
+        setTranslatedTryOns(tryOns);
+      }
+    };
+    translateAll();
+  }, [tryOns]);
 
   const handleToggleFavorite = async (item) => {
     try {
@@ -74,14 +94,14 @@ export default function RecentTryOnsScreen({ navigation }) {
         <View style={{ width: 24 }} />
       </View>
 
-      {tryOns.length === 0 ? (
+      {translatedTryOns.length === 0 ? (
         <View style={styles.center}>
           <Ionicons name="shirt-outline" size={64} color={Colors.borderDefault} />
           <Text style={styles.emptyText}>{t('home.noRecentTryOns')}</Text>
         </View>
       ) : (
         <FlatList
-          data={tryOns}
+          data={translatedTryOns}
           numColumns={2}
           keyExtractor={(item) => item._id?.$oid || item._id}
           renderItem={renderItem}

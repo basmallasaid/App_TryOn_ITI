@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
@@ -33,7 +33,7 @@ import SparkleIcon from "../../components/recycle/SparkleIcon";
 import { ROUTES } from "../../navigation/routes";
 import GradientBorder from "../../components/recycle/GradientBorder";
 import DashedGradientBorder from "../../components/recycle/DashedGradientBorder";
-import { translateDesignIdea } from "../../utils/dynamicTranslator";
+import { translateDesignIdea, translateWardrobeItem, translateBatch } from "../../utils/dynamicTranslator";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import i18n from "../../localization/i18n";
 
@@ -44,6 +44,19 @@ export default function RecycleScreen({ navigation }) {
   const { themeVersion } = useTheme();
   const { items: wardrobeItems } = useWardrobe();
   const { showFeedback } = useFeedback();
+  const [translatedWardrobeItems, setTranslatedWardrobeItems] = useState([]);
+
+  useEffect(() => {
+    const translateAll = async () => {
+      if (i18n.language === 'ar' && wardrobeItems.length > 0) {
+        const translated = await translateBatch(wardrobeItems, translateWardrobeItem, 'ar');
+        setTranslatedWardrobeItems(translated);
+      } else {
+        setTranslatedWardrobeItems(wardrobeItems);
+      }
+    };
+    translateAll();
+  }, [wardrobeItems]);
 
   const [activeTab, setActiveTab] = useState("Wardrobe");
   const [selectedItems, setSelectedItems] = useState([]);
@@ -167,7 +180,7 @@ export default function RecycleScreen({ navigation }) {
   const getActiveImages = () => {
     if (activeTab === "Wardrobe") {
       return selectedItems
-        .map((id) => wardrobeItems.find((item) => item._id === id))
+        .map((id) => translatedWardrobeItems.find((item) => item._id === id))
         .filter(Boolean);
     }
     if (activeTab === "Camera") return capturedImages;
@@ -189,7 +202,7 @@ export default function RecycleScreen({ navigation }) {
 
       if (activeTab === "Wardrobe") {
         for (const id of selectedItems) {
-          const item = wardrobeItems.find((w) => w._id === id);
+          const item = translatedWardrobeItems.find((w) => w._id === id);
           if (item?.image) {
             let localUri = item.image;
             if (item.image.startsWith("http")) {
@@ -307,7 +320,7 @@ export default function RecycleScreen({ navigation }) {
 
   const renderWardrobeTab = () => (
     <View>
-      {wardrobeItems.length === 0 ? (
+      {translatedWardrobeItems.length === 0 ? (
         <View style={styles.emptyWrap}>
           <MaterialCommunityIcons name="hanger" size={48} color={Colors.iconGray} />
           <Text style={styles.emptyText}>{t("recycle.wardrobeEmpty")}</Text>
@@ -319,7 +332,7 @@ export default function RecycleScreen({ navigation }) {
           </View>
           <FlatList
             horizontal
-            data={wardrobeItems}
+            data={translatedWardrobeItems}
             keyExtractor={(item) => item._id}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.wardrobeList}

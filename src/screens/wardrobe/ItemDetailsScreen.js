@@ -31,6 +31,33 @@ const CATEGORIES = ["Bottom", "Top", "Dress", "Suit", "Bag", "Shoes", "Jacket", 
 const SEASONS = ["Summer", "Winter", "Spring", "Fall"];
 const STYLES = ["Casual", "Basic", "Formal","Mart-Casual"];
 
+const colorMap = {
+  black: "#1A1A1A",
+  white: "#FFFFFF",
+  red: "#F44336",
+  blue: "#2196F3",
+  green: "#4CAF50",
+  yellow: "#FFD700",
+  brown: "#8B4513",
+  grey: "#9E9E9E",
+  gray: "#9E9E9E",
+  navy: "#000080",
+  maroon: "#800000",
+  pink: "#E91E63",
+  purple: "#9C27B0",
+  orange: "#FF9800",
+  beige: "#F5F5DC",
+  cream: "#FFFDD0",
+  gold: "#FFD700",
+  silver: "#C0C0C0",
+};
+
+const getHexColor = (name) => {
+  if (!name) return Colors.borderDefault;
+  const key = name.toLowerCase().trim().replace(/\s+/g, '');
+  return colorMap[key] || key;
+};
+
 const ItemDetailsScreen = ({ route, navigation }) => {
   const { themeVersion, isDarkMode } = useTheme();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
@@ -43,6 +70,9 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [selectedColor, setSelectedColor] = useState('');
+
+  const getColorName = (c) => (typeof c === "string" ? c : c?.color) || "";
 
   const fetchDetails = async () => {
     try {
@@ -53,6 +83,8 @@ const ItemDetailsScreen = ({ route, navigation }) => {
         data = await translateWardrobeItem(data, 'ar');
       }
       setItemData(data);
+      const firstColors = data?.garments?.[0]?.colors;
+      if (firstColors?.length > 0) setSelectedColor(getColorName(firstColors[0]));
     } catch (error) {
     } finally {
       setLoading(false);
@@ -93,7 +125,9 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   }
 
   const garment = itemData?.garments?.[0] || {};
-  const primaryColorName = garment.colors?.[0]?.color || "white";
+  const rawColors = garment.colors || [];
+  const colors = rawColors.map(getColorName).filter(Boolean);
+  const primaryColorName = selectedColor || colors[0] || "white";
   const normalize = (v) =>
     v
       ? v
@@ -160,15 +194,25 @@ const ItemDetailsScreen = ({ route, navigation }) => {
 
         <View style={styles.colorSection}>
           <Text style={styles.colorLabel}>
-            {t("wardrobe.details.color")} <Text style={styles.colorValue}>{primaryColorName}</Text>
+            {t("wardrobe.details.color")} <Text style={styles.colorValue}>{selectedColor}</Text>
           </Text>
-          <View style={[styles.colorRing, { borderColor: Colors.primary }]}>
-            <View
-              style={[
-                styles.colorInside,
-                { backgroundColor: primaryColorName.toLowerCase().trim() },
-              ]}
-            />
+          <View style={[styles.optionsRow, { flexDirection: "row" }]}>
+            {colors.map((color, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => setSelectedColor(color)}
+                style={[styles.colorRing, selectedColor === color && { borderColor: Colors.primary }]}
+              >
+                <View
+                  style={[
+                    styles.colorInside,
+                    {
+                      backgroundColor: getHexColor(color),
+                    },
+                  ]}
+                />
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
@@ -346,17 +390,19 @@ const createStyles = () => StyleSheet.create({
     height: 38,
     borderRadius: 19,
     borderWidth: 2,
+    borderColor: 'transparent',
     justifyContent: "center",
     alignItems: "center",
+    marginEnd: 12,
   },
   colorInside: {
     width: 28,
     height: 28,
     borderRadius: 14,
     elevation: 1,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+  },
+  optionsRow: {
+    alignItems: 'center',
   },
   detailsLabel: {
     fontFamily: "Roboto_700Bold",

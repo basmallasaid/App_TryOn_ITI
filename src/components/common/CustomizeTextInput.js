@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { useLanguage } from "../../context/LanguageContext";
 import Typography from "../../constants/theme/typography";
 import { Ionicons } from "@expo/vector-icons";
 const CustomizeTextInput = ({
@@ -28,6 +29,7 @@ const CustomizeTextInput = ({
   editable = true,
 }) => {
   const { themeVersion } = useTheme();
+  const { isRTL } = useLanguage();
   const [hidden, setHidden] = useState(secureTextEntry);
 
   const borderColor =
@@ -93,6 +95,7 @@ const styles = React.useMemo(() => StyleSheet.create({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
+  marginStart: 8,
 },
 }), [themeVersion]);
 
@@ -122,6 +125,7 @@ const styles = React.useMemo(() => StyleSheet.create({
             styles.input,
             {
               color: stateColor,
+              textAlign: isRTL ? "right" : "left",
             },
           ]}
           placeholder={placeholder}

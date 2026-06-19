@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import SafeScreen from "../../components/common/SafeScreen";
 import {
   View,
@@ -21,6 +21,8 @@ import { getCategoriesByGender, CATEGORY_TO_BACKEND } from "../../constants/ward
 import { useTranslation } from 'react-i18next';
 import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
+import { translateWardrobeItem, translateBatch } from "../../utils/dynamicTranslator";
+import i18n from "../../localization/i18n";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = 175;
@@ -35,6 +37,19 @@ const EditWardrobeScreen = ({ navigation, route }) => {
   const { initialSelectedId } = route.params || {};
   const { items, removeItem, refetch } = useWardrobe();
   const { profile } = useProfileContext();
+  const [translatedItems, setTranslatedItems] = useState([]);
+
+  useEffect(() => {
+    const translateAll = async () => {
+      if (i18n.language === 'ar' && items.length > 0) {
+        const translated = await translateBatch(items, translateWardrobeItem, 'ar');
+        setTranslatedItems(translated);
+      } else {
+        setTranslatedItems(items);
+      }
+    };
+    translateAll();
+  }, [items]);
 
   const [selectedIds, setSelectedIds] = useState(
     initialSelectedId ? [initialSelectedId] : [],
@@ -46,13 +61,13 @@ const EditWardrobeScreen = ({ navigation, route }) => {
   const categories = getCategoriesByGender(profile?.profile?.gender);
 
   const filteredItems = useMemo(() => {
-    if (selectedCategory === "All") return items;
+    if (selectedCategory === "All") return translatedItems;
     const backendCategory = CATEGORY_TO_BACKEND[selectedCategory];
-    if (!backendCategory) return items;
-    return items.filter(
+    if (!backendCategory) return translatedItems;
+    return translatedItems.filter(
       (i) => i.category?.toLowerCase() === backendCategory,
     );
-  }, [items, selectedCategory]);
+  }, [translatedItems, selectedCategory]);
 
   const toggleSelect = (id) => {
     setSelectedIds((prev) =>

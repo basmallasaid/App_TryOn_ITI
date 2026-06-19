@@ -146,15 +146,19 @@ export async function translateProduct(product, targetLang = i18n.language) {
   if (!product || targetLang !== "ar") return product;
 
   try {
-    const [nameAr, descAr] = await Promise.all([
+    const [nameAr, descAr, storeNameAr] = await Promise.all([
       translateToArabic(product.name, targetLang),
       translateToArabic(product.description, targetLang),
+      translateToArabic(product.store_id?.name, targetLang),
     ]);
 
     return {
       ...product,
       name: nameAr || product.name,
       description: descAr || product.description,
+      store_id: product.store_id
+        ? { ...product.store_id, name: storeNameAr || product.store_id.name }
+        : product.store_id,
     };
   } catch (err) {
     return product;

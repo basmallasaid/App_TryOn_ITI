@@ -56,7 +56,7 @@ export default function TryOnScreen({ navigation, route }) {
         avatarImage?.url ||
         null;
 
-  const displayUri = avatarUri || photoUri;
+  const displayUri = photoUri || avatarUri;
 
   const [activeTab, setActiveTab] = useState("My Wardrobe");
   const [selectedItems, setSelectedItems] = useState([]);

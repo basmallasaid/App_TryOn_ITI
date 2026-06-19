@@ -49,7 +49,7 @@ export default function AvatarDetailScreen() {
   return (
     <SafeScreen>
       <View style={[styles.header, { flexDirection: "row" }]}>
-        <CustomBackButton onPress={() => navigation.goBack()} />
+        <CustomBackButton onPress={() => navigation.navigate(ROUTES.PROFILE_MAIN)} />
         <Text style={[styles.headerTitle, { textAlign: "center" }]}>{t('profile.avatarTitle')}</Text>
         <View style={{ width: 56 }} />
       </View>

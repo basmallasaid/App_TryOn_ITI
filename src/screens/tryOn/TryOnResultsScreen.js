@@ -123,7 +123,7 @@ const TryOnResult = ({ navigation, route }) => {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={[styles.header, { flexDirection: "row" }]}>
-          <CustomBackButton onPress={() => navigation.goBack()} />
+          <CustomBackButton onPress={() => navigation.navigate(ROUTES.MAIN, { screen: ROUTES.HOME })} />
           <Text style={styles.headerTitle}>{t("tryOn.results.title")}</Text>
           <TouchableOpacity>
             <Icon name="help-circle-outline" size={28} color={Colors.iconGray} style={{marginTop:-12}}/>

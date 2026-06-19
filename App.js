@@ -39,15 +39,6 @@ I18nManager.allowRTL(true);
 // DEV ONLY — comment out when done testing
 resetOnboardingAndLanguage();
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
-
 function RecommendationProviderWithAuthKey({ children }) {
   const { user } = useAuth();
   return (

@@ -12,6 +12,23 @@ Notifications.setNotificationHandler({
   }),
 });
 
+async function ensureAndroidChannel() {
+  if (Platform.OS !== "android") return;
+  try {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "ReDolapy",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+      sound: "default",
+    });
+  } catch (e) {
+    // channel creation failed silently
+  }
+}
+
+ensureAndroidChannel();
+
 export async function requestPermissionsAndGetTokenAsync() {
   if (!Device.isDevice) {
     return null;
@@ -42,15 +59,6 @@ export async function requestPermissionsAndGetTokenAsync() {
     const token = (
       await Notifications.getExpoPushTokenAsync({ projectId })
     ).data;
-
-    if (Platform.OS === "android") {
-      await Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
-      });
-    }
 
     return token;
   } catch {

@@ -46,10 +46,9 @@ export const updateProfile=async(token,firstName,lastName,dateOfBirth,gender)=>{
 
 }
 
-export const deleteAccount=async(token)=>{
-  await apiClient.delete(ENDPOINTS.DELETE_ACCOUNT, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+export const deleteAccount=async(email)=>{
+  const { data } = await apiClient.delete(ENDPOINTS.DELETE_ACCOUNT, { data: { email } });
+  return data;
 }
 
 export const forgotPassword = async (email) => {

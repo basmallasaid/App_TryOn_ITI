@@ -2,15 +2,21 @@ import axios from "axios";
 import { BASE_URL } from "../../config/env";
 import { getToken, clearToken, clearUserId } from "../../storage/TokenStorage";
 
-export const setCachedToken = () => {};
-export const clearCachedToken = () => {};
+let _onUnauthorized = null;
+
+export const registerUnauthorizedHandler = (handler) => {
+  _onUnauthorized = handler;
+};
+
+export const unregisterUnauthorizedHandler = () => {
+  _onUnauthorized = null;
+};
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 
-// Always read token fresh from SecureStore to avoid stale-token bugs on user switch
 apiClient.interceptors.request.use(async (config) => {
   const token = await getToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -23,6 +29,7 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       await clearToken();
       await clearUserId();
+      if (_onUnauthorized) _onUnauthorized();
     }
     return Promise.reject(error);
   },

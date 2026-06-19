@@ -319,3 +319,12 @@ export async function translateBatch(items, translatorFn, targetLang = i18n.lang
   }
   return results;
 }
+
+export const clearTranslationCache = async () => {
+  translationCache = {};
+  try {
+    await AsyncStorage.removeItem(CACHE_KEY);
+  } catch (e) {
+    console.log('dynamicTranslator: clearTranslationCache failed', e.message);
+  }
+};

@@ -31,6 +31,9 @@ const LightColors = {
   tabInactive: "#E9EBEE",
 
   textInverse: "#FFFFFF",
+
+  genderColorMale:"#E5F2FF",
+  genderColorFemale:"#FDEDF5",
 };
 
 const DarkColors = {
@@ -66,6 +69,9 @@ const DarkColors = {
   tabInactive: "#161B22",
 
   textInverse: "#FFFFFF",
+
+  genderColorMale:"#E5F2FF",
+  genderColorFemale:"#FDEDF5",
 };
 
 let currentTheme = "light";

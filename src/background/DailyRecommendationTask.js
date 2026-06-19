@@ -2,6 +2,7 @@ import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import { getAllRecommendations, requestRecommendations } from '../api/recommendations_services/recommendationsServices';
 import { getToken, getUserId, setDailyOutfitDate, setDailyOutfitData, getDailyOutfitDate } from '../storage/TokenStorage';
+import { getWardrobeCache } from '../storage/AsyncStorageCache';
 
 const LOG_TAG = "[BG-Recommendation]";
 const TASK_NAME = 'daily-recommendation-fetch';
@@ -72,9 +73,17 @@ TaskManager.defineTask(TASK_NAME, async () => {
     }
 
     // ── Step 2.5: Also check local cache (prevents race-condition duplicates) ──
+    // Only skip if server also confirmed an entry exists for today
     const cachedDate = await getDailyOutfitDate(userId);
-    if (cachedDate === todayKey) {
+    if (cachedDate === todayKey && todayEntry) {
       console.log(LOG_TAG, `Local cache already has outfit for ${todayKey} — skipping POST`);
+      return BackgroundTask.BackgroundTaskResult.Success;
+    }
+
+    // ── Step 2.6: Check if wardrobe is empty (use cache) ──
+    const cachedWardrobe = await getWardrobeCache(userId);
+    if (!cachedWardrobe || cachedWardrobe.length === 0) {
+      console.log(LOG_TAG, "Wardrobe is empty — skipping POST");
       return BackgroundTask.BackgroundTaskResult.Success;
     }
 

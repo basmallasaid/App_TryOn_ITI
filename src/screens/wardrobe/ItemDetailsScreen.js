@@ -12,7 +12,6 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 import { useWardrobe } from "../../context/WardrobeContext";
 import { useFavorites } from "../../context/FavoritesContext";
 import Colors from "../../constants/theme/colors";
@@ -63,7 +62,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { t } = useTranslation();
   const { itemId, analysisId, source } = route.params;
-  const { removeItem, refetch } = useWardrobe();
+  const { removeItem, refetch, getItem } = useWardrobe();
   const { isFavorite: checkIsFavorite, toggleFavorite } = useFavorites();
 
   const [itemData, setItemData] = useState(null);
@@ -78,7 +77,7 @@ const ItemDetailsScreen = ({ route, navigation }) => {
     try {
       setLoading(true);
       const id = analysisId || itemId;
-      let data = await getWardrobeItem(id);
+      let data = await getItem(id);
       if (i18n.language === 'ar') {
         data = await translateWardrobeItem(data, 'ar');
       }

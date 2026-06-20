@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { AppState } from 'react-native';
-import { getWardrobeItems, deleteWardrobeItem } from '../api/wardrobe_services/wardrobeService';
+import { getWardrobeItems, deleteWardrobeItem, editWardrobeItem, saveToWardrobe as apiSaveToWardrobe, getWardrobeItem } from '../api/wardrobe_services/wardrobeService';
 import { setWardrobeCache, getWardrobeCache } from '../storage/TokenStorage';
 import { useAuth } from './AuthContext';
 import { getUserFriendlyErrorMessage } from '../utils/errorMessages';
@@ -101,13 +101,49 @@ export const WardrobeProvider = ({ children }) => {
     }
   }, [userId]);
 
-  const updateItem = useCallback((itemId, updates) => {
+  const updateItem = useCallback(async (itemId, updates) => {
+    let previousItem = null;
     setItems((prev) => {
+      previousItem = prev.find((i) => i._id === itemId) || null;
       const next = prev.map((i) => (i._id === itemId ? { ...i, ...updates } : i));
       setWardrobeCache(next, userId).catch(() => {});
       return next;
     });
+
+    if (previousItem?.analysis_id && previousItem?.garments?.[0]) {
+      try {
+        const updateData = {
+          name: updates.name || previousItem.name || previousItem.garments[0].specificType,
+          category: updates.category || previousItem.category || previousItem.garments[0].category,
+          style: updates.style || previousItem.style || previousItem.garments[0].style,
+          season: updates.season || previousItem.season || previousItem.garments[0].season || [],
+        };
+        await editWardrobeItem(previousItem.analysis_id, previousItem.garments[0], updateData);
+      } catch (e) {
+        if (previousItem) {
+          setItems((prev) => {
+            const next = prev.map((i) => (i._id === itemId ? previousItem : i));
+            setWardrobeCache(next, userId).catch(() => {});
+            return next;
+          });
+        }
+        throw e;
+      }
+    }
   }, [userId]);
+
+  const saveToWardrobe = useCallback(async (analysisId, garmentIndex = 0) => {
+    const result = await apiSaveToWardrobe(analysisId, garmentIndex);
+    const newItemId = result._id || result.item?._id || result.analysis?._id;
+    if (newItemId) {
+      await fetchItems({ showLoading: false, useCache: false });
+    }
+    return result;
+  }, [fetchItems]);
+
+  const getItem = useCallback(async (id) => {
+    return await getWardrobeItem(id);
+  }, []);
 
   const value = useMemo(() => ({
     items,
@@ -117,7 +153,9 @@ export const WardrobeProvider = ({ children }) => {
     addItem,
     removeItem,
     updateItem,
-  }), [items, loading, error, fetchItems, addItem, removeItem, updateItem]);
+    saveToWardrobe,
+    getItem,
+  }), [items, loading, error, fetchItems, addItem, removeItem, updateItem, saveToWardrobe, getItem]);
 
   return (
     <WardrobeContext.Provider value={value}>

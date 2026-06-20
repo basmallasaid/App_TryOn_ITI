@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { clearTranslationCache } from '../utils/dynamicTranslator';
 
 const CACHE_TTL = 30 * 60 * 1000;
 
@@ -127,6 +128,7 @@ export const clearAllUserCache = async (userId) => {
     await clearWardrobeCache(userId);
     await clearProductsCache(userId);
     await clearDailyOutfit(userId);
+    await clearTranslationCache();
   } catch (e) {
     console.log('AsyncStorageCache: clearAllUserCache failed', e.message);
   }

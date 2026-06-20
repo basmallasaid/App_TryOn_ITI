@@ -31,7 +31,6 @@ import { ROUTES } from "../../navigation/routes";
 import { useTheme } from "../../context/ThemeContext";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
-import { deleteAccount } from "../../api/user_services/userService";
 import AvatarOptionCard from "../../components/avatar/AvatarOptionCard";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
@@ -42,7 +41,7 @@ const ProfileScreen = ({ navigation }) => {
   const { themeVersion, isDarkMode, setDarkMode } = useTheme();
   const { showFeedback } = useFeedback();
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
-  const { logout } = useAuth();
+  const { logout, deleteAccount } = useAuth();
   const { language, selectLanguage } = useLanguage();
   const {
     profile,
@@ -144,7 +143,6 @@ const ProfileScreen = ({ navigation }) => {
     try {
       await deleteAccount(profile?.email);
       setDeleteModalVisible(false);
-      logout();
     } catch (err) {
       setDeleteModalVisible(false);
       showFeedback({ type: "error", title: t("common.error"), message: getUserFriendlyErrorMessage(err, t) });

@@ -26,7 +26,7 @@ import CustomizeAppButtonFilled from "../../components/common/CustomizeAppButton
 import CustomBackButton from "../../components/common/CustomBackButton"; // Added Import
 import { useTranslation } from 'react-i18next';
 import { ROUTES } from "../../navigation/routes";
-import { saveToWardrobe, editWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
+import { editWardrobeItem } from "../../api/wardrobe_services/wardrobeService";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
 import { translateToArabic } from "../../utils/dynamicTranslator";
@@ -68,7 +68,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { imageUri, analysisResult } = route.params;
   const garment = analysisResult?.garments?.[0] ?? {};
-  const { refetch, updateItem } = useWardrobe();
+  const { refetch, updateItem, saveToWardrobe } = useWardrobe();
   const { t } = useTranslation();
   const { showFeedback } = useFeedback();
 
@@ -182,9 +182,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
     try {
       setLoading(true);
 
-      // 1. Prepare the user's manual selections (safe defaults)
       const rawCategory = form.categories[0] || garment.category || "top";
-      // Server wardrobe enum rejects "basic" — remap to a valid fallback
       const category = rawCategory.toLowerCase() === "basic" ? "top" : rawCategory;
       const updateData = {
         name: form.name || garment.specificType || "",
@@ -193,22 +191,17 @@ const VerifyItemScreen = ({ route, navigation }) => {
         season: form.seasons.length ? form.seasons : (garment.season || ["summer"]),
       };
 
-      // 2. First UPDATE the analysis with user corrections, so the AI's bad
-      //    category (e.g. "basic") is replaced before saving to wardrobe
       await editWardrobeItem(analysisResult.analysis_id, garment, updateData);
 
-      // 3. Now save the (corrected) analysis to wardrobe
       const saveResponse = await saveToWardrobe(analysisResult.analysis_id, 0);
       const wardrobeItemId = saveResponse._id || saveResponse.item?._id || saveResponse.analysis?._id;
 
-      // 4. Sync context and go home
       if (wardrobeItemId) {
-        updateItem(wardrobeItemId, {
+        await updateItem(wardrobeItemId, {
           name: updateData.name,
           category: updateData.category.toLowerCase(),
         });
       }
-      await refetch();
       navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (e) {
       const msg = getUserFriendlyErrorMessage(e, t);

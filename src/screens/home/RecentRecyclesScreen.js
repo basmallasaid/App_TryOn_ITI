@@ -16,9 +16,9 @@ import { useFavorites } from '../../context/FavoritesContext';
 import RecentItemCard from '../../components/home/RecentItemCard';
 import OutfitViewModal from '../../components/common/OutfitViewModal';
 import CustomBackButton from '../../components/common/CustomBackButton';
+import { getItemImage } from '../../utils/getItemImage';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
-import { translateToArabic, translateBatch } from '../../utils/dynamicTranslator';
 import i18n from '../../localization/i18n';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -38,24 +38,29 @@ export default function RecentRecyclesScreen({ navigation }) {
 
   useEffect(() => {
     const translateAll = async () => {
-      if (i18n.language === 'ar' && recycles.length > 0) {
-        const translated = await Promise.all(
-          recycles.map(async (item) => {
-            const nameAr = await translateToArabic(item.name || item.designTitle, 'ar');
+      if (recycles.length > 0) {
+        const translated = recycles.map((item) => {
+          if (i18n.language === 'ar') {
+            const nameAr = item.designTitleAr || item.name;
             return {
               ...item,
               name: nameAr || item.name,
               designTitle: nameAr || item.designTitle,
             };
-          })
-        );
+          }
+          return {
+            ...item,
+            name: item.designTitle || item.name,
+            designTitle: item.designTitle || item.name,
+          };
+        });
         setTranslatedRecycles(translated);
       } else {
         setTranslatedRecycles(recycles);
       }
     };
     translateAll();
-  }, [recycles]);
+  }, [recycles, i18n.language]);
 
   const handleToggleFavorite = async (item) => {
     try {
@@ -118,7 +123,7 @@ export default function RecentRecyclesScreen({ navigation }) {
       <OutfitViewModal
         visible={!!selectedOutfit}
         onClose={() => setSelectedOutfit(null)}
-        imageUri={selectedOutfit?.imageUrl || selectedOutfit?.image}
+        imageUri={selectedOutfit ? getItemImage(selectedOutfit) : null}
         isFavorite={selectedOutfit ? isFavorite(selectedOutfit._id) : false}
         onToggleFavorite={async () => {
           if (!selectedOutfit) return;

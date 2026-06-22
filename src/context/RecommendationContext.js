@@ -17,6 +17,7 @@ import {
   setDailyOutfitDate,
   setDailyOutfitData,
   getDailyOutfitData,
+  getWardrobeCache,
 } from "../storage/TokenStorage";
 import { useAuth } from "./AuthContext";
 import { translateToArabic } from "../utils/dynamicTranslator";
@@ -163,14 +164,14 @@ export const RecommendationProvider = ({ children }) => {
   const appStateRef = useRef(AppState.currentState);
   const lastFetchTimeRef = useRef(0);
 
-  const checkAndFetchDaily = useCallback(async () => {
+  const checkAndFetchDaily = useCallback(async ({ force = false } = {}) => {
     try {
       const now = Date.now();
-      if (now - lastFetchTimeRef.current < COOLDOWN_MS) {
+      if (!force && now - lastFetchTimeRef.current < COOLDOWN_MS) {
         console.log(LOG_TAG, "Cooldown active, skipping fetch");
         return;
       }
-      lastFetchTimeRef.current = now;
+      if (!force) lastFetchTimeRef.current = now;
 
       const todayKey = toLocalDateKey(new Date());
       const currentHour = new Date().getHours();
@@ -245,7 +246,14 @@ export const RecommendationProvider = ({ children }) => {
       }
 
       // ── Step 4: After 6AM — check wardrobe before POST ──
-      if (!wardrobeItems || wardrobeItems.length === 0) {
+      let hasWardrobe = wardrobeItems && wardrobeItems.length > 0;
+      if (!hasWardrobe) {
+        try {
+          const cached = await getWardrobeCache(userId);
+          hasWardrobe = cached && cached.length > 0;
+        } catch (e) { /* ignore */ }
+      }
+      if (!hasWardrobe) {
         console.log(LOG_TAG, "Wardrobe is empty — skipping POST");
         const translatedHistory = await translateHistory(serverHistory);
         setHistory(translatedHistory);
@@ -336,6 +344,17 @@ export const RecommendationProvider = ({ children }) => {
     });
     return () => subscription.remove();
   }, [checkAndFetchDaily]);
+
+  const prevWardrobeLenRef = useRef(wardrobeItems?.length || 0);
+  useEffect(() => {
+    const prevLen = prevWardrobeLenRef.current;
+    const curLen = wardrobeItems?.length || 0;
+    prevWardrobeLenRef.current = curLen;
+    if (prevLen === 0 && curLen > 0) {
+      console.log(LOG_TAG, "Wardrobe loaded, re-checking daily outfit");
+      checkAndFetchDaily({ force: true });
+    }
+  }, [wardrobeItems, checkAndFetchDaily]);
 
   const weeklyOutfits = useMemo(() => {
     const todayKey = toLocalDateKey(new Date());

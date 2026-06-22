@@ -7,6 +7,7 @@ import React, {
   useRef,
   useMemo,
 } from "react";
+import { AppState } from "react-native";
 import { useAuth } from "./AuthContext";
 import {
   requestPermissionsAndGetTokenAsync,
@@ -102,6 +103,17 @@ export const NotificationProvider = ({ children }) => {
       fetchNotifications();
     }
   }, [user?.token, fetchNotifications]);
+
+  const appStateRef = useRef(AppState.currentState);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (appStateRef.current.match(/inactive|background/) && nextState === 'active') {
+        fetchNotifications();
+      }
+      appStateRef.current = nextState;
+    });
+    return () => subscription.remove();
+  }, [fetchNotifications]);
 
   const markAsRead = useCallback(
     async (notificationId) => {

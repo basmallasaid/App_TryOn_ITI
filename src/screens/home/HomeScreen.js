@@ -24,6 +24,7 @@ import HorizontalScrollSection from "../../components/common/HorizontalScrollSec
 import OutfitViewModal from "../../components/common/OutfitViewModal";
 import { useFeedback } from "../../context/FeedbackContext";
 import { getUserFriendlyErrorMessage } from "../../utils/errorMessages";
+import { getItemImage } from "../../utils/getItemImage";
 
 const filterLast30Days = (items) => {
   const thirtyDaysAgo = new Date();
@@ -68,7 +69,7 @@ export default function HomeScreen({ navigation }) {
 
   const renderTryOnItem = useCallback((item) => (
     <TryOnCard
-      imageUri={item.imageUrl}
+      imageUri={getItemImage(item)}
       isFavorite={isFavorite(item._id)}
       onToggleFavorite={async () => {
         try {
@@ -83,7 +84,7 @@ export default function HomeScreen({ navigation }) {
 
   const renderRecycleItem = useCallback((item) => (
     <TryOnCard
-      imageUri={item.imageUrl}
+      imageUri={getItemImage(item)}
       isFavorite={isFavorite(item._id)}
       onToggleFavorite={async () => {
         try {
@@ -182,7 +183,7 @@ export default function HomeScreen({ navigation }) {
       <OutfitViewModal
         visible={!!selectedOutfit}
         onClose={() => setSelectedOutfit(null)}
-        imageUri={selectedOutfit?.imageUrl}
+        imageUri={selectedOutfit ? getItemImage(selectedOutfit) : null}
         isFavorite={selectedOutfit ? isFavorite(selectedOutfit._id) : false}
         onToggleFavorite={async () => {
           if (!selectedOutfit) return;
@@ -205,6 +206,7 @@ const createStyles = () => StyleSheet.create({
   screenWrapper: {
     flex: 1,
     paddingHorizontal: 20,
+    overflow: "visible",
   },
   container: {
     flex: 1,

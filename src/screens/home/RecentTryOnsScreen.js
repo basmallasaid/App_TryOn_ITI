@@ -16,6 +16,7 @@ import { useFavorites } from '../../context/FavoritesContext';
 import RecentItemCard from '../../components/home/RecentItemCard';
 import OutfitViewModal from '../../components/common/OutfitViewModal';
 import CustomBackButton from '../../components/common/CustomBackButton';
+import { getItemImage } from '../../utils/getItemImage';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
 import { translateToArabic } from '../../utils/dynamicTranslator';
@@ -51,7 +52,7 @@ export default function RecentTryOnsScreen({ navigation }) {
       }
     };
     translateAll();
-  }, [tryOns]);
+  }, [tryOns, i18n.language]);
 
   const handleToggleFavorite = async (item) => {
     try {
@@ -114,7 +115,7 @@ export default function RecentTryOnsScreen({ navigation }) {
       <OutfitViewModal
         visible={!!selectedOutfit}
         onClose={() => setSelectedOutfit(null)}
-        imageUri={selectedOutfit?.imageUrl || selectedOutfit?.image}
+        imageUri={selectedOutfit ? getItemImage(selectedOutfit) : null}
         isFavorite={selectedOutfit ? isFavorite(selectedOutfit._id) : false}
         onToggleFavorite={async () => {
           if (!selectedOutfit) return;

@@ -36,10 +36,12 @@ export default function RecycleResultScreen({ route, navigation }) {
     designTitleAr,
     designDescription,
     designDescriptionAr,
+    displayTitle: displayTitleParam,
+    displayDesc: displayDescParam,
   } = route.params || {};
 
-  const displayTitle = designTitle;
-  const displayDescription = designDescription;
+  const displayTitle = displayTitleParam || designTitle;
+  const displayDescription = displayDescParam || designDescription;
 
   useEffect(() => {
     const checkIfSaved = async () => {

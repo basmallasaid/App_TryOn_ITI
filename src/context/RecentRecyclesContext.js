@@ -15,7 +15,7 @@ const filterLast30Days = (items) => {
 };
 
 export const RecentRecyclesProvider = ({ children }) => {
-  const { profile, loading: profileLoading } = useProfileContext();
+  const { profile, loading: profileLoading, refreshProfile } = useProfileContext();
   const [recycles, setRecycles] = useState([]);
 
   useEffect(() => {
@@ -24,8 +24,8 @@ export const RecentRecyclesProvider = ({ children }) => {
   }, [profile?.latestRecycle]);
 
   const refresh = useCallback(async () => {
-    // Data comes from ProfileContext — no independent API call needed
-  }, []);
+    await refreshProfile();
+  }, [refreshProfile]);
 
   const value = useMemo(() => ({ recycles, loading: profileLoading, refresh }), [recycles, profileLoading, refresh]);
 

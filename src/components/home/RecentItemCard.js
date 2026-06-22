@@ -5,11 +5,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '../../constants/theme/colors';
 import { useTheme } from '../../context/ThemeContext';
+import { getItemImage } from '../../utils/getItemImage';
 
 const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
 const RecentItemCard = ({ item, isFavorite, onToggleFavorite, onPress }) => {
-  const imageUri = item.imageUrl || item.image || null;
+  const imageUri = getItemImage(item);
   const label = item.name || item.designTitle || '';
   const { themeVersion } = useTheme();
 

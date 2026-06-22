@@ -43,9 +43,9 @@ export default function RecommendationScreen({ navigation }) {
   const { weeklyOutfits, todaysOutfit, todaysWeather, history, loading } = useRecommendation();
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
 
-  const weather = todaysWeather || weeklyOutfits.find(d => d.isToday)?.entry?.weather || history[0]?.weather || null;
+  const weather = todaysWeather || weeklyOutfits.find(d => d.isToday)?.entry?.weather || null;
   const todayEntry = weeklyOutfits.find(d => d.isToday);
-  const todayOutfit = todaysOutfit || todayEntry?.entry || history[0] || null;
+  const todayOutfit = todaysOutfit || todayEntry?.entry || null;
 
   return (
     <SafeScreen style={styles.safeArea}>

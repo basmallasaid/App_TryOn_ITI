@@ -280,19 +280,26 @@ export default function RecycleScreen({ navigation }) {
 
       if (result.success) {
         const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId);
-        const displayTitle = i18n.language === 'ar' && selectedIdea?.title_ar
-          ? selectedIdea.title_ar
-          : selectedIdea?.title || t("recommendation.generatedDesign");
-        const displayDesc = i18n.language === 'ar' && selectedIdea?.design_description_ar
-          ? selectedIdea.design_description_ar
-          : selectedIdea?.design_description || "";
+        const englishTitle = selectedIdea?.title || t("recommendation.generatedDesign");
+        const arabicTitle = selectedIdea?.title_ar || null;
+        const englishDesc = selectedIdea?.design_description || "";
+        const arabicDesc = selectedIdea?.design_description_ar || null;
+
+        const displayTitle = i18n.language === 'ar' && arabicTitle
+          ? arabicTitle
+          : englishTitle;
+        const displayDesc = i18n.language === 'ar' && arabicDesc
+          ? arabicDesc
+          : englishDesc;
 
         navigation.navigate(ROUTES.RECYCLE_RESULT, {
           resultImageUri: result.image_url,
-          designTitle: displayTitle,
-          designTitleAr: selectedIdea?.title_ar || null,
-          designDescription: displayDesc,
-          designDescriptionAr: selectedIdea?.design_description_ar || null,
+          designTitle: englishTitle,
+          designTitleAr: arabicTitle,
+          designDescription: englishDesc,
+          designDescriptionAr: arabicDesc,
+          displayTitle,
+          displayDesc,
           sessionId,
           ideaId: selectedIdeaId,
         });

@@ -5,7 +5,9 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
+import { AppState } from "react-native";
 
 import { useAuth } from "./AuthContext";
 import { getUserProfile, getUserSettings, updateLanguage, updateNotifications, updateDarkMode, updateUserImage } from "../api/user_services/userService";
@@ -111,6 +113,17 @@ export const ProfileProvider = ({ children }) => {
 
   useEffect(() => {
     refreshProfile();
+  }, [refreshProfile]);
+
+  const appStateRef = useRef(AppState.currentState);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (appStateRef.current.match(/inactive|background/) && nextState === 'active') {
+        refreshProfile();
+      }
+      appStateRef.current = nextState;
+    });
+    return () => subscription.remove();
   }, [refreshProfile]);
 
   const value = useMemo(() => ({

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { AppState } from 'react-native';
 import { getFavorites, addFavorite, removeFavorite } from '../api/favorites_services/favoritesService';
 import { getWardrobeItems } from '../api/wardrobe_services/wardrobeService';
 import { getAllProducts, getUserProfile } from '../api/user_services/userService';
@@ -9,6 +10,9 @@ import i18n from '../localization/i18n';
 const FavoritesContext = createContext();
 
 const normalizeId = (id) => id?.$oid ?? id;
+
+const getRecycleImage = (item) => item.image_url || item.imageUrl || item.image || null;
+const getTryOnImage = (item) => item.image_url || item.imageUrl || item.image || null;
 
 const enrichFavorites = (favorites, wardrobeItems, products, tryOnItems, recycleItems) => {
   return favorites.map((fav) => {
@@ -22,9 +26,9 @@ const enrichFavorites = (favorites, wardrobeItems, products, tryOnItems, recycle
     }
     if (fav.itemType === "TRYON") {
       const recycleItem = recycleItems.find((r) => normalizeId(r._id) === normalizeId(fav.itemId));
-      if (recycleItem) return { ...fav, image: recycleItem.imageUrl, name: recycleItem.designTitle || 'Recycle', category: 'Recycle' };
+      if (recycleItem) return { ...fav, image: getRecycleImage(recycleItem), name: recycleItem.designTitle || 'Recycle', category: 'Recycle' };
       const tryOnItem = tryOnItems.find((t) => normalizeId(t._id) === normalizeId(fav.itemId));
-      if (tryOnItem) return { ...fav, image: tryOnItem.imageUrl, name: tryOnItem.name || 'Try-On', category: 'Try On' };
+      if (tryOnItem) return { ...fav, image: getTryOnImage(tryOnItem), name: tryOnItem.name || 'Try-On', category: 'Try On' };
     }
     return fav;
   });
@@ -41,9 +45,9 @@ const enrichSingleItem = (fav, wardrobeItems, products, tryOnItems, recycleItems
   }
   if (fav.itemType === "TRYON") {
     const recycleItem = recycleItems.find((r) => normalizeId(r._id) === normalizeId(fav.itemId));
-    if (recycleItem) return { ...fav, image: recycleItem.imageUrl, name: recycleItem.designTitle || 'Recycle', category: 'Recycle' };
+    if (recycleItem) return { ...fav, image: getRecycleImage(recycleItem), name: recycleItem.designTitle || 'Recycle', category: 'Recycle' };
     const tryOnItem = tryOnItems.find((t) => normalizeId(t._id) === normalizeId(fav.itemId));
-    if (tryOnItem) return { ...fav, image: tryOnItem.imageUrl, name: tryOnItem.name || 'Try-On', category: 'Try On' };
+    if (tryOnItem) return { ...fav, image: getTryOnImage(tryOnItem), name: tryOnItem.name || 'Try-On', category: 'Try On' };
   }
   return fav;
 };
@@ -79,26 +83,19 @@ export const FavoritesProvider = ({ children }) => {
       const data = await getFavorites();
       const raw = data?.favorites ?? data?.items ?? [];
 
-      let wardrobeItems = wardrobeRef.current;
-      let products = productsRef.current;
-      let tryOnItems = tryOnRef.current;
-      let recycleItems = recycleRef.current;
-
-      if (wardrobeItems.length === 0 || products.length === 0) {
-        const [wardrobeData, productsData, profileData] = await Promise.all([
-          getWardrobeItems().catch(() => []),
-          getAllProducts().catch(() => []),
-          getUserProfile(user._id).catch(() => ({})),
-        ]);
-        products = Array.isArray(productsData) ? productsData : [];
-        wardrobeItems = wardrobeData ?? [];
-        tryOnItems = profileData?.latestTryOn ?? [];
-        recycleItems = profileData?.latestRecycle ?? [];
-        wardrobeRef.current = wardrobeItems;
-        productsRef.current = products;
-        tryOnRef.current = tryOnItems;
-        recycleRef.current = recycleItems;
-      }
+      const [wardrobeData, productsData, profileData] = await Promise.all([
+        getWardrobeItems().catch(() => []),
+        getAllProducts().catch(() => []),
+        getUserProfile(user._id).catch(() => ({})),
+      ]);
+      const products = Array.isArray(productsData) ? productsData : [];
+      const wardrobeItems = wardrobeData ?? [];
+      const tryOnItems = profileData?.latestTryOn ?? [];
+      const recycleItems = profileData?.latestRecycle ?? [];
+      wardrobeRef.current = wardrobeItems;
+      productsRef.current = products;
+      tryOnRef.current = tryOnItems;
+      recycleRef.current = recycleItems;
 
       setItems(enrichFavorites(raw, wardrobeItems, products, tryOnItems, recycleItems));
     } catch (e) {
@@ -106,10 +103,21 @@ export const FavoritesProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [user?.token]);
+  }, [user?.token, user?._id]);
 
   useEffect(() => {
     fetchFavorites();
+  }, [fetchFavorites]);
+
+  const appStateRef = useRef(AppState.currentState);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (appStateRef.current.match(/inactive|background/) && nextState === 'active') {
+        fetchFavorites();
+      }
+      appStateRef.current = nextState;
+    });
+    return () => subscription.remove();
   }, [fetchFavorites]);
 
   const addItem = useCallback(async (itemId, itemType, itemData = null) => {

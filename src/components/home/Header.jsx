@@ -9,6 +9,7 @@ import { ROUTES } from "../../navigation/routes";
 import { useProfileContext } from "../../context/ProfileContext";
 import Colors from "../../constants/theme/colors";
 import { useTheme } from "../../context/ThemeContext";
+import { useNotifications } from "../../context/NotificationContext";
 
 const BLURHASH_PLACEHOLDER = 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.';
 
@@ -19,6 +20,7 @@ export default function Header() {
   const navigation = useNavigation();
   const { profile, settings } = useProfileContext();
   const { themeVersion } = useTheme();
+  const { unreadCount } = useNotifications();
 
   const firstName = profile?.profile?.first_name?.split(" ")[0] || "";
   const lastName = profile?.profile?.last_name || "";
@@ -35,6 +37,7 @@ export default function Header() {
       justifyContent: "space-between",
       alignItems: "center",
       marginVertical: 25,
+      overflow: "visible",
     },
     headerLeft: {
       flexDirection: "row",
@@ -78,6 +81,25 @@ export default function Header() {
       fontWeight: "700",
       color: Colors.textPrimary,
     },
+    badge: {
+      position: 'absolute',
+      top: -10,
+      right: -6,
+      backgroundColor: Colors.error,
+      borderRadius: 9,
+      minWidth: 18,
+      height: 18,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 4,
+      borderWidth: 1.5,
+      borderColor: Colors.backgroundColor,
+    },
+    badgeText: {
+      color: Colors.textInverse,
+      fontSize: 10,
+      fontWeight: '700',
+    },
   }), [themeVersion]);
 
   return (
@@ -107,13 +129,23 @@ export default function Header() {
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => navigation.navigate(ROUTES.NOTIFICATIONS)}>
-        <Ionicons
-          name="notifications"
-          size={26}
-          color={settings?.notifications ? Colors.error : Colors.disabled}
-          style={{marginTop:-15}}
-        />
+      <TouchableOpacity
+        onPress={() => navigation.navigate(ROUTES.NOTIFICATIONS)}
+        style={{marginTop:-15, overflow:'visible'}}
+        activeOpacity={0.7}
+      >
+        <View style={{overflow:'visible',right:5,top:3}}>
+          <Ionicons
+            name="notifications"
+            size={26}
+            color={settings?.notifications ? Colors.error : Colors.disabled}
+          />
+          {unreadCount > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+            </View>
+          )}
+        </View>
       </TouchableOpacity>
     </View>
   );

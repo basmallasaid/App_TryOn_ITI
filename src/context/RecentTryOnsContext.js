@@ -15,7 +15,7 @@ const filterLast30Days = (items) => {
 };
 
 export const RecentTryOnsProvider = ({ children }) => {
-  const { profile, loading: profileLoading } = useProfileContext();
+  const { profile, loading: profileLoading, refreshProfile } = useProfileContext();
   const [tryOns, setTryOns] = useState([]);
 
   useEffect(() => {
@@ -24,8 +24,8 @@ export const RecentTryOnsProvider = ({ children }) => {
   }, [profile?.latestTryOn]);
 
   const refresh = useCallback(async () => {
-    // Data comes from ProfileContext — no independent API call needed
-  }, []);
+    await refreshProfile();
+  }, [refreshProfile]);
 
   const value = useMemo(() => ({ tryOns, loading: profileLoading, refresh }), [tryOns, profileLoading, refresh]);
 

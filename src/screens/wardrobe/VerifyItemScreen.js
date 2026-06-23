@@ -68,7 +68,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
   const styles = React.useMemo(() => createStyles(), [themeVersion]);
   const { imageUri, analysisResult } = route.params;
   const garment = analysisResult?.garments?.[0] ?? {};
-  const { refetch, updateItem, saveToWardrobe } = useWardrobe();
+  const { refetch, saveToWardrobe } = useWardrobe();
   const { t } = useTranslation();
   const { showFeedback } = useFeedback();
 
@@ -193,15 +193,7 @@ const VerifyItemScreen = ({ route, navigation }) => {
 
       await editWardrobeItem(analysisResult.analysis_id, garment, updateData);
 
-      const saveResponse = await saveToWardrobe(analysisResult.analysis_id, 0);
-      const wardrobeItemId = saveResponse._id || saveResponse.item?._id || saveResponse.analysis?._id;
-
-      if (wardrobeItemId) {
-        await updateItem(wardrobeItemId, {
-          name: updateData.name,
-          category: updateData.category.toLowerCase(),
-        });
-      }
+      await saveToWardrobe(analysisResult.analysis_id, 0);
       navigation.navigate(ROUTES.WARDROBE_MAIN);
     } catch (e) {
       const msg = getUserFriendlyErrorMessage(e, t);

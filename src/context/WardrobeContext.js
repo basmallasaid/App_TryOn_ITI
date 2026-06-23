@@ -19,7 +19,7 @@ export const WardrobeProvider = ({ children }) => {
   const lastFetchTimeRef = useRef(0);
   const mountedRef = useRef(true);
 
-  const fetchItems = useCallback(async ({ showLoading = true, useCache = true } = {}) => {
+  const fetchItems = useCallback(async ({ showLoading = true, useCache = true, force = false } = {}) => {
     if (!user?.token) return;
     try {
       if (showLoading) setLoading(true);
@@ -35,7 +35,7 @@ export const WardrobeProvider = ({ children }) => {
       }
 
       const now = Date.now();
-      if (now - lastFetchTimeRef.current < COOLDOWN_MS && !showLoading) {
+      if (!force && now - lastFetchTimeRef.current < COOLDOWN_MS && !showLoading) {
         setLoading(false);
         return;
       }
@@ -134,10 +134,7 @@ export const WardrobeProvider = ({ children }) => {
 
   const saveToWardrobe = useCallback(async (analysisId, garmentIndex = 0) => {
     const result = await apiSaveToWardrobe(analysisId, garmentIndex);
-    const newItemId = result._id || result.item?._id || result.analysis?._id;
-    if (newItemId) {
-      await fetchItems({ showLoading: false, useCache: false });
-    }
+    await fetchItems({ showLoading: false, useCache: false, force: true });
     return result;
   }, [fetchItems]);
 

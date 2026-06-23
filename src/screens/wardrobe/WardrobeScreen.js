@@ -71,9 +71,8 @@ const WardrobeScreen = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      if (items.length > 0) return;
       refetch();
-    }, [refetch, items.length]),
+    }, [refetch]),
   );
 
   const gender = profile?.profile?.gender ?? null;
